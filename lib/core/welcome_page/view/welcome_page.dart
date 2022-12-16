@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:techno_store/core/maintenance_list/view/maintenance_list.dart';
 import 'package:techno_store/core/store/view/store.dart';
+import 'package:techno_store/data_source/firebase.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -62,7 +64,9 @@ class _WelcomePageState extends State<WelcomePage> {
             margin: EdgeInsets.only(right: 10, left: 10),
             child: Center(
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  FirebaseDataSource().signOut();
+                },
                 child: Text(
                   "AR",
                   textAlign: TextAlign.center,

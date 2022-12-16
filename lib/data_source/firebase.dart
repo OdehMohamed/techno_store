@@ -27,7 +27,6 @@ class FirebaseDataSource {
   }
 
   void signOut() {
-    print("jjnjnjnjnnjnjjnj");
     try {
       firebaseAuth.signOut();
     } catch (e, v) {

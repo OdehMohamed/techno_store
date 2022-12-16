@@ -13,10 +13,40 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
+
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  Widget build(BuildContext context) {
+
+    return StreamBuilder<User?>(
+        stream: FirebaseDataSource()
+            .firebaseAuth
+            .authStateChanges(),
+        builder: ((context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator());
+          }
+          else if (snapshot.hasData) {
+            return WelcomePage();
+          } else {
+            return SignIn();
+          }
+        }));
+  }
+}
+
+class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
+
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
 final login_email = TextEditingController();
 final login_password = TextEditingController();
 
-class _MainScreenState extends State<MainScreen> {
+class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -75,9 +105,9 @@ class _MainScreenState extends State<MainScreen> {
                               .authStateChanges(),
                           builder: ((context, snapshot) {
                             if (snapshot.hasData) {
-                              return Text("Signed In");
+                              return Text("signed in");
                             } else {
-                              return Text("Not signed In");
+                              return Text("signed out");
                             }
                           })),
                       Row(
@@ -94,8 +124,8 @@ class _MainScreenState extends State<MainScreen> {
                                 // await FirebaseAuth.instance.signOut();
 
                                 if (FirebaseDataSource()
-                                        .firebaseAuth
-                                        .currentUser ==
+                                    .firebaseAuth
+                                    .currentUser ==
                                     null) {
                                   print("no user founed");
                                 } else {
@@ -126,7 +156,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                             hintText: ' Email ',
                             hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
+                            TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                         ),
                       ),
@@ -150,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                             hintText: ' password ',
                             hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
+                            TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                         ),
                       ),
@@ -170,14 +200,14 @@ class _MainScreenState extends State<MainScreen> {
                           height: height * 0.06,
                           child: Center(
                               child: Text(
-                            "Login",
-                            textAlign: TextAlign.center,
-                          )),
+                                "Login",
+                                textAlign: TextAlign.center,
+                              )),
                         ),
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(24, 114, 151, 1),
                           textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                          TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                       SizedBox(height: 15),
@@ -199,14 +229,14 @@ class _MainScreenState extends State<MainScreen> {
                           height: height * 0.06,
                           child: Center(
                               child: Text(
-                            "Create new account",
-                            textAlign: TextAlign.center,
-                          )),
+                                "Create new account",
+                                textAlign: TextAlign.center,
+                              )),
                         ),
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(128, 128, 128, 1),
                           textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                          TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                       SizedBox(height: 35),
@@ -232,3 +262,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
