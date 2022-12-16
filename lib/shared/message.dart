@@ -14,7 +14,8 @@ class Message {
 
   static void showErrorToastMessage(String message) {
     _showToastMessage(message,
-        backgroundColor: Colors.red, textColor: Colors.white);
+        backgroundColor: Colors.red,
+        textColor: Colors.white);
   }
 
   static void _showToastMessage(String message,

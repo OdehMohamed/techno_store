@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techno_store/data_source/firebase.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
@@ -81,7 +82,10 @@ class _ResetPasswordState extends State<ResetPassword> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await FirebaseDataSource()
+                                .resetPassword("maenobaid123@gmail.com");
+                          },
                           child: Container(
                             width: width * 0.6,
                             height: height * 0.06,

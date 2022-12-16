@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
 class CreateUserAccount extends StatefulWidget {
@@ -236,7 +237,10 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await FirebaseDataSource()
+                              .signUp("maenobaid123@gmail.com", "mmmmmmmm");
+                        },
                         child: Container(
                           width: 200,
                           child: Text(
