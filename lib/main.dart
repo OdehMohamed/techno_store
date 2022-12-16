@@ -11,7 +11,6 @@ Future<void> main() async {
   await Firebase.initializeApp();
   await EasyLocalization.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
