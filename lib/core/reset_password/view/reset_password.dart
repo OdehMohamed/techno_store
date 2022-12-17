@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
 
@@ -36,9 +38,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
+                  child: WidgetUtilities.autoSizeText(
                     "Reset Password",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
                   ),
                 )),
           ),
@@ -58,10 +59,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
+                        WidgetUtilities.autoSizeText(
                           "We will send an Email to reset your password ",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 20, right: 20),
@@ -87,7 +87,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                             width: width * 0.6,
                             height: height * 0.06,
                             child: Center(
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                               "Send Email",
                               textAlign: TextAlign.center,
                             )),

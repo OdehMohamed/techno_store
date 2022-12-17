@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 class manageCategory extends StatefulWidget {
   const manageCategory({Key? key}) : super(key: key);
 
@@ -85,7 +87,7 @@ class _manageCategoryState extends State<manageCategory> {
                   ),
                 ),
                 child:Container(child:
-                Text("Manage Categories",style: TextStyle(color: ColorUtilities.white,fontSize: 22,),textAlign: TextAlign.center,)
+                WidgetUtilities.autoSizeText("Manage Categories",textAlign: TextAlign.center)
                   ,)
             ),
           ),
@@ -105,7 +107,7 @@ class _manageCategoryState extends State<manageCategory> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text("Categories",style: TextStyle(fontSize: 20),),
+                      WidgetUtilities.autoSizeText("Categories",textStyle: TextStyle(color: Colors.black)),
                       Row(children: [
                         Container(
                           width: width*0.7,
@@ -120,7 +122,7 @@ class _manageCategoryState extends State<manageCategory> {
                             items: categories.map((String items) {
                               return DropdownMenuItem(
                                 value: items,
-                                child: Text(items),
+                                child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -138,7 +140,7 @@ class _manageCategoryState extends State<manageCategory> {
                             showDialog<Image>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                title: Text("Add category"),
+                                title: WidgetUtilities.autoSizeText("Add category",textStyle: TextStyle(color: Colors.black),textAlign: TextAlign.center),
                                 content: Container(
                                     width: width,
                                     height: height*0.2,
@@ -173,12 +175,12 @@ class _manageCategoryState extends State<manageCategory> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        ElevatedButton(onPressed: (){}, child:Text("Add"),style: ElevatedButton.styleFrom(
+                                        ElevatedButton(onPressed: (){}, child:WidgetUtilities.autoSizeText("Add"),style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green
                                             ),
                                         ),
                                         SizedBox(width: 30,),
-                                        ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancel"),style: ElevatedButton.styleFrom(
+                                        ElevatedButton(onPressed: (){Navigator.pop(context);}, child: WidgetUtilities.autoSizeText("cancel"),style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey
                             ),),
 
@@ -192,7 +194,7 @@ class _manageCategoryState extends State<manageCategory> {
                           ,)
                       ],),
                       Divider(thickness: 1,color: Colors.grey,),
-                      Text("Sub-Categories",style: TextStyle(fontSize: 20),),
+                      WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
                       Row(children: [
                         Container(
                           width: width*0.7,
@@ -208,7 +210,7 @@ class _manageCategoryState extends State<manageCategory> {
                                     items: sub_categories.map((String items) {
                                       return DropdownMenuItem(
                                         value: items,
-                                        child: Text(items),
+                                        child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                                       );
                                     }).toList(),
                                     onChanged: enabled_sub_category?(String? newValue) {
@@ -243,7 +245,7 @@ class _manageCategoryState extends State<manageCategory> {
                               showDialog<Image>(
                                 context: context,
                                 builder: (BuildContext context) => AlertDialog(
-                                  title: Text("Add Sub-category"),
+                                  title: WidgetUtilities.autoSizeText("Add sub-category",textStyle: TextStyle(color: Colors.black),textAlign:TextAlign.center),
                                   content: Container(
                                       width: width,
                                       height: height*0.25,
@@ -263,7 +265,7 @@ class _manageCategoryState extends State<manageCategory> {
                                               items: categories.map((String items) {
                                                 return DropdownMenuItem(
                                                   value: items,
-                                                  child: Text(items),
+                                                  child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                                                 );
                                               }).toList(),
                                               onChanged: (String? newValue) {
@@ -301,12 +303,12 @@ class _manageCategoryState extends State<manageCategory> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          ElevatedButton(onPressed: (){}, child:Text("Add"),style: ElevatedButton.styleFrom(
+                                          ElevatedButton(onPressed: (){}, child:WidgetUtilities.autoSizeText("Add"),style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.green
                                           ),
                                           ),
                                           SizedBox(width: 30,),
-                                          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancel"),style: ElevatedButton.styleFrom(
+                                          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: WidgetUtilities.autoSizeText("Cancel"),style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.grey
                                           ),),
 
@@ -348,7 +350,7 @@ class _manageCategoryState extends State<manageCategory> {
                         width: width*0.5,
                         height: height*0.05,
                         child:
-                      ElevatedButton(onPressed: (){}, child: Text("Change"),
+                      ElevatedButton(onPressed: (){}, child: WidgetUtilities.autoSizeText("Change"),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           textStyle: TextStyle(
@@ -360,7 +362,7 @@ class _manageCategoryState extends State<manageCategory> {
                         width: width*0.5,
                         height: height*0.05,
                         child:
-                        ElevatedButton(onPressed: (){}, child: Text("Delete"),
+                        ElevatedButton(onPressed: (){}, child: WidgetUtilities.autoSizeText("Delete"),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             textStyle: TextStyle(

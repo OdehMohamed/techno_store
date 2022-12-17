@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class NewProduct extends StatefulWidget {
   const NewProduct({Key? key}) : super(key: key);
 
@@ -59,9 +61,9 @@ class _NewProductState extends State<NewProduct> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
+                  child: WidgetUtilities.autoSizeText(
                     "New Product",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                      textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20)
                   ),
                 )),
           ),
@@ -242,7 +244,7 @@ class _NewProductState extends State<NewProduct> {
                                   items: categories.map((String items) {
                                     return DropdownMenuItem(
                                       value: items,
-                                      child: Text(items),
+                                      child: WidgetUtilities.autoSizeText(items ,textStyle: TextStyle(color: Colors.black)),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
@@ -269,7 +271,7 @@ class _NewProductState extends State<NewProduct> {
                                   items: sub_categories.map((String items) {
                                     return DropdownMenuItem(
                                       value: items,
-                                      child: Text(items),
+                                      child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
@@ -313,7 +315,7 @@ class _NewProductState extends State<NewProduct> {
                                 onPressed: (){},
                                 child: Container(
                                   width: width*0.2,
-                                  child: Text("Create",textAlign: TextAlign.center,),
+                                  child: WidgetUtilities.autoSizeText("Create",textAlign: TextAlign.center,),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   primary: ColorUtilities.secondary,
@@ -325,7 +327,7 @@ class _NewProductState extends State<NewProduct> {
                                 onPressed: (){},
                                 child: Container(
                                   width: width*0.2,
-                                  child: Text("Cancel",textAlign: TextAlign.center,),
+                                  child: WidgetUtilities.autoSizeText("Cancel",textAlign: TextAlign.center,),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   primary: Color.fromRGBO(128, 128, 128, 1),

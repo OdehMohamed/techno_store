@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class CreateUserAccount extends StatefulWidget {
   const CreateUserAccount({Key? key}) : super(key: key);
 
@@ -46,10 +48,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    "New Account",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
-                  ),
+                  child:WidgetUtilities.autoSizeText("New Account",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
                 )),
           ),
           Container(
@@ -239,10 +238,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                         onPressed: () {},
                         child: Container(
                           width: 200,
-                          child: Text(
-                            "Create Account",
-                            textAlign: TextAlign.center,
-                          ),
+                          child: WidgetUtilities.autoSizeText("Create Account",textAlign: TextAlign.center)
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorUtilities.primary,

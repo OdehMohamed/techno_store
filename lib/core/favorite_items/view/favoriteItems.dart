@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
 import '../../product_details/view/product_details.dart';
 class favoraitItems extends StatefulWidget {
   const favoraitItems({Key? key}) : super(key: key);
@@ -38,12 +39,12 @@ class _favoraitItemsState extends State<favoraitItems> {
                 children: [
                   Row(
                     children: [
-                      Text("Iphone 14 pro"),
+                      WidgetUtilities.autoSizeText("IPhone 14 pro",textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      Text("1100JD"),
+                      WidgetUtilities.autoSizeText("1000JD",textStyle: TextStyle(color: Colors.black54))
                     ],
                   ),
-                  Text("this is iphone 14, ",maxLines: 4,)
+                  WidgetUtilities.autoSizeText("this is details",textStyle: TextStyle(color: Colors.black54))
                 ],
               )
             ],
@@ -72,9 +73,9 @@ class _favoraitItemsState extends State<favoraitItems> {
                 height: height*0.15,
                 child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
               ),
-              Text("Iphone 14 pro" ,style: TextStyle(color: Colors.black54),),
+              WidgetUtilities.autoSizeText("Iphone 14 pro",textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
-              Text("1100JD"),
+              WidgetUtilities.autoSizeText("1100JD",textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
             ],
           ),
@@ -126,7 +127,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                       children: [
                         Container(
                           margin: EdgeInsets.only(top:height*0.13),
-                          child: Text("Favorites ",style: TextStyle(color: Colors.white,fontSize: 26,),),
+                          child: WidgetUtilities.autoSizeText("Favorite"),
                         ),
                       ],
                     )

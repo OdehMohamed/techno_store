@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class NewUserAdminSide extends StatefulWidget {
   const NewUserAdminSide({Key? key}) : super(key: key);
 
@@ -43,9 +45,9 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
+                  child: WidgetUtilities.autoSizeText(
                     "New Account",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                      textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20)
                   ),
                 )),
           ),
@@ -231,9 +233,9 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                 usertype = value.toString();
                               });
                             }),
-                        Text(
+                        WidgetUtilities.autoSizeText(
                           "Reception",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                            textStyle: TextStyle(color: Colors.black)
                         ),
                         Radio(
                             value: "2",
@@ -244,9 +246,9 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                 usertype = value.toString();
                               });
                             }),
-                        Text(
+                        WidgetUtilities.autoSizeText(
                           "Maintinance",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                            textStyle: TextStyle(color: Colors.black)
                         ),
                       ]),
                       ElevatedButton(

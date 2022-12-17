@@ -3,6 +3,8 @@ import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class MaintinanceList extends StatefulWidget {
   const MaintinanceList({Key? key}) : super(key: key);
 
@@ -111,25 +113,25 @@ class _MaintinanceListState extends State<MaintinanceList> {
                   Container(
                     width: width*0.67,
                     child: Row(children: [
-                      Text("Ahmad Mohammad",style: TextStyle(color: Colors.black,fontSize: 16),),
+                      WidgetUtilities.autoSizeText("Ahmad Mohammad",textStyle: TextStyle(color: Colors.black)),
                       Flexible(child: Container()),
                       Icon(FontAwesome5.check_circle,color: Colors.green,),
                       SizedBox(width: 5,),
-                      Text("fixed",style: TextStyle(color: Colors.black54,fontSize: 16))
+                      WidgetUtilities.autoSizeText("Fixed",textStyle: TextStyle(color: Colors.black54))
                     ],),
                   ),
                   Container(
                     width: width*0.67,
                     child: Row(children: [
-                      Text("Apple 13 Pro Max",style: TextStyle(color: Colors.black54,fontSize: 16),),
+                      WidgetUtilities.autoSizeText("Apple 13 pro max",textStyle: TextStyle(color: Colors.black54))
                     ],),
                   ),
                   Container(
                     width: width*0.67,
                     child: Row(children: [
-                      Text("4 days",style: TextStyle(color: Colors.black54,fontSize: 16)),
+                      WidgetUtilities.autoSizeText("4 days",textStyle: TextStyle(color: Colors.black54)),
                       Flexible(child: Container()),
-                      Text("30JD",style: TextStyle(color: Colors.black54,fontSize: 16))
+                      WidgetUtilities.autoSizeText("30 JD",textStyle: TextStyle(color: Colors.black54))
                     ],),
                   ),
 
@@ -170,10 +172,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(top: height * 0.13),
-                      child: Text(
-                        "Mobile List",
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
+                      child: WidgetUtilities.autoSizeText("Mobile list",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
                     ),
                     Flexible(child: Container()),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [

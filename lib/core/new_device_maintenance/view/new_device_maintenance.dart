@@ -3,6 +3,8 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/widget_utilities.dart';
+
 class NewDeviceMaintanace extends StatefulWidget {
   const NewDeviceMaintanace({Key? key}) : super(key: key);
 
@@ -64,10 +66,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    "Device Maintinance",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
-                  ),
+                  child: WidgetUtilities.autoSizeText("Device Maintinance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
                 )),
           ),
           Container(
@@ -90,7 +89,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Customer Information"),
+                        WidgetUtilities.autoSizeText("Customer Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
@@ -178,7 +177,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Device Information"),
+                        WidgetUtilities.autoSizeText("Device Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
@@ -192,13 +191,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           child: DropdownButton(
                             isExpanded: true,
                             underline: SizedBox(),
-                            hint: Text("Device Brand"),
+                            hint: WidgetUtilities.autoSizeText("Device Brand"),
                             value: dropdownvalue,
                             icon: const Icon(Icons.keyboard_arrow_down),
                             items: items.map((String items) {
                               return DropdownMenuItem(
                                 value: items,
-                                child: Text(items),
+                                child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -305,9 +304,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     height: height * 0.09,
                                     color: Colors.green,
                                     child: Center(
-                                      child: Text(
+                                      child: WidgetUtilities.autoSizeText(
                                         "Pattern",
-                                        style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -355,11 +353,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                     .circular(
                                                                         5)),
                                                         child: Center(
-                                                          child: Text(
+                                                          child: WidgetUtilities.autoSizeText(
                                                             "Save",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
                                                           ),
                                                         )),
                                                     onTap: () {
@@ -385,7 +380,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Maintinance Information"),
+                        WidgetUtilities.autoSizeText("Maintinance Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
@@ -555,7 +550,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               onPressed: () {},
                               child: Container(
                                 width: width * 0.2,
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                                   "Create",
                                   textAlign: TextAlign.center,
                                 ),
@@ -570,7 +565,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               onPressed: () {},
                               child: Container(
                                 width: width * 0.2,
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                                   "Cancel",
                                   textAlign: TextAlign.center,
                                 ),
