@@ -8,7 +8,6 @@ class MainScreenState extends ChangeNotifier {
     loading = true;
     refresh();
 
-
     try {
       await FirebaseDataSource().signIn(email, password);
     } catch (e) {
