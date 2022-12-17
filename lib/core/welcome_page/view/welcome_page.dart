@@ -2,8 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 import 'package:techno_store/core/maintenance_list/view/maintenance_list.dart';
 import 'package:techno_store/core/store/view/store.dart';
+import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -14,8 +17,17 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  late WelcomePageState welcomePageState;
+
+  @override
+  void initState() {
+    welcomePageState = context.read<WelcomePageState>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    welcomePageState = context.watch<WelcomePageState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     Widget card(
@@ -78,82 +90,89 @@ class _WelcomePageState extends State<WelcomePage> {
       ),
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
-      drawer: Container(
-        width: 0.8 * width,
-        height: height,
-        color: Color.fromRGBO(24, 114, 151, 1),
-        child: Column(
-          children: [
-            Container(
-                margin: EdgeInsets.only(top: height * 0.07),
-                width: 100,
-                height: 100,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage("assets/images/defaultImg.png"),
-                  backgroundColor: Colors.white,
-                )),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "My name ",
-              style: TextStyle(color: Colors.white),
-            ),
-            Flexible(
-                child: ListView(
-              children: [
-                card("Favorite", Icon(Icons.star, color: Colors.yellow)),
-                card(
-                  "Store",
-                  Icon(
-                    Icons.shopping_cart,
-                    color: Colors.white60,
+      drawer: ModalProgressHUD(
+        inAsyncCall: welcomePageState.loading,
+        child: Container(
+          width: 0.8 * width,
+          height: height,
+          color: Color.fromRGBO(24, 114, 151, 1),
+          child: Column(
+            children: [
+              Container(
+                  margin: EdgeInsets.only(top: height * 0.07),
+                  width: 100,
+                  height: 100,
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/defaultImg.png"),
+                    backgroundColor: Colors.white,
+                  )),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "My name ",
+                style: TextStyle(color: Colors.white),
+              ),
+              Flexible(
+                  child: ListView(
+                children: [
+                  card("Favorite", Icon(Icons.star, color: Colors.yellow)),
+                  card(
+                    "Store",
+                    Icon(
+                      Icons.shopping_cart,
+                      color: Colors.white60,
+                    ),
                   ),
-                ),
-                card(
-                  "Check My Device",
-                  Icon(
-                    Icons.phone_android,
-                    color: Colors.white60,
+                  card(
+                    "Check My Device",
+                    Icon(
+                      Icons.phone_android,
+                      color: Colors.white60,
+                    ),
                   ),
-                ),
-                card(
-                  "Maintinance",
-                  Icon(Icons.add_to_home_screen, color: Colors.white60),
-                ),
-                card(
-                  "Add new Emoloyee",
-                  Icon(
-                    Icons.person_add,
-                    color: Colors.white60,
+                  card(
+                    "Maintinance",
+                    Icon(Icons.add_to_home_screen, color: Colors.white60),
                   ),
-                ),
-              ],
-            )),
-            InkWell(
-                onTap: () {
-                  FirebaseDataSource().signOut();
-                },
-                child: Container(
-                    padding: EdgeInsets.all(10),
-                    color: Colors.red,
-                    width: width,
-                    height: 40,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.white60,
-                        ),
-                        Text(
-                          "Logout",
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ))),
-          ],
+                  card(
+                    "Add new Emoloyee",
+                    Icon(
+                      Icons.person_add,
+                      color: Colors.white60,
+                    ),
+                  ),
+                ],
+              )),
+              InkWell(
+                  onTap: () async {
+                    try {
+                      await welcomePageState.signOut();
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10),
+                      color: Colors.red,
+                      width: width,
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.logout,
+                            color: Colors.white60,
+                          ),
+                          Text(
+                            "Logout",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ))),
+            ],
+          ),
         ),
       ),
       body: Column(

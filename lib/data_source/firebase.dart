@@ -38,6 +38,7 @@ class FirebaseDataSource {
           .then((value) => print(value.user?.email));
     } catch (e, v) {
       print(e.toString() + "----->" + v.toString());
+      rethrow;
     }
   }
 
@@ -101,7 +102,7 @@ class FirebaseDataSource {
 
     try {
       if (data["photo"] != "") {
-        data["photo"] = uploadPhoto(data["photo"] ?? "");
+        data["photo"] = await uploadPhoto(data["photo"] ?? "");
       }
 
       await firebaseFirestore
