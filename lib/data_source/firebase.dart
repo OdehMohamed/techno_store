@@ -54,4 +54,12 @@ class FirebaseDataSource {
       print(e.toString() + " -----> " + v.toString());
     }
   }
+
+  Future<void> sendEmailVerification() async {
+    try {
+      await firebaseAuth.currentUser?.sendEmailVerification();
+    } catch (e, v) {
+      print(e.toString() + " -----> " + v.toString());
+    }
+  }
 }

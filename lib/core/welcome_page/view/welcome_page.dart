@@ -65,7 +65,7 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  FirebaseDataSource().signOut();
+                  FirebaseDataSource().sendEmailVerification();
                 },
                 child: Text(
                   "AR",

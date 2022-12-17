@@ -83,8 +83,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await FirebaseDataSource()
-                                .resetPassword("maenobaid123@gmail.com");
+                            // await FirebaseDataSource()
+                            //     .resetPassword("abd20180706@std.psut.edu.jo");
+                            await FirebaseDataSource().sendEmailVerification();
                           },
                           child: Container(
                             width: width * 0.6,
