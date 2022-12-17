@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techno_store/shared/color_utilities.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
@@ -24,12 +25,12 @@ class _ResetPasswordState extends State<ResetPassword> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -42,12 +43,12 @@ class _ResetPasswordState extends State<ResetPassword> {
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -92,7 +93,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                             )),
                           ),
                           style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(76, 127, 158, 1),
+                            primary: ColorUtilities.secondary,
                             textStyle:
                                 TextStyle(fontSize: 16, color: Colors.white),
                           ),

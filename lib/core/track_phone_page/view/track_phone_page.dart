@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:techno_store/shared/color_utilities.dart';
 
 class TrackPhonePage extends StatefulWidget {
   const TrackPhonePage({Key? key}) : super(key: key);
@@ -65,13 +66,13 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 padding: EdgeInsets.only(top: height * 0.1),
                 width: width,
                 height: height * 0.4,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -92,12 +93,12 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -148,7 +149,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                backgroundColor: Colors.white,
+                                backgroundColor:ColorUtilities.white,
                                 content: Container(
                                   height: height * 0.6,
                                   child: Column(
@@ -258,7 +259,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                               ),
                             )),
                         style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(24, 114, 151, 1),
+                          primary: ColorUtilities.secondary,
                           textStyle:
                               TextStyle(fontSize: 16, color: Colors.white),
                         ),

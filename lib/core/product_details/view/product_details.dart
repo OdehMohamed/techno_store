@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techno_store/shared/color_utilities.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({Key? key}) : super(key: key);
@@ -21,12 +22,12 @@ class _ProductDetailsState extends State<ProductDetails> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -39,12 +40,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color:ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -68,7 +69,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           height: height * 0.2,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                           ),
                           child: SingleChildScrollView(
                               child: Container(

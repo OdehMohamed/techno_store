@@ -5,6 +5,7 @@ import 'package:techno_store/core/create_user_account/view/create_user_account_v
 import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
+import 'package:techno_store/shared/color_utilities.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -56,12 +57,12 @@ class _SignInState extends State<SignIn> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.4,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color:ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -78,19 +79,19 @@ class _SignInState extends State<SignIn> {
                       child: Image.asset(
                         "assets/images/logo.png",
                         fit: BoxFit.fill,
-                        color: Colors.white,
+                        color: ColorUtilities.white,
                       ),
                     ),
                   ],
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.white,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -140,7 +141,7 @@ class _SignInState extends State<SignIn> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -151,7 +152,7 @@ class _SignInState extends State<SignIn> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.perm_identity_outlined,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                               size: 28,
                             ),
                             hintText: ' Email ',
@@ -163,7 +164,7 @@ class _SignInState extends State<SignIn> {
                       SizedBox(height: 40),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -175,7 +176,7 @@ class _SignInState extends State<SignIn> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.lock_outlined,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                               size: 28,
                             ),
                             hintText: ' password ',
@@ -205,7 +206,7 @@ class _SignInState extends State<SignIn> {
                               )),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(24, 114, 151, 1),
+                          primary: ColorUtilities.secondary,
                           textStyle:
                           TextStyle(fontSize: 16, color: Colors.white),
                         ),
