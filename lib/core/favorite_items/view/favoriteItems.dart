@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
@@ -41,7 +42,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                     children: [
                       WidgetUtilities.autoSizeText("IPhone 14 pro",textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      WidgetUtilities.autoSizeText("1000JD",textStyle: TextStyle(color: Colors.black54))
+                      WidgetUtilities.autoSizeText("1000"+"JD".tr(),textStyle: TextStyle(color: Colors.black54))
                     ],
                   ),
                   WidgetUtilities.autoSizeText("this is details",textStyle: TextStyle(color: Colors.black54))
@@ -68,14 +69,13 @@ class _favoraitItemsState extends State<favoraitItems> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                margin:EdgeInsets.only(top: 10),
                 width: width*0.3,
                 height: height*0.15,
                 child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
               ),
               WidgetUtilities.autoSizeText("Iphone 14 pro",textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
-              WidgetUtilities.autoSizeText("1100JD",textStyle: TextStyle(color: Colors.black54)),
+              WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
             ],
           ),
@@ -127,7 +127,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                       children: [
                         Container(
                           margin: EdgeInsets.only(top:height*0.13),
-                          child: WidgetUtilities.autoSizeText("Favorite"),
+                          child: WidgetUtilities.autoSizeText("Favorite",textStyle: TextStyle(fontSize: 24,color: ColorUtilities.textColor)),
                         ),
                       ],
                     )

@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
@@ -109,24 +110,6 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                           child: Text("+"),
                                         )),
                                     onTap: () async {
-                                      // final ImagePicker _picker = ImagePicker();
-                                      // // Pick an image
-                                      // var image = await _picker.pickImage(
-                                      //     source: ImageSource.gallery);
-                                      // print(image?.path ?? "ss");
-                                      // if (image?.path != null) {
-                                      //   setState(() {
-                                      //     photoPath = image!.path;
-                                      //   });
-                                      // }
-                                      //
-                                      //
-                                      //
-                                      //Use image picker here
-                                      //
-                                      //
-                                      //
-
                                       final result =
                                           await FilePicker.platform.pickFiles(
                                         type: FileType.image,
@@ -160,7 +143,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Full name ',
+                            hintText: 'Full name'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -182,7 +165,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Email ',
+                            hintText: 'Email'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -205,7 +188,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Password ',
+                            hintText: 'Password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -228,7 +211,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' re-password ',
+                            hintText: 're-password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),

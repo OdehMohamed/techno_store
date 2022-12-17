@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
@@ -39,7 +40,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                 ),
                 child: Center(
                   child: WidgetUtilities.autoSizeText(
-                    "Reset Password",
+                    "Reset Password".tr(),
+                    textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
                   ),
                 )),
           ),
@@ -60,8 +62,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         WidgetUtilities.autoSizeText(
-                          "We will send an Email to reset your password ",
+                          "We will send an Email to reset your password",
                           textAlign: TextAlign.center,
+                          textStyle: TextStyle(color: Colors.black)
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 20, right: 20),
@@ -75,7 +78,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Please Enter your Email ',
+                              hintText: 'Please Enter your Email'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),

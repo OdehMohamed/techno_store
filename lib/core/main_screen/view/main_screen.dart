@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -91,7 +94,7 @@ class _SignInState extends State<SignIn> {
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
-                  color: ColorUtilities.white,
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -100,45 +103,6 @@ class _SignInState extends State<SignIn> {
                   margin: EdgeInsets.only(top: 30, left: 40, right: 40),
                   child: Column(
                     children: [
-                      StreamBuilder<User?>(
-                          stream: FirebaseDataSource()
-                              .firebaseAuth
-                              .authStateChanges(),
-                          builder: ((context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Text("signed in");
-                            } else {
-                              return Text("signed out");
-                            }
-                          })),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                await FirebaseDataSource()
-                                    .signIn("mmm@gmail.com", "mmmmmmmm");
-                              },
-                              child: Text("jhgfjhgfgh")),
-                          ElevatedButton(
-                              onPressed: () {
-                                FirebaseDataSource().signOut();
-                                // await FirebaseAuth.instance.signOut();
-
-                                if (FirebaseDataSource()
-                                    .firebaseAuth
-                                    .currentUser ==
-                                    null) {
-                                  print("no user founed");
-                                } else {
-                                  print(FirebaseDataSource()
-                                      .firebaseAuth
-                                      .currentUser
-                                      ?.uid);
-                                }
-                              },
-                              child: Text("out")),
-                        ],
-                      ),
                       Container(
                         decoration: BoxDecoration(
                           color: ColorUtilities.white,
@@ -155,7 +119,7 @@ class _SignInState extends State<SignIn> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Email ',
+                            hintText: 'Email'.tr(),
                             hintStyle:
                             TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -179,7 +143,7 @@ class _SignInState extends State<SignIn> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' password ',
+                            hintText: 'Password'.tr(),
                             hintStyle:
                             TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -189,18 +153,15 @@ class _SignInState extends State<SignIn> {
                         height: 30,
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WelcomePage()),
-                          );
+                        onPressed: () async {
+                          await FirebaseDataSource()
+                              .signIn("mmm@gmail.com", "mmmmmmmm");
                         },
                         child: Container(
                           width: width * 0.5,
                           height: height * 0.06,
                           child: Center(
-                              child: Text(
+                              child: WidgetUtilities.autoSizeText(
                                 "Login",
                                 textAlign: TextAlign.center,
                               )),
@@ -212,9 +173,9 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                       SizedBox(height: 15),
-                      Text(
+                      WidgetUtilities.autoSizeText(
                         "or",
-                        style: TextStyle(color: Colors.grey),
+                        textStyle: TextStyle(color: Colors.grey),
                       ),
                       SizedBox(height: 15),
                       ElevatedButton(
@@ -229,8 +190,8 @@ class _SignInState extends State<SignIn> {
                           width: width * 0.5,
                           height: height * 0.06,
                           child: Center(
-                              child: Text(
-                                "Create new account",
+                              child: WidgetUtilities.autoSizeText(
+                                "Create new Account",
                                 textAlign: TextAlign.center,
                               )),
                         ),
@@ -243,7 +204,7 @@ class _SignInState extends State<SignIn> {
                       SizedBox(height: 35),
                       InkWell(
                         child: Text(
-                          "Forget password?",
+                          "Forget password".tr()+"?".tr(),
                           style: TextStyle(color: Colors.blue, fontSize: 12),
                         ),
                         onTap: () {

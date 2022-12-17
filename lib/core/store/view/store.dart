@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
@@ -149,10 +150,10 @@ class _StoreState extends State<Store> {
                     children: [
                       WidgetUtilities.autoSizeText("Iphone 14 pro",textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      WidgetUtilities.autoSizeText("1100JD",textStyle: TextStyle(color: Colors.black54)),
+                      WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
                     ],
                   ),
-                  WidgetUtilities.autoSizeText("this is iphone 14, ",textStyle: TextStyle(color: Colors.black54))
+                  WidgetUtilities.autoSizeText("this is iphone 14",textStyle: TextStyle(color: Colors.black54))
                 ],
               )
             ],
@@ -176,14 +177,13 @@ class _StoreState extends State<Store> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                margin:EdgeInsets.only(top: 10),
                 width: width*0.3,
                 height: height*0.15,
                 child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
               ),
               WidgetUtilities.autoSizeText("Iphone 14 pro" ,textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
-              WidgetUtilities.autoSizeText("1100JD",textStyle: TextStyle(color: Colors.black54)),
+              WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
             ],
           ),
@@ -229,7 +229,7 @@ class _StoreState extends State<Store> {
                     Row(children: [
                       Container(
                         width: width*0.35,
-                        padding: EdgeInsets.only(left: 40),
+                        padding: EdgeInsets.only(right: 30,left: 30),
                         child:DropdownButton(
                           dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
                           isExpanded: true,
@@ -239,7 +239,7 @@ class _StoreState extends State<Store> {
                           items: categories.map((String items) {
                             return DropdownMenuItem(
                               value: items,
-                              child: Text(items,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                              child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {

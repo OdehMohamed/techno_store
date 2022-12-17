@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -16,7 +17,7 @@ class WidgetUtilities {
         color: ColorUtilities.textColor,
       ),
       textAlign = TextAlign.start}) {
-    return AutoSizeText(text,
+    return AutoSizeText(text.tr(),
         style: textStyle,
         textAlign: textAlign,
         softWrap: true,

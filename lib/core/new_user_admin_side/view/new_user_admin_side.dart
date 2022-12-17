@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
@@ -149,7 +150,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Full name ',
+                            hintText: 'Full name'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -171,7 +172,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               color:ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Email ',
+                            hintText: 'Email'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -194,7 +195,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Password ',
+                            hintText: 'Password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -217,7 +218,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' re-password ',
+                            hintText: 're-password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -247,7 +248,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               });
                             }),
                         WidgetUtilities.autoSizeText(
-                          "Maintinance",
+                          "Maintenance",
                             textStyle: TextStyle(color: Colors.black)
                         ),
                       ]),
@@ -255,7 +256,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                         onPressed: () {},
                         child: Container(
                           width: 200,
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Create Account",
                             textAlign: TextAlign.center,
                           ),

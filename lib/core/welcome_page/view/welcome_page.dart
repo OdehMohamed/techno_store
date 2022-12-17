@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
@@ -14,6 +15,7 @@ import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
 import '../../../shared/utilities.dart';
+import '../../../shared/widget_utilities.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -46,9 +48,8 @@ class _WelcomePageState extends State<WelcomePage> {
                   Row(
                     children: [
                       icon,
-                      Text(
+                      WidgetUtilities.autoSizeText(
                         title,
-                        style: TextStyle(color: Colors.white),
                       )
                     ],
                   ),
@@ -63,11 +64,11 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       );
     }
-
+    String lang = context.locale == Locale("en") ? "ar" : "en";
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Welcome"),
+        title:  WidgetUtilities.autoSizeText("Welcome"),
         backgroundColor: Colors.transparent,
         actions: [
           Container(
@@ -75,10 +76,10 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  FirebaseDataSource().signOut();
+                  context.locale = context.locale == Locale("en") ? Locale("ar") : Locale("en");
                 },
-                child: Text(
-                  "AR",
+                child: WidgetUtilities.autoSizeText(
+                  lang.tr(),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -105,9 +106,8 @@ class _WelcomePageState extends State<WelcomePage> {
             SizedBox(
               height: 10,
             ),
-            Text(
+            WidgetUtilities.autoSizeText(
               "My name ",
-              style: TextStyle(color: Colors.white),
             ),
             Flexible(
                 child: ListView(
@@ -130,12 +130,12 @@ class _WelcomePageState extends State<WelcomePage> {
                     (){Utilities.navigatorWithBack(context, TrackPhonePage());}
                 ),
                 card(
-                  "Maintinance",
+                  "Maintenance",
                   Icon(Icons.add_to_home_screen, color: Colors.white60),
                     (){Utilities.navigatorWithBack(context, MaintinanceList());}
                 ),
                 card(
-                  "Add new Emoloyee",
+                  "Add new Employee",
                   Icon(
                     Icons.person_add,
                     color: Colors.white60,
@@ -145,13 +145,15 @@ class _WelcomePageState extends State<WelcomePage> {
                 card("Add new Product", Icon(Icons.note_add,color: Colors.white60,),
                         (){Navigator.push(context, MaterialPageRoute(builder: (context) => NewProduct()),);}
                 ),
-                card("Manage Category", Icon(Icons.category,color: Colors.white60,),
+                card("Manage Categories", Icon(Icons.category,color: Colors.white60,),
                         (){Navigator.push(context, MaterialPageRoute(builder: (context) =>manageCategory()),);}
                 ),
               ],
             )),
             InkWell(
-                onTap: () {},
+                onTap: () {
+                  FirebaseDataSource().signOut();
+                },
                 child: Container(
                     padding: EdgeInsets.all(10),
                     color: Colors.red,
@@ -164,10 +166,8 @@ class _WelcomePageState extends State<WelcomePage> {
                           Icons.logout,
                           color: Colors.white60,
                         ),
-                        Text(
+                        WidgetUtilities.autoSizeText(
                           "Logout",
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
                         ),
                       ],
                     ))),
@@ -238,10 +238,9 @@ class _WelcomePageState extends State<WelcomePage> {
                             width: 200,
                             height: 90,
                             child: Center(
-                              child: Text(
+                              child: WidgetUtilities.autoSizeText(
                                 "Store",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 22),
+                                textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor),
                               ),
                             )),
                       ),
@@ -264,10 +263,10 @@ class _WelcomePageState extends State<WelcomePage> {
                             width: 200,
                             height: 90,
                             child: Center(
-                              child: Text(
-                                "Maintinance",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 22),
+                              child: WidgetUtilities.autoSizeText(
+                                "Maintenance",
+                                textStyle: TextStyle(
+                                    color: ColorUtilities.textColor, fontSize: 22),
                               ),
                             )),
                       ),

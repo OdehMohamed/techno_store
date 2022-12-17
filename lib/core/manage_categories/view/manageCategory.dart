@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
@@ -87,7 +88,7 @@ class _manageCategoryState extends State<manageCategory> {
                   ),
                 ),
                 child:Container(child:
-                WidgetUtilities.autoSizeText("Manage Categories",textAlign: TextAlign.center)
+                WidgetUtilities.autoSizeText("Manage Categories",textAlign: TextAlign.center,textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor))
                   ,)
             ),
           ),
@@ -116,7 +117,7 @@ class _manageCategoryState extends State<manageCategory> {
                           DropdownButton(
                             isExpanded: true,
                             underline: SizedBox(),
-                            hint: Text("Category"),
+                            hint: WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
                             value: category_dropdown_value,
                             icon: const Icon(Icons.keyboard_arrow_down),
                             items: categories.map((String items) {
@@ -135,61 +136,82 @@ class _manageCategoryState extends State<manageCategory> {
                         ),
                         InkWell(
                           child:Icon(Icons.add_circle_outlined,color: Colors.green,size: 30,),
-                          onTap: (){
-
-                            showDialog<Image>(
+                          onTap: () async {
+                            await showDialog(
                               context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: WidgetUtilities.autoSizeText("Add category",textStyle: TextStyle(color: Colors.black),textAlign: TextAlign.center),
-                                content: Container(
-                                    width: width,
-                                    height: height*0.2,
-                                    child:
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Container(
-                                          width: width*0.5,
-                                          margin: EdgeInsets.only(top: 20),
-                                          padding: EdgeInsets.only(left: 20,right: 20),
-                                          decoration: BoxDecoration(
-                                            color:ColorUtilities.white,
-                                            border: Border.all(color: Colors.grey),
-                                            borderRadius: BorderRadius.circular(5),
-                                          ),
-                                          child :TextField(
-                                            controller: new_category_name_controller,
-                                            style: TextStyle(color: Colors.black),
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText: ' New Category',
-                                              hintStyle:
-                                              TextStyle(color:Colors.grey, fontSize: 16),),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                ),
-                                actions: [
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        ElevatedButton(onPressed: (){}, child:WidgetUtilities.autoSizeText("Add"),style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Container(width: width,height: height*0.05,child: WidgetUtilities.autoSizeText(
+                                      "Add Category",
+                                      textStyle: TextStyle(color: Colors.black),
+                                      textAlign: TextAlign.center),),
+                                  content: Container(
+                                      width: width,
+                                      height: height * 0.2,
+                                      child:
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceEvenly,
+                                        children: [
+                                          Container(
+                                            width: width * 0.5,
+                                            margin: EdgeInsets.only(top: 20),
+                                            padding: EdgeInsets.only(
+                                                left: 20, right: 20),
+                                            decoration: BoxDecoration(
+                                              color: ColorUtilities.white,
+                                              border: Border.all(
+                                                  color: Colors.grey),
+                                              borderRadius: BorderRadius
+                                                  .circular(5),
                                             ),
-                                        ),
-                                        SizedBox(width: 30,),
-                                        ElevatedButton(onPressed: (){Navigator.pop(context);}, child: WidgetUtilities.autoSizeText("cancel"),style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey
-                            ),),
+                                            child: TextField(
+                                              controller: new_category_name_controller,
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'New Category'.tr(),
+                                                hintStyle:
+                                                TextStyle(color: Colors.grey,
+                                                    fontSize: 16),),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                  ),
+                                  actions: [
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          ElevatedButton(onPressed: () {},
+                                            child:Text(
+                                                "Add".tr()),
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.green
+                                            ),
+                                          ),
+                                          SizedBox(width: 30,),
+                                          ElevatedButton(onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                            child: Text(
+                                                "Cancel").tr(),
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.grey
+                                            ),),
 
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+
+                              }
                             );
+
                           }
                           ,)
                       ],),
@@ -204,7 +226,7 @@ class _manageCategoryState extends State<manageCategory> {
                                 child: DropdownButton(
                                     isExpanded: true,
                                     underline: SizedBox(),
-                                    hint: Text("Sub-Categories",style: TextStyle(color: enabled_sub_category?Colors.black:Colors.black12),),
+                                    hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: enabled_sub_category?Colors.black:Colors.black12),),
                                     value: sub_category_dropdown_value,
                                     icon:  Icon(Icons.keyboard_arrow_down,color:  enabled_sub_category?Colors.black:Colors.black12,),
                                     items: sub_categories.map((String items) {
@@ -245,7 +267,12 @@ class _manageCategoryState extends State<manageCategory> {
                               showDialog<Image>(
                                 context: context,
                                 builder: (BuildContext context) => AlertDialog(
-                                  title: WidgetUtilities.autoSizeText("Add sub-category",textStyle: TextStyle(color: Colors.black),textAlign:TextAlign.center),
+                                  title: Container(
+                                    child:
+                                    WidgetUtilities.autoSizeText("Add sub-category",textStyle: TextStyle(color: Colors.black),textAlign:TextAlign.center),
+                                    width: width,
+                                    height: height*0.05,
+                                  ),
                                   content: Container(
                                       width: width,
                                       height: height*0.25,
@@ -259,7 +286,7 @@ class _manageCategoryState extends State<manageCategory> {
                                             DropdownButton(
                                               isExpanded: true,
                                               underline: SizedBox(),
-                                              hint: Text("Category"),
+                                              hint:  WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
                                               value: category_dropdown_value,
                                               icon: const Icon(Icons.keyboard_arrow_down),
                                               items: categories.map((String items) {
@@ -290,7 +317,7 @@ class _manageCategoryState extends State<manageCategory> {
                                               style: TextStyle(color: Colors.black),
                                               decoration: InputDecoration(
                                                 border: InputBorder.none,
-                                                hintText: ' New Sub-Category',
+                                                hintText: 'New Sub-Category'.tr(),
                                                 hintStyle:
                                                 TextStyle(color:Colors.grey, fontSize: 16),),
                                             ),
@@ -303,12 +330,12 @@ class _manageCategoryState extends State<manageCategory> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          ElevatedButton(onPressed: (){}, child:WidgetUtilities.autoSizeText("Add"),style: ElevatedButton.styleFrom(
+                                          ElevatedButton(onPressed: (){}, child:Text("Add".tr()),style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.green
                                           ),
                                           ),
                                           SizedBox(width: 30,),
-                                          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: WidgetUtilities.autoSizeText("Cancel"),style: ElevatedButton.styleFrom(
+                                          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancel".tr()),style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.grey
                                           ),),
 
@@ -340,7 +367,7 @@ class _manageCategoryState extends State<manageCategory> {
                           style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: ' New Name ',
+                            hintText: 'New Name'.tr(),
                             hintStyle:
                             TextStyle(color:Colors.grey, fontSize: 16),),
                         ),

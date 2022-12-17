@@ -129,10 +129,15 @@ class _MaintinanceListState extends State<MaintinanceList> {
                   Container(
                     width: width*0.67,
                     child: Row(children: [
-                      WidgetUtilities.autoSizeText("4 days",textStyle: TextStyle(color: Colors.black54)),
+                      Container(child: Row(children: [
+                        WidgetUtilities.autoSizeText("4",textStyle: TextStyle(color: Colors.black54)),
+                        WidgetUtilities.autoSizeText("days",textStyle: TextStyle(color: Colors.black54)),
+                      ],),),
                       Flexible(child: Container()),
-                      WidgetUtilities.autoSizeText("30 JD",textStyle: TextStyle(color: Colors.black54))
-                    ],),
+                      Container(child: Row(children: [
+                        WidgetUtilities.autoSizeText("30",textStyle: TextStyle(color: Colors.black54)),
+                        WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
+                      ],),),                    ],),
                   ),
 
                 ],
@@ -172,7 +177,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(top: height * 0.13),
-                      child: WidgetUtilities.autoSizeText("Mobile list",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
+                      child: WidgetUtilities.autoSizeText("Mobile List",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
                     ),
                     Flexible(child: Container()),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -183,9 +188,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[0],
                               borderRadius: BorderRadius.circular(15)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "All",
-                            style: TextStyle(color: textColor[0], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[0], fontSize: 18),
                           ),
                         ),
                         onTap: () {
@@ -200,9 +205,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[1],
                               borderRadius: BorderRadius.circular(25)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Fixing",
-                            style: TextStyle(color: textColor[1], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[1], fontSize: 18),
                           ),
                         ),
                         onTap: () {
@@ -217,9 +222,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[2],
                               borderRadius: BorderRadius.circular(25)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Done",
-                            style: TextStyle(color: textColor[2], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[2], fontSize: 18),
                           ),
                         ),
                         onTap: () {

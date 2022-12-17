@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
@@ -66,7 +67,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                   ),
                 ),
                 child: Center(
-                  child: WidgetUtilities.autoSizeText("Device Maintinance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
+                  child: WidgetUtilities.autoSizeText("Device Maintenance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
                 )),
           ),
           Container(
@@ -105,7 +106,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Name ',
+                              hintText: 'Name'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -115,14 +116,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 15,
                         ),
                         Container(
-                          padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
                             color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: InternationalPhoneNumberInput(
-                            hintText: "Phone number",
+                            hintText: "Phone number".tr(),
                             onInputChanged: (PhoneNumber number) {
                               phoneCode = number.dialCode!;
                             },
@@ -161,7 +161,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Address ',
+                              hintText: 'Address'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -222,7 +222,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Device Model ',
+                              hintText: 'Device Model'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -243,7 +243,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Color ',
+                              hintText: 'Color'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -264,7 +264,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' IMEI Number ',
+                              hintText: 'IMEI Number'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -274,7 +274,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 15,
                         ),
                         Container(
-                            padding: EdgeInsets.only(left: 10),
                             decoration: BoxDecoration(
                               color: ColorUtilities.white,
                               border: Border.all(color: Colors.grey),
@@ -291,7 +290,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     style: TextStyle(color: Colors.black),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: ' PIN ',
+                                      hintText: 'PIN'.tr(),
                                       hintStyle: TextStyle(
                                           color: Colors.grey, fontSize: 16),
                                     ),
@@ -305,7 +304,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     color: Colors.green,
                                     child: Center(
                                       child: WidgetUtilities.autoSizeText(
-                                        "Pattern",
+                                        "Pattern".tr(),
                                       ),
                                     ),
                                   ),
@@ -354,7 +353,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                         5)),
                                                         child: Center(
                                                           child: WidgetUtilities.autoSizeText(
-                                                            "Save",
+                                                            "Save".tr(),
                                                           ),
                                                         )),
                                                     onTap: () {
@@ -380,7 +379,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        WidgetUtilities.autoSizeText("Maintinance Information",textStyle: TextStyle(color: Colors.black)),
+                        WidgetUtilities.autoSizeText("Maintenance Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
@@ -396,7 +395,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' The problem ',
+                              hintText: 'The problem'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -417,7 +416,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Device Status ',
+                              hintText: 'Device Status'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -438,7 +437,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Notes ',
+                              hintText: 'Notes'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -462,7 +461,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             maxLines: null,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Accessoires ',
+                              hintText: 'Accessories'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -486,7 +485,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: ' Price ',
+                                  hintText: 'Price'.tr(),
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 16),
                                 ),
@@ -508,7 +507,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: ' Estimated Time ',
+                                  hintText: 'Estimated Time'.tr(),
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 16),
                                 ),
@@ -534,7 +533,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             maxLines: null,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Notes ',
+                              hintText: 'Notes'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),

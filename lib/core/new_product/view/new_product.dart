@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
@@ -62,7 +63,7 @@ class _NewProductState extends State<NewProduct> {
                 ),
                 child: Center(
                   child: WidgetUtilities.autoSizeText(
-                    "New Product",
+                    "New Product".tr(),
                       textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20)
                   ),
                 )),
@@ -159,7 +160,6 @@ class _NewProductState extends State<NewProduct> {
                                       result.files.forEach((file) {
                                         photoPaths.add(file.path!);
                                       });
-                                      print("\n\n\n\nhere"+photoPaths.toString()+"\n\n\n\n");
                                       setState(() {});
                                     }
                                   },
@@ -196,7 +196,7 @@ class _NewProductState extends State<NewProduct> {
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: ' Title ',
+                                hintText: 'Title'.tr(),
                                 hintStyle:
                                 TextStyle(color:Colors.grey, fontSize: 16),),
                             ),
@@ -217,7 +217,7 @@ class _NewProductState extends State<NewProduct> {
                               maxLines: null,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: ' Description ',
+                                hintText: 'Description'.tr(),
                                 hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                               ),
@@ -238,7 +238,7 @@ class _NewProductState extends State<NewProduct> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   underline: SizedBox(),
-                                  hint: Text("Device Category"),
+                                  hint: WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
                                   value: category_dropdown_value,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   items: categories.map((String items) {
@@ -265,7 +265,7 @@ class _NewProductState extends State<NewProduct> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   underline: SizedBox(),
-                                  hint: Text("Device sub-category"),
+                                  hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
                                   value: sub_category_dropdown_value,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   items: sub_categories.map((String items) {
@@ -299,7 +299,7 @@ class _NewProductState extends State<NewProduct> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: ' price ',
+                                    hintText: 'Price'.tr(),
                                     hintStyle:
                                     TextStyle(color:Colors.grey, fontSize: 16),),
                                 ),
