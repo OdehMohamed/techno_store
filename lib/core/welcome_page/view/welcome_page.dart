@@ -131,7 +131,9 @@ class _WelcomePageState extends State<WelcomePage> {
               ],
             )),
             InkWell(
-                onTap: () {},
+                onTap: () {
+                  FirebaseDataSource().signOut();
+                },
                 child: Container(
                     padding: EdgeInsets.all(10),
                     color: Colors.red,
