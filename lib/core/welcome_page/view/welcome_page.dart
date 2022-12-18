@@ -13,6 +13,7 @@ import 'package:techno_store/core/store/view/store.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../shared/utilities.dart';
 import '../../../shared/widget_utilities.dart';
@@ -25,6 +26,18 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  void _launchSocial(String url, String fallbackUrl) async {
+    try {
+      bool launched =
+      await launch(url, forceSafariVC: false, forceWebView: false);
+      if (!launched) {
+        print("inside fallback");
+        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      }
+    } catch (e) {
+      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -280,6 +293,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.green,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('https://wa.me/message/WGQOCNRN47W7M1?src=qr', 'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -288,6 +304,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.blue,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('fb://profile/100088001516569', 'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -296,6 +315,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.pink,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('instagram://user?username=techno__store00', 'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -304,6 +326,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.yellowAccent,
                               size: 30,
                             ),
+                              onTap: (){
+                                _launchSocial('https://www.snapchat.com/add/technostore0', 'https://www.snapchat.com/add/technostore0');
+                              },
                           ),
                         ],
                       ),
