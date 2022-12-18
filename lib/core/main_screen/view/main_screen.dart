@@ -74,40 +74,42 @@ class _SignInState extends State<SignIn> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                width: width,
-                height: height * 0.4,
-                decoration: const BoxDecoration(
-                  color:ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
+      body: ModalProgressHUD(
+        inAsyncCall: mainScreenState.loading,
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  width: width,
+                  height: height * 0.4,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                    ),
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: 150,
-                      height: 150,
-                      child: Image.asset(
-                        "assets/images/logo.png",
-                        fit: BoxFit.fill,
-                        color: ColorUtilities.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 20,
                       ),
-                    ),
-                  ],
-                )),
-          ),
-          Container(
-            color: ColorUtilities.secondary,
-            child: Container(
+                      Container(
+                        width: 150,
+                        height: 150,
+                        child: Image.asset(
+                          "assets/images/logo.png",
+                          fit: BoxFit.fill,
+                          color: ColorUtilities.white,
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+            Container(
+              color: ColorUtilities.secondary,
+              child: Container(
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
@@ -138,7 +140,7 @@ class _SignInState extends State<SignIn> {
                             ),
                             hintText: 'Email'.tr(),
                             hintStyle:
-                            TextStyle(color: Colors.grey, fontSize: 16),
+                                TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                         ),
                       ),
@@ -162,7 +164,7 @@ class _SignInState extends State<SignIn> {
                             ),
                             hintText: 'Password'.tr(),
                             hintStyle:
-                            TextStyle(color: Colors.grey, fontSize: 16),
+                                TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                         ),
                       ),
@@ -170,23 +172,28 @@ class _SignInState extends State<SignIn> {
                         height: 30,
                       ),
                       ElevatedButton(
-                        onPressed: () async {
-                          await FirebaseDataSource()
-                              .signIn("mmm@gmail.com", "mmmmmmmm");
+                        onPressed: () {
+                          try {
+                            mainScreenState.signIn(
+                                "obeidmaen@gmail.com", "mmmmmmmm");
+                          } catch (e) {
+                            Message.showErrorToastMessage(
+                                "Wrong inputs or you are not signed up");
+                          }
                         },
                         child: Container(
                           width: width * 0.5,
                           height: height * 0.06,
                           child: Center(
                               child: WidgetUtilities.autoSizeText(
-                                "Login",
-                                textAlign: TextAlign.center,
-                              )),
+                            "Login",
+                            textAlign: TextAlign.center,
+                          )),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: ColorUtilities.secondary,
+                          backgroundColor: ColorUtilities.secondary,
                           textStyle:
-                          TextStyle(fontSize: 16, color: Colors.white),
+                              TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                       SizedBox(height: 15),
@@ -208,20 +215,20 @@ class _SignInState extends State<SignIn> {
                           height: height * 0.06,
                           child: Center(
                               child: WidgetUtilities.autoSizeText(
-                                "Create new Account",
-                                textAlign: TextAlign.center,
-                              )),
+                            "Create new Account",
+                            textAlign: TextAlign.center,
+                          )),
                         ),
                         style: ElevatedButton.styleFrom(
                           primary: Color.fromRGBO(128, 128, 128, 1),
                           textStyle:
-                          TextStyle(fontSize: 16, color: Colors.white),
+                              TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                       SizedBox(height: 35),
                       InkWell(
                         child: Text(
-                          "Forget password".tr()+"?".tr(),
+                          "Forget password".tr() + "?".tr(),
                           style: TextStyle(color: Colors.blue, fontSize: 12),
                         ),
                         onTap: () {
@@ -234,181 +241,12 @@ class _SignInState extends State<SignIn> {
                       )
                     ],
                   ),
-                )),
-          )
-        ],
-      /*body: ModalProgressHUD(
-        inAsyncCall: mainScreenState.loading,
-        child: Column(
-          children: [
-            Container(
-              color: Color.fromRGBO(239, 239, 239, 1),
-              child: Container(
-                  width: width,
-                  height: height * 0.4,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(76, 127, 158, 1),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        width: 150,
-                        height: 150,
-                        child: Image.asset(
-                          "assets/images/logo.png",
-                          fit: BoxFit.fill,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  )),
+                ),
+              ),
             ),
-            Container(
-              color: Color.fromRGBO(76, 127, 158, 1),
-              child: Container(
-                  width: width,
-                  height: height * 0.6,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(239, 239, 239, 1),
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(50),
-                    ),
-                  ),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 30, left: 40, right: 40),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: TextField(
-                            controller: login_email,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              prefixIcon: Icon(
-                                Icons.perm_identity_outlined,
-                                color: Color.fromRGBO(76, 127, 158, 1),
-                                size: 28,
-                              ),
-                              hintText: ' Email ',
-                              hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 40),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: TextField(
-                            controller: login_password,
-                            obscureText: true,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              prefixIcon: Icon(
-                                Icons.lock_outlined,
-                                color: Color.fromRGBO(76, 127, 158, 1),
-                                size: 28,
-                              ),
-                              hintText: ' password ',
-                              hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            try {
-                              mainScreenState.signIn(
-                                  "obeidmaen@gmail.com", "mmmmmmmm");
-                            } catch (e) {
-                              Message.showErrorToastMessage(
-                                  "Wrong inputs or you are not signed up");
-                            }
-                          },
-                          child: Container(
-                            width: width * 0.5,
-                            height: height * 0.06,
-                            child: Center(
-                                child: Text(
-                              "Login",
-                              textAlign: TextAlign.center,
-                            )),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(24, 114, 151, 1),
-                            textStyle:
-                                TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Text(
-                          "or",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        SizedBox(height: 15),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CreateUserAccount()),
-                            );
-                          },
-                          child: Container(
-                            width: width * 0.5,
-                            height: height * 0.06,
-                            child: Center(
-                                child: Text(
-                              "Create new account",
-                              textAlign: TextAlign.center,
-                            )),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(128, 128, 128, 1),
-                            textStyle:
-                                TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(height: 35),
-                        InkWell(
-                          child: Text(
-                            "Forget password?",
-                            style: TextStyle(color: Colors.blue, fontSize: 12),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ResetPassword()),
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                  )),
-            )
           ],
         ),
-      ),*/
-    )
+      ),
+    );
   }
 }
