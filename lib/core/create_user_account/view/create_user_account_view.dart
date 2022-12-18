@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,8 @@ import 'package:techno_store/core/create_user_account/view_model/create_user_acc
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class CreateUserAccount extends StatefulWidget {
   const CreateUserAccount({Key? key}) : super(key: key);
@@ -71,10 +74,10 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                     ),
                   ),
                   child: Center(
-                    child: Text(
+                    child: WidgetUtilities.autoSizeText(
                       "New Account",
-                      style: TextStyle(color: Colors.white, fontSize: 22),
-                    ),
+                      textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor
+                    ))
                   )),
             ),
             Container(
@@ -135,23 +138,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                             child: Text("+"),
                                           )),
                                       onTap: () async {
-                                        // final ImagePicker _picker = ImagePicker();
-                                        // // Pick an image
-                                        // var image = await _picker.pickImage(
-                                        //     source: ImageSource.gallery);
-                                        // print(image?.path ?? "ss");
-                                        // if (image?.path != null) {
-                                        //   setState(() {
-                                        //     photoPath = image!.path;
-                                        //   });
-                                        // }
-                                        //
-                                        //
-                                        //
-                                        //Use image picker here
-                                        //
-                                        //
-                                        //
+
 
                                         final result =
                                             await FilePicker.platform.pickFiles(
@@ -186,7 +173,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Full name ',
+                              hintText: ' Full name '.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -208,7 +195,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Email ',
+                              hintText: ' Email '.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -231,7 +218,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Password ',
+                              hintText: ' Password '.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -254,7 +241,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' re-password ',
+                              hintText: ' re-password '.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -272,10 +259,10 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                           },
                           child: Container(
                             width: 200,
-                            child: Text(
+                            child: WidgetUtilities.autoSizeText(
                               "Create Account",
-                              textAlign: TextAlign.center,
-                            ),
+                              textAlign: TextAlign.center
+                            )
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorUtilities.primary,

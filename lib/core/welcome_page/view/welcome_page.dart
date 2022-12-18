@@ -1,13 +1,25 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
+import 'package:techno_store/core/favorite_items/view/favoriteItems.dart';
 import 'package:techno_store/core/maintenance_list/view/maintenance_list.dart';
+import 'package:techno_store/core/manage_categories/view/manageCategory.dart';
+import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
+import 'package:techno_store/core/new_product/view/new_product.dart';
+import 'package:techno_store/core/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/core/store/view/store.dart';
 import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
+import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../shared/utilities.dart';
+import '../../../shared/widget_utilities.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -25,6 +37,18 @@ class _WelcomePageState extends State<WelcomePage> {
     super.initState();
   }
 
+  void _launchSocial(String url, String fallbackUrl) async {
+    try {
+      bool launched =
+      await launch(url, forceSafariVC: false, forceWebView: false);
+      if (!launched) {
+        print("inside fallback");
+        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      }
+    } catch (e) {
+      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     welcomePageState = context.watch<WelcomePageState>();
@@ -33,11 +57,12 @@ class _WelcomePageState extends State<WelcomePage> {
     Widget card(
       String title,
       Icon icon,
+        tap()
     ) {
       return Column(
         children: [
           InkWell(
-            onTap: () {},
+            onTap: tap,
             child: Container(
               padding: EdgeInsets.only(left: 20),
               height: height * 0.1,
@@ -48,9 +73,8 @@ class _WelcomePageState extends State<WelcomePage> {
                   Row(
                     children: [
                       icon,
-                      Text(
+                      WidgetUtilities.autoSizeText(
                         title,
-                        style: TextStyle(color: Colors.white),
                       )
                     ],
                   ),
@@ -65,11 +89,11 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       );
     }
-
+    String lang = context.locale == Locale("en") ? "ar" : "en";
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text("Welcome"),
+        title:  WidgetUtilities.autoSizeText("Welcome"),
         backgroundColor: Colors.transparent,
         actions: [
           Container(
@@ -77,10 +101,10 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  FirebaseDataSource().sendEmailVerification();
+                  context.locale = context.locale == Locale("en") ? Locale("ar") : Locale("en");
                 },
-                child: Text(
-                  "AR",
+                child: WidgetUtilities.autoSizeText(
+                  lang.tr(),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -93,97 +117,103 @@ class _WelcomePageState extends State<WelcomePage> {
       drawer: ModalProgressHUD(
         inAsyncCall: welcomePageState.loading,
         child: Container(
-          width: 0.8 * width,
-          height: height,
-          color: Color.fromRGBO(24, 114, 151, 1),
-          child: Column(
-            children: [
-              Container(
-                  margin: EdgeInsets.only(top: height * 0.07),
-                  width: 100,
-                  height: 100,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage("assets/images/defaultImg.png"),
-                    backgroundColor: Colors.white,
-                  )),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "My name ",
-                style: TextStyle(color: Colors.white),
-              ),
-              Flexible(
-                  child: ListView(
-                children: [
-                  card("Favorite", Icon(Icons.star, color: Colors.yellow)),
-                  card(
-                    "Store",
-                    Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white60,
-                    ),
+        width: 0.8 * width,
+        height: height,
+        color: ColorUtilities.secondary,
+        child: Column(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: height * 0.07),
+                width: 100,
+                height: 100,
+                child: CircleAvatar(
+                  backgroundImage: AssetImage("assets/images/defaultImg.png"),
+                  backgroundColor: Colors.white,
+                )),
+            SizedBox(
+              height: 10,
+            ),
+            WidgetUtilities.autoSizeText(
+              "My name ",
+            ),
+            Flexible(
+                child: ListView(
+              children: [
+                card("Favorite", Icon(Icons.star, color: Colors.yellow),(){Utilities.navigatorWithBack(context, favoraitItems());}),
+                card(
+                  "Store",
+                  Icon(
+                    Icons.shopping_cart,
+                    color: Colors.white60,
                   ),
-                  card(
-                    "Check My Device",
-                    Icon(
-                      Icons.phone_android,
-                      color: Colors.white60,
-                    ),
+                    (){Utilities.navigatorWithBack(context, Store());}
+                ),
+                card(
+                  "Check My Device",
+                  Icon(
+                    Icons.phone_android,
+                    color: Colors.white60,
                   ),
-                  card(
-                    "Maintinance",
-                    Icon(Icons.add_to_home_screen, color: Colors.white60),
+                    (){Utilities.navigatorWithBack(context, TrackPhonePage());}
+                ),
+                card(
+                  "Maintenance",
+                  Icon(Icons.add_to_home_screen, color: Colors.white60),
+                    (){Utilities.navigatorWithBack(context, MaintinanceList());}
+                ),
+                card(
+                  "Add new Employee",
+                  Icon(
+                    Icons.person_add,
+                    color: Colors.white60,
                   ),
-                  card(
-                    "Add new Emoloyee",
-                    Icon(
-                      Icons.person_add,
-                      color: Colors.white60,
-                    ),
-                  ),
-                ],
-              )),
-              InkWell(
-                  onTap: () async {
-                    try {
-                      await welcomePageState.signOut();
-                    } catch (e) {
-                      print(e.toString());
-                    }
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(10),
-                      color: Colors.red,
-                      width: width,
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.logout,
-                            color: Colors.white60,
-                          ),
-                          Text(
-                            "Logout",
-                            style: TextStyle(color: Colors.white),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ))),
-            ],
-          ),
+                    (){Utilities.navigatorWithBack(context, NewUserAdminSide());}
+                ),
+                card("Add new Product", Icon(Icons.note_add,color: Colors.white60,),
+                        (){Navigator.push(context, MaterialPageRoute(builder: (context) => NewProduct()),);}
+                ),
+                card("Manage Categories", Icon(Icons.category,color: Colors.white60,),
+                        (){Navigator.push(context, MaterialPageRoute(builder: (context) =>manageCategory()),);}
+                ),
+              ],
+            )),
+            InkWell(
+                onTap: () async {
+                  try {
+                    await welcomePageState.signOut();
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.all(10),
+                    color: Colors.red,
+                    width: width,
+                    height: 40,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.logout,
+                          color: Colors.white60,
+                        ),
+                        WidgetUtilities.autoSizeText(
+                          "Logout",
+                        ),
+                      ],
+                    ))),
+          ],
         ),
-      ),
+      ),),
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color:ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.4,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -207,12 +237,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -234,15 +264,14 @@ class _WelcomePageState extends State<WelcomePage> {
                         child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                             ),
                             width: 200,
                             height: 90,
                             child: Center(
-                              child: Text(
+                              child: WidgetUtilities.autoSizeText(
                                 "Store",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 22),
+                                textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor),
                               ),
                             )),
                       ),
@@ -260,15 +289,15 @@ class _WelcomePageState extends State<WelcomePage> {
                         child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                             ),
                             width: 200,
                             height: 90,
                             child: Center(
-                              child: Text(
-                                "Maintinance",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 22),
+                              child: WidgetUtilities.autoSizeText(
+                                "Maintenance",
+                                textStyle: TextStyle(
+                                    color: ColorUtilities.textColor, fontSize: 22),
                               ),
                             )),
                       ),
@@ -282,6 +311,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.green,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('https://wa.me/message/WGQOCNRN47W7M1?src=qr', 'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -290,6 +322,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.blue,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('fb://profile/100088001516569', 'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -298,6 +333,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.pink,
                               size: 30,
                             ),
+                            onTap: (){
+                              _launchSocial('instagram://user?username=techno__store00', 'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                            },
                           ),
                           SizedBox(width: 15),
                           InkWell(
@@ -306,6 +344,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.yellowAccent,
                               size: 30,
                             ),
+                              onTap: (){
+                                _launchSocial('https://www.snapchat.com/add/technostore0', 'https://www.snapchat.com/add/technostore0');
+                              },
                           ),
                         ],
                       ),

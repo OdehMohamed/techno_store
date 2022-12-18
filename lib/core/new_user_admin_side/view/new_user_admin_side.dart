@@ -1,6 +1,10 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class NewUserAdminSide extends StatefulWidget {
   const NewUserAdminSide({Key? key}) : super(key: key);
@@ -31,30 +35,30 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
                 ),
                 child: Center(
-                  child: Text(
+                  child: WidgetUtilities.autoSizeText(
                     "New Account",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                      textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20)
                   ),
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -68,7 +72,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                         children: [
                           Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: ColorUtilities.white,
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
@@ -132,7 +136,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -143,10 +147,10 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.perm_identity_outlined,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Full name ',
+                            hintText: 'Full name'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -154,7 +158,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -165,10 +169,10 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.email,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color:ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Email ',
+                            hintText: 'Email'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -176,7 +180,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -188,10 +192,10 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.lock,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' Password ',
+                            hintText: 'Password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -199,7 +203,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorUtilities.white,
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -211,10 +215,10 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                             border: InputBorder.none,
                             prefixIcon: Icon(
                               Icons.lock,
-                              color: Color.fromRGBO(76, 127, 158, 1),
+                              color: ColorUtilities.secondary,
                               size: 28,
                             ),
-                            hintText: ' re-password ',
+                            hintText: 're-password'.tr(),
                             hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                           ),
@@ -230,9 +234,9 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                 usertype = value.toString();
                               });
                             }),
-                        Text(
+                        WidgetUtilities.autoSizeText(
                           "Reception",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                            textStyle: TextStyle(color: Colors.black)
                         ),
                         Radio(
                             value: "2",
@@ -243,22 +247,22 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                 usertype = value.toString();
                               });
                             }),
-                        Text(
-                          "Maintinance",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        WidgetUtilities.autoSizeText(
+                          "Maintenance",
+                            textStyle: TextStyle(color: Colors.black)
                         ),
                       ]),
                       ElevatedButton(
                         onPressed: () {},
                         child: Container(
                           width: 200,
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Create Account",
                             textAlign: TextAlign.center,
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(24, 114, 151, 1),
+                          primary: ColorUtilities.secondary,
                           textStyle:
                               TextStyle(fontSize: 16, color: Colors.white),
                         ),

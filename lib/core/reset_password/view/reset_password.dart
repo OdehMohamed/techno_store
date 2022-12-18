@@ -1,5 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/data_source/firebase.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
@@ -25,30 +29,30 @@ class _ResetPasswordState extends State<ResetPassword> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    "Reset Password",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                  child: WidgetUtilities.autoSizeText(
+                    "Reset Password".tr(),
+                    textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
                   ),
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -58,10 +62,10 @@ class _ResetPasswordState extends State<ResetPassword> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          "We will send an Email to reset your password ",
+                        WidgetUtilities.autoSizeText(
+                          "We will send an Email to reset your password",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          textStyle: TextStyle(color: Colors.black)
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 20, right: 20),
@@ -75,7 +79,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Please Enter your Email ',
+                              hintText: 'Please Enter your Email'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -91,13 +95,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                             width: width * 0.6,
                             height: height * 0.06,
                             child: Center(
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                               "Send Email",
                               textAlign: TextAlign.center,
                             )),
                           ),
                           style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(76, 127, 158, 1),
+                            primary: ColorUtilities.secondary,
                             textStyle:
                                 TextStyle(fontSize: 16, color: Colors.white),
                           ),

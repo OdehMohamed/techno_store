@@ -1,5 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:techno_store/core/product_details/view/product_details.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class Store extends StatefulWidget {
   const Store({Key? key}) : super(key: key);
@@ -23,29 +28,36 @@ var sub_categories = [
 ];
 String category_dropdown_value = 'Devices';
 String? sub_category_dropdown_value;
+int gridNumber=2;
+
 List<Color> backgroundColor = [
   Colors.white,
   Colors.transparent,
   Colors.transparent
 ];
 List<Color> textColor = [
-  Color.fromRGBO(76, 127, 158, 1),
-  Colors.white,
-  Colors.white
+  ColorUtilities.secondary,
+  ColorUtilities.white,
+  ColorUtilities.white,
 ];
+List <Color> gridIconColor = [
+  Color.fromRGBO(76, 127, 158, 1),
+  Colors.black
+];
+
 void changeStatus(int status) {
   switch (status) {
     case 0:
       {
         backgroundColor = [
-          Colors.white,
+          ColorUtilities.white,
           Colors.transparent,
           Colors.transparent
         ];
         textColor = [
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white,
-          Colors.white
+          ColorUtilities.secondary,
+          ColorUtilities.white,
+          ColorUtilities.white,
         ];
         break;
       }
@@ -53,13 +65,13 @@ void changeStatus(int status) {
       {
         backgroundColor = [
           Colors.transparent,
-          Colors.white,
+          ColorUtilities.white,
           Colors.transparent
         ];
         textColor = [
-          Colors.white,
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white
+          ColorUtilities.white,
+          ColorUtilities.secondary,
+          ColorUtilities.white,
         ];
         break;
       }
@@ -68,12 +80,12 @@ void changeStatus(int status) {
         backgroundColor = [
           Colors.transparent,
           Colors.transparent,
-          Colors.white
+          ColorUtilities.white,
         ];
         textColor = [
-          Colors.white,
-          Colors.white,
-          Color.fromRGBO(76, 127, 158, 1)
+          ColorUtilities.white,
+          ColorUtilities.white,
+          ColorUtilities.secondary
         ];
         break;
       }
@@ -85,9 +97,9 @@ void changeStatus(int status) {
           Colors.transparent
         ];
         textColor = [
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white,
-          Colors.white
+          ColorUtilities.secondary,
+          ColorUtilities.white,
+          ColorUtilities.white,
         ];
         break;
       }
@@ -95,10 +107,93 @@ void changeStatus(int status) {
 }
 
 class _StoreState extends State<Store> {
+  void changeGridLength(int length){
+    gridNumber =length;
+    switch(length){
+
+      case 1: {
+        gridIconColor = [Colors.black,Color.fromRGBO(76, 127, 158, 1)];
+        break;
+      }
+      case 2:{
+        gridIconColor = [Color.fromRGBO(76, 127, 158, 1),Colors.black];
+        break;
+      }
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    Widget listCard(){
+      return InkWell(
+        child:  Container(
+          margin: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+          ),
+          child: Row(
+            children: [
+              Container(
+                margin: EdgeInsets.all(width*0.01),
+                width: width*0.3,
+                height: height*0.4,
+                child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    children: [
+                      WidgetUtilities.autoSizeText("Iphone 14 pro",textStyle: TextStyle(color: Colors.black)),
+                      SizedBox(width: 30,),
+                      WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+                    ],
+                  ),
+                  WidgetUtilities.autoSizeText("this is iphone 14",textStyle: TextStyle(color: Colors.black54))
+                ],
+              )
+            ],
+          ),
+        ),
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+        },
+      );
+    }
+    Widget gridCard(){
+      return InkWell(
+        child:  Container(
+          height: height*0.2,
+          decoration: BoxDecoration(
+              color:Colors.white,
+              borderRadius: BorderRadius.circular(10)
+          ),
+          margin: EdgeInsets.all(5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                width: width*0.3,
+                height: height*0.15,
+                child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
+              ),
+              WidgetUtilities.autoSizeText("Iphone 14 pro" ,textStyle: TextStyle(color: Colors.black)),
+              SizedBox(height: 5,),
+              WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+              SizedBox(height: 5,),
+            ],
+          ),
+        ),
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -109,12 +204,12 @@ class _StoreState extends State<Store> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -124,38 +219,27 @@ class _StoreState extends State<Store> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                      margin: EdgeInsets.only(top: height * 0.13),
-                      child: Text(
-                        "Categoires ",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                        ),
+                      margin: EdgeInsets.only(top: height * 0.1),
+                      child: WidgetUtilities.autoSizeText(
+                        "Store",
+                        textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
                       ),
                     ),
                     Flexible(child: Container()),
                     Row(children: [
                       Container(
-                        width: width * 0.35,
-                        padding: EdgeInsets.only(left: 40),
-                        child: DropdownButton(
+                        width: width*0.35,
+                        padding: EdgeInsets.only(right: 30,left: 30),
+                        child:DropdownButton(
+                          dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
                           isExpanded: true,
                           underline: SizedBox(),
                           value: category_dropdown_value,
-                          icon: const Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.white,
-                          ),
+                          icon: const Icon(Icons.keyboard_arrow_down,color: Colors.white,),
                           items: categories.map((String items) {
                             return DropdownMenuItem(
                               value: items,
-                              child: Text(
-                                items,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18),
-                              ),
+                              child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
@@ -234,25 +318,67 @@ class _StoreState extends State<Store> {
                 ))),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
-            child: Container(
+            color:Color.fromRGBO(76, 127, 158, 1),
+            child: Container (
                 width: width,
-                height: height * 0.75,
+                height: height*0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color:   Color.fromRGBO(239, 239, 239, 1),
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
                 ),
-                child: Container(
-                    margin: EdgeInsets.only(right: 20, left: 20),
-                    padding: EdgeInsets.only(top: 30, bottom: 10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [],
+                child:Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 30),
+                      child:    Row(mainAxisAlignment: MainAxisAlignment.center,children: [
+                        InkWell(
+                          child: Container(
+                            margin: EdgeInsets.all(15),
+                            child: Center(child:
+                            Icon(Icons.grid_view_rounded,color: gridIconColor[0],size: 30,),),
+                          ),
+                          onTap: (){
+                            changeGridLength(2);
+                            setState(() {});
+                          },
+                        ),
+                        InkWell(
+                          child: Container(
+                            margin: EdgeInsets.all(15),
+                            child: Center(child:
+                            Icon(Icons.format_list_bulleted,color: gridIconColor[1],size: 30,),),
+                          ),
+                          onTap: (){
+                            changeGridLength(1);
+                            setState(() {});
+                          },
+                        )
+                      ]
                       ),
-                    ))),
+                    ),
+                    Expanded(
+                      child: GridView.builder(
+                        padding: EdgeInsets.all(10),
+                        itemCount: 5,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
+                            crossAxisCount: gridNumber,
+                            crossAxisSpacing: 1.0,
+                            mainAxisSpacing: 5
+                        ), itemBuilder: (BuildContext context, int index) {
+                        if (gridNumber==1){
+                          return listCard();
+                        }
+                        return gridCard();
+                      },
+                      ),
+                    )
+                  ],
+                )
+            ),
           )
         ],
       ),

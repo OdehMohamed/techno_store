@@ -1,6 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class NewDeviceMaintanace extends StatefulWidget {
   const NewDeviceMaintanace({Key? key}) : super(key: key);
@@ -52,30 +56,27 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color:ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    "Device Maintinance",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
-                  ),
+                  child: WidgetUtilities.autoSizeText("Device Maintenance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color:ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -89,14 +90,14 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Customer Information"),
+                        WidgetUtilities.autoSizeText("Customer Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -105,7 +106,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Name ',
+                              hintText: 'Name'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -115,14 +116,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 15,
                         ),
                         Container(
-                          padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: InternationalPhoneNumberInput(
-                            hintText: "Phone number",
+                            hintText: "Phone number".tr(),
                             onInputChanged: (PhoneNumber number) {
                               phoneCode = number.dialCode!;
                             },
@@ -152,7 +152,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -161,7 +161,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Address ',
+                              hintText: 'Address'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -177,27 +177,27 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Device Information"),
+                        WidgetUtilities.autoSizeText("Device Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: DropdownButton(
                             isExpanded: true,
                             underline: SizedBox(),
-                            hint: Text("Device Brand"),
+                            hint: WidgetUtilities.autoSizeText("Device Brand"),
                             value: dropdownvalue,
                             icon: const Icon(Icons.keyboard_arrow_down),
                             items: items.map((String items) {
                               return DropdownMenuItem(
                                 value: items,
-                                child: Text(items),
+                                child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -213,7 +213,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -222,7 +222,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Device Model ',
+                              hintText: 'Device Model'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -234,7 +234,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -243,7 +243,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Color ',
+                              hintText: 'Color'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -255,7 +255,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -264,7 +264,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' IMEI Number ',
+                              hintText: 'IMEI Number'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -274,9 +274,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 15,
                         ),
                         Container(
-                            padding: EdgeInsets.only(left: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: ColorUtilities.white,
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(5),
@@ -291,7 +290,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     style: TextStyle(color: Colors.black),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: ' PIN ',
+                                      hintText: 'PIN'.tr(),
                                       hintStyle: TextStyle(
                                           color: Colors.grey, fontSize: 16),
                                     ),
@@ -304,9 +303,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     height: height * 0.09,
                                     color: Colors.green,
                                     child: Center(
-                                      child: Text(
-                                        "Pattern",
-                                        style: TextStyle(color: Colors.white),
+                                      child: WidgetUtilities.autoSizeText(
+                                        "Pattern".tr(),
                                       ),
                                     ),
                                   ),
@@ -315,7 +313,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                            backgroundColor: Colors.white,
+                                            backgroundColor: ColorUtilities.white,
                                             content: Container(
                                               height: height * 0.5,
                                               width: width,
@@ -354,11 +352,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                     .circular(
                                                                         5)),
                                                         child: Center(
-                                                          child: Text(
-                                                            "Save",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
+                                                          child: WidgetUtilities.autoSizeText(
+                                                            "Save".tr(),
                                                           ),
                                                         )),
                                                     onTap: () {
@@ -384,14 +379,14 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         SizedBox(
                           height: 30,
                         ),
-                        Text("Maintinance Information"),
+                        WidgetUtilities.autoSizeText("Maintenance Information",textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
                           height: 30,
                         ),
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -400,7 +395,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' The problem ',
+                              hintText: 'The problem'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -412,7 +407,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -421,7 +416,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Device Status ',
+                              hintText: 'Device Status'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -433,7 +428,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                         Container(
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -442,7 +437,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Notes ',
+                              hintText: 'Notes'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -455,7 +450,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 100,
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -466,7 +461,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             maxLines: null,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Accessoires ',
+                              hintText: 'Accessories'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -481,7 +476,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               width: width * 0.4,
                               padding: EdgeInsets.only(left: 10),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: ColorUtilities.white,
                                 border: Border.all(color: Colors.grey),
                                 borderRadius: BorderRadius.circular(5),
                               ),
@@ -490,7 +485,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: ' Price ',
+                                  hintText: 'Price'.tr(),
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 16),
                                 ),
@@ -503,7 +498,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               width: width * 0.4,
                               padding: EdgeInsets.only(left: 10),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: ColorUtilities.white,
                                 border: Border.all(color: Colors.grey),
                                 borderRadius: BorderRadius.circular(5),
                               ),
@@ -512,7 +507,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: ' Estimated Time ',
+                                  hintText: 'Estimated Time'.tr(),
                                   hintStyle: TextStyle(
                                       color: Colors.grey, fontSize: 16),
                                 ),
@@ -527,7 +522,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           height: 100,
                           padding: EdgeInsets.only(left: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -538,7 +533,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                             maxLines: null,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: ' Notes ',
+                              hintText: 'Notes'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -554,13 +549,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               onPressed: () {},
                               child: Container(
                                 width: width * 0.2,
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                                   "Create",
                                   textAlign: TextAlign.center,
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(24, 114, 151, 1),
+                                primary: ColorUtilities.secondary,
                                 textStyle: TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),
@@ -569,7 +564,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               onPressed: () {},
                               child: Container(
                                 width: width * 0.2,
-                                child: Text(
+                                child: WidgetUtilities.autoSizeText(
                                   "Cancel",
                                   textAlign: TextAlign.center,
                                 ),

@@ -1,6 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class TrackPhonePage extends StatefulWidget {
   const TrackPhonePage({Key? key}) : super(key: key);
@@ -18,60 +22,27 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget card(
-      String title,
-      Icon icon,
-    ) {
-      return Column(
-        children: [
-          InkWell(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(20),
-              height: height * 0.1,
-              width: width,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      icon,
-                      Text(
-                        title,
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Divider(
-            color: Colors.grey,
-            thickness: 1,
-          ),
-        ],
-      );
-    }
+
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text("Tracking"),
+        title: WidgetUtilities.autoSizeText("Tracking"),
         centerTitle: true,
       ),
       extendBodyBehindAppBar: true,
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 padding: EdgeInsets.only(top: height * 0.1),
                 width: width,
                 height: height * 0.4,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -92,12 +63,12 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.6,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -109,16 +80,16 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                       SizedBox(
                         height: height * 0.05,
                       ),
-                      Text(
-                        "From Here You can track your mobile \nstatus",
+                      WidgetUtilities.autoSizeText(
+                        "From Here You can track your mobile",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        textStyle: TextStyle(color: Colors.black)
                       ),
                       SizedBox(
                         height: height * 0.07,
                       ),
                       InternationalPhoneNumberInput(
-                        hintText: "Phone number",
+                        hintText: "Phone number".tr(),
                         onInputChanged: (PhoneNumber number) {
                           phoneCode = number.dialCode!;
                         },
@@ -148,9 +119,10 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                backgroundColor: Colors.white,
+                                backgroundColor:ColorUtilities.white,
                                 content: Container(
                                   height: height * 0.6,
+                                  width: width,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -162,12 +134,11 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            Text(
+                                            WidgetUtilities.autoSizeText(
                                               "Status",
-                                              style: TextStyle(
+                                              textStyle: TextStyle(
                                                 color: Color.fromRGBO(
                                                     0, 0, 0, 0.7),
-                                                fontSize: width / 20,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -182,18 +153,17 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                             SizedBox(
                                               height: 10,
                                             ),
-                                            Text(
+                                            WidgetUtilities.autoSizeText(
                                               "Fixed",
-                                              style: TextStyle(
-                                                  color: Colors.green),
-                                            ),
+                                              textStyle: TextStyle(color: Colors.green)
+                                            )
                                           ],
                                         ),
                                       ),
-                                      Text("Owner name : Abdullah ta"),
+                                      WidgetUtilities.autoSizeText("Owner name",textStyle: TextStyle(color: Colors.black)),
                                       Row(
                                         children: [
-                                          Text("Mobile Type : Apple"),
+                                          WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
                                           SizedBox(
                                             width: 10,
                                           ),
@@ -204,10 +174,10 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                                   "assets/images/appleLogo.png"))
                                         ],
                                       ),
-                                      Text("Estimated Time : 5days"),
-                                      Text("Estimated cost : 25JD"),
-                                      Text(
-                                          "Notes : Please Come to the store before 11/02/2022"),
+                                      WidgetUtilities.autoSizeText("Estimated Time",textStyle: TextStyle(color: Colors.black)),
+                                      WidgetUtilities.autoSizeText("Estimated cost",textStyle: TextStyle(color: Colors.black)),
+                                      WidgetUtilities.autoSizeText(
+                                          "Notes",textStyle: TextStyle(color: Colors.black)),
                                       SizedBox(
                                         height: 10,
                                       ),
@@ -225,9 +195,9 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                               width: width / 2,
                                               height: height / 20,
                                               child: Center(
-                                                child: Text(
+                                                child:  WidgetUtilities.autoSizeText(
                                                   "Close",
-                                                  style: TextStyle(
+                                                  textStyle: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: width / 20,
                                                     fontWeight: FontWeight.bold,
@@ -252,13 +222,13 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             width: width * 0.4,
                             height: height * 0.07,
                             child: Center(
-                              child: Text(
+                              child: WidgetUtilities.autoSizeText(
                                 "Check Status",
                                 textAlign: TextAlign.center,
                               ),
                             )),
                         style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(24, 114, 151, 1),
+                          primary: ColorUtilities.secondary,
                           textStyle:
                               TextStyle(fontSize: 16, color: Colors.white),
                         ),

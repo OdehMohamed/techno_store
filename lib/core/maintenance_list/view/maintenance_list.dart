@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class MaintinanceList extends StatefulWidget {
   const MaintinanceList({Key? key}) : super(key: key);
@@ -15,23 +18,23 @@ List<Color> backgroundColor = [
   Colors.transparent
 ];
 List<Color> textColor = [
-  Color.fromRGBO(76, 127, 158, 1),
-  Colors.white,
-  Colors.white
+  ColorUtilities.secondary,
+  ColorUtilities.white,
+  ColorUtilities.white
 ];
 void changeStatus(int status) {
   switch (status) {
     case 0:
       {
         backgroundColor = [
-          Colors.white,
+          ColorUtilities.white,
           Colors.transparent,
           Colors.transparent
         ];
         textColor = [
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white,
-          Colors.white
+          ColorUtilities.secondary,
+          ColorUtilities.white,
+          ColorUtilities.white
         ];
         break;
       }
@@ -39,13 +42,13 @@ void changeStatus(int status) {
       {
         backgroundColor = [
           Colors.transparent,
-          Colors.white,
+          ColorUtilities.white,
           Colors.transparent
         ];
         textColor = [
-          Colors.white,
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white
+          ColorUtilities.white,
+          ColorUtilities.secondary,
+          ColorUtilities.white
         ];
         break;
       }
@@ -54,26 +57,26 @@ void changeStatus(int status) {
         backgroundColor = [
           Colors.transparent,
           Colors.transparent,
-          Colors.white
+          ColorUtilities.white
         ];
         textColor = [
-          Colors.white,
-          Colors.white,
-          Color.fromRGBO(76, 127, 158, 1)
+          ColorUtilities.white,
+          ColorUtilities.white,
+          ColorUtilities.secondary
         ];
         break;
       }
     default:
       {
         backgroundColor = [
-          Colors.white,
+          ColorUtilities.white,
           Colors.transparent,
           Colors.transparent
         ];
         textColor = [
-          Color.fromRGBO(76, 127, 158, 1),
-          Colors.white,
-          Colors.white
+          ColorUtilities.secondary,
+          ColorUtilities.white,
+          ColorUtilities.white,
         ];
         break;
       }
@@ -85,88 +88,65 @@ class _MaintinanceListState extends State<MaintinanceList> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget card() {
+    Widget card(){
       return InkWell(
-        child: Container(
-          width: width * 0.9,
-          height: height * 0.2,
+        child:  Container(
+          width: width*0.9,
+          height: height*0.2,
           margin: EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.white,
+
           ),
           child: Row(
             children: [
               Container(
-                margin: EdgeInsets.all(width * 0.05),
-                width: width * 0.1,
-                height: height * 0.07,
-                child: Image.asset(
-                  "assets/images/appleLogo.png",
-                  fit: BoxFit.fill,
-                ),
+                margin: EdgeInsets.all(width*0.05),
+                width: width*0.1,
+                height: height*0.07,
+                child: Image.asset("assets/images/appleLogo.png",fit: BoxFit.fill,),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    width: width * 0.67,
-                    child: Row(
-                      children: [
-                        Text(
-                          "Ahmad Mohammad",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Flexible(child: Container()),
-                        Icon(
-                          FontAwesome5.check_circle,
-                          color: Colors.green,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text("fixed",
-                            style: TextStyle(color: Colors.white, fontSize: 16))
-                      ],
-                    ),
+                    width: width*0.67,
+                    child: Row(children: [
+                      WidgetUtilities.autoSizeText("Ahmad Mohammad",textStyle: TextStyle(color: Colors.black)),
+                      Flexible(child: Container()),
+                      Icon(FontAwesome5.check_circle,color: Colors.green,),
+                      SizedBox(width: 5,),
+                      WidgetUtilities.autoSizeText("Fixed",textStyle: TextStyle(color: Colors.black54))
+                    ],),
                   ),
                   Container(
-                    width: width * 0.67,
-                    child: Row(
-                      children: [
-                        Text(
-                          "Apple 13 Pro Max",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
+                    width: width*0.67,
+                    child: Row(children: [
+                      WidgetUtilities.autoSizeText("Apple 13 pro max",textStyle: TextStyle(color: Colors.black54))
+                    ],),
                   ),
                   Container(
-                    width: width * 0.67,
-                    child: Row(
-                      children: [
-                        Text("4 days",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16)),
-                        Flexible(child: Container()),
-                        Text("30JD",
-                            style: TextStyle(color: Colors.white, fontSize: 16))
-                      ],
-                    ),
+                    width: width*0.67,
+                    child: Row(children: [
+                      Container(child: Row(children: [
+                        WidgetUtilities.autoSizeText("4",textStyle: TextStyle(color: Colors.black54)),
+                        WidgetUtilities.autoSizeText("days",textStyle: TextStyle(color: Colors.black54)),
+                      ],),),
+                      Flexible(child: Container()),
+                      Container(child: Row(children: [
+                        WidgetUtilities.autoSizeText("30",textStyle: TextStyle(color: Colors.black54)),
+                        WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
+                      ],),),                    ],),
                   ),
+
                 ],
               )
             ],
           ),
         ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewDeviceMaintanace()),
-          );
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NewDeviceMaintanace()),);
         },
       );
     }
@@ -181,12 +161,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
@@ -197,10 +177,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(top: height * 0.13),
-                      child: Text(
-                        "Mobile List",
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
+                      child: WidgetUtilities.autoSizeText("Mobile List",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
                     ),
                     Flexible(child: Container()),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -211,9 +188,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[0],
                               borderRadius: BorderRadius.circular(15)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "All",
-                            style: TextStyle(color: textColor[0], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[0], fontSize: 18),
                           ),
                         ),
                         onTap: () {
@@ -228,9 +205,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[1],
                               borderRadius: BorderRadius.circular(25)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Fixing",
-                            style: TextStyle(color: textColor[1], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[1], fontSize: 18),
                           ),
                         ),
                         onTap: () {
@@ -245,9 +222,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           decoration: BoxDecoration(
                               color: backgroundColor[2],
                               borderRadius: BorderRadius.circular(25)),
-                          child: Text(
+                          child: WidgetUtilities.autoSizeText(
                             "Done",
-                            style: TextStyle(color: textColor[2], fontSize: 18),
+                            textStyle: TextStyle(color: textColor[2], fontSize: 18),
                           ),
                         ),
                         onTap: () {
@@ -260,12 +237,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 ))),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color: ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),

@@ -1,4 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:techno_store/shared/color_utilities.dart';
+
+import '../../../shared/widget_utilities.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({Key? key}) : super(key: key);
@@ -6,10 +12,19 @@ class ProductDetails extends StatefulWidget {
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
-
+bool favourite = false;
+List<String> images=[
+  "assets/images/iPhone-14.png",
+  "assets/images/iPhone-14-2.png",
+  "assets/images/iPhone-14-3.png",
+];
 class _ProductDetailsState extends State<ProductDetails> {
   @override
   Widget build(BuildContext context) {
+    void changeFavourite(){
+      favourite=!favourite;
+      setState(() {});
+    }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -21,30 +36,32 @@ class _ProductDetailsState extends State<ProductDetails> {
       body: Column(
         children: [
           Container(
-            color: Color.fromRGBO(239, 239, 239, 1),
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.25,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(76, 127, 158, 1),
+                  color: ColorUtilities.secondary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(50),
                   ),
                 ),
                 child: Center(
-                  child: Text(
+                  child: WidgetUtilities.autoSizeText(
                     "IPhone 14 Pro",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                      textStyle: TextStyle(color: ColorUtilities.textColor,
+                        fontSize: 20
+                      ),
                   ),
                 )),
           ),
           Container(
-            color: Color.fromRGBO(76, 127, 158, 1),
+            color:ColorUtilities.secondary,
             child: Container(
                 width: width,
                 height: height * 0.75,
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(239, 239, 239, 1),
+                  color: ColorUtilities.backgroundContainer,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                   ),
@@ -54,26 +71,66 @@ class _ProductDetailsState extends State<ProductDetails> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
-                          width: width * 0.6,
-                          height: height * 0.3,
-                          child: Image.asset(
-                            "assets/images/iPhone-14.png",
-                            fit: BoxFit.fill,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              child:favourite?
+                              Icon(CupertinoIcons.heart_fill,color:Colors.red,size: 35,):
+                              Icon(CupertinoIcons.heart,color: Color.fromRGBO(76, 127, 158, 1),size: 35),
+                              onTap: (){
+                                changeFavourite();
+                              },
+                            ),
+
+                          ],
                         ),
-                        Text("1000 JD", style: TextStyle(fontSize: 18)),
+                        Container(
+                            width: width*0.6,
+                            height: height*0.3,
+                            child:  ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: List.generate(
+                                3,
+                                    (i) => Container(
+                                    width: width*0.5,
+                                    alignment: Alignment.center,
+                                    child:Container(margin: EdgeInsets.all(10),child:GestureDetector(
+                                        child: InkWell(child: Image.asset(images[i]),
+                                          onTap: ()  {
+                                            showDialog<Image>(
+                                              context: context,
+                                              builder: (BuildContext context) => AlertDialog(
+                                                content: Container(
+                                                  width: width,
+                                                  height: width,
+                                                  child:
+                                                  PhotoView(
+                                                    backgroundDecoration:BoxDecoration(color: Colors.transparent),
+                                                    imageProvider: AssetImage(images[i]),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+
+                                          },)
+                                    ))
+                                ),
+                              ),
+                            )
+                        ),
+                        WidgetUtilities.autoSizeText("1000"+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
                         Container(
                           width: width * 0.8,
                           height: height * 0.2,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Colors.white,
+                            color: ColorUtilities.white,
                           ),
                           child: SingleChildScrollView(
                               child: Container(
                             margin: EdgeInsets.all(10),
-                            child: Text("Details"),
+                            child: WidgetUtilities.autoSizeText("Details",textStyle: TextStyle(color: Colors.black))
                           )),
                         )
                       ],
