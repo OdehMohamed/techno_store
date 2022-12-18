@@ -173,7 +173,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Full name '.tr(),
+                              hintText: 'Full name'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -195,7 +195,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Email '.tr(),
+                              hintText: 'Email'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -218,7 +218,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' Password '.tr(),
+                              hintText: 'Password'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
@@ -241,7 +241,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                 color: ColorUtilities.secondary,
                                 size: 28,
                               ),
-                              hintText: ' re-password '.tr(),
+                              hintText: 're-password'.tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
