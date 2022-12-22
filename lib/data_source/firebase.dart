@@ -164,6 +164,83 @@ class FirebaseDataSource {
 ////
 ////
 
+  void getCategories() async {
+    await firebaseFirestore.collection("categories").get().then((value) {
+      value.docs.forEach((element) {
+        print(element.data().toString());
+      });
+    });
+  }
+
+  void addCategory(Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("categories")
+        .add(data)
+        .then((value) => print(value.id));
+  }
+
+  Future<void> editCategory(
+      String categoryID, Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("categories")
+        .doc(categoryID)
+        .update(data)
+        .then((value) => print("Updated"));
+  }
+
+  void getSubCategories(String categoryID) async {
+    await firebaseFirestore
+        .collection("categories")
+        .doc(categoryID)
+        .collection("sub-categories")
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        print(element.data().toString());
+      }
+    });
+  }
+
+  void addSubCategories(String categoryID, Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("categories")
+        .doc(categoryID)
+        .collection("sub-categories")
+        .add(data)
+        .then((value) {
+      print(value.id);
+    });
+  }
+
+  void editSubCategories(String categoryID, String subCategoryID,
+      Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("categories")
+        .doc(categoryID)
+        .collection("sub-categories")
+        .doc(subCategoryID)
+        .update(data)
+        .then((value) {
+      print("Updated");
+    });
+  }
+
+////
+////
+////
+//////////////////////   <<<<<<<---------   Categories ans Sub-Categories  /////////////////
+////
+////
+////
+
+////
+////
+////
+//////////////////////   Categories ans Sub-Categories  ------->>>>>>> /////////////////
+////
+////
+////
+
 ////
 ////
 ////
