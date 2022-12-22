@@ -233,19 +233,100 @@ class FirebaseDataSource {
 ////
 ////
 
+  ////
+//////////////////////   Products   ------->>>>>>> /////////////////
 ////
 ////
 ////
-//////////////////////   Categories ans Sub-Categories  ------->>>>>>> /////////////////
+  void getAllProducts (String category,String sub_category) async {
+    await firebaseFirestore
+        .collection("products")
+        .where("category",isEqualTo: category)
+        .where("sub_category",isEqualTo:sub_category)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        print(element.data().toString());
+      });
+    });
+  }
+  void addProduct(Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("products")
+        .add(data)
+        .then((value) => print(value.id));
+  }
+  void editProduct(product_id,Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("products")
+        .doc(product_id)
+        .update(data)
+        .then((value) {
+      print("Updated");
+    });
+  }
+  void deleteProduct(String product_id) async {
+    await firebaseFirestore
+        .collection('products')
+        .doc(product_id)
+        .delete()
+    .then((value) => print(product_id+" -->deleted"));
+  }
+
+  ////
 ////
 ////
 ////
+//////////////////////   <<<<<<<---------   Products  /////////////////
+////
+////
+////
+////
+//////////////////////   Maintenance   ------->>>>>>> /////////////////
+////
+////
+////
+  void getDevicesInMaintenance (String status) async {
+    await firebaseFirestore
+        .collection("MaintenanceDevices")
+        .where("status",isEqualTo:status)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        print(element.data().toString());
+      });
+    });
+  }
+  void addDeviceToMaintenance(Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("MaintenanceDevices")
+        .add(data)
+        .then((value) => print(value.id));
+  }
+  void editDeviceInMaintenance (device_id,Map<String, dynamic> data) async {
+    await firebaseFirestore
+        .collection("MaintenanceDevices")
+        .doc(device_id)
+        .update(data)
+        .then((value) {
+      print("Updated");
+    });
+  }
+  void checkDeviceStatus(String phone_number) async{
+    await firebaseFirestore
+        .collection("MaintenanceDevices")
+        .where("phoneNumber",isEqualTo:phone_number)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        print(element.data().toString());
+      });
+    });
+  }
 
 ////
 ////
 ////
-//////////////////////   <<<<<<<---------   Categories ans Sub-Categories  /////////////////
-////
-////
-////
+//////////////////////   <<<<<<<---------   Maintenance  /////////////////
+
 }
