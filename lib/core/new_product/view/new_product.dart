@@ -15,7 +15,8 @@ class NewProduct extends StatefulWidget {
 }
 
 List<String> photoPaths=[];
-final title_controller = TextEditingController();
+final en_title_controller = TextEditingController();
+final ar_title_controller = TextEditingController();
 final description_controller = TextEditingController();
 final price_controller = TextEditingController();
 
@@ -26,6 +27,10 @@ var categories = [
   'Item 4',
   'Item 5',
 ];
+var brands = [
+  "brand1",
+  "brand2"
+];
 var sub_categories = [
   'Item 1',
   'Item 2',
@@ -35,6 +40,7 @@ var sub_categories = [
 ];
 String? category_dropdown_value;
 String? sub_category_dropdown_value;
+String? brand_dropdown_value;
 
 class _NewProductState extends State<NewProduct> {
   @override
@@ -192,11 +198,29 @@ class _NewProductState extends State<NewProduct> {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child :TextField(
-                              controller: title_controller,
+                              controller: en_title_controller,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Title'.tr(),
+                                hintText: 'English Title'.tr(),
+                                hintStyle:
+                                TextStyle(color:Colors.grey, fontSize: 16),),
+                            ),
+                          ),
+                          SizedBox(height: 15,),
+                          Container(
+                            padding: EdgeInsets.only(left: 20,right: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child :TextField(
+                              controller: ar_title_controller,
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Arabic Title'.tr(),
                                 hintStyle:
                                 TextStyle(color:Colors.grey, fontSize: 16),),
                             ),
@@ -204,7 +228,7 @@ class _NewProductState extends State<NewProduct> {
                           SizedBox(height: 15,),
                           Container(
                             height: 100,
-                            padding: EdgeInsets.only(left: 10),
+                            padding: EdgeInsets.only(left: 10,right: 10),
                             decoration: BoxDecoration(
                               color: ColorUtilities.white,
                               border: Border.all(color: Colors.grey),
@@ -229,7 +253,7 @@ class _NewProductState extends State<NewProduct> {
                             children: [
                               Container(
                                 width: width*0.35,
-                                padding: EdgeInsets.only(left: 10),
+                                padding: EdgeInsets.only(left: 10,right: 10),
                                 decoration: BoxDecoration(
                                   color: ColorUtilities.white,
                                   border: Border.all(color: Colors.grey),
@@ -256,7 +280,7 @@ class _NewProductState extends State<NewProduct> {
                               ),
                               Container(
                                 width: width*0.35,
-                                padding: EdgeInsets.only(left: 10),
+                                padding: EdgeInsets.only(left: 10,right: 10),
                                 decoration: BoxDecoration(
                                   color: ColorUtilities.white,
                                   border: Border.all(color: Colors.grey),
@@ -304,6 +328,34 @@ class _NewProductState extends State<NewProduct> {
                                     TextStyle(color:Colors.grey, fontSize: 16),),
                                 ),
                               ),
+                              Container(
+                                width: width*0.35,
+                                padding: EdgeInsets.only(left: 10,right: 10),
+                                decoration: BoxDecoration(
+                                  color: ColorUtilities.white,
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  underline: SizedBox(),
+                                  hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
+                                  value: brand_dropdown_value,
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  items: brands.map((String items) {
+                                    return DropdownMenuItem(
+                                      value: items,
+                                      child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      brand_dropdown_value = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+
                             ],
                           ),
                           SizedBox(height: 15,),

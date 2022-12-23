@@ -27,8 +27,11 @@ var sub_categories = [
 String? sub_category_dropdown_value ;
 String? category_dropdown_value ;
 final edit_name_controller=TextEditingController();
-final new_category_name_controller=TextEditingController();
-final new_sub_category_controller=TextEditingController();
+final new_category_name_controller_en=TextEditingController();
+final new_category_name_controller_ar=TextEditingController();
+
+final new_sub_category_controller_en=TextEditingController();
+final new_sub_category_controller_ar=TextEditingController();
 
 class _manageCategoryState extends State<manageCategory> {
   @override
@@ -147,7 +150,7 @@ class _manageCategoryState extends State<manageCategory> {
                                       textAlign: TextAlign.center),),
                                   content: Container(
                                       width: width,
-                                      height: height * 0.2,
+                                      height: height * 0.3,
                                       child:
                                       Column(
                                         mainAxisAlignment: MainAxisAlignment
@@ -166,15 +169,39 @@ class _manageCategoryState extends State<manageCategory> {
                                                   .circular(5),
                                             ),
                                             child: TextField(
-                                              controller: new_category_name_controller,
+                                              controller: new_category_name_controller_en,
                                               style: TextStyle(
                                                   color: Colors.black),
                                               decoration: InputDecoration(
                                                 border: InputBorder.none,
-                                                hintText: 'New Category'.tr(),
+                                                hintText: 'New Category'.tr()+"enLang".tr(),
                                                 hintStyle:
                                                 TextStyle(color: Colors.grey,
-                                                    fontSize: 16),),
+                                                    fontSize: 14),),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: width * 0.5,
+                                            margin: EdgeInsets.only(top: 20),
+                                            padding: EdgeInsets.only(
+                                                left: 20, right: 20),
+                                            decoration: BoxDecoration(
+                                              color: ColorUtilities.white,
+                                              border: Border.all(
+                                                  color: Colors.grey),
+                                              borderRadius: BorderRadius
+                                                  .circular(5),
+                                            ),
+                                            child: TextField(
+                                              controller: new_category_name_controller_ar,
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'New Category'.tr()+"arLang".tr(),
+                                                hintStyle:
+                                                TextStyle(color: Colors.grey,
+                                                    fontSize: 14),),
                                             ),
                                           ),
                                         ],
@@ -275,7 +302,7 @@ class _manageCategoryState extends State<manageCategory> {
                                   ),
                                   content: Container(
                                       width: width,
-                                      height: height*0.25,
+                                      height: height*0.3,
                                       child:
                                       Column(
                                         children: [
@@ -313,13 +340,32 @@ class _manageCategoryState extends State<manageCategory> {
                                               borderRadius: BorderRadius.circular(5),
                                             ),
                                             child :TextField(
-                                              controller: new_sub_category_controller,
+                                              controller: new_sub_category_controller_en,
                                               style: TextStyle(color: Colors.black),
                                               decoration: InputDecoration(
                                                 border: InputBorder.none,
-                                                hintText: 'New Sub-Category'.tr(),
+                                                hintText: 'New Sub-Category'.tr()+"enLang".tr(),
                                                 hintStyle:
-                                                TextStyle(color:Colors.grey, fontSize: 16),),
+                                                TextStyle(color:Colors.grey, fontSize: 12),),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: width*0.5,
+                                            margin: EdgeInsets.only(top: 20),
+                                            padding: EdgeInsets.only(left: 20,right: 20),
+                                            decoration: BoxDecoration(
+                                              color: ColorUtilities.white,
+                                              border: Border.all(color: Colors.grey),
+                                              borderRadius: BorderRadius.circular(5),
+                                            ),
+                                            child :TextField(
+                                              controller: new_sub_category_controller_ar,
+                                              style: TextStyle(color: Colors.black),
+                                              decoration: InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'New Sub-Category'.tr()+"arLang".tr(),
+                                                hintStyle:
+                                                TextStyle(color:Colors.grey, fontSize: 12),),
                                             ),
                                           ),
                                         ],

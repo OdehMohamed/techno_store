@@ -75,5 +75,9 @@
   "Reset Password": "تغيير كلمة المرور",
   "We will send an Email to reset your password": "سوف يتم ارسال رابط لتغيير كلمة المرور الى بريدك الألكتروني",
   "Please Enter your Email": "يرجى ادخال بريدك الالكتروني",
-  "Send Email": "ارسال"
+  "Send Email": "ارسال",
+  "English Title": "العنوان بالعربي",
+  "Arabic Title": "العنوان بالانجليزي",
+  "arLang": " (عربي) ",
+  "enLang": " (انجليزي) "
 }
