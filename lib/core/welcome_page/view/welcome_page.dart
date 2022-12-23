@@ -251,6 +251,9 @@ class _WelcomePageState extends State<WelcomePage> {
                   margin: EdgeInsets.only(top: 30, left: 40, right: 40),
                   child: Column(
                     children: [
+                      ElevatedButton(onPressed: (){
+                        FirebaseDataSource().updateFavorites("VnNd0h9AO6BENfpowP7m", ["UD88D82ZYYnnWoPqT0Ng"]);
+                      }, child: Text("jgv")),
                       SizedBox(
                         height: height * 0.05,
                       ),

@@ -4,6 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:techno_store/core/create_user_account/model/create_user_account_model.dart';
+import 'package:techno_store/core/shared/model/brand_model.dart';
+import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
+import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
+import 'package:techno_store/core/store/model/productModel.dart';
 import 'package:techno_store/shared/message.dart';
 import 'package:uuid/uuid.dart';
 
@@ -62,7 +66,6 @@ class FirebaseDataSource {
   }
 
   Future<void> resetPassword(String email) async {
-    print("rrrrrrrrrrrrrrrrrrr");
     try {
       await firebaseAuth
           .sendPasswordResetEmail(email: email)
@@ -159,118 +162,181 @@ class FirebaseDataSource {
 ////
 ////
 ////
-//////////////////////   Categories ans Sub-Categories  ------->>>>>>> /////////////////
+//////////////////////   Categories and Sub-Categories  ------->>>>>>> /////////////////
 ////
 ////
 ////
 
-  void getCategories() async {
-    await firebaseFirestore.collection("categories").get().then((value) {
-      value.docs.forEach((element) {
-        print(element.data().toString());
+  Future<List<CategoriesAndSubCategoryModel>> getCategories() async {
+    List<CategoriesAndSubCategoryModel> categories = [];
+    try {
+      await firebaseFirestore.collection("categories").get().then((value) {
+        for (var element in value.docs) {
+          categories
+              .add(CategoriesAndSubCategoryModel.fromJson(element.data()));
+        }
       });
-    });
+    } catch (e) {}
+
+    return categories;
   }
 
-  void addCategory(Map<String, dynamic> data) async {
+  void addCategory(
+      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
-        .add(data)
+        .add(categoriesAndSubCategoryModel.toJson())
         .then((value) => print(value.id));
   }
 
-  Future<void> editCategory(
-      String categoryID, Map<String, dynamic> data) async {
+  Future<void> editCategory(String categoryID,
+      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
         .doc(categoryID)
-        .update(data)
+        .update(categoriesAndSubCategoryModel.toJson())
         .then((value) => print("Updated"));
   }
 
-  void getSubCategories(String categoryID) async {
-    await firebaseFirestore
-        .collection("categories")
-        .doc(categoryID)
-        .collection("sub-categories")
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        print(element.data().toString());
-      }
-    });
+  Future<List<CategoriesAndSubCategoryModel>> getSubCategories(
+      String categoryID) async {
+    List<CategoriesAndSubCategoryModel> categories = [];
+    try {
+      await firebaseFirestore
+          .collection("categories")
+          .doc(categoryID)
+          .collection("sub-categories")
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          categories
+              .add(CategoriesAndSubCategoryModel.fromJson(element.data()));
+        }
+      });
+    } catch (e) {}
+
+    return categories;
   }
 
-  void addSubCategories(String categoryID, Map<String, dynamic> data) async {
+  void addSubCategory(String categoryID,
+      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
         .doc(categoryID)
         .collection("sub-categories")
-        .add(data)
+        .add(categoriesAndSubCategoryModel.toJson())
         .then((value) {
       print(value.id);
     });
   }
 
   void editSubCategories(String categoryID, String subCategoryID,
-      Map<String, dynamic> data) async {
+      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
         .doc(categoryID)
         .collection("sub-categories")
         .doc(subCategoryID)
-        .update(data)
+        .update(categoriesAndSubCategoryModel.toJson())
         .then((value) {
       print("Updated");
     });
   }
 
+  Future<void> deleteCategory(String categoryId) async {
+    int subCategoriesLength = 0;
+    await firebaseFirestore
+        .collection("categories")
+        .doc(categoryId)
+        .collection("sub-categories")
+        .get()
+        .then((value) {
+      subCategoriesLength = value.docs.length;
+    });
+
+    print(subCategoriesLength);
+
+    if (subCategoriesLength == null || subCategoriesLength == 0) {
+      firebaseFirestore
+          .collection("categories")
+          .doc(categoryId)
+          .delete()
+          .then((value) => print("delete"));
+    }
+  }
+
+  Future<void> deleteSubCategory(
+      String categoryId, String subCategoryId) async {
+    List<ProductModel> products = await getProducts(subCategoryId);
+    if (products.isEmpty) {
+      firebaseFirestore
+          .collection("categories")
+          .doc(categoryId)
+          .collection("sub-categories")
+          .doc(subCategoryId)
+          .delete()
+          .then((value) => print("deleted"));
+    }
+  }
+
 ////
 ////
 ////
-//////////////////////   <<<<<<<---------   Categories ans Sub-Categories  /////////////////
+//////////////////////   <<<<<<<---------   Categories and Sub-Categories  /////////////////
 ////
 ////
 ////
 
-  ////
+////
+////
+////
 //////////////////////   Products   ------->>>>>>> /////////////////
 ////
 ////
 ////
-  void getAllProducts (String category,String sub_category) async {
-    await firebaseFirestore
-        .collection("products")
-        .where("category",isEqualTo: category)
-        .where("sub_category",isEqualTo:sub_category)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        print(element.data().toString());
+  Future<List<ProductModel>> getProducts(String subCategoryId) async {
+    List<ProductModel> products = [];
+    try {
+      await firebaseFirestore
+          .collection("products")
+          .where("subCategoryID", isEqualTo: subCategoryId)
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          products.add(ProductModel.fromJson(element.data()));
+          print(element.data().toString());
+        }
       });
-    });
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return products;
   }
-  void addProduct(Map<String, dynamic> data) async {
+
+  void addProduct(ProductModel productModel) async {
     await firebaseFirestore
         .collection("products")
-        .add(data)
+        .add(productModel.toJson())
         .then((value) => print(value.id));
   }
-  void editProduct(product_id,Map<String, dynamic> data) async {
+
+  void editProduct(String productId, ProductModel productModel) async {
     await firebaseFirestore
         .collection("products")
-        .doc(product_id)
-        .update(data)
+        .doc(productId)
+        .update(productModel.toJson())
         .then((value) {
       print("Updated");
     });
   }
-  void deleteProduct(String product_id) async {
+
+  void deleteProduct(String productId) async {
     await firebaseFirestore
         .collection('products')
-        .doc(product_id)
+        .doc(productId)
         .delete()
-    .then((value) => print(product_id+" -->deleted"));
+        .then((value) => print(productId + " -->deleted"));
   }
 
   ////
@@ -286,36 +352,45 @@ class FirebaseDataSource {
 ////
 ////
 ////
-  void getDevicesInMaintenance (String status) async {
+  Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
+      String status) async {
+    List<MaintenanceDeviceModel> devices = [];
     await firebaseFirestore
-        .collection("MaintenanceDevices")
-        .where("status",isEqualTo:status)
+        .collection("maintenanceDevices")
+        .where("status", isEqualTo: status)
         .get()
         .then((value) {
-      value.docs.forEach((element) {
-        print(element.data().toString());
-      });
+      for (var element in value.docs) {
+        devices.add(MaintenanceDeviceModel.fromJson(element.data()));
+      }
     });
+
+    return devices;
   }
-  void addDeviceToMaintenance(Map<String, dynamic> data) async {
+
+  void addDeviceToMaintenance(
+      MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
-        .collection("MaintenanceDevices")
-        .add(data)
+        .collection("maintenanceDevices")
+        .add(maintenanceDeviceModel.toJson())
         .then((value) => print(value.id));
   }
-  void editDeviceInMaintenance (device_id,Map<String, dynamic> data) async {
+
+  void editDeviceInMaintenance(
+      String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
-        .collection("MaintenanceDevices")
-        .doc(device_id)
-        .update(data)
+        .collection("maintenanceDevices")
+        .doc(deviceID)
+        .update(maintenanceDeviceModel.toJson())
         .then((value) {
       print("Updated");
     });
   }
-  void checkDeviceStatus(String phone_number) async{
+
+  void checkDeviceStatus(String phoneNumber) async {
     await firebaseFirestore
-        .collection("MaintenanceDevices")
-        .where("phoneNumber",isEqualTo:phone_number)
+        .collection("maintenanceDevices")
+        .where("phoneNumber", isEqualTo: phoneNumber)
         .get()
         .then((value) {
       value.docs.forEach((element) {
@@ -328,5 +403,60 @@ class FirebaseDataSource {
 ////
 ////
 //////////////////////   <<<<<<<---------   Maintenance  /////////////////
+
+////
+////
+//////////////////////   Favorites   ------->>>>>>> /////////////////
+////
+////
+////
+
+  Future<void> updateFavorites(
+      String productID, List<String> favoriteList) async {
+    try {
+      await firebaseFirestore
+          .collection("products")
+          .doc(productID)
+          .update({"favoriteList": favoriteList}).then((value) {
+        print("Updated");
+      });
+    } catch (e) {}
+  }
+
+////
+////
+////
+////
+//////////////////////   <<<<<<<---------   Favorites  /////////////////
+////
+////
+
+////
+////
+//////////////////////   Brands   ------->>>>>>> /////////////////
+////
+////
+////
+
+  Future<List<BrandModel>> getBrands() async {
+    List<BrandModel> brands = [];
+    try {
+      await firebaseFirestore.collection("brands").get().then((value) {
+        for (var element in value.docs) {
+          brands.add(BrandModel.fromJson(element.data()));
+          print(element.data().toString());
+        }
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return brands;
+  }
+
+////
+////
+////
+//////////////////////   <<<<<<<---------   Brands  /////////////////
 
 }
