@@ -40,7 +40,7 @@ class _WelcomePageState extends State<WelcomePage> {
   void _launchSocial(String url, String fallbackUrl) async {
     try {
       bool launched =
-      await launch(url, forceSafariVC: false, forceWebView: false);
+          await launch(url, forceSafariVC: false, forceWebView: false);
       if (!launched) {
         print("inside fallback");
         await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
@@ -49,16 +49,13 @@ class _WelcomePageState extends State<WelcomePage> {
       await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     welcomePageState = context.watch<WelcomePageState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget card(
-      String title,
-      Icon icon,
-        tap()
-    ) {
+    Widget card(String title, Icon icon, tap()) {
       return Column(
         children: [
           InkWell(
@@ -89,11 +86,12 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       );
     }
+
     String lang = context.locale == Locale("en") ? "ar" : "en";
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title:  WidgetUtilities.autoSizeText("Welcome"),
+        title: WidgetUtilities.autoSizeText("Welcome"),
         backgroundColor: Colors.transparent,
         actions: [
           Container(
@@ -101,7 +99,9 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  context.locale = context.locale == Locale("en") ? Locale("ar") : Locale("en");
+                  context.locale = context.locale == Locale("en")
+                      ? Locale("ar")
+                      : Locale("en");
                 },
                 child: WidgetUtilities.autoSizeText(
                   lang.tr(),
@@ -117,98 +117,117 @@ class _WelcomePageState extends State<WelcomePage> {
       drawer: ModalProgressHUD(
         inAsyncCall: welcomePageState.loading,
         child: Container(
-        width: 0.8 * width,
-        height: height,
-        color: ColorUtilities.secondary,
-        child: Column(
-          children: [
-            Container(
-                margin: EdgeInsets.only(top: height * 0.07),
-                width: 100,
-                height: 100,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage("assets/images/defaultImg.png"),
-                  backgroundColor: Colors.white,
-                )),
-            SizedBox(
-              height: 10,
-            ),
-            WidgetUtilities.autoSizeText(
-              "My name ",
-            ),
-            Flexible(
-                child: ListView(
-              children: [
-                card("Favorite", Icon(Icons.star, color: Colors.yellow),(){Utilities.navigatorWithBack(context, favoraitItems());}),
-                card(
-                  "Store",
-                  Icon(
-                    Icons.shopping_cart,
-                    color: Colors.white60,
-                  ),
-                    (){Utilities.navigatorWithBack(context, Store());}
-                ),
-                card(
-                  "Check My Device",
-                  Icon(
-                    Icons.phone_android,
-                    color: Colors.white60,
-                  ),
-                    (){Utilities.navigatorWithBack(context, TrackPhonePage());}
-                ),
-                card(
-                  "Maintenance",
-                  Icon(Icons.add_to_home_screen, color: Colors.white60),
-                    (){Utilities.navigatorWithBack(context, MaintinanceList());}
-                ),
-                card(
-                  "Add new Employee",
-                  Icon(
-                    Icons.person_add,
-                    color: Colors.white60,
-                  ),
-                    (){Utilities.navigatorWithBack(context, NewUserAdminSide());}
-                ),
-                card("Add new Product", Icon(Icons.note_add,color: Colors.white60,),
-                        (){Navigator.push(context, MaterialPageRoute(builder: (context) => NewProduct()),);}
-                ),
-                card("Manage Categories", Icon(Icons.category,color: Colors.white60,),
-                        (){Navigator.push(context, MaterialPageRoute(builder: (context) =>manageCategory()),);}
-                ),
-              ],
-            )),
-            InkWell(
-                onTap: () async {
-                  try {
-                    await welcomePageState.signOut();
-                  } catch (e) {
-                    print(e.toString());
-                  }
-                },
-                child: Container(
-                    padding: EdgeInsets.all(10),
-                    color: Colors.red,
-                    width: width,
-                    height: 40,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.white60,
-                        ),
-                        WidgetUtilities.autoSizeText(
-                          "Logout",
-                        ),
-                      ],
-                    ))),
-          ],
+          width: 0.8 * width,
+          height: height,
+          color: ColorUtilities.secondary,
+          child: Column(
+            children: [
+              Container(
+                  margin: EdgeInsets.only(top: height * 0.07),
+                  width: 100,
+                  height: 100,
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/defaultImg.png"),
+                    backgroundColor: Colors.white,
+                  )),
+              SizedBox(
+                height: 10,
+              ),
+              WidgetUtilities.autoSizeText(
+                "My name ",
+              ),
+              Flexible(
+                  child: ListView(
+                children: [
+                  card("Favorite", Icon(Icons.star, color: Colors.yellow), () {
+                    Utilities.navigatorWithBack(context, favoraitItems());
+                  }),
+                  card(
+                      "Store",
+                      Icon(
+                        Icons.shopping_cart,
+                        color: Colors.white60,
+                      ), () {
+                    Utilities.navigatorWithBack(context, Store());
+                  }),
+                  card(
+                      "Check My Device",
+                      Icon(
+                        Icons.phone_android,
+                        color: Colors.white60,
+                      ), () {
+                    Utilities.navigatorWithBack(context, TrackPhonePage());
+                  }),
+                  card("Maintenance",
+                      Icon(Icons.add_to_home_screen, color: Colors.white60),
+                      () {
+                    Utilities.navigatorWithBack(context, MaintinanceList());
+                  }),
+                  card(
+                      "Add new Employee",
+                      Icon(
+                        Icons.person_add,
+                        color: Colors.white60,
+                      ), () {
+                    Utilities.navigatorWithBack(context, NewUserAdminSide());
+                  }),
+                  card(
+                      "Add new Product",
+                      Icon(
+                        Icons.note_add,
+                        color: Colors.white60,
+                      ), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NewProduct()),
+                    );
+                  }),
+                  card(
+                      "Manage Categories",
+                      Icon(
+                        Icons.category,
+                        color: Colors.white60,
+                      ), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => manageCategory()),
+                    );
+                  }),
+                ],
+              )),
+              InkWell(
+                  onTap: () async {
+                    try {
+                      await welcomePageState.signOut();
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10),
+                      color: Colors.red,
+                      width: width,
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.logout,
+                            color: Colors.white60,
+                          ),
+                          WidgetUtilities.autoSizeText(
+                            "Logout",
+                          ),
+                        ],
+                      ))),
+            ],
+          ),
         ),
-      ),),
+      ),
       body: Column(
         children: [
           Container(
-            color:ColorUtilities.backgroundContainer,
+            color: ColorUtilities.backgroundContainer,
             child: Container(
                 width: width,
                 height: height * 0.4,
@@ -251,9 +270,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   margin: EdgeInsets.only(top: 30, left: 40, right: 40),
                   child: Column(
                     children: [
-                      ElevatedButton(onPressed: (){
-                        FirebaseDataSource().updateFavorites("VnNd0h9AO6BENfpowP7m", ["UD88D82ZYYnnWoPqT0Ng"]);
-                      }, child: Text("jgv")),
                       SizedBox(
                         height: height * 0.05,
                       ),
@@ -274,7 +290,9 @@ class _WelcomePageState extends State<WelcomePage> {
                             child: Center(
                               child: WidgetUtilities.autoSizeText(
                                 "Store",
-                                textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor),
+                                textStyle: TextStyle(
+                                    fontSize: 22,
+                                    color: ColorUtilities.textColor),
                               ),
                             )),
                       ),
@@ -300,7 +318,8 @@ class _WelcomePageState extends State<WelcomePage> {
                               child: WidgetUtilities.autoSizeText(
                                 "Maintenance",
                                 textStyle: TextStyle(
-                                    color: ColorUtilities.textColor, fontSize: 22),
+                                    color: ColorUtilities.textColor,
+                                    fontSize: 22),
                               ),
                             )),
                       ),
@@ -314,8 +333,10 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.green,
                               size: 30,
                             ),
-                            onTap: (){
-                              _launchSocial('https://wa.me/message/WGQOCNRN47W7M1?src=qr', 'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                            onTap: () {
+                              _launchSocial(
+                                  'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
+                                  'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
                             },
                           ),
                           SizedBox(width: 15),
@@ -325,8 +346,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.blue,
                               size: 30,
                             ),
-                            onTap: (){
-                              _launchSocial('fb://profile/100088001516569', 'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                            onTap: () {
+                              _launchSocial('fb://profile/100088001516569',
+                                  'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
                             },
                           ),
                           SizedBox(width: 15),
@@ -336,8 +358,10 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.pink,
                               size: 30,
                             ),
-                            onTap: (){
-                              _launchSocial('instagram://user?username=techno__store00', 'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                            onTap: () {
+                              _launchSocial(
+                                  'instagram://user?username=techno__store00',
+                                  'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
                             },
                           ),
                           SizedBox(width: 15),
@@ -347,9 +371,11 @@ class _WelcomePageState extends State<WelcomePage> {
                               color: Colors.yellowAccent,
                               size: 30,
                             ),
-                              onTap: (){
-                                _launchSocial('https://www.snapchat.com/add/technostore0', 'https://www.snapchat.com/add/technostore0');
-                              },
+                            onTap: () {
+                              _launchSocial(
+                                  'https://www.snapchat.com/add/technostore0',
+                                  'https://www.snapchat.com/add/technostore0');
+                            },
                           ),
                         ],
                       ),
