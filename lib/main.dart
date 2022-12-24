@@ -10,6 +10,7 @@ import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dar
 
 import 'core/create_user_account/view_model/create_user_account_state.dart';
 import 'core/main_screen/view_model/main_screen_state.dart';
+import 'core/shared/view_model/shared_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => CreateUserAccountState()),
         ChangeNotifierProvider(create: (_) => MainScreenState()),
-        ChangeNotifierProvider(create: (_) => WelcomePageState())
+        ChangeNotifierProvider(create: (_) => WelcomePageState()),
+        ChangeNotifierProvider(create: (_) => SharedState()),
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,

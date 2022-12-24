@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class Utilities {
@@ -7,20 +8,24 @@ class Utilities {
     return MediaQuery.of(context).size.width;
   }
 
-  static double getDeviceheight(BuildContext context) {
+  static double getDeviceHeight(BuildContext context) {
     return MediaQuery.of(context).size.height;
   }
 
-  static EdgeInsets getDefaultPading() {
+  static EdgeInsets getDefaultPadding() {
     return const EdgeInsets.all(defaultPading);
   }
 
-  static EdgeInsets getDefaultTBPading() {
+  static EdgeInsets getDefaultTBPadding() {
     return const EdgeInsets.fromLTRB(0, defaultPading, 0, defaultPading);
   }
 
-  static EdgeInsets getDefaultLRPading() {
+  static EdgeInsets getDefaultLRPadding() {
     return const EdgeInsets.fromLTRB(defaultPading, 0, defaultPading, 0);
+  }
+
+  static bool isEnglish(BuildContext context){
+    return context.locale == Locale("en");
   }
 
   static navigator(BuildContext context, Widget screen) {

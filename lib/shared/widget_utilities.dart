@@ -30,7 +30,7 @@ class WidgetUtilities {
       child: Container(
         color: ColorUtilities.primary,
         child: Padding(
-          padding: Utilities.getDefaultPading(),
+          padding: Utilities.getDefaultPadding(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -38,7 +38,7 @@ class WidgetUtilities {
                 Icons.do_not_disturb_alt_sharp,
                 color: ColorUtilities.backGround,
               ),
-              Padding(padding: Utilities.getDefaultTBPading()),
+              Padding(padding: Utilities.getDefaultTBPadding()),
               WidgetUtilities.autoSizeText("No Data Available")
             ],
           ),
