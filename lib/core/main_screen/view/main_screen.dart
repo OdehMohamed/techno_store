@@ -53,6 +53,7 @@ class _SignInState extends State<SignIn> {
   final login_email = TextEditingController();
   final login_password = TextEditingController();
   late MainScreenState mainScreenState;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -120,127 +121,154 @@ class _SignInState extends State<SignIn> {
                 ),
                 child: Container(
                   margin: EdgeInsets.only(top: 30, left: 40, right: 40),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ColorUtilities.white,
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: TextField(
-                          controller: login_email,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Icon(
-                              Icons.perm_identity_outlined,
-                              color: ColorUtilities.secondary,
-                              size: 28,
+                  child:Form(
+                    key: _formKey,
+                    child:  Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: ColorUtilities.white,
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextFormField(
+                            controller: login_email,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.perm_identity_outlined,
+                                color: ColorUtilities.secondary,
+                                size: 28,
+                              ),
+                              hintText: 'Email'.tr(),
+                              hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 16),
                             ),
-                            hintText: 'Email'.tr(),
-                            hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please Enter".tr()+" "+"Email".tr();
+                              }
+                              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value)) {
+                                return "Please Enter".tr()+" "+"valid Email".tr();
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                      ),
-                      SizedBox(height: 40),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ColorUtilities.white,
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: TextField(
-                          controller: login_password,
-                          obscureText: true,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Icon(
-                              Icons.lock_outlined,
-                              color: ColorUtilities.secondary,
-                              size: 28,
+                        SizedBox(height: 40),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: ColorUtilities.white,
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextFormField(
+                            controller: login_password,
+                            obscureText: true,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.lock_outlined,
+                                color: ColorUtilities.secondary,
+                                size: 28,
+                              ),
+                              hintText: 'Password'.tr(),
+                              hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 16),
                             ),
-                            hintText: 'Password'.tr(),
-                            hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please Enter".tr()+" "+"Password".tr();
+                              }
+                              if (value.length<8){
+                                return "Password".tr()+" " +"too short".tr();
+                              }
+                              if (value.contains(" ")){
+                                return "Password".tr()+" " +"can't have spaces".tr();
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          try {
-                            mainScreenState.signIn(
-                                "obeidmaen@gmail.com", "mmmmmmmm");
-                          } catch (e) {
-                            Message.showErrorToastMessage(
-                                "Wrong inputs or you are not signed up");
-                          }
-                        },
-                        child: Container(
-                          width: width * 0.5,
-                          height: height * 0.06,
-                          child: Center(
-                              child: WidgetUtilities.autoSizeText(
-                            "Login",
-                            textAlign: TextAlign.center,
-                          )),
+                        SizedBox(
+                          height: 30,
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorUtilities.secondary,
-                          textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                mainScreenState.signIn(
+                                    "obeidmaen@gmail.com", "mmmmmmmm");
+                              } catch (e) {
+                                Message.showErrorToastMessage(
+                                    "Wrong inputs or you are not signed up");
+                              }
+                            }
+                          },
+                          child: Container(
+                            width: width * 0.5,
+                            height: height * 0.06,
+                            child: Center(
+                                child: WidgetUtilities.autoSizeText(
+                                  "Login",
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ColorUtilities.secondary,
+                            textStyle:
+                            TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 15),
-                      WidgetUtilities.autoSizeText(
-                        "or",
-                        textStyle: TextStyle(color: Colors.grey),
-                      ),
-                      SizedBox(height: 15),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CreateUserAccount()),
-                          );
-                        },
-                        child: Container(
-                          width: width * 0.5,
-                          height: height * 0.06,
-                          child: Center(
-                              child: WidgetUtilities.autoSizeText(
-                            "Create new Account",
-                            textAlign: TextAlign.center,
-                          )),
+                        SizedBox(height: 15),
+                        WidgetUtilities.autoSizeText(
+                          "or",
+                          textStyle: TextStyle(color: Colors.grey),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(128, 128, 128, 1),
-                          textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                        SizedBox(height: 15),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CreateUserAccount()),
+                            );
+                          },
+                          child: Container(
+                            width: width * 0.5,
+                            height: height * 0.06,
+                            child: Center(
+                                child: WidgetUtilities.autoSizeText(
+                                  "Create new Account",
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromRGBO(128, 128, 128, 1),
+                            textStyle:
+                            TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 35),
-                      InkWell(
-                        child: Text(
-                          "Forget password".tr() + "?".tr(),
-                          style: TextStyle(color: Colors.blue, fontSize: 12),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ResetPassword()),
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                        SizedBox(height: 35),
+                        InkWell(
+                          child: Text(
+                            "Forget password".tr() + "?".tr(),
+                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ResetPassword()),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  )
                 ),
               ),
             ),
