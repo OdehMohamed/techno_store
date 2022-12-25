@@ -18,6 +18,110 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   String phoneCode = "+962";
   PhoneNumber number = PhoneNumber(isoCode: 'JO');
   final phoneController = TextEditingController();
+  showStatus(width,height){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor:ColorUtilities.white,
+          content: Container(
+            height: height * 0.6,
+            width: width,
+            child: Column(
+              mainAxisAlignment:
+              MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly,
+                    children: [
+                      WidgetUtilities.autoSizeText(
+                        "Status",
+                        textStyle: TextStyle(
+                          color: Color.fromRGBO(
+                              0, 0, 0, 0.7),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Icon(
+                        FontAwesome5.check_circle,
+                        color: Colors.green,
+                        size: 40,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      WidgetUtilities.autoSizeText(
+                          "Fixed",
+                          textStyle: TextStyle(color: Colors.green)
+                      )
+                    ],
+                  ),
+                ),
+                WidgetUtilities.autoSizeText("Owner name",textStyle: TextStyle(color: Colors.black)),
+                Row(
+                  children: [
+                    WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                        width: 30,
+                        height: 30,
+                        child: Image.asset(
+                            "assets/images/appleLogo.png"))
+                  ],
+                ),
+                WidgetUtilities.autoSizeText("Estimated Time",textStyle: TextStyle(color: Colors.black)),
+                WidgetUtilities.autoSizeText("Estimated cost",textStyle: TextStyle(color: Colors.black)),
+                WidgetUtilities.autoSizeText(
+                    "Notes",textStyle: TextStyle(color: Colors.black)),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                          BorderRadius.circular(10),
+                          color: Colors.green,
+                        ),
+                        width: width / 2,
+                        height: height / 20,
+                        child: Center(
+                          child:  WidgetUtilities.autoSizeText(
+                            "Close",
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: width / 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -89,6 +193,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         height: height * 0.07,
                       ),
                       InternationalPhoneNumberInput(
+                        errorMessage: "Invalid phone number".tr(),
                         hintText: "Phone number".tr(),
                         onInputChanged: (PhoneNumber number) {
                           phoneCode = number.dialCode!;
@@ -100,7 +205,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                         ),
                         ignoreBlank: false,
-                        autoValidateMode: AutovalidateMode.onUserInteraction,
+                        autoValidateMode: AutovalidateMode.always,
                         selectorTextStyle: TextStyle(color: Colors.black),
                         initialValue: number,
                         textFieldController: phoneController,
@@ -114,110 +219,10 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                       Expanded(child: Container()),
                       ElevatedButton(
                         onPressed: () async {
-                          print(phoneCode + phoneController.value.text);
-                          await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                backgroundColor:ColorUtilities.white,
-                                content: Container(
-                                  height: height * 0.6,
-                                  width: width,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            WidgetUtilities.autoSizeText(
-                                              "Status",
-                                              textStyle: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    0, 0, 0, 0.7),
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Icon(
-                                              FontAwesome5.check_circle,
-                                              color: Colors.green,
-                                              size: 40,
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            WidgetUtilities.autoSizeText(
-                                              "Fixed",
-                                              textStyle: TextStyle(color: Colors.green)
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      WidgetUtilities.autoSizeText("Owner name",textStyle: TextStyle(color: Colors.black)),
-                                      Row(
-                                        children: [
-                                          WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Container(
-                                              width: 30,
-                                              height: 30,
-                                              child: Image.asset(
-                                                  "assets/images/appleLogo.png"))
-                                        ],
-                                      ),
-                                      WidgetUtilities.autoSizeText("Estimated Time",textStyle: TextStyle(color: Colors.black)),
-                                      WidgetUtilities.autoSizeText("Estimated cost",textStyle: TextStyle(color: Colors.black)),
-                                      WidgetUtilities.autoSizeText(
-                                          "Notes",textStyle: TextStyle(color: Colors.black)),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          InkWell(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Colors.green,
-                                              ),
-                                              width: width / 2,
-                                              height: height / 20,
-                                              child: Center(
-                                                child:  WidgetUtilities.autoSizeText(
-                                                  "Close",
-                                                  textStyle: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: width / 20,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                          if (phoneValid) {
+                            showStatus(width, height);
+                          }
+                          },
                         child: Container(
                             width: width * 0.4,
                             height: height * 0.07,

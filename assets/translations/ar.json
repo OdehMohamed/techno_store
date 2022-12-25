@@ -76,8 +76,16 @@
   "We will send an Email to reset your password": "سوف يتم ارسال رابط لتغيير كلمة المرور الى بريدك الألكتروني",
   "Please Enter your Email": "يرجى ادخال بريدك الالكتروني",
   "Send Email": "ارسال",
-  "English Title": "العنوان بالعربي",
-  "Arabic Title": "العنوان بالانجليزي",
+  "English Title": "العنوان بالانجليزي",
+  "Arabic Title": "العنوان بالعربي",
   "arLang": " (عربي) ",
-  "enLang": " (انجليزي) "
+  "enLang": " (انجليزي) ",
+  "Please Enter" : "يرجى ادخال",
+  "Please Add an Image": "يرجى اضافة صورة",
+  "Not Valid Price": "السعر غير مسموح",
+  "Passwords does not match": "كلمات السر غير متطابقة",
+  "too short" : "قصيرة",
+  "can't have spaces": "لا يجب ان تحتوي على مسافة",
+  "valid Email": "ايميل صحيح",
+  "Invalid phone number": "رقم الهاتف غير صحيح"
 }

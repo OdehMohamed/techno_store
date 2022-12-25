@@ -79,5 +79,13 @@
   "English Title": "English Title",
   "Arabic Title": "Arabic Title",
   "arLang": " (Arabic) ",
-  "enLang": " (English) "
+  "enLang": " (English) ",
+  "Please Enter": "Please Enter",
+  "Please Add an Image":"Please Add an Image",
+  "Not Valid Price": "Not Valid Price",
+  "Passwords does not match": "Passwords does not match",
+  "too short": "too short",
+  "can't have spaces": "can't have spaces",
+  "valid Email": "valid Email",
+  "Invalid phone number": "Invalid phone number"
 }

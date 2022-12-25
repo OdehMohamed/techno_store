@@ -13,6 +13,7 @@ class ResetPassword extends StatefulWidget {
 }
 
 final email_controller = TextEditingController();
+final _formKey = GlobalKey<FormState>();
 
 class _ResetPasswordState extends State<ResetPassword> {
   @override
@@ -74,22 +75,35 @@ class _ResetPasswordState extends State<ResetPassword> {
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
                           ),
-                          child: TextField(
-                            controller: email_controller,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Please Enter your Email'.tr(),
-                              hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 16),
+                          child: Form(
+                            key: _formKey,
+                            child: TextFormField(
+                              controller: email_controller,
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Please Enter your Email'.tr(),
+                                hintStyle:
+                                TextStyle(color: Colors.grey, fontSize: 16),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please Enter".tr()+" "+"Email".tr();
+                                }
+                                if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                                  return "Please Enter".tr()+" "+"valid Email".tr();
+                                }
+                                return null;
+                              },
                             ),
-                          ),
+                          )
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            // await FirebaseDataSource()
-                            //     .resetPassword("abd20180706@std.psut.edu.jo");
-                            await FirebaseDataSource().sendEmailVerification();
+                            if (_formKey.currentState!.validate()) {
+                              await FirebaseDataSource().sendEmailVerification();
+                            }
                           },
                           child: Container(
                             width: width * 0.6,

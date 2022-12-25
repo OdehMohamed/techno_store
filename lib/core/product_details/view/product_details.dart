@@ -15,8 +15,10 @@ class ProductDetails extends StatefulWidget {
 bool favourite = false;
 List<String> images=[
   "assets/images/iPhone-14.png",
-  "assets/images/iPhone-14-2.png",
-  "assets/images/iPhone-14-3.png",
+  "assets/images/iPhone-14.png",
+  "assets/images/iPhone-14.png",
+  "assets/images/iPhone-14.png",
+
 ];
 class _ProductDetailsState extends State<ProductDetails> {
   @override
@@ -91,7 +93,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             child:  ListView(
                               scrollDirection: Axis.horizontal,
                               children: List.generate(
-                                3,
+                                images.length,
                                     (i) => Container(
                                     width: width*0.5,
                                     alignment: Alignment.center,
