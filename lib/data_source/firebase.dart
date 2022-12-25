@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:techno_store/core/create_user_account/model/create_user_account_model.dart';
+import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
-import 'package:techno_store/core/store/model/productModel.dart';
+import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/message.dart';
 import 'package:uuid/uuid.dart';
 
@@ -181,7 +181,7 @@ class FirebaseDataSource {
     return categories;
   }
 
-  void addCategory(
+  Future<void> addCategory(
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
@@ -218,7 +218,7 @@ class FirebaseDataSource {
     return categories;
   }
 
-  void addSubCategory(String categoryID,
+  Future<void> addSubCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
@@ -230,7 +230,7 @@ class FirebaseDataSource {
     });
   }
 
-  void editSubCategories(String categoryID, String subCategoryID,
+  Future<void> editSubCategories(String categoryID, String subCategoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     await firebaseFirestore
         .collection("categories")
@@ -314,14 +314,14 @@ class FirebaseDataSource {
     return products;
   }
 
-  void addProduct(ProductModel productModel) async {
+  Future<void> addProduct(ProductModel productModel) async {
     await firebaseFirestore
         .collection("products")
         .add(productModel.toJson())
         .then((value) => print(value.id));
   }
 
-  void editProduct(String productId, ProductModel productModel) async {
+  Future<void> editProduct(String productId, ProductModel productModel) async {
     await firebaseFirestore
         .collection("products")
         .doc(productId)
@@ -331,7 +331,7 @@ class FirebaseDataSource {
     });
   }
 
-  void deleteProduct(String productId) async {
+  Future<void> deleteProduct(String productId) async {
     await firebaseFirestore
         .collection('products')
         .doc(productId)
@@ -368,7 +368,7 @@ class FirebaseDataSource {
     return devices;
   }
 
-  void addDeviceToMaintenance(
+  Future<void> addDeviceToMaintenance(
       MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
         .collection("maintenanceDevices")
@@ -376,7 +376,7 @@ class FirebaseDataSource {
         .then((value) => print(value.id));
   }
 
-  void editDeviceInMaintenance(
+  Future<void> editDeviceInMaintenance(
       String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
         .collection("maintenanceDevices")
@@ -387,16 +387,23 @@ class FirebaseDataSource {
     });
   }
 
-  void checkDeviceStatus(String phoneNumber) async {
-    await firebaseFirestore
-        .collection("maintenanceDevices")
-        .where("phoneNumber", isEqualTo: phoneNumber)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        print(element.data().toString());
+  Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
+      String phoneNumber) async {
+    List<MaintenanceDeviceModel> devices = [];
+
+    try {
+      await firebaseFirestore
+          .collection("maintenanceDevices")
+          .where("phoneNumber", isEqualTo: phoneNumber)
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          devices.add(MaintenanceDeviceModel.fromJson(element.data()));
+        }
       });
-    });
+    } catch (e) {}
+
+    return devices;
   }
 
 ////
@@ -410,6 +417,26 @@ class FirebaseDataSource {
 ////
 ////
 ////
+
+  Future<List<ProductModel>> getFavorites() async {
+    List<ProductModel> products = [];
+    try {
+      await firebaseFirestore
+          .collection("products")
+          .where("favoriteList", arrayContains: firebaseAuth.currentUser!.uid)
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          products.add(ProductModel.fromJson(element.data()));
+          print(element.data().toString());
+        }
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return products;
+  }
 
   Future<void> updateFavorites(
       String productID, List<String> favoriteList) async {
@@ -452,6 +479,23 @@ class FirebaseDataSource {
     }
 
     return brands;
+  }
+
+  Future<BrandModel> getBrand(String brandID) async {
+    late BrandModel brand;
+    try {
+      await firebaseFirestore
+          .collection("brands")
+          .doc(brandID)
+          .get()
+          .then((value) {
+        brand = BrandModel.fromJson(value.data()!);
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return brand;
   }
 
 ////

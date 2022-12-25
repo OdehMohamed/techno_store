@@ -6,13 +6,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:techno_store/core/create_user_account/model/create_user_account_model.dart';
-import 'package:techno_store/core/create_user_account/view_model/create_user_account_state.dart';
-import 'package:techno_store/data_source/firebase.dart';
+import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../../../shared/widget_utilities.dart';
+import '../../shared/view_model/shared_state.dart';
 
 class CreateUserAccount extends StatefulWidget {
   const CreateUserAccount({Key? key}) : super(key: key);
@@ -29,11 +28,11 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
   final password_controller = TextEditingController();
   final re_password_controller = TextEditingController();
 
-  late CreateUserAccountState createUserAccountState;
+  late SharedState createUserAccountState;
 
   @override
   void initState() {
-    createUserAccountState = context.read<CreateUserAccountState>();
+    createUserAccountState = context.read<SharedState>();
     super.initState();
   }
 
@@ -48,7 +47,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
 
   @override
   Widget build(BuildContext context) {
-    createUserAccountState = context.watch<CreateUserAccountState>();
+    createUserAccountState = context.watch<SharedState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(

@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
-class MainScreenState extends ChangeNotifier {
+import '../../shared/model/maintenance_device_model.dart';
+
+class NewDeviceMaintenanceState extends ChangeNotifier{
   bool loading = false;
 
-  Future<void> signIn(String email, String password) async {
+
+  Future<void> addDeviceToMaintenance(
+      MaintenanceDeviceModel maintenanceDeviceModel) async {
+
     changeLoadingState();
 
-    try {
-      await FirebaseDataSource().signIn(email, password);
-    } catch (e) {
-      print("EEEEEEEEEEERRRRRRRRROOOOOOOORRRRRRRRRR");
-    }
+    await FirebaseDataSource().addDeviceToMaintenance(maintenanceDeviceModel);
 
     changeLoadingState();
   }

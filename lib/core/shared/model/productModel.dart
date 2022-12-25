@@ -3,7 +3,7 @@ class ProductModel {
   String? _enName;
   String? _brandID;
   String? _description;
-  String? _photo;
+  List<String>? _photo;
   String? _subCategoryID;
   List<String>? _favoriteList;
 
@@ -12,7 +12,7 @@ class ProductModel {
         String? enName,
         String? brandID,
         String? description,
-        String? photo,
+        List<String>? photo,
         String? subCategoryID,
         List<String>? favoriteList}) {
     if (arName != null) {
@@ -46,8 +46,8 @@ class ProductModel {
   set brandID(String? brandID) => _brandID = brandID;
   String? get description => _description;
   set description(String? description) => _description = description;
-  String? get photo => _photo;
-  set photo(String? photo) => _photo = photo;
+  List<String>? get photo => _photo;
+  set photo(List<String>? photo) => _photo = photo;
   String? get subCategoryID => _subCategoryID;
   set subCategoryID(String? subCategoryID) => _subCategoryID = subCategoryID;
   List<String>? get favoriteList => _favoriteList;
@@ -58,7 +58,7 @@ class ProductModel {
     _enName = json['enName'];
     _brandID = json['brandID'];
     _description = json['description'];
-    _photo = json['photo'];
+    _photo = json['photo'].cast<String>();
     _subCategoryID = json['subCategoryID'];
     _favoriteList = json['favoriteList'].cast<String>();
   }

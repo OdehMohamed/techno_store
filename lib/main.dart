@@ -7,10 +7,14 @@ import 'package:techno_store/core/main_screen/view/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
-
-import 'core/create_user_account/view_model/create_user_account_state.dart';
 import 'core/main_screen/view_model/main_screen_state.dart';
+import 'core/manage_categories/view_model/manage_categories.dart';
+import 'core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
+import 'core/new_product/view_model/new_product_state.dart';
+import 'core/reset_password/view_model/reset_password_state.dart';
 import 'core/shared/view_model/shared_state.dart';
+import 'core/store/view_model/store_state.dart';
+import 'core/track_phone_page/view_model/track_phone_page_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,10 +41,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CreateUserAccountState()),
         ChangeNotifierProvider(create: (_) => MainScreenState()),
         ChangeNotifierProvider(create: (_) => WelcomePageState()),
         ChangeNotifierProvider(create: (_) => SharedState()),
+        ChangeNotifierProvider(create: (_) => NewProductState()),
+        ChangeNotifierProvider(create: (_) => StoreState()),
+        ChangeNotifierProvider(create: (_) => NewDeviceMaintenanceState()),
+        ChangeNotifierProvider(create: (_) => TrackPhonePageState()),
+        ChangeNotifierProvider(create: (_) => ManageCategories()),
+        ChangeNotifierProvider(create: (_) => ResetPasswordState()),
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,

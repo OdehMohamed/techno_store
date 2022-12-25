@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
+import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
-class WelcomePageState extends ChangeNotifier {
+class StoreState extends ChangeNotifier{
   bool loading = false;
 
-  Future<void> signOut() async {
+  Future<List<ProductModel>> getProducts(String subCategoryId) async {
     changeLoadingState();
 
-    try {
-      await FirebaseDataSource().signOut();
-    } catch (e) {
-      print("EEEEEEEEEEERRRRRRRRROOOOOOOORRRRRRRRRR");
-    }
+    List<ProductModel> products =  await FirebaseDataSource().getProducts(subCategoryId);
 
     changeLoadingState();
+
+    return products;
   }
 
   void changeLoadingState() {

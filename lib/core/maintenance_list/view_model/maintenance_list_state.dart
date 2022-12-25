@@ -1,0 +1,39 @@
+import 'package:flutter/cupertino.dart';
+import 'package:techno_store/data_source/firebase.dart';
+
+import '../../shared/model/maintenance_device_model.dart';
+
+class MaintenanceListState extends ChangeNotifier{
+  bool loading = false;
+
+  Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
+      String status) async {
+
+    changeLoadingState();
+
+    List<MaintenanceDeviceModel> devices = await FirebaseDataSource().getDevicesInMaintenance(status);
+
+    changeLoadingState();
+
+    return devices;
+  }
+
+  Future<void> editDeviceInMaintenance(
+      String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
+
+    changeLoadingState();
+
+    await FirebaseDataSource().editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
+
+    changeLoadingState();
+  }
+
+  void changeLoadingState(){
+    loading ? loading = false : loading = true;
+    refresh();
+  }
+
+  void refresh() {
+    notifyListeners();
+  }
+}
