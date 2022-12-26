@@ -372,8 +372,9 @@ class FirebaseDataSource {
       MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
         .collection("maintenanceDevices")
-        .add(maintenanceDeviceModel.toJson())
-        .then((value) => print(value.id));
+    .doc(maintenanceDeviceModel.id)
+    .set(maintenanceDeviceModel.toJson())
+        .then((value) => print("new device added"));
   }
 
   Future<void> editDeviceInMaintenance(

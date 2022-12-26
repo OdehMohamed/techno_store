@@ -7,7 +7,7 @@ import '../model/brand_model.dart';
 import '../model/create_user_account_model.dart';
 
 class SharedState extends ChangeNotifier {
-  bool loading = false;
+  bool loading = true;
 
   Future<void> signUp(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
@@ -20,12 +20,12 @@ class SharedState extends ChangeNotifier {
   }
 
   Future<List<CategoriesAndSubCategoryModel>> getCategories() async {
-    changeLoadingState();
+    //changeLoadingState();
 
     List<CategoriesAndSubCategoryModel> categories =
         await FirebaseDataSource().getCategories();
 
-    changeLoadingState();
+    //changeLoadingState();
 
     return categories;
   }

@@ -1,4 +1,7 @@
+import 'package:uuid/uuid.dart';
+
 class MaintenanceDeviceModel {
+  String? _id = Uuid().v4();
   String? _customerName;
   String? _phoneNumber;
   String? _address;
@@ -13,6 +16,7 @@ class MaintenanceDeviceModel {
   String? _price;
   String? _estimatedTime;
   String? _notes;
+  String? _devicePassword;
   List<int>? _pattern;
 
   MaintenanceDeviceModel(
@@ -30,6 +34,7 @@ class MaintenanceDeviceModel {
         String? price,
         String? estimatedTime,
         String? notes,
+        String? devicePassword,
         List<int>? pattern}) {
     if (customerName != null) {
       this._customerName = customerName;
@@ -73,11 +78,16 @@ class MaintenanceDeviceModel {
     if (notes != null) {
       this._notes = notes;
     }
+    if (devicePassword != null) {
+      this._devicePassword = devicePassword;
+    }
     if (pattern != null) {
       this._pattern = pattern;
     }
   }
 
+  String? get id => _id;
+  set id(String? id) => _id = id;
   String? get customerName => _customerName;
   set customerName(String? customerName) => _customerName = customerName;
   String? get phoneNumber => _phoneNumber;
@@ -106,10 +116,13 @@ class MaintenanceDeviceModel {
   set estimatedTime(String? estimatedTime) => _estimatedTime = estimatedTime;
   String? get notes => _notes;
   set notes(String? notes) => _notes = notes;
+  String? get devicePassword => _devicePassword;
+  set devicePassword(String? devicePassword) => _devicePassword = devicePassword;
   List<int>? get pattern => _pattern;
   set pattern(List<int>? pattern) => _pattern = pattern;
 
   MaintenanceDeviceModel.fromJson(Map<String, dynamic> json) {
+    _id = json['id'];
     _customerName = json['customerName'];
     _phoneNumber = json['phoneNumber'];
     _address = json['address'];
@@ -124,11 +137,13 @@ class MaintenanceDeviceModel {
     _price = json['price'];
     _estimatedTime = json['estimatedTime'];
     _notes = json['notes'];
+    _devicePassword = json['devicePassword'];
     _pattern = json['pattern'].cast<int>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this._id;
     data['customerName'] = this._customerName;
     data['phoneNumber'] = this._phoneNumber;
     data['address'] = this._address;
@@ -143,6 +158,7 @@ class MaintenanceDeviceModel {
     data['price'] = this._price;
     data['estimatedTime'] = this._estimatedTime;
     data['notes'] = this._notes;
+    data['devicePassword'] = this._devicePassword;
     data['pattern'] = this._pattern;
     return data;
   }

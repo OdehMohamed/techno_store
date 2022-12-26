@@ -7,6 +7,7 @@ import 'package:techno_store/shared/color_utilities.dart';
 import 'package:techno_store/shared/custom_widgets.dart';
 import 'package:techno_store/shared/utilities.dart';
 
+import '../../../shared/string_utilities.dart';
 import '../../../shared/widget_utilities.dart';
 
 class manageCategory extends StatefulWidget {
@@ -33,6 +34,7 @@ var sub_categories = [
 ];
 String? sub_category_dropdown_value;
 String? category_dropdown_value;
+CategoriesAndSubCategoryModel? selectedCategory;
 final edit_name_controller = TextEditingController();
 final new_category_name_controller_en = TextEditingController();
 final new_category_name_controller_ar = TextEditingController();
@@ -42,18 +44,18 @@ final new_sub_category_controller_ar = TextEditingController();
 
 class _manageCategoryState extends State<manageCategory> {
   late SharedState sharedState;
-  CategoriesAndSubCategoryModel? value;
-
+   late Future mmmmm;
   @override
-  void intState() {
+  void initState() {
     sharedState = context.read<SharedState>();
+    mmmmm = sharedState.getCategories();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    sharedState = context.watch<SharedState>();
 
+    sharedState = context.watch<SharedState>();
     Widget card(
       String title,
       Icon icon,
@@ -138,17 +140,61 @@ class _manageCategoryState extends State<manageCategory> {
                     children: [
                       WidgetUtilities.autoSizeText("Categories",
                           textStyle: TextStyle(color: Colors.black)),
-                      FutureBuilder(future: sharedState.getCategories(),
+                      FutureBuilder(future: mmmmm,
                           builder: (context, AsyncSnapshot snapshot){
                         if(snapshot.hasData){
-                          List<CategoriesAndSubCategoryModel> categories = snapshot.data;
-                           value = categories.first;
-                          return CustomWidgets.categoriesDropdownMenu(context,categories,value,(CategoriesAndSubCategoryModel? selectedValue){
-                            // print(selectedValue!.enName);
-                            value = selectedValue;
-                            setState(() {
-                            });
-                          });
+                          List<CategoriesAndSubCategoryModel> futureCategories = snapshot.data;
+                          //selectedCategory = futureCategories.first;
+                          return
+                          InputDecorator(
+                              decoration: InputDecoration(),
+                              child: Opacity(
+                                opacity: 1,
+                                child:
+                                // DropdownButton<CategoriesAndSubCategoryModel>(
+                                //   isExpanded: true,
+                                //   underline: const SizedBox.shrink(),
+                                //   value: selectedCategory,
+                                //   //Value
+                                //   onChanged: (CategoriesAndSubCategoryModel? newValue)  {
+                                //
+                                //     setState(() {
+                                //       selectedCategory = newValue!;
+                                //     });
+                                //     //notify(newValue);
+                                //   },
+                                //   items: List.generate(
+                                //       futureCategories.length ?? 0,
+                                //           (index) => DropdownMenuItem<CategoriesAndSubCategoryModel>(
+                                //         value: futureCategories[index],
+                                //         child: Text(StringUtilities.getStringByLanguage(
+                                //             context,
+                                //             futureCategories[index].arName,
+                                //             futureCategories[index].enName)),
+                                //       )),
+                                // ),
+                                DropdownButton(
+                                  isExpanded: true,
+                                  underline: SizedBox(),
+                                  hint: WidgetUtilities.autoSizeText("Category",
+                                      textStyle: TextStyle(color: Colors.black)),
+                                  value: selectedCategory,
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  items: futureCategories.map((CategoriesAndSubCategoryModel items) {
+                                    return DropdownMenuItem(
+                                      value: items,
+                                      child: WidgetUtilities.autoSizeText(items.enName!,
+                                          textStyle:
+                                          TextStyle(color: Colors.black)),
+                                    );
+                                  }).toList(),
+                                  onChanged: (CategoriesAndSubCategoryModel? newValue) {
+                                    setState(() {
+                                      selectedCategory = newValue!;
+                                    });
+                                  },
+                                ),
+                              ));
                         }
                         return SizedBox();
                           })

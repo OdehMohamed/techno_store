@@ -2,6 +2,7 @@ class ProductModel {
   String? _arName;
   String? _enName;
   String? _brandID;
+  double? _price;
   String? _description;
   List<String>? _photo;
   String? _subCategoryID;
@@ -9,12 +10,13 @@ class ProductModel {
 
   ProductModel(
       {String? arName,
-        String? enName,
-        String? brandID,
-        String? description,
-        List<String>? photo,
-        String? subCategoryID,
-        List<String>? favoriteList}) {
+      String? enName,
+      String? brandID,
+      double? price,
+      String? description,
+      List<String>? photo,
+      String? subCategoryID,
+      List<String>? favoriteList}) {
     if (arName != null) {
       this._arName = arName;
     }
@@ -23,6 +25,9 @@ class ProductModel {
     }
     if (brandID != null) {
       this._brandID = brandID;
+    }
+    if (price != null) {
+      this._price = price;
     }
     if (description != null) {
       this._description = description;
@@ -44,6 +49,8 @@ class ProductModel {
   set enName(String? enName) => _enName = enName;
   String? get brandID => _brandID;
   set brandID(String? brandID) => _brandID = brandID;
+  double? get price => _price;
+  set price(double? price) => _price = price;
   String? get description => _description;
   set description(String? description) => _description = description;
   List<String>? get photo => _photo;
@@ -57,6 +64,7 @@ class ProductModel {
     _arName = json['arName'];
     _enName = json['enName'];
     _brandID = json['brandID'];
+    _price = json['price'];
     _description = json['description'];
     _photo = json['photo'].cast<String>();
     _subCategoryID = json['subCategoryID'];
@@ -68,6 +76,7 @@ class ProductModel {
     data['arName'] = this._arName;
     data['enName'] = this._enName;
     data['brandID'] = this._brandID;
+    data['price'] = this._price;
     data['description'] = this._description;
     data['photo'] = this._photo;
     data['subCategoryID'] = this._subCategoryID;

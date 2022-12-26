@@ -310,6 +310,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                         else if(snapshot.hasData){
                           List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
                           return ListView.builder(
+                            padding: EdgeInsets.zero,
                               itemCount: devices.length,
                               itemBuilder:(context,index)
                               {
