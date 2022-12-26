@@ -2,24 +2,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
 
 class ProductDetails extends StatefulWidget {
-  const ProductDetails({Key? key}) : super(key: key);
-
+  final ProductModel product ;
+  ProductDetails({Key? key, required this.product}) : super(key: key);
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
 bool favourite = false;
-List<String> images=[
-  "assets/images/iPhone-14.png",
-  "assets/images/iPhone-14.png",
-  "assets/images/iPhone-14.png",
-  "assets/images/iPhone-14.png",
-
-];
 class _ProductDetailsState extends State<ProductDetails> {
   @override
   Widget build(BuildContext context) {
@@ -50,7 +44,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ),
                 child: Center(
                   child: WidgetUtilities.autoSizeText(
-                    "IPhone 14 Pro",
+                    context.locale==Locale("en")?widget.product.enName!:widget.product.arName!,
                       textStyle: TextStyle(color: ColorUtilities.textColor,
                         fontSize: 20
                       ),
@@ -90,15 +84,15 @@ class _ProductDetailsState extends State<ProductDetails> {
                         Container(
                             width: width*0.6,
                             height: height*0.3,
-                            child:  ListView(
+                            child: widget.product.photo!.isNotEmpty? ListView(
                               scrollDirection: Axis.horizontal,
                               children: List.generate(
-                                images.length,
+                                widget.product.photo!.length,
                                     (i) => Container(
                                     width: width*0.5,
                                     alignment: Alignment.center,
                                     child:Container(margin: EdgeInsets.all(10),child:GestureDetector(
-                                        child: InkWell(child: Image.asset(images[i]),
+                                        child: InkWell(child: Image.network(widget.product.photo![i]),
                                           onTap: ()  {
                                             showDialog<Image>(
                                               context: context,
@@ -109,7 +103,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                   child:
                                                   PhotoView(
                                                     backgroundDecoration:BoxDecoration(color: Colors.transparent),
-                                                    imageProvider: AssetImage(images[i]),
+                                                    imageProvider: NetworkImage(widget.product.photo![i]),
                                                   ),
                                                 ),
                                               ),
@@ -119,7 +113,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     ))
                                 ),
                               ),
-                            )
+                            ):
+                                Image.asset("assets/images/defaultProductImage.png")
                         ),
                         WidgetUtilities.autoSizeText("1000"+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
                         Container(
@@ -132,7 +127,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           child: SingleChildScrollView(
                               child: Container(
                             margin: EdgeInsets.all(10),
-                            child: WidgetUtilities.autoSizeText("Details",textStyle: TextStyle(color: Colors.black))
+                            child: Text(widget.product.description!,style: TextStyle(color: Colors.black))
                           )),
                         )
                       ],

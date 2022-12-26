@@ -52,7 +52,7 @@ class _favoraitItemsState extends State<favoraitItems> {
           ),
         ),
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+          //Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
         },
       );
     }
@@ -81,7 +81,7 @@ class _favoraitItemsState extends State<favoraitItems> {
           ),
         ),
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+         // Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
         },
       );
     }

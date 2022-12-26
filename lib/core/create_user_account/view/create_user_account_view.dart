@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -21,6 +22,7 @@ class CreateUserAccount extends StatefulWidget {
 }
 
 class _CreateUserAccountState extends State<CreateUserAccount> {
+
   String photoPath = "";
   final _formKey = GlobalKey<FormState>();
 
@@ -291,14 +293,13 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-
                               if (_formKey.currentState!.validate()) {
                                   await createUserAccountState
                                       .signUp(
-                                      "testimages2@gmail.com",
-                                      "mmmmmmmm",
+                                      email_controller.text,
+                                      password_controller.text,
                                       CreateUserAccountModel(
-                                          name: "maen obeid", photo: photoPath))
+                                          name: fullname_controller.text, photo: photoPath))
                                       .then((value) => Navigator.pop(context));
                               }
                             },

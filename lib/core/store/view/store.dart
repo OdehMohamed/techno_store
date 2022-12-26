@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
+import 'package:techno_store/core/store/view_model/store_state.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/productModel.dart';
 
 class Store extends StatefulWidget {
   const Store({Key? key}) : super(key: key);
@@ -107,6 +110,14 @@ void changeStatus(int status) {
 }
 
 class _StoreState extends State<Store> {
+  late StoreState storeState;
+  late Future<List<ProductModel>> productList ;
+  @override
+  void initState() {
+    storeState=context.read<StoreState>();
+    productList= storeState.getProducts('3N7ICfyqonoRodcOAEEk');
+    super.initState();
+  }
   void changeGridLength(int length){
     gridNumber =length;
     switch(length){
@@ -125,9 +136,12 @@ class _StoreState extends State<Store> {
 
   @override
   Widget build(BuildContext context) {
+    storeState=context.watch<StoreState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget listCard(){
+    Widget listCard(ProductModel device){
+      String? name=device.enName;
+      context.locale == Locale("en")?name=device.enName:name=device.arName;
       return InkWell(
         child:  Container(
           margin: EdgeInsets.all(10),
@@ -141,33 +155,40 @@ class _StoreState extends State<Store> {
                 margin: EdgeInsets.all(width*0.01),
                 width: width*0.3,
                 height: height*0.4,
-                child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
+                child: device.photo!.isNotEmpty ?Image.network(device.photo!.first,fit: BoxFit.fill,):
+                Image.asset("assets/images/defaultProductImage.png",),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      WidgetUtilities.autoSizeText("Iphone 14 pro",textStyle: TextStyle(color: Colors.black)),
+                      WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+                      WidgetUtilities.autoSizeText("1000JD".tr(),textStyle: TextStyle(color: Colors.black54)),
                     ],
                   ),
-                  WidgetUtilities.autoSizeText("this is iphone 14",textStyle: TextStyle(color: Colors.black54))
+                  Container(
+                    width: width*0.5,
+                    child: WidgetUtilities.autoSizeText(device.description!,textStyle: TextStyle(color: Colors.black54)),
+                  )
                 ],
               )
             ],
           ),
         ),
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: device,)),);
         },
       );
     }
-    Widget gridCard(){
+    Widget gridCard(ProductModel device){
+      String? name=device.enName;
+      context.locale == Locale("en")?name=device.enName:name=device.arName;
       return InkWell(
         child:  Container(
-          height: height*0.2,
+          height: height*0.25,
           decoration: BoxDecoration(
               color:Colors.white,
               borderRadius: BorderRadius.circular(10)
@@ -177,11 +198,12 @@ class _StoreState extends State<Store> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                width: width*0.3,
-                height: height*0.15,
-                child: Image.asset("assets/images/iPhone-14.png",fit: BoxFit.fill,),
+                width: width*0.25,
+                height: height*0.12,
+                child: device.photo!.isNotEmpty?Image.network(device.photo!.first,fit: BoxFit.fill,):
+                Image.asset("assets/images/defaultProductImage.png",),
               ),
-              WidgetUtilities.autoSizeText("Iphone 14 pro" ,textStyle: TextStyle(color: Colors.black)),
+              WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
               WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
@@ -189,7 +211,7 @@ class _StoreState extends State<Store> {
           ),
         ),
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails()),);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: device,)),);
         },
       );
     }
@@ -360,21 +382,40 @@ class _StoreState extends State<Store> {
                       ),
                     ),
                     Expanded(
-                      child: GridView.builder(
-                        padding: EdgeInsets.all(10),
-                        itemCount: 5,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
-                            crossAxisCount: gridNumber,
-                            crossAxisSpacing: 1.0,
-                            mainAxisSpacing: 5
-                        ), itemBuilder: (BuildContext context, int index) {
-                        if (gridNumber==1){
-                          return listCard();
-                        }
-                        return gridCard();
-                      },
-                      ),
+                      child:
+                      FutureBuilder<List<ProductModel>>(
+                        future: productList,
+                        builder: (context,snapshot){
+                          if (snapshot.connectionState==ConnectionState.waiting){
+                            return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
+                          }
+                          else if(snapshot.hasData){
+                            List<ProductModel> devices= snapshot.data as List<ProductModel>;
+                            return 
+                              GridView.builder(
+                              padding: EdgeInsets.all(10),
+                              itemCount: devices.length,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
+                                  crossAxisCount: gridNumber,
+                                  crossAxisSpacing: 1.0,
+                                  mainAxisSpacing: 5
+                              ), itemBuilder: (BuildContext context, int index) {
+                              if (gridNumber==1){
+                                return listCard(devices[index]);
+                              }
+                              return gridCard(devices[index]);
+                            },
+                            );
+                          }
+                          else  if (snapshot.data!.isEmpty){
+                            return Center(child: Text("No Data".tr()),);
+                          }
+                          else {
+                            return Center(child: Text("Error".tr()),);
+                          }
+                        },
+                      )
                     )
                   ],
                 )

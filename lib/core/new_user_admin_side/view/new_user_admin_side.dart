@@ -1,11 +1,15 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/create_user_account_model.dart';
+import '../../shared/view_model/shared_state.dart';
 
 class NewUserAdminSide extends StatefulWidget {
   const NewUserAdminSide({Key? key}) : super(key: key);
@@ -13,7 +17,6 @@ class NewUserAdminSide extends StatefulWidget {
   @override
   State<NewUserAdminSide> createState() => _NewUserAdminSideState();
 }
-
 final fullname_controller = TextEditingController();
 final email_controller = TextEditingController();
 final password_controller = TextEditingController();
@@ -21,11 +24,17 @@ final re_password_controller = TextEditingController();
 
 class _NewUserAdminSideState extends State<NewUserAdminSide> {
   final _formKey = GlobalKey<FormState>();
-
+  late SharedState createUserAccountModel;
+  @override
+  void setState(VoidCallback fn) {
+    createUserAccountModel = context.read<SharedState>();
+    super.setState(fn);
+  }
   String photoPath = "";
-  String usertype="1";
+  String usertype="2";
   @override
   Widget build(BuildContext context) {
+    createUserAccountModel= context.watch<SharedState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -263,7 +272,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                         ),
                         Row(children: [
                             Radio(
-                              value: "1",
+                              value: "2",
 
                               groupValue: usertype,
                               onChanged: (value) {
@@ -277,7 +286,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                               textStyle: TextStyle(color: Colors.black)
                           ),
                           Radio(
-                              value: "2",
+                              value: "3",
                               groupValue: usertype,
                               onChanged: (value) {
                                 print(value);
@@ -291,9 +300,20 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                           ),
                         ]),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                               //call function
+                               print(fullname_controller.text);
+                               print(email_controller.text);
+                               print(password_controller.text);
+                               print(re_password_controller.text);
+                               print(usertype);
+                               await
+                               createUserAccountModel.signUp(
+                                   email_controller.text,
+                                   password_controller.text,
+                                   CreateUserAccountModel(
+                                       name: fullname_controller.text, photo: photoPath,type: int.parse(usertype)))
+                                   .then((value) => Navigator.pop(context));
                             }
                           },
                           child: Container(

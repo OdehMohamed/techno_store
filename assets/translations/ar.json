@@ -18,6 +18,8 @@
   "days": "أيام",
   "JD" : "دينار",
   "Fixed": "تم اصلاحه",
+  "in maintenance":"تحت الصيانة",
+  "under review": "تحت المعاينة",
   "Done": "تم اصلاحه",
   "Fixing": "تحت الصيانة",
   "All": "الكل",
@@ -87,5 +89,8 @@
   "too short" : "قصيرة",
   "can't have spaces": "لا يجب ان تحتوي على مسافة",
   "valid Email": "ايميل صحيح",
-  "Invalid phone number": "رقم الهاتف غير صحيح"
+  "Invalid phone number": "رقم الهاتف غير صحيح",
+  "Please check your email or spam": "الرجاء التحقق من ايميلك او ال spam",
+  "Added successfully": "تمت الاضافة بنجاح",
+  "No Data": "لا يوجد بيانات"
 }

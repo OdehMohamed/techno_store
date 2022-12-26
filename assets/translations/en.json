@@ -18,6 +18,8 @@
   "days": "days",
   "JD" : "JD",
   "Fixed": "Fixed",
+  "in maintenance": "in maintenance",
+  "under review": "under review",
   "Done": "Done",
   "Fixing": "Fixing",
   "All": "All",
@@ -87,5 +89,8 @@
   "too short": "too short",
   "can't have spaces": "can't have spaces",
   "valid Email": "valid Email",
-  "Invalid phone number": "Invalid phone number"
+  "Invalid phone number": "Invalid phone number",
+  "Please check your email or spam": "Please check your email or spam",
+  "Added successfully": "Added successfully",
+  "No Data": "No Data"
 }

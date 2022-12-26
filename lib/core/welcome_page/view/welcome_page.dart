@@ -301,11 +301,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MaintinanceList()),
-                          );
+                          Utilities.navigatorWithBack(context, MaintinanceList());
                         },
                         child: Container(
                             decoration: BoxDecoration(

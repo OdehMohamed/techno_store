@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
+import '../view_model/reset_password_state.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
@@ -16,8 +19,15 @@ final email_controller = TextEditingController();
 final _formKey = GlobalKey<FormState>();
 
 class _ResetPasswordState extends State<ResetPassword> {
+  late ResetPasswordState resetPasswordState;
+  @override
+  void initState() {
+    resetPasswordState = context.read<ResetPasswordState>();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    resetPasswordState=context.watch<ResetPasswordState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -102,7 +112,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                         ElevatedButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              await FirebaseDataSource().sendEmailVerification();
+                            resetPasswordState.resetPassword(email_controller.text).then((value) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content:  Text('Please check your email or spam'.tr()),
+                              )
+                              );
+                            });
                             }
                           },
                           child: Container(

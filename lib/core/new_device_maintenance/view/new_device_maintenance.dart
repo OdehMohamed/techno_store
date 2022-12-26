@@ -1,40 +1,56 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
+import 'package:provider/provider.dart';
+import 'package:techno_store/core/manage_categories/view/manageCategory.dart';
+import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/maintenance_device_model.dart';
+List<int> patternList=[];
+List<int> drawingList=[];
 
+int i=0;
+late Timer? timer;
+late Timer? secondTimer;
 class NewDeviceMaintanace extends StatefulWidget {
-  const NewDeviceMaintanace({Key? key}) : super(key: key);
+  final MaintenanceDeviceModel? maintenanceDevice;
+  final bool editable;
+  NewDeviceMaintanace({Key? key,manageCategory, this.maintenanceDevice,required this.editable}) : super(key: key);
 
   @override
   State<NewDeviceMaintanace> createState() => _NewDeviceMaintanaceState();
 }
 final _formKey = GlobalKey<FormState>();
-bool phoneValid = false;
-String phoneCode = "+962";
-PhoneNumber number = PhoneNumber(isoCode: 'JO');
-final name_controller = TextEditingController();
-final address_controller = TextEditingController();
-final phone_controller = TextEditingController();
-final model_controller = TextEditingController();
-final color_controller = TextEditingController();
-final IMEI_controller = TextEditingController();
-final pin_controller = TextEditingController();
-final problem_controller = TextEditingController();
-final status_controller = TextEditingController();
-final notes_controller = TextEditingController();
-final accessoires_controller = TextEditingController();
-final price_controller = TextEditingController();
-final estimated_time_controller = TextEditingController();
-final notes2_controller = TextEditingController();
-
 
 class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
-  List<int>? patternValue;
-  var items = [
+  var status = [
+    "Fixed",
+    "in maintenance",
+    "under review"
+  ];
+  final name_controller = TextEditingController();
+  final address_controller = TextEditingController();
+  final phone_controller = TextEditingController();
+  final model_controller = TextEditingController();
+  final color_controller = TextEditingController();
+  final IMEI_controller = TextEditingController();
+  final pin_controller = TextEditingController();
+  final problem_controller = TextEditingController();
+  final notes_controller = TextEditingController();
+  final accessoires_controller = TextEditingController();
+  final price_controller = TextEditingController();
+  final estimated_time_controller = TextEditingController();
+  final notes2_controller = TextEditingController();
+
+  late NewDeviceMaintenanceState newDeviceMaintenanceState;
+  List<int> patternValue=[];
+  var brands = [
     'Item 1',
     'Item 2',
     'Item 3',
@@ -42,8 +58,90 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     'Item 5',
   ];
   String? brand_value;
+  String? status_value;
+  late bool phoneValid ;
+  String phoneCode ="+962";
+  late PhoneNumber number;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editable!=null && widget.editable){
+      name_controller.text = widget.maintenanceDevice!.customerName!;
+      address_controller.text = widget.maintenanceDevice!.address!;
+      String phone =  widget.maintenanceDevice!.phoneNumber!.split("-").last;
+      phoneCode =  widget.maintenanceDevice!.phoneNumber!.split("-").first;
+      number=PhoneNumber(dialCode: phoneCode,isoCode: PhoneNumber.getISO2CodeByPrefix(phoneCode),phoneNumber: phone);
+      model_controller.text = widget.maintenanceDevice!.deviceModel!;
+      color_controller.text = widget.maintenanceDevice!.color!;
+      IMEI_controller.text = widget.maintenanceDevice!.imeiNumber!;
+      //pin_controller.text = widget.maintenanceDevice!.pin!;
+      problem_controller.text = widget.maintenanceDevice!.problem!;
+      notes_controller.text = widget.maintenanceDevice!.problemNotes!;
+      accessoires_controller.text = widget.maintenanceDevice!.accessories!;
+      price_controller.text = widget.maintenanceDevice!.price!;
+      estimated_time_controller.text = widget.maintenanceDevice!.estimatedTime!;
+      notes2_controller.text = widget.maintenanceDevice!.notes!;
+      patternList=widget.maintenanceDevice!.pattern!;
+      //brand_value=widget.maintenanceDevice!.brandID;
+      status_value=widget.maintenanceDevice!.status;
+    }
+    else{
+       phoneValid = false;
+       phoneCode = "+962";
+       number = PhoneNumber(isoCode: 'JO');
+       i=0;
+       patternList=[];
+    }
+  }
+  void draw(){
+    if (patternList.isEmpty) {
+      timer?.cancel();
+      secondTimer?.cancel();
+      return;
+    }
+    drawingList.add(patternList[i]);
+    i++;
+    if (i==patternList.length){
+      timer?.cancel();
+    }
+    print (drawingList);
+  }
+  startDraw(){
+    i=0;
+    drawingList=[];
+    timer = Timer.periodic(Duration(milliseconds:500), (Timer t) {
+      draw();
+    }
+    );
+  }
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    newDeviceMaintenanceState=context.read<NewDeviceMaintenanceState>();
+  }
+  @override
+  void dispose() {
+    name_controller.dispose();
+    address_controller.dispose();
+    phone_controller.dispose();
+    model_controller.dispose();
+    color_controller.dispose();
+    IMEI_controller.dispose();
+    pin_controller.dispose();
+    problem_controller.dispose();
+    notes_controller.dispose();
+    accessoires_controller.dispose();
+    price_controller.dispose();
+    estimated_time_controller.dispose();
+    notes2_controller.dispose();
+    timer?.cancel();
+    secondTimer?.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
+    newDeviceMaintenanceState=context.watch<NewDeviceMaintenanceState>();
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -208,7 +306,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.grey)),
                               value: brand_value,
                               icon: const Icon(Icons.keyboard_arrow_down),
-                              items: items.map((String items) {
+                              items: brands.map((String items) {
                                 return DropdownMenuItem(
                                   value: items,
                                   child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
@@ -341,62 +439,81 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       ),
                                     ),
                                     onTap: () async {
+                                      secondTimer=null;
+                                      startDraw();
                                       await showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          return AlertDialog(
-                                              backgroundColor: ColorUtilities.white,
-                                              content: Container(
-                                                height: height * 0.5,
-                                                width: width,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceEvenly,
-                                                  children: [
-                                                    Container(
-                                                        height: height * 0.4,
-                                                        width: width,
-                                                        child: PatternLock(
-                                                          selectedColor:
-                                                          Colors.blue,
-                                                          pointRadius: 8,
-                                                          showInput: true,
-                                                          dimension: 3,
-                                                          relativePadding: 0.7,
-                                                          selectThreshold: 25,
-                                                          fillPoints: true,
-                                                          onInputComplete:
-                                                              (List<int> input) {
-                                                            patternValue = input;
-                                                            print(patternValue);
-                                                          },
-                                                          setUsed: [],
-                                                        )),
-                                                    InkWell(
-                                                      child: Container(
-                                                          width: width * 0.2,
-                                                          height: height * 0.05,
-                                                          decoration: BoxDecoration(
-                                                              color: Colors.green,
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                  5)),
-                                                          child: Center(
-                                                            child: WidgetUtilities.autoSizeText(
-                                                              "Save".tr(),
+                                          return StatefulBuilder(builder: (context,StateSetter setState){
+                                            if( secondTimer==null){
+                                            secondTimer = Timer.periodic(Duration(milliseconds:500), (Timer t) {
+                                                setState(() {});
+                                            });
+                                            }
+                                            if (drawingList.length==patternList.length){
+                                              setState((){});
+                                              secondTimer?.cancel();
+                                            }
+                                            return  AlertDialog(
+                                                backgroundColor: ColorUtilities.white,
+                                                content: Container(
+                                                  height: height * 0.5,
+                                                  width: width,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                    children: [
+                                                      Container(
+                                                          height: height * 0.4,
+                                                          width: width,
+                                                          child: AbsorbPointer(
+                                                            absorbing: widget.editable,
+                                                            child: PatternLock(
+                                                              selectedColor:
+                                                              Colors.blue,
+                                                              pointRadius: 8,
+                                                              showInput: true,
+                                                              dimension: 3,
+                                                              relativePadding: 0.7,
+                                                              selectThreshold: 25,
+                                                              fillPoints: true,
+                                                              onInputComplete:
+                                                                  (List<int> input) {
+                                                                patternValue = input;
+                                                                print(patternValue);
+                                                              },
+                                                              setUsed: drawingList,
                                                             ),
-                                                          )),
-                                                      onTap: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                              ));
+                                                          )
+                                                      ),
+                                                      InkWell(
+                                                        child: Container(
+                                                            width: width * 0.2,
+                                                            height: height * 0.05,
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.green,
+                                                                borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                    5)),
+                                                            child: Center(
+                                                              child: WidgetUtilities.autoSizeText(
+                                                                "Save".tr(),
+                                                              ),
+                                                            )),
+                                                        onTap: () {
+                                                          Navigator.pop(context);
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                            );
+                                          });
                                         },
                                       );
+
                                     },
                                   )
                                 ],
@@ -449,8 +566,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: TextFormField(
-                              controller: status_controller,
+                            child: DropdownButtonFormField(
+                              isExpanded: true,
+                              hint: WidgetUtilities.autoSizeText("Device Status",textStyle: TextStyle(color: Colors.grey)),
+                              value: status_value,
+                              icon: const Icon(Icons.keyboard_arrow_down),
+
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -458,9 +579,20 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 hintStyle:
                                 TextStyle(color: Colors.grey, fontSize: 16),
                               ),
+                              items: status.map((String status) {
+                              return DropdownMenuItem(
+                                value: status,
+                                child: WidgetUtilities.autoSizeText(status,textStyle: TextStyle(color: Colors.black)),
+                              );
+                            }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  status_value = newValue!;
+                                });
+                              },
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please Enter".tr()+" "+"Device Status".tr();
+                                if (value == null ) {
+                                  return "Please Enter".tr()+" "+"Device Brand".tr();
                                 }
                                 return null;
                               },
@@ -604,18 +736,56 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('done').tr()),
+                                    if (widget.editable) {
+                                      print ("edit");
+                                    }
+                                    else {
+                                      newDeviceMaintenanceState
+                                          .addDeviceToMaintenance(
+                                          MaintenanceDeviceModel(
+                                              customerName: name_controller
+                                                  .text,
+                                              phoneNumber: phoneCode
+                                                  .toString() + "-" +
+                                                  phone_controller.text,
+                                              address: address_controller.text,
+                                              ////
+                                              ///please add brand id here
+                                              //brandID: brand_value,
+                                              ///
+                                              deviceModel: model_controller
+                                                  .text,
+                                              color: color_controller.text,
+                                              //pin:pin_controller.text,
+                                              imeiNumber: IMEI_controller.text,
+                                              problem: problem_controller.text,
+                                              status: status_value,
+                                              problemNotes: notes_controller
+                                                  .text,
+                                              accessories: accessoires_controller
+                                                  .text,
+                                              price: price_controller.text,
+                                              estimatedTime: estimated_time_controller
+                                                  .text,
+                                              notes: notes2_controller.text,
+                                              pattern: patternValue
+                                          )
+                                      ).then((value) {
+                                        Message.showLongToastMessage(
+                                            "Added successfully".tr());
+                                        Navigator.pop(context);
+                                      }
                                       );
+                                    }
                                   }
                                 },
                                 child: Container(
                                   width: width * 0.2,
                                   child: WidgetUtilities.autoSizeText(
-                                    "Create",
+                                    widget.editable?"Save":"Create",
                                     textAlign: TextAlign.center,
                                   ),
-                                ),
+                          ),
                                 style: ElevatedButton.styleFrom(
                                   primary: ColorUtilities.secondary,
                                   textStyle: TextStyle(

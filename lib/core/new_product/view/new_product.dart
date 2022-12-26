@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:techno_store/core/new_product/view_model/new_product_state.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
@@ -17,6 +19,7 @@ class NewProduct extends StatefulWidget {
 
 
 class _NewProductState extends State<NewProduct> {
+  late NewProductState newProductState;
   final _formKey = GlobalKey<FormState>();
   List<String> photoPaths=[];
   final en_title_controller = TextEditingController();
@@ -45,9 +48,14 @@ class _NewProductState extends State<NewProduct> {
   String? category_dropdown_value;
   String? sub_category_dropdown_value;
   String? brand_dropdown_value;
-
+  @override
+  void setState(VoidCallback fn) {
+    newProductState= context.read<NewProductState>();
+    super.setState(fn);
+  }
   @override
   Widget build(BuildContext context) {
+    newProductState= context.watch<NewProductState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(

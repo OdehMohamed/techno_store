@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/data_source/firebase.dart';
@@ -51,7 +52,7 @@ class SharedState extends ChangeNotifier {
 
   Future<BrandModel> getBrand(String brandID) async {
 
-    changeLoadingState();
+    loading=true;
 
     BrandModel brands = await FirebaseDataSource().getBrand(brandID);
 

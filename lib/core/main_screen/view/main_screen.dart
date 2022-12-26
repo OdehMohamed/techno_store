@@ -6,6 +6,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/create_user_account/view/create_user_account_view.dart';
 import 'package:techno_store/core/main_screen/view_model/main_screen_state.dart';
+import 'package:techno_store/core/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
@@ -71,10 +72,34 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     mainScreenState = context.watch<MainScreenState>();
+    String lang = context.locale == Locale("en") ? "ar" : "en";
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: 10, left: 10),
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  context.locale = context.locale == Locale("en")
+                      ? Locale("ar")
+                      : Locale("en");
+                },
+                child: WidgetUtilities.autoSizeText(
+                  lang.tr(),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
       body: ModalProgressHUD(
         inAsyncCall: mainScreenState.loading,
         child: Column(
@@ -201,7 +226,7 @@ class _SignInState extends State<SignIn> {
                             if (_formKey.currentState!.validate()) {
                               try {
                                 mainScreenState.signIn(
-                                    "obeidmaen@gmail.com", "mmmmmmmm");
+                                    login_email.text, login_password.text);
                               } catch (e) {
                                 Message.showErrorToastMessage(
                                     "Wrong inputs or you are not signed up");

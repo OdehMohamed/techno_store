@@ -1,9 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:techno_store/core/maintenance_list/view_model/maintenance_list_state.dart';
 import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
+import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
+import 'package:techno_store/core/shared/view_model/shared_state.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/brand_model.dart';
 
 class MaintinanceList extends StatefulWidget {
   const MaintinanceList({Key? key}) : super(key: key);
@@ -11,7 +18,7 @@ class MaintinanceList extends StatefulWidget {
   @override
   State<MaintinanceList> createState() => _MaintinanceListState();
 }
-
+String theStatus="Fixed";
 List<Color> backgroundColor = [
   Colors.white,
   Colors.transparent,
@@ -22,136 +29,180 @@ List<Color> textColor = [
   ColorUtilities.white,
   ColorUtilities.white
 ];
-void changeStatus(int status) {
-  switch (status) {
-    case 0:
-      {
-        backgroundColor = [
-          ColorUtilities.white,
-          Colors.transparent,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.secondary,
-          ColorUtilities.white,
-          ColorUtilities.white
-        ];
-        break;
-      }
-    case 1:
-      {
-        backgroundColor = [
-          Colors.transparent,
-          ColorUtilities.white,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.white,
-          ColorUtilities.secondary,
-          ColorUtilities.white
-        ];
-        break;
-      }
-    case 2:
-      {
-        backgroundColor = [
-          Colors.transparent,
-          Colors.transparent,
-          ColorUtilities.white
-        ];
-        textColor = [
-          ColorUtilities.white,
-          ColorUtilities.white,
-          ColorUtilities.secondary
-        ];
-        break;
-      }
-    default:
-      {
-        backgroundColor = [
-          ColorUtilities.white,
-          Colors.transparent,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.secondary,
-          ColorUtilities.white,
-          ColorUtilities.white,
-        ];
-        break;
-      }
-  }
-}
 
 class _MaintinanceListState extends State<MaintinanceList> {
+  late MaintenanceListState maintenanceListState;
+  late Future<List<MaintenanceDeviceModel>> deviceList;
+  void changeStatus(int status) {
+    switch (status) {
+      case 0:
+        {
+          theStatus="Fixed";
+          backgroundColor = [
+            ColorUtilities.white,
+            Colors.transparent,
+            Colors.transparent
+          ];
+          textColor = [
+            ColorUtilities.secondary,
+            ColorUtilities.white,
+            ColorUtilities.white
+          ];
+          break;
+        }
+      case 1:
+        {
+          theStatus="in maintenance";
+          backgroundColor = [
+            Colors.transparent,
+            ColorUtilities.white,
+            Colors.transparent
+          ];
+          textColor = [
+            ColorUtilities.white,
+            ColorUtilities.secondary,
+            ColorUtilities.white
+          ];
+          break;
+        }
+      case 2:
+        {
+          theStatus="under review";
+          backgroundColor = [
+            Colors.transparent,
+            Colors.transparent,
+            ColorUtilities.white
+          ];
+          textColor = [
+            ColorUtilities.white,
+            ColorUtilities.white,
+            ColorUtilities.secondary
+          ];
+          break;
+        }
+      default:
+        {
+          theStatus="Fixed";
+          backgroundColor = [
+            ColorUtilities.white,
+            Colors.transparent,
+            Colors.transparent
+          ];
+          textColor = [
+            ColorUtilities.secondary,
+            ColorUtilities.white,
+            ColorUtilities.white,
+          ];
+          break;
+        }
+    }
+    deviceList = maintenanceListState.getDevicesInMaintenance(theStatus);
+
+  }
+
+  @override
+  void initState() {
+    maintenanceListState=context.read<MaintenanceListState>();
+    deviceList = maintenanceListState.getDevicesInMaintenance(theStatus);
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    maintenanceListState=context.watch<MaintenanceListState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Widget card(){
-      return InkWell(
-        child:  Container(
-          width: width*0.9,
-          height: height*0.2,
-          margin: EdgeInsets.only(top: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: ColorUtilities.white,
+    Widget card(MaintenanceDeviceModel device) {
+      Icon statusIcon;
+      switch (device.status){
+        case "Fixed" :{
+          statusIcon=Icon(FontAwesome5.check_circle,color: Colors.green);
+          break;
+        }
+        case "under review":{
+          statusIcon=Icon(Icons.person_search,color: Colors.orange);
+          break;
+        }
+        default:{
+          statusIcon=Icon(Icons.precision_manufacturing,color: Colors.yellow,);
+          break;
+        }
+      }
+      String? brandImgUrl="https://firebasestorage.googleapis.com/v0/b/technostore-86118.appspot.com/o/Images%2Fapple_logo.png?alt=media";
+          return InkWell(
+            child:  Container(
+              width: width*0.9,
+              height: height*0.2,
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: ColorUtilities.white,
 
-          ),
-          child: Row(
-            children: [
-              Container(
-                margin: EdgeInsets.all(width*0.05),
-                width: width*0.1,
-                height: height*0.07,
-                child: Image.asset("assets/images/appleLogo.png",fit: BoxFit.fill,),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Row(
                 children: [
                   Container(
-                    width: width*0.67,
-                    child: Row(children: [
-                      WidgetUtilities.autoSizeText("Ahmad Mohammad",textStyle: TextStyle(color: Colors.black)),
-                      Flexible(child: Container()),
-                      Icon(FontAwesome5.check_circle,color: Colors.green,),
-                      SizedBox(width: 5,),
-                      WidgetUtilities.autoSizeText("Fixed",textStyle: TextStyle(color: Colors.black54))
-                    ],),
+                    margin: EdgeInsets.all(width*0.05),
+                    width: width*0.1,
+                    height: height*0.07,
+                    child: Image.network(brandImgUrl!,fit: BoxFit.fill,),
                   ),
-                  Container(
-                    width: width*0.67,
-                    child: Row(children: [
-                      WidgetUtilities.autoSizeText("Apple 13 pro max",textStyle: TextStyle(color: Colors.black54))
-                    ],),
-                  ),
-                  Container(
-                    width: width*0.67,
-                    child: Row(children: [
-                      Container(child: Row(children: [
-                        WidgetUtilities.autoSizeText("4",textStyle: TextStyle(color: Colors.black54)),
-                        WidgetUtilities.autoSizeText("days",textStyle: TextStyle(color: Colors.black54)),
-                      ],),),
-                      Flexible(child: Container()),
-                      Container(child: Row(children: [
-                        WidgetUtilities.autoSizeText("30",textStyle: TextStyle(color: Colors.black54)),
-                        WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
-                      ],),),                    ],),
-                  ),
-
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: width*0.67,
+                        child: Row(children: [
+                          WidgetUtilities.autoSizeText(device.customerName!,textStyle: TextStyle(color: Colors.black)),
+                          Flexible(child: Container()),
+                          statusIcon,
+                          SizedBox(width: 5,),
+                          WidgetUtilities.autoSizeText(device.status!,textStyle: TextStyle(color: Colors.black54))
+                        ],),
+                      ),
+                      Container(
+                        width: width*0.67,
+                        child: Row(children: [
+                          WidgetUtilities.autoSizeText(device.deviceModel!,textStyle: TextStyle(color: Colors.black54))
+                        ],),
+                      ),
+                      Container(
+                        width: width*0.67,
+                        child: Row(children: [
+                          Container(child: Row(children: [
+                            WidgetUtilities.autoSizeText(device.estimatedTime!,textStyle: TextStyle(color: Colors.black54)),
+                            WidgetUtilities.autoSizeText("days",textStyle: TextStyle(color: Colors.black54)),
+                          ],),),
+                          Flexible(child: Container()),
+                          Container(child: Row(children: [
+                            WidgetUtilities.autoSizeText(device.price!,textStyle: TextStyle(color: Colors.black54)),
+                            WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
+                          ],
+                          ),
+                          ),
+                        ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
-              )
-            ],
-          ),
-        ),
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => NewDeviceMaintanace()),);
-        },
-      );
+              ),
+            ),
+            onTap: (){
+              Utilities.navigatorWithBack(context, NewDeviceMaintanace(maintenanceDevice: device,editable: true,));
+            },
+          );
     }
 
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add,color: ColorUtilities.secondary,),
+        backgroundColor: Colors.white,
+        onPressed: () {
+          Utilities.navigatorWithBack(context, NewDeviceMaintanace(editable: false,));
+      },
+      ),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -189,7 +240,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                               color: backgroundColor[0],
                               borderRadius: BorderRadius.circular(15)),
                           child: WidgetUtilities.autoSizeText(
-                            "All",
+                            "Fixed",
                             textStyle: TextStyle(color: textColor[0], fontSize: 18),
                           ),
                         ),
@@ -206,7 +257,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                               color: backgroundColor[1],
                               borderRadius: BorderRadius.circular(25)),
                           child: WidgetUtilities.autoSizeText(
-                            "Fixing",
+                            "under review",
                             textStyle: TextStyle(color: textColor[1], fontSize: 18),
                           ),
                         ),
@@ -223,7 +274,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                               color: backgroundColor[2],
                               borderRadius: BorderRadius.circular(25)),
                           child: WidgetUtilities.autoSizeText(
-                            "Done",
+                            "in maintenance",
                             textStyle: TextStyle(color: textColor[2], fontSize: 18),
                           ),
                         ),
@@ -250,20 +301,32 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 child: Container(
                     margin: EdgeInsets.only(right: 20, left: 20),
                     padding: EdgeInsets.only(top: 30, bottom: 10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          card(),
-                          card(),
-                          card(),
-                          card(),
-                          card(),
-                          card(),
-                          card(),
-                        ],
-                      ),
-                    ))),
+                    child: FutureBuilder<List<MaintenanceDeviceModel>>(
+                      future: deviceList,
+                      builder: (context,snapshot){
+                        if (snapshot.connectionState==ConnectionState.waiting){
+                          return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
+                        }
+                        else if(snapshot.hasData){
+                          List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
+                          return ListView.builder(
+                              itemCount: devices.length,
+                              itemBuilder:(context,index)
+                              {
+                                return card(devices[index]);
+                              }
+                          );
+                        }
+                        else  if (snapshot.data!.isEmpty){
+                          return Center(child: Text("No Data".tr()),);
+                        }
+                        else {
+                          return Center(child: Text("Error".tr()),);
+                        }
+                      },
+                    )
+                )
+            ),
           )
         ],
       ),
