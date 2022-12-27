@@ -166,7 +166,7 @@ class _StoreState extends State<Store> {
                     children: [
                       WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      WidgetUtilities.autoSizeText("1000JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+                      WidgetUtilities.autoSizeText(device.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
                     ],
                   ),
                   Container(
@@ -205,7 +205,7 @@ class _StoreState extends State<Store> {
               ),
               WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
-              WidgetUtilities.autoSizeText("1100"+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+              WidgetUtilities.autoSizeText(device.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
             ],
           ),

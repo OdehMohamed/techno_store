@@ -52,7 +52,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
         }
       case 1:
         {
-          theStatus="in maintenance";
+          theStatus="under review";
           backgroundColor = [
             Colors.transparent,
             ColorUtilities.white,
@@ -67,7 +67,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
         }
       case 2:
         {
-          theStatus="under review";
+          theStatus="in maintenance";
           backgroundColor = [
             Colors.transparent,
             Colors.transparent,

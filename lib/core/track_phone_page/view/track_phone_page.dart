@@ -364,7 +364,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                               builder: (BuildContext context) {
                                 return
                                   FutureBuilder<List<MaintenanceDeviceModel>>
-                                    (future: trackPhonePageState.checkDeviceStatus(phoneCode+phoneController.text),
+                                    (future: trackPhonePageState.checkDeviceStatus(phoneCode+"-"+phoneController.text),
                                     builder: (context, snapshot){
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return Container(child:CircularProgressIndicator(),height: height*0.7,margin: EdgeInsets.all(width*0.4),);

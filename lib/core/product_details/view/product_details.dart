@@ -2,8 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:provider/provider.dart';
+import 'package:techno_store/core/new_product/view/new_product.dart';
+import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
 
@@ -16,7 +20,15 @@ class ProductDetails extends StatefulWidget {
 bool favourite = false;
 class _ProductDetailsState extends State<ProductDetails> {
   @override
+  late ProductDetailsState productDetailsState;
+  @override
+  void initState() {
+    productDetailsState=context.read<ProductDetailsState>();
+    super.initState();
+  }
   Widget build(BuildContext context) {
+    productDetailsState=context.watch<ProductDetailsState>();
+
     void changeFavourite(){
       favourite=!favourite;
       setState(() {});
@@ -68,8 +80,26 @@ class _ProductDetailsState extends State<ProductDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  child :Icon(Icons.edit,color: ColorUtilities.secondary,size: 35),
+                                  onTap: (){
+                                    //Utilities.navigatorWithBack(context, NewProduct(widget.product,true));
+                                  },
+                                ),
+                                SizedBox(width: width*0.05,),
+                                InkWell(
+                                  child :Icon(CupertinoIcons.delete,color: Colors.red,size: 35),
+                                  onTap: (){
+                                   //productDetailsState.deleteProduct(widget.product);
+                                  },
+                                ),
+                              ],
+                            ),
                             InkWell(
                               child:favourite?
                               Icon(CupertinoIcons.heart_fill,color:Colors.red,size: 35,):
@@ -78,7 +108,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 changeFavourite();
                               },
                             ),
-
                           ],
                         ),
                         Container(
@@ -116,7 +145,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ):
                                 Image.asset("assets/images/defaultProductImage.png")
                         ),
-                        WidgetUtilities.autoSizeText("1000"+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
+                        WidgetUtilities.autoSizeText(widget.product.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
                         Container(
                           width: width * 0.8,
                           height: height * 0.2,

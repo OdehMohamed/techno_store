@@ -7,6 +7,7 @@ import 'package:techno_store/core/main_screen/view/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:techno_store/core/maintenance_list/view_model/maintenance_list_state.dart';
+import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
 import 'core/main_screen/view_model/main_screen_state.dart';
 import 'core/manage_categories/view_model/manage_categories.dart';
@@ -52,6 +53,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ManageCategories()),
         ChangeNotifierProvider(create: (_) => ResetPasswordState()),
         ChangeNotifierProvider(create: (_) => MaintenanceListState()),
+        ChangeNotifierProvider(create: (_) => ProductDetailsState()),
+
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,

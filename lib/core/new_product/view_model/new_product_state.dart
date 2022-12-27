@@ -15,7 +15,13 @@ class NewProductState extends ChangeNotifier{
     changeLoadingState();
 
   }
+  Future<void> editProduct(String productId, ProductModel productModel) async {
+    changeLoadingState();
 
+    await FirebaseDataSource().editProduct(productId, productModel);
+
+    changeLoadingState();
+  }
   void changeLoadingState(){
     loading ? loading = false : loading = true;
     refresh();

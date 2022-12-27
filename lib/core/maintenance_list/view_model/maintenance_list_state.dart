@@ -17,16 +17,6 @@ class MaintenanceListState extends ChangeNotifier{
     return devices;
   }
 
-  Future<void> editDeviceInMaintenance(
-      String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
-
-    changeLoadingState();
-
-    await FirebaseDataSource().editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
-
-    changeLoadingState();
-  }
-
   void changeLoadingState(){
     loading ? loading = false : loading = true;
     refresh();

@@ -54,7 +54,6 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -62,7 +61,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
       extendBodyBehindAppBar: true,
       body: ModalProgressHUD(
         inAsyncCall: createUserAccountState.loading,
-        child: Column(
+        child:SingleChildScrollView(child:  Column(
           children: [
             Container(
               color: Color.fromRGBO(239, 239, 239, 1),
@@ -76,10 +75,10 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                     ),
                   ),
                   child: Center(
-                    child: WidgetUtilities.autoSizeText(
-                      "New Account",
-                      textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor
-                    ))
+                      child: WidgetUtilities.autoSizeText(
+                          "New Account",
+                          textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor
+                          ))
                   )),
             ),
             Container(
@@ -94,206 +93,206 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                     ),
                   ),
                   child: Container(
-                    margin: EdgeInsets.only(right: 40, left: 40),
-                    child:Form(
-                      key: _formKey,
-                      child:  Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                  decoration: BoxDecoration(
-                                    color: ColorUtilities.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:
-                                        ColorUtilities.black.withOpacity(0.4),
-                                        blurRadius: 20,
-                                        offset: Offset(0, 15),
-                                      ),
-                                    ],
+                      margin: EdgeInsets.only(right: 40, left: 40),
+                      child:Form(
+                        key: _formKey,
+                        child:  Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Stack(
+                              children: [
+                                Container(
+                                    decoration: BoxDecoration(
+                                      color: ColorUtilities.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                          ColorUtilities.black.withOpacity(0.4),
+                                          blurRadius: 20,
+                                          offset: Offset(0, 15),
+                                        ),
+                                      ],
+                                    ),
+                                    width: 100,
+                                    height: 100,
+                                    child: photoPath.isNotEmpty
+                                        ? Image.file(
+                                      File(photoPath),
+                                      fit: BoxFit.fill,
+                                    )
+                                        : Image.asset(
+                                        "assets/images/defaultImg.png")),
+                                Container(
+                                    height: 110,
+                                    width: 100,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        InkWell(
+                                          child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.green,
+                                                  borderRadius:
+                                                  BorderRadius.circular(50)),
+                                              child: Center(
+                                                child: Text("+"),
+                                              )),
+                                          onTap: () async {
+
+
+                                            final result =
+                                            await FilePicker.platform.pickFiles(
+                                              type: FileType.image,
+                                            );
+                                            if (result != null) {
+                                              final file = result.files.first;
+
+                                              setState(() {
+                                                photoPath = file.path!;
+                                              });
+                                            }
+                                          },
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: TextFormField(
+                                controller: fullname_controller,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(
+                                    Icons.perm_identity_outlined,
+                                    color: ColorUtilities.secondary,
+                                    size: 28,
                                   ),
-                                  width: 100,
-                                  height: 100,
-                                  child: photoPath.isNotEmpty
-                                      ? Image.file(
-                                    File(photoPath),
-                                    fit: BoxFit.fill,
-                                  )
-                                      : Image.asset(
-                                      "assets/images/defaultImg.png")),
-                              Container(
-                                  height: 110,
-                                  width: 100,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      InkWell(
-                                        child: Container(
-                                            width: 25,
-                                            height: 25,
-                                            decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                borderRadius:
-                                                BorderRadius.circular(50)),
-                                            child: Center(
-                                              child: Text("+"),
-                                            )),
-                                        onTap: () async {
-
-
-                                          final result =
-                                          await FilePicker.platform.pickFiles(
-                                            type: FileType.image,
-                                          );
-                                          if (result != null) {
-                                            final file = result.files.first;
-
-                                            setState(() {
-                                              photoPath = file.path!;
-                                            });
-                                          }
-                                        },
-                                      )
-                                    ],
-                                  )),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: TextFormField(
-                              controller: fullname_controller,
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.perm_identity_outlined,
-                                  color: ColorUtilities.secondary,
-                                  size: 28,
+                                  hintText: 'Full name'.tr(),
+                                  hintStyle:
+                                  TextStyle(color: Colors.grey, fontSize: 16),
                                 ),
-                                hintText: 'Full name'.tr(),
-                                hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please Enter".tr()+" "+"Full name".tr();
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: TextFormField(
-                              controller: email_controller,
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.email,
-                                  color: ColorUtilities.secondary,
-                                  size: 28,
-                                ),
-                                hintText: 'Email'.tr(),
-                                hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please Enter".tr()+" "+"Email".tr();
-                                }
-                                if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value)) {
-                                  return "Please Enter".tr()+" "+"valid Email".tr();
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: TextFormField(
-                              obscureText: true,
-                              controller: password_controller,
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.lock,
-                                  color: ColorUtilities.secondary,
-                                  size: 28,
-                                ),
-                                hintText: 'Password'.tr(),
-                                hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please Enter".tr()+" "+"Password".tr();
-                                }
-                                if (value.length<8){
-                                  return "Password".tr()+" " +"too short".tr();
-                                }
-                                if (value.contains(" ")){
-                                  return "Password".tr()+" " +"can't have spaces".tr();
-                                }
-                                if (value!=re_password_controller.value.text){
-                                  return "Passwords does not match".tr();
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: TextFormField(
-                              obscureText: true,
-                              controller: re_password_controller,
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.lock,
-                                  color: ColorUtilities.secondary,
-                                  size: 28,
-                                ),
-                                hintText: 're-password'.tr(),
-                                hintStyle:
-                                TextStyle(color: Colors.grey, fontSize: 16),
-                              ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return "Please Enter".tr()+" "+"re-password".tr();
+                                    return "Please Enter".tr()+" "+"Full name".tr();
                                   }
-                                  if (value!=password_controller.value.text){
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: TextFormField(
+                                controller: email_controller,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: ColorUtilities.secondary,
+                                    size: 28,
+                                  ),
+                                  hintText: 'Email'.tr(),
+                                  hintStyle:
+                                  TextStyle(color: Colors.grey, fontSize: 16),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Please Enter".tr()+" "+"Email".tr();
+                                  }
+                                  if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(value)) {
+                                    return "Please Enter".tr()+" "+"valid Email".tr();
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: TextFormField(
+                                obscureText: true,
+                                controller: password_controller,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(
+                                    Icons.lock,
+                                    color: ColorUtilities.secondary,
+                                    size: 28,
+                                  ),
+                                  hintText: 'Password'.tr(),
+                                  hintStyle:
+                                  TextStyle(color: Colors.grey, fontSize: 16),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Please Enter".tr()+" "+"Password".tr();
+                                  }
+                                  if (value.length<8){
+                                    return "Password".tr()+" " +"too short".tr();
+                                  }
+                                  if (value.contains(" ")){
+                                    return "Password".tr()+" " +"can't have spaces".tr();
+                                  }
+                                  if (value!=re_password_controller.value.text){
                                     return "Passwords does not match".tr();
                                   }
                                   return null;
-                                }
+                                },
+                              ),
                             ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: TextFormField(
+                                  obscureText: true,
+                                  controller: re_password_controller,
+                                  style: TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: ColorUtilities.secondary,
+                                      size: 28,
+                                    ),
+                                    hintText: 're-password'.tr(),
+                                    hintStyle:
+                                    TextStyle(color: Colors.grey, fontSize: 16),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "Please Enter".tr()+" "+"re-password".tr();
+                                    }
+                                    if (value!=password_controller.value.text){
+                                      return "Passwords does not match".tr();
+                                    }
+                                    return null;
+                                  }
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
                                   await createUserAccountState
                                       .signUp(
                                       email_controller.text,
@@ -301,28 +300,28 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                       CreateUserAccountModel(
                                           name: fullname_controller.text, photo: photoPath))
                                       .then((value) => Navigator.pop(context));
-                              }
-                            },
-                            child: Container(
-                                width: 200,
-                                child: WidgetUtilities.autoSizeText(
-                                    "Create Account",
-                                    textAlign: TextAlign.center
-                                )
+                                }
+                              },
+                              child: Container(
+                                  width: 200,
+                                  child: WidgetUtilities.autoSizeText(
+                                      "Create Account",
+                                      textAlign: TextAlign.center
+                                  )
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorUtilities.primary,
+                                textStyle:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                              ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorUtilities.primary,
-                              textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                          ],
+                        ),
+                      )
                   )),
             )
           ],
-        ),
+        ),)
       ),
     );
   }

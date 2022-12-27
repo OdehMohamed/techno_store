@@ -30,15 +30,6 @@ class SharedState extends ChangeNotifier {
     return categories;
   }
 
-  Future<void> updateFavorites(
-      String productID, List<String> favoriteList) async {
-    changeLoadingState();
-
-    await FirebaseDataSource().updateFavorites(productID, favoriteList);
-
-    changeLoadingState();
-  }
-
   Future<List<BrandModel>> getBrands() async {
 
     changeLoadingState();
