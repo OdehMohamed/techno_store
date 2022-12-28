@@ -261,7 +261,7 @@ class _StoreState extends State<Store> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(top: height * 0.1),
+                        margin: EdgeInsets.only(top: height * 0.08),
                         child: WidgetUtilities.autoSizeText(
                           "Store",
                           textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
@@ -313,7 +313,7 @@ class _StoreState extends State<Store> {
                                               index]
                                                   .enName)),
                                         )),
-                                    label: "Categories",
+                                    label: "Categories".tr(),
                                   );
                                 }
                                 return SizedBox();

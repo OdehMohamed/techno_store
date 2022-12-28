@@ -46,8 +46,8 @@ class _manageCategoryState extends State<manageCategory> {
   CategoriesAndSubCategoryModel? selectedCategory;
   CategoriesAndSubCategoryModel? selectedSubCategory;
 
-
-  TextEditingController edit_name_controller = TextEditingController();
+  TextEditingController edit_name_controller_en = TextEditingController();
+  TextEditingController edit_name_controller_ar = TextEditingController();
   TextEditingController new_category_name_controller_en = TextEditingController();
   TextEditingController new_category_name_controller_ar = TextEditingController();
 
@@ -64,7 +64,8 @@ class _manageCategoryState extends State<manageCategory> {
 
   @override
   void dispose() {
-    edit_name_controller.dispose();
+    edit_name_controller_en.dispose();
+    edit_name_controller_ar.dispose();
     new_category_name_controller_en.dispose();
     new_category_name_controller_ar.dispose();
     new_sub_category_controller_en.dispose();
@@ -197,7 +198,7 @@ class _manageCategoryState extends State<manageCategory> {
                                                                   index]
                                                               .enName)),
                                                 )),
-                                        label: "Categories",
+                                        label: "Categories".tr(),
                                       ),
                                     ),
                                     InkWell(
@@ -585,7 +586,7 @@ class _manageCategoryState extends State<manageCategory> {
                                                                       index]
                                                                   .enName)),
                                                     )),
-                                            label: "Sub Categories",
+                                            label: "Sub-Categories".tr(),
                                           ),
                                         ),
                                         InkWell(
@@ -1021,16 +1022,37 @@ class _manageCategoryState extends State<manageCategory> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: TextField(
-                            controller: edit_name_controller,
+                            controller: edit_name_controller_en,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'New Name'.tr(),
+                              hintText: 'New Name'.tr()+"enLang".tr(),
                               hintStyle:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
                           ),
                         ),
+                        Container(
+                          width: Utilities.getDeviceWidth(context) * 0.5,
+                          margin: EdgeInsets.only(top: 20),
+                          padding: EdgeInsets.only(left: 20, right: 20),
+                          decoration: BoxDecoration(
+                            color: ColorUtilities.white,
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: TextField(
+                            controller: edit_name_controller_ar,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'New Name'.tr()+"arLang".tr(),
+                              hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 16),
+                            ),
+                          ),
+                        ),
+
                         SizedBox(
                           height: 20,
                         ),

@@ -305,6 +305,7 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     Container(
                                       width: width*0.35,
+                                      height: height*0.1,
                                       padding: EdgeInsets.only(left: 10,right: 10),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
@@ -344,7 +345,7 @@ class _NewProductState extends State<NewProduct> {
                                                            index]
                                                                .enName)),
                                                      )),
-                                                 label: "Categories",
+                                                 label: "Categories".tr(),
                                                );
                                              }
                                              return SizedBox();
@@ -375,6 +376,7 @@ class _NewProductState extends State<NewProduct> {
                                     ),
                                     Container(
                                       width: width*0.35,
+                                      height: height*0.1,
                                       padding: EdgeInsets.only(left: 10,right: 10),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
@@ -414,7 +416,7 @@ class _NewProductState extends State<NewProduct> {
                                                           index]
                                                               .enName)),
                                                     )),
-                                                label: "Sub Categories",
+                                                label: "Sub-Categories".tr(),
                                               );
                                             }
                                             return SizedBox();
@@ -451,6 +453,8 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     Container(
                                       width: width*0.35,
+                                      height: height*0.1,
+
                                       padding: EdgeInsets.only(left: 20,right: 20),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
@@ -479,6 +483,8 @@ class _NewProductState extends State<NewProduct> {
                                     ),
                                     Container(
                                       width: width*0.35,
+                                      height: height*0.1,
+
                                       padding: EdgeInsets.only(left: 10,right: 10),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,

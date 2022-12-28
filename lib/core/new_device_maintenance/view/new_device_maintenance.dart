@@ -17,12 +17,7 @@ import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
 import '../../shared/view_model/shared_state.dart';
-List<int> patternList=[];
-List<int> drawingList=[];
 
-int i=0;
-late Timer? timer;
-late Timer? secondTimer;
 class NewDeviceMaintanace extends StatefulWidget {
   final MaintenanceDeviceModel? maintenanceDevice;
   final bool editable;
@@ -33,6 +28,11 @@ class NewDeviceMaintanace extends StatefulWidget {
 }
 
 class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
+  List<int> patternList=[];
+  List<int> drawingList=[];
+  int i=0;
+  Timer? timer;
+  Timer? secondTimer;
   final _formKey = GlobalKey<FormState>();
 
   late SharedState sharedState;
@@ -96,7 +96,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       estimated_time_controller.text = widget.maintenanceDevice!.estimatedTime!;
       notes2_controller.text = widget.maintenanceDevice!.notes!;
       patternList=widget.maintenanceDevice!.pattern!;
-      //brand_value=widget.maintenanceDevice!.brandID;
+      brand_value=widget.maintenanceDevice!.brandID;
       status_value=widget.maintenanceDevice!.status;
     }
     else{
@@ -329,6 +329,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           dropDownValue: selectedBrand,
                                           onChanged: (newValue) {
                                             selectedBrand = newValue;
+                                            print(selectedBrand?.name);
                                             setState(() {});
                                           },
                                           items: List.generate(
@@ -635,7 +636,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   },
                                   validator: (value) {
                                     if (value == null ) {
-                                      return "Please Enter".tr()+" "+"Device Brand".tr();
+                                      return "Please Enter".tr()+" "+"Device Status".tr();
                                     }
                                     return null;
                                   },
@@ -783,7 +784,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           widget.maintenanceDevice?.customerName=name_controller.text;
                                           widget.maintenanceDevice?.phoneNumber=phoneCode+"-"+phone_controller.text;
                                           widget.maintenanceDevice?.address=address_controller.text;
-                                          //brandID: brand_value,
+                                          widget.maintenanceDevice?.brandID= selectedBrand?.name;
                                           widget.maintenanceDevice?.deviceModel=model_controller.text;
                                           widget.maintenanceDevice?.color=color_controller.text;
                                           widget.maintenanceDevice?.devicePassword=pin_controller.text;
@@ -863,10 +864,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                       .toString() + "-" +
                                                       phone_controller.text,
                                                   address: address_controller.text,
-                                                  ////
-                                                  ///please add brand id here
-                                                  //brandID: brand_value,
-                                                  ///
+                                                  brandID: selectedBrand?.name,
                                                   deviceModel: model_controller
                                                       .text,
                                                   color: color_controller.text,
