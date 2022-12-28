@@ -95,5 +95,8 @@
   "No Data": "لا يوجد بيانات",
   "Edited successfully": "تم التعديل بنجاح",
   "this field is Required": "هذا الحقل مطلوب",
-  "Select category first":"يجب اختيار التصنيف اولا"
+  "Select category first":"يجب اختيار التصنيف اولا",
+  "Delete warning": "تحذير الحذف",
+  "Are you sure you want to delete this product?": "هل انت متاكد من حذف هذا المنتج ؟",
+  "Deleted": "تم الحذف"
 }

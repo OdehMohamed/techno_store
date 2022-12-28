@@ -95,5 +95,8 @@
   "No Data": "No Data",
   "Edited successfully": "Edited successfully",
   "this field is Required": "this field is Required",
-  "Select category first": "Select category first"
+  "Select category first": "Select category first",
+  "Delete warning": "Delete warning",
+  "Are you sure you want to delete this product?": "Are you sure you want to delete this product?",
+  "Deleted": "Deleted"
 }

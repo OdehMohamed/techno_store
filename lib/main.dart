@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:techno_store/core/favorite_items/view_model/favorite_items_state.dart';
 import 'package:techno_store/core/main_screen/view/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -54,6 +55,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ResetPasswordState()),
         ChangeNotifierProvider(create: (_) => MaintenanceListState()),
         ChangeNotifierProvider(create: (_) => ProductDetailsState()),
+        ChangeNotifierProvider(create: (_) => FavoriteItemsState()),
+
 
       ],
       child: MaterialApp(

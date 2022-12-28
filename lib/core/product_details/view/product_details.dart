@@ -7,6 +7,7 @@ import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/message.dart';
 import 'package:techno_store/shared/utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
@@ -17,12 +18,15 @@ class ProductDetails extends StatefulWidget {
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
-bool favourite = false;
 class _ProductDetailsState extends State<ProductDetails> {
   @override
   late ProductDetailsState productDetailsState;
+  bool favourite = false;
   @override
   void initState() {
+    if (widget.product.favoriteList!.contains("1212")){
+      favourite=true;
+    }
     productDetailsState=context.read<ProductDetailsState>();
     super.initState();
   }
@@ -31,6 +35,13 @@ class _ProductDetailsState extends State<ProductDetails> {
 
     void changeFavourite(){
       favourite=!favourite;
+      if (widget.product.favoriteList!.contains("1212")){
+        widget.product.favoriteList?.remove("1212");
+      }
+      else {
+        widget.product.favoriteList?.add("1212");
+      }
+      productDetailsState.updateFavorites("DX1NsPWTF2ufN5RI5azw", widget.product.favoriteList!);
       setState(() {});
     }
     double width = MediaQuery.of(context).size.width;
@@ -95,7 +106,32 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 InkWell(
                                   child :Icon(CupertinoIcons.delete,color: Colors.red,size: 35),
                                   onTap: (){
-                                   //productDetailsState.deleteProduct(widget.product);
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return  AlertDialog(
+                                          title: Text("Delete warning".tr()),
+                                          content: Text("Are you sure you want to delete this product?".tr()),
+                                          actions: [
+                                        TextButton(
+                                        child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
+                                        onPressed: () {
+                                          productDetailsState.deleteProduct("RWTxDPcjXDsmC4dqrX1J");
+                                          Message.showLongToastMessage("Deleted".tr());
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        },
+                                        ),
+                                        TextButton(
+                                        child: Text("Cancel".tr()),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        )
+                                          ],
+                                        );;
+                                      },
+                                    );
                                   },
                                 ),
                               ],

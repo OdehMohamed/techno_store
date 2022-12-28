@@ -5,12 +5,8 @@ import 'package:techno_store/data_source/firebase.dart';
 class FavoriteItemsState extends ChangeNotifier{
   bool loading = false;
 
-  Future<List<ProductModel>> getProducts(String subCategoryId) async {
+  Future<List<ProductModel>> getProducts() async {
     loading = true;
-
-    // List<ProductModel> products =  await FirebaseDataSource().getProducts(subCategoryId);
-    // products.removeWhere((element) => !element.favoriteList!.contains(FirebaseDataSource().firebaseAuth.currentUser!.uid));
-
     List<ProductModel> products =  await FirebaseDataSource().getFavorites();
 
     changeLoadingState();
