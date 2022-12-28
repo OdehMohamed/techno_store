@@ -10,7 +10,7 @@ import 'package:techno_store/core/maintenance_list/view_model/maintenance_list_s
 import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
 import 'core/main_screen/view_model/main_screen_state.dart';
-import 'core/manage_categories/view_model/manage_categories.dart';
+import 'core/manage_categories/view_model/manage_categories_state.dart';
 import 'core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'core/new_product/view_model/new_product_state.dart';
 import 'core/reset_password/view_model/reset_password_state.dart';

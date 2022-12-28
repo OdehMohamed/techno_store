@@ -172,8 +172,10 @@ class FirebaseDataSource {
     try {
       await firebaseFirestore.collection("categories").get().then((value) {
         for (var element in value.docs) {
-          categories
-              .add(CategoriesAndSubCategoryModel.fromJson(element.data()));
+          CategoriesAndSubCategoryModel category =
+              CategoriesAndSubCategoryModel.fromJson(element.data());
+          category.id = element.id;
+          categories.add(category);
         }
       });
     } catch (e) {}
@@ -200,7 +202,7 @@ class FirebaseDataSource {
 
   Future<List<CategoriesAndSubCategoryModel>> getSubCategories(
       String categoryID) async {
-    List<CategoriesAndSubCategoryModel> categories = [];
+    List<CategoriesAndSubCategoryModel> subCategories = [];
     try {
       await firebaseFirestore
           .collection("categories")
@@ -209,13 +211,15 @@ class FirebaseDataSource {
           .get()
           .then((value) {
         for (var element in value.docs) {
-          categories
-              .add(CategoriesAndSubCategoryModel.fromJson(element.data()));
+          CategoriesAndSubCategoryModel subCategory =
+              CategoriesAndSubCategoryModel.fromJson(element.data());
+          subCategory.id = element.id;
+          subCategories.add(subCategory);
         }
       });
     } catch (e) {}
 
-    return categories;
+    return subCategories;
   }
 
   Future<void> addSubCategory(String categoryID,
@@ -372,8 +376,8 @@ class FirebaseDataSource {
       MaintenanceDeviceModel maintenanceDeviceModel) async {
     await firebaseFirestore
         .collection("maintenanceDevices")
-    .doc(maintenanceDeviceModel.id)
-    .set(maintenanceDeviceModel.toJson())
+        .doc(maintenanceDeviceModel.id)
+        .set(maintenanceDeviceModel.toJson())
         .then((value) => print("new device added"));
   }
 

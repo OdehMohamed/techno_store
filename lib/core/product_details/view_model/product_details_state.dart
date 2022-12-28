@@ -6,7 +6,7 @@ class ProductDetailsState extends ChangeNotifier {
   bool loading = false;
 
   Future<void> deleteProduct(String productId) async {
-    changeLoadingState();
+    loading = true;
 
     FirebaseDataSource().deleteProduct(productId);
 
@@ -14,7 +14,7 @@ class ProductDetailsState extends ChangeNotifier {
   }
   Future<void> updateFavorites(
       String productID, List<String> favoriteList) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().updateFavorites(productID, favoriteList);
 

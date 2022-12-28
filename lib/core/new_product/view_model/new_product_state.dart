@@ -8,7 +8,7 @@ class NewProductState extends ChangeNotifier{
 
   Future<void> addProduct(ProductModel productModel) async {
 
-    changeLoadingState();
+    loading = true;
 
      await FirebaseDataSource().addProduct(productModel);
 
@@ -16,7 +16,7 @@ class NewProductState extends ChangeNotifier{
 
   }
   Future<void> editProduct(String productId, ProductModel productModel) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().editProduct(productId, productModel);
 

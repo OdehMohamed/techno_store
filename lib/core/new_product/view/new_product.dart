@@ -8,7 +8,12 @@ import 'package:techno_store/core/product_details/view/product_details.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../../../shared/custom_widgets.dart';
+import '../../../shared/string_utilities.dart';
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/brand_model.dart';
+import '../../shared/model/category_and_sub_category_model.dart';
+import '../../shared/view_model/shared_state.dart';
 
 class NewProduct extends StatefulWidget {
   const NewProduct({Key? key}) : super(key: key);
@@ -20,6 +25,15 @@ class NewProduct extends StatefulWidget {
 
 class _NewProductState extends State<NewProduct> {
   late NewProductState newProductState;
+  late SharedState sharedState;
+
+  late Future getCategoriesFuture;
+  Future? getSubCategoriesFuture;
+  late Future getBrandsFuture;
+  BrandModel? selectedBrand;
+  CategoriesAndSubCategoryModel? selectedCategory;
+  CategoriesAndSubCategoryModel? selectedSubCategory;
+
   final _formKey = GlobalKey<FormState>();
   List<String> photoPaths=[];
   final en_title_controller = TextEditingController();
@@ -49,13 +63,20 @@ class _NewProductState extends State<NewProduct> {
   String? sub_category_dropdown_value;
   String? brand_dropdown_value;
   @override
-  void setState(VoidCallback fn) {
+  void initState() {
     newProductState= context.read<NewProductState>();
-    super.setState(fn);
+    sharedState = context.read<SharedState>();
+    getCategoriesFuture = sharedState.getCategories();
+    getBrandsFuture = sharedState.getBrands();
+
+
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {
     newProductState= context.watch<NewProductState>();
+    sharedState= context.watch<SharedState>();
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -290,29 +311,67 @@ class _NewProductState extends State<NewProduct> {
                                         border: Border.all(color: Colors.grey),
                                         borderRadius: BorderRadius.circular(5),
                                       ),
-                                      child: DropdownButtonFormField(
-                                        isExpanded: true,
-                                        hint: WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
-                                        value: category_dropdown_value,
-                                        icon: const Icon(Icons.keyboard_arrow_down),
-                                        items: categories.map((String items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: WidgetUtilities.autoSizeText(items ,textStyle: TextStyle(color: Colors.black)),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            category_dropdown_value = newValue!;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null ) {
-                                            return "Please Enter".tr()+" "+"Category".tr();
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                       child: FutureBuilder(
+                                           future: getCategoriesFuture,
+                                           builder: (context, AsyncSnapshot snapshot) {
+                                             if (snapshot.hasData) {
+                                               List<CategoriesAndSubCategoryModel>
+                                               futureCategories = snapshot.data;
+                                               return FormValidatorDropdown<
+                                                   CategoriesAndSubCategoryModel>(
+                                                 name: "CategoryName",
+                                                 dropDownValue: selectedCategory,
+                                                 onChanged: (newValue) {
+                                                   selectedCategory = newValue;
+                                                   getSubCategoriesFuture = sharedState
+                                                       .getSubCategories(newValue.id!);
+                                                   selectedSubCategory = null;
+                                                   setState(() {});
+                                                 },
+                                                 items: List.generate(
+                                                     futureCategories.length,
+                                                         (index) => DropdownMenuItem<
+                                                         CategoriesAndSubCategoryModel>(
+                                                       value:
+                                                       futureCategories[index],
+                                                       child: Text(StringUtilities
+                                                           .getStringByLanguage(
+                                                           context,
+                                                           futureCategories[
+                                                           index]
+                                                               .arName,
+                                                           futureCategories[
+                                                           index]
+                                                               .enName)),
+                                                     )),
+                                                 label: "Categories",
+                                               );
+                                             }
+                                             return SizedBox();
+                                           }),
+                                      // DropdownButtonFormField(
+                                      //   isExpanded: true,
+                                      //   hint: WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
+                                      //   value: category_dropdown_value,
+                                      //   icon: const Icon(Icons.keyboard_arrow_down),
+                                      //   items: categories.map((String items) {
+                                      //     return DropdownMenuItem(
+                                      //       value: items,
+                                      //       child: WidgetUtilities.autoSizeText(items ,textStyle: TextStyle(color: Colors.black)),
+                                      //     );
+                                      //   }).toList(),
+                                      //   onChanged: (String? newValue) {
+                                      //     setState(() {
+                                      //       category_dropdown_value = newValue!;
+                                      //     });
+                                      //   },
+                                      //   validator: (value) {
+                                      //     if (value == null ) {
+                                      //       return "Please Enter".tr()+" "+"Category".tr();
+                                      //     }
+                                      //     return null;
+                                      //   },
+                                      // ),
                                     ),
                                     Container(
                                       width: width*0.35,
@@ -322,29 +381,68 @@ class _NewProductState extends State<NewProduct> {
                                         border: Border.all(color: Colors.grey),
                                         borderRadius: BorderRadius.circular(5),
                                       ),
-                                      child: DropdownButtonFormField(
-                                        isExpanded: true,
-                                        hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
-                                        value: sub_category_dropdown_value,
-                                        icon: const Icon(Icons.keyboard_arrow_down),
-                                        items: sub_categories.map((String items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            sub_category_dropdown_value = newValue!;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null ) {
-                                            return "Please Enter".tr()+" "+"Sub-Categories".tr();
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                      child:
+                                      getSubCategoriesFuture != null
+                                          ? FutureBuilder(
+                                          future: getSubCategoriesFuture,
+                                          builder: (context, AsyncSnapshot snapshot) {
+                                            if (snapshot.hasData) {
+                                              List<CategoriesAndSubCategoryModel>
+                                              futureSubCategories = snapshot.data;
+                                              return FormValidatorDropdown<
+                                                  CategoriesAndSubCategoryModel>(
+                                                name: "SubCategoryName",
+                                                dropDownValue: selectedSubCategory,
+                                                onChanged: (newValue) {
+                                                  selectedSubCategory = newValue;
+                                                  setState(() {});
+                                                },
+                                                items: List.generate(
+                                                    futureSubCategories.length,
+                                                        (index) => DropdownMenuItem<
+                                                        CategoriesAndSubCategoryModel>(
+                                                      value:
+                                                      futureSubCategories[
+                                                      index],
+                                                      child: Text(StringUtilities
+                                                          .getStringByLanguage(
+                                                          context,
+                                                          futureSubCategories[
+                                                          index]
+                                                              .arName,
+                                                          futureSubCategories[
+                                                          index]
+                                                              .enName)),
+                                                    )),
+                                                label: "Sub Categories",
+                                              );
+                                            }
+                                            return SizedBox();
+                                          })
+                                          : SizedBox(),
+                                      // DropdownButtonFormField(
+                                      //   isExpanded: true,
+                                      //   hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
+                                      //   value: sub_category_dropdown_value,
+                                      //   icon: const Icon(Icons.keyboard_arrow_down),
+                                      //   items: sub_categories.map((String items) {
+                                      //     return DropdownMenuItem(
+                                      //       value: items,
+                                      //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
+                                      //     );
+                                      //   }).toList(),
+                                      //   onChanged: (String? newValue) {
+                                      //     setState(() {
+                                      //       sub_category_dropdown_value = newValue!;
+                                      //     });
+                                      //   },
+                                      //   validator: (value) {
+                                      //     if (value == null ) {
+                                      //       return "Please Enter".tr()+" "+"Sub-Categories".tr();
+                                      //     }
+                                      //     return null;
+                                      //   },
+                                      // ),
                                     ),
                                   ],),
                                 SizedBox(height: 15,),
@@ -387,29 +485,57 @@ class _NewProductState extends State<NewProduct> {
                                         border: Border.all(color: Colors.grey),
                                         borderRadius: BorderRadius.circular(5),
                                       ),
-                                      child: DropdownButtonFormField(
-                                        isExpanded: true,
-                                        hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
-                                        value: brand_dropdown_value,
-                                        icon: const Icon(Icons.keyboard_arrow_down),
-                                        items: brands.map((String items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            brand_dropdown_value = newValue!;
-                                          });
-                                        },
-                                        validator: (value) {
-                                          if (value == null ) {
-                                            return "Please Enter".tr()+" "+"Price".tr();
-                                          }
-                                          return null;
-                                        },
-                                      ),
+                                      child:
+                                      FutureBuilder(
+                                          future: getBrandsFuture,
+                                          builder: (context, AsyncSnapshot snapshot) {
+                                            if (snapshot.hasData) {
+                                              List<BrandModel>
+                                              futureBrands = snapshot.data;
+                                              return FormValidatorDropdown<
+                                                  BrandModel>(
+                                                name: "BrandName",
+                                                dropDownValue: selectedBrand,
+                                                onChanged: (newValue) {
+                                                  selectedBrand = newValue;
+                                                  setState(() {});
+                                                },
+                                                items: List.generate(
+                                                    futureBrands.length,
+                                                        (index) => DropdownMenuItem<
+                                                        BrandModel>(
+                                                      value:
+                                                      futureBrands[index],
+                                                      child: Text(futureBrands[index].name!),
+                                                    )),
+                                                label: "Device Brand".tr(),
+                                              );
+                                            }
+                                            return SizedBox();
+                                          }),
+                                      // DropdownButtonFormField(
+                                      //   isExpanded: true,
+                                      //   hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
+                                      //   value: brand_dropdown_value,
+                                      //   icon: const Icon(Icons.keyboard_arrow_down),
+                                      //   items: brands.map((String items) {
+                                      //     return DropdownMenuItem(
+                                      //       value: items,
+                                      //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
+                                      //     );
+                                      //   }).toList(),
+                                      //   onChanged: (String? newValue) {
+                                      //     setState(() {
+                                      //       brand_dropdown_value = newValue!;
+                                      //     });
+                                      //   },
+                                      //   validator: (value) {
+                                      //     if (value == null ) {
+                                      //       return "Please Enter".tr()+" "+"Price".tr();
+                                      //     }
+                                      //     return null;
+                                      //   },
+                                      // ),
                                     ),
 
                                   ],

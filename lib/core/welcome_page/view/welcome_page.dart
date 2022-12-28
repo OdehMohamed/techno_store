@@ -7,7 +7,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/favorite_items/view/favoriteItems.dart';
 import 'package:techno_store/core/maintenance_list/view/maintenance_list.dart';
-import 'package:techno_store/core/manage_categories/view/manageCategory.dart';
+import 'package:techno_store/core/manage_categories/view/manage_category_view.dart';
 import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core/new_user_admin_side/view/new_user_admin_side.dart';

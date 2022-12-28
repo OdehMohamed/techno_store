@@ -8,7 +8,7 @@ class ManageCategories extends ChangeNotifier {
 
   Future<void> addCategory(
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().addCategory(categoriesAndSubCategoryModel);
 
@@ -17,7 +17,7 @@ class ManageCategories extends ChangeNotifier {
 
   Future<void> editCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource()
         .editCategory(categoryID, categoriesAndSubCategoryModel);
@@ -27,7 +27,7 @@ class ManageCategories extends ChangeNotifier {
 
   Future<void> addSubCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource()
         .addSubCategory(categoryID, categoriesAndSubCategoryModel);
@@ -37,7 +37,7 @@ class ManageCategories extends ChangeNotifier {
 
   Future<void> editSubCategories(String categoryID, String subCategoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().editSubCategories(
         categoryID, subCategoryID, categoriesAndSubCategoryModel);
@@ -46,7 +46,7 @@ class ManageCategories extends ChangeNotifier {
   }
 
   Future<void> deleteCategory(String categoryId) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().deleteCategory(categoryId);
 
@@ -55,7 +55,7 @@ class ManageCategories extends ChangeNotifier {
 
   Future<void> deleteSubCategory(
       String categoryId, String subCategoryId) async {
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().deleteSubCategory(categoryId, subCategoryId);
 

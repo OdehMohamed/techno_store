@@ -4,6 +4,8 @@ import 'package:techno_store/shared/color_utilities.dart';
 import 'package:techno_store/shared/string_utilities.dart';
 import 'package:techno_store/shared/utilities.dart';
 import 'package:techno_store/shared/widget_utilities.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 class CustomWidgets {
   static InputDecorator categoriesDropdownMenu(
@@ -35,5 +37,107 @@ class CustomWidgets {
                     )),
           ),
         ));
+  }
+}
+//
+// class FormValidatorDropdown<T> extends StatelessWidget {
+//   const FormValidatorDropdown(
+//       {required this.label,
+//         this.onChanged,
+//         required this.items,
+//         required this.dropDownValue,
+//         this.showErrorText = true,
+//         this.optional = false,
+//         Key? key})
+//       : super(key: key);
+//
+//   final String label;
+//   final bool showErrorText;
+//   final bool optional;
+//   final ValueChanged<T>? onChanged;
+//   final T? dropDownValue;
+//   final List<DropdownMenuItem<T>> items;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return InputDecorator(
+//       decoration: InputDecoration(
+//         label: Text(label),
+//       ),
+//       //SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
+//       child: Opacity(
+//         opacity: 1,
+//         child: DropdownButton<T>(
+//           isExpanded: true,
+//           underline: const SizedBox.shrink(),
+//           //iconSize: SSCUI.SMALL_ICON_SIZE,
+//           value: dropDownValue,
+//           onChanged: (T? newValue) async {
+//             onChanged!(newValue as T);
+//             //state.didChange(newValue);
+//           },
+//           items: items,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class FormValidatorDropdown<T> extends StatelessWidget {
+  const FormValidatorDropdown(
+      {required this.label,
+        required this.name,
+        this.onChanged,
+        required this.items,
+        required this.dropDownValue,
+        this.showErrorText = true,
+        this.optional = false,
+        Key? key})
+      : super(key: key);
+
+  final String label;
+  final String name;
+  final bool showErrorText;
+  final bool optional;
+  final ValueChanged<T>? onChanged;
+  final T? dropDownValue;
+  final List<DropdownMenuItem<T>> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return FormBuilderField(
+      autovalidateMode: AutovalidateMode.always,
+      name: name,
+      builder: (FormFieldState<T> state) {
+        return InputDecorator(
+          decoration: InputDecoration(
+            label: Text(label),
+          ),
+          //SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
+          child: Opacity(
+            opacity: 1,
+            child: DropdownButton<T>(
+              isExpanded: true,
+              underline: const SizedBox.shrink(),
+              //iconSize: SSCUI.SMALL_ICON_SIZE,
+              value: dropDownValue,
+              onChanged: (T? newValue) async {
+                onChanged!(newValue as T);
+                //state.didChange(newValue);
+              },
+              items: items,
+            ),
+          ),
+        );
+
+      },
+      validator: FormBuilderValidators.compose([
+        if (!optional)
+          FormBuilderValidators.required(
+              errorText: showErrorText
+                  ? "this_field_is_required"
+                  : ' '),
+      ]),
+    );
   }
 }

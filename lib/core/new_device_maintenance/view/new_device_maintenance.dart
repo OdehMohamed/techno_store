@@ -6,14 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:provider/provider.dart';
-import 'package:techno_store/core/manage_categories/view/manageCategory.dart';
+import 'package:techno_store/core/manage_categories/view/manage_category_view.dart';
 import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
+import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../shared/custom_widgets.dart';
 import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
+import '../../shared/view_model/shared_state.dart';
 List<int> patternList=[];
 List<int> drawingList=[];
 
@@ -28,9 +31,14 @@ class NewDeviceMaintanace extends StatefulWidget {
   @override
   State<NewDeviceMaintanace> createState() => _NewDeviceMaintanaceState();
 }
-final _formKey = GlobalKey<FormState>();
 
 class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
+  final _formKey = GlobalKey<FormState>();
+
+  late SharedState sharedState;
+  late Future getBrandsFuture;
+  BrandModel? selectedBrand;
+
   var status = [
     "Fixed",
     "in maintenance",
@@ -67,6 +75,10 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   @override
   void initState() {
     super.initState();
+
+    sharedState = context.read<SharedState>();
+    getBrandsFuture = sharedState.getBrands();
+
     if (widget.editable!=null && widget.editable){
       name_controller.text = widget.maintenanceDevice!.customerName!;
       address_controller.text = widget.maintenanceDevice!.address!;
@@ -143,6 +155,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   @override
   Widget build(BuildContext context) {
     newDeviceMaintenanceState=context.watch<NewDeviceMaintenanceState>();
+    sharedState = context.watch<SharedState>();
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -303,29 +316,57 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   border: Border.all(color: Colors.grey),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: DropdownButtonFormField(
-                                  isExpanded: true,
-                                  hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.grey)),
-                                  value: brand_value,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  items: brands.map((String items) {
-                                    return DropdownMenuItem(
-                                      value: items,
-                                      child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      brand_value = newValue!;
-                                    });
-                                  },
-                                  validator: (value) {
-                                    if (value == null ) {
-                                      return "Please Enter".tr()+" "+"Device Brand".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                child:
+                                FutureBuilder(
+                                    future: getBrandsFuture,
+                                    builder: (context, AsyncSnapshot snapshot) {
+                                      if (snapshot.hasData) {
+                                        List<BrandModel>
+                                        futureBrands = snapshot.data;
+                                        return FormValidatorDropdown<
+                                            BrandModel>(
+                                          name: "BrandName",
+                                          dropDownValue: selectedBrand,
+                                          onChanged: (newValue) {
+                                            selectedBrand = newValue;
+                                            setState(() {});
+                                          },
+                                          items: List.generate(
+                                              futureBrands.length,
+                                                  (index) => DropdownMenuItem<
+                                                      BrandModel>(
+                                                value:
+                                                futureBrands[index],
+                                                child: Text(futureBrands[index].name!),
+                                              )),
+                                          label: "Device Brand".tr(),
+                                        );
+                                      }
+                                      return SizedBox();
+                                    }),
+                                // DropdownButtonFormField(
+                                //   isExpanded: true,
+                                //   hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.grey)),
+                                //   value: brand_value,
+                                //   icon: const Icon(Icons.keyboard_arrow_down),
+                                //   items: brands.map((String items) {
+                                //     return DropdownMenuItem(
+                                //       value: items,
+                                //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
+                                //     );
+                                //   }).toList(),
+                                //   onChanged: (String? newValue) {
+                                //     setState(() {
+                                //       brand_value = newValue!;
+                                //     });
+                                //   },
+                                //   validator: (value) {
+                                //     if (value == null ) {
+                                //       return "Please Enter".tr()+" "+"Device Brand".tr();
+                                //     }
+                                //     return null;
+                                //   },
+                                // ),
                               ),
                               SizedBox(
                                 height: 30,

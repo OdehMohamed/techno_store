@@ -1,8 +1,10 @@
 class CategoriesAndSubCategoryModel {
+  String? _id;
   String? _arName;
   String? _enName;
 
   CategoriesAndSubCategoryModel({String? arName, String? enName}) {
+
     if (arName != null) {
       this._arName = arName;
     }
@@ -11,6 +13,8 @@ class CategoriesAndSubCategoryModel {
     }
   }
 
+  String? get id => _id;
+  set id(String? id) => _id = id;
   String? get arName => _arName;
   set arName(String? arName) => _arName = arName;
   String? get enName => _enName;

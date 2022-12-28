@@ -1,13 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
 import 'package:techno_store/core/store/view_model/store_state.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/custom_widgets.dart';
+import '../../../shared/string_utilities.dart';
 import '../../../shared/widget_utilities.dart';
+import '../../shared/model/category_and_sub_category_model.dart';
 import '../../shared/model/productModel.dart';
+import '../../shared/view_model/shared_state.dart';
 
 class Store extends StatefulWidget {
   const Store({Key? key}) : super(key: key);
@@ -110,11 +115,22 @@ void changeStatus(int status) {
 }
 
 class _StoreState extends State<Store> {
+
+  late SharedState sharedState;
+  late Future getCategoriesFuture;
+  Future? getSubCategoriesFuture;
+  CategoriesAndSubCategoryModel? selectedCategory;
+  CategoriesAndSubCategoryModel? selectedSubCategory;
+
   late StoreState storeState;
   late Future<List<ProductModel>> productList ;
+
   @override
   void initState() {
     storeState=context.read<StoreState>();
+    sharedState = context.read<SharedState>();
+    getCategoriesFuture = sharedState.getCategories();
+
     productList= storeState.getProducts('3N7ICfyqonoRodcOAEEk');
     super.initState();
   }
@@ -137,6 +153,8 @@ class _StoreState extends State<Store> {
   @override
   Widget build(BuildContext context) {
     storeState=context.watch<StoreState>();
+    sharedState = context.watch<SharedState>();
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     Widget listCard(ProductModel device){
@@ -223,205 +241,356 @@ class _StoreState extends State<Store> {
       ),
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                width: width,
-                height: height * 0.25,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                  ),
-                ),
-                child: Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: height * 0.1),
-                      child: WidgetUtilities.autoSizeText(
-                        "Store",
-                        textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
-                      ),
+      body: ModalProgressHUD(
+        inAsyncCall: sharedState.loading || storeState.loading,
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  width: width,
+                  height: height * 0.25,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
                     ),
-                    Flexible(child: Container()),
-                    Row(children: [
+                  ),
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
                       Container(
-                        width: width*0.35,
-                        padding: EdgeInsets.only(right: 30,left: 30),
-                        child:DropdownButton(
-                          dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
-                          isExpanded: true,
-                          underline: SizedBox(),
-                          value: category_dropdown_value,
-                          icon: const Icon(Icons.keyboard_arrow_down,color: Colors.white,),
-                          items: categories.map((String items) {
-                            return DropdownMenuItem(
-                              value: items,
-                              child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              category_dropdown_value = newValue!;
-                            });
-                          },
+                        margin: EdgeInsets.only(top: height * 0.1),
+                        child: WidgetUtilities.autoSizeText(
+                          "Store",
+                          textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
                         ),
                       ),
-                      Container(
-                        width: width * 0.65,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[0],
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Text(
-                                    "Phones",
-                                    style: TextStyle(
-                                        color: textColor[0], fontSize: 14),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(0);
-                                  setState(() {});
-                                },
-                              ),
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[1],
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Text(
-                                    "Laptops",
-                                    style: TextStyle(
-                                        color: textColor[1], fontSize: 14),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(1);
-                                  setState(() {});
-                                },
-                              ),
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[2],
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: Text(
-                                    "Tablets",
-                                    style: TextStyle(
-                                        color: textColor[2], fontSize: 14),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(2);
-                                  setState(() {});
-                                },
-                              ),
-                            ],
-                          ),
+                      Flexible(child: Container()),
+                      Row(children: [
+                        Container(
+                          width: width*0.35,
+                          padding: EdgeInsets.only(right: 30,left: 30),
+                          child:
+                          FutureBuilder(
+                              future: getCategoriesFuture,
+                              builder: (context, AsyncSnapshot snapshot) {
+                                if (snapshot.hasData) {
+                                  List<CategoriesAndSubCategoryModel>
+                                  futureCategories = snapshot.data;
+                                  if(selectedCategory == null && futureCategories.isNotEmpty){
+                                    selectedCategory = futureCategories.first;
+                                    getSubCategoriesFuture = sharedState
+                                        .getSubCategories(selectedCategory!.id!);
+                                    selectedSubCategory = null;
+                                  }
+
+                                  return FormValidatorDropdown<
+                                      CategoriesAndSubCategoryModel>(
+                                    name: "CategoryName",
+                                    dropDownValue: selectedCategory,
+                                    onChanged: (newValue) {
+                                      selectedCategory = newValue;
+                                      getSubCategoriesFuture = sharedState
+                                          .getSubCategories(newValue.id!);
+                                      selectedSubCategory = null;
+                                      setState(() {});
+                                    },
+                                    items: List.generate(
+                                        futureCategories.length,
+                                            (index) => DropdownMenuItem<
+                                            CategoriesAndSubCategoryModel>(
+                                          value:
+                                          futureCategories[index],
+                                          child: Text(StringUtilities
+                                              .getStringByLanguage(
+                                              context,
+                                              futureCategories[
+                                              index]
+                                                  .arName,
+                                              futureCategories[
+                                              index]
+                                                  .enName)),
+                                        )),
+                                    label: "Categories",
+                                  );
+                                }
+                                return SizedBox();
+                              }),
+                          // DropdownButton(
+                          //   dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
+                          //   isExpanded: true,
+                          //   underline: SizedBox(),
+                          //   value: category_dropdown_value,
+                          //   icon: const Icon(Icons.keyboard_arrow_down,color: Colors.white,),
+                          //   items: categories.map((String items) {
+                          //     return DropdownMenuItem(
+                          //       value: items,
+                          //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                          //     );
+                          //   }).toList(),
+                          //   onChanged: (String? newValue) {
+                          //     setState(() {
+                          //       category_dropdown_value = newValue!;
+                          //     });
+                          //   },
+                          // ),
                         ),
-                      )
-                    ])
-                  ],
-                ))),
-          ),
-          Container(
-            color:Color.fromRGBO(76, 127, 158, 1),
-            child: Container (
-                width: width,
-                height: height*0.75,
-                decoration: const BoxDecoration(
-                  color:   Color.fromRGBO(239, 239, 239, 1),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
+                        getSubCategoriesFuture != null
+                            ? FutureBuilder(
+                            future: getSubCategoriesFuture,
+                            builder: (context, AsyncSnapshot snapshot) {
+                              if (snapshot.hasData) {
+                                List<CategoriesAndSubCategoryModel>
+                                futureSubCategories = snapshot.data;
+                                return
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: List.generate(
+                                      futureSubCategories.length,
+                                      (index) => InkWell(
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              top: 5, bottom: 5, left: 10, right: 10),
+                                          decoration: BoxDecoration(
+                                              color: backgroundColor[0],
+                                              borderRadius: BorderRadius.circular(15)),
+                                          child: Text(StringUtilities
+                                              .getStringByLanguage(
+                                              context,
+                                              futureSubCategories[
+                                              index]
+                                                  .arName,
+                                              futureSubCategories[
+                                              index]
+                                                  .enName)),
+                                        ),
+                                        onTap: () {
+                                          changeStatus(0);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    )
+                                  ),
+                                  );
+                                ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                    padding: EdgeInsets.zero,
+                                    itemCount: futureSubCategories.length,
+                                    itemBuilder:(context,index)
+                                    {
+                                      return
+                                      InkWell(
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              top: 5, bottom: 5, left: 10, right: 10),
+                                          decoration: BoxDecoration(
+                                              color: backgroundColor[0],
+                                              borderRadius: BorderRadius.circular(15)),
+                                          child: Text(StringUtilities
+                                              .getStringByLanguage(
+                                              context,
+                                              futureSubCategories[
+                                              index]
+                                                  .arName,
+                                              futureSubCategories[
+                                              index]
+                                                  .enName)),
+                                        ),
+                                        onTap: () {
+                                          changeStatus(0);
+                                          setState(() {});
+                                        },
+                                      );
+                                    }
+                                );
+
+
+                                  FormValidatorDropdown<
+                                    CategoriesAndSubCategoryModel>(
+                                  name: "SubCategoryName",
+                                  dropDownValue: selectedSubCategory,
+                                  onChanged: (newValue) {
+                                    selectedSubCategory = newValue;
+                                    setState(() {});
+                                  },
+                                  items: List.generate(
+                                      futureSubCategories.length,
+                                          (index) => DropdownMenuItem<
+                                          CategoriesAndSubCategoryModel>(
+                                        value:
+                                        futureSubCategories[
+                                        index],
+                                        child: Text(StringUtilities
+                                            .getStringByLanguage(
+                                            context,
+                                            futureSubCategories[
+                                            index]
+                                                .arName,
+                                            futureSubCategories[
+                                            index]
+                                                .enName)),
+                                      )),
+                                  label: "Sub Categories",
+                                );
+                              }
+                              return SizedBox();
+                            })
+                            : SizedBox(),
+                        // Container(
+                        //   width: width * 0.65,
+                        //   child: SingleChildScrollView(
+                        //     scrollDirection: Axis.horizontal,
+                        //     child: Row(
+                        //       children: [
+                        //         InkWell(
+                        //           child: Container(
+                        //             padding: EdgeInsets.only(
+                        //                 top: 5, bottom: 5, left: 10, right: 10),
+                        //             decoration: BoxDecoration(
+                        //                 color: backgroundColor[0],
+                        //                 borderRadius: BorderRadius.circular(15)),
+                        //             child: Text(
+                        //               "Phones",
+                        //               style: TextStyle(
+                        //                   color: textColor[0], fontSize: 14),
+                        //             ),
+                        //           ),
+                        //           onTap: () {
+                        //             changeStatus(0);
+                        //             setState(() {});
+                        //           },
+                        //         ),
+                        //         InkWell(
+                        //           child: Container(
+                        //             padding: EdgeInsets.only(
+                        //                 top: 5, bottom: 5, left: 10, right: 10),
+                        //             decoration: BoxDecoration(
+                        //                 color: backgroundColor[1],
+                        //                 borderRadius: BorderRadius.circular(25)),
+                        //             child: Text(
+                        //               "Laptops",
+                        //               style: TextStyle(
+                        //                   color: textColor[1], fontSize: 14),
+                        //             ),
+                        //           ),
+                        //           onTap: () {
+                        //             changeStatus(1);
+                        //             setState(() {});
+                        //           },
+                        //         ),
+                        //         InkWell(
+                        //           child: Container(
+                        //             padding: EdgeInsets.only(
+                        //                 top: 5, bottom: 5, left: 10, right: 10),
+                        //             decoration: BoxDecoration(
+                        //                 color: backgroundColor[2],
+                        //                 borderRadius: BorderRadius.circular(25)),
+                        //             child: Text(
+                        //               "Tablets",
+                        //               style: TextStyle(
+                        //                   color: textColor[2], fontSize: 14),
+                        //             ),
+                        //           ),
+                        //           onTap: () {
+                        //             changeStatus(2);
+                        //             setState(() {});
+                        //           },
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // )
+                      ])
+                    ],
+                  ))),
+            ),
+            Container(
+              color:Color.fromRGBO(76, 127, 158, 1),
+              child: Container (
+                  width: width,
+                  height: height*0.75,
+                  decoration: const BoxDecoration(
+                    color:   Color.fromRGBO(239, 239, 239, 1),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                    ),
                   ),
-                ),
-                child:Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child:    Row(mainAxisAlignment: MainAxisAlignment.center,children: [
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(15),
-                            child: Center(child:
-                            Icon(Icons.grid_view_rounded,color: gridIconColor[0],size: 30,),),
+                  child:Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 30),
+                        child:    Row(mainAxisAlignment: MainAxisAlignment.center,children: [
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              child: Center(child:
+                              Icon(Icons.grid_view_rounded,color: gridIconColor[0],size: 30,),),
+                            ),
+                            onTap: (){
+                              changeGridLength(2);
+                              setState(() {});
+                            },
                           ),
-                          onTap: (){
-                            changeGridLength(2);
-                            setState(() {});
-                          },
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              child: Center(child:
+                              Icon(Icons.format_list_bulleted,color: gridIconColor[1],size: 30,),),
+                            ),
+                            onTap: (){
+                              changeGridLength(1);
+                              setState(() {});
+                            },
+                          )
+                        ]
                         ),
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(15),
-                            child: Center(child:
-                            Icon(Icons.format_list_bulleted,color: gridIconColor[1],size: 30,),),
-                          ),
-                          onTap: (){
-                            changeGridLength(1);
-                            setState(() {});
+                      ),
+                      Expanded(
+                        child:
+                        FutureBuilder<List<ProductModel>>(
+                          future: productList,
+                          builder: (context,snapshot){
+                            if (snapshot.connectionState==ConnectionState.waiting){
+                              return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
+                            }
+                            else if(snapshot.hasData){
+                              List<ProductModel> devices= snapshot.data as List<ProductModel>;
+                              return
+                                GridView.builder(
+                                padding: EdgeInsets.all(10),
+                                itemCount: devices.length,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
+                                    crossAxisCount: gridNumber,
+                                    crossAxisSpacing: 1.0,
+                                    mainAxisSpacing: 5
+                                ), itemBuilder: (BuildContext context, int index) {
+                                if (gridNumber==1){
+                                  return listCard(devices[index]);
+                                }
+                                return gridCard(devices[index]);
+                              },
+                              );
+                            }
+                            else  if (snapshot.data!.isEmpty){
+                              return Center(child: Text("No Data".tr()),);
+                            }
+                            else {
+                              return Center(child: Text("Error".tr()),);
+                            }
                           },
                         )
-                      ]
-                      ),
-                    ),
-                    Expanded(
-                      child:
-                      FutureBuilder<List<ProductModel>>(
-                        future: productList,
-                        builder: (context,snapshot){
-                          if (snapshot.connectionState==ConnectionState.waiting){
-                            return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
-                          }
-                          else if(snapshot.hasData){
-                            List<ProductModel> devices= snapshot.data as List<ProductModel>;
-                            return 
-                              GridView.builder(
-                              padding: EdgeInsets.all(10),
-                              itemCount: devices.length,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
-                                  crossAxisCount: gridNumber,
-                                  crossAxisSpacing: 1.0,
-                                  mainAxisSpacing: 5
-                              ), itemBuilder: (BuildContext context, int index) {
-                              if (gridNumber==1){
-                                return listCard(devices[index]);
-                              }
-                              return gridCard(devices[index]);
-                            },
-                            );
-                          }
-                          else  if (snapshot.data!.isEmpty){
-                            return Center(child: Text("No Data".tr()),);
-                          }
-                          else {
-                            return Center(child: Text("Error".tr()),);
-                          }
-                        },
                       )
-                    )
-                  ],
-                )
-            ),
-          )
-        ],
+                    ],
+                  )
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

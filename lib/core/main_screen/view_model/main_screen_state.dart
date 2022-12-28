@@ -5,8 +5,7 @@ class MainScreenState extends ChangeNotifier {
   bool loading = false;
 
   Future<void> signIn(String email, String password) async {
-    changeLoadingState();
-
+    loading = true;
     try {
       await FirebaseDataSource().signIn(email, password);
     } catch (e) {

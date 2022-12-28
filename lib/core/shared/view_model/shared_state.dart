@@ -7,11 +7,12 @@ import '../model/brand_model.dart';
 import '../model/create_user_account_model.dart';
 
 class SharedState extends ChangeNotifier {
-  bool loading = true;
+  bool loading = false;
 
   Future<void> signUp(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
-    changeLoadingState();
+
+    loading = true;
 
     await FirebaseDataSource().signUp(email, password).then(
         (value) => FirebaseDataSource().saveUserInfo(createUserAccountModel));
@@ -20,19 +21,32 @@ class SharedState extends ChangeNotifier {
   }
 
   Future<List<CategoriesAndSubCategoryModel>> getCategories() async {
-    //changeLoadingState();
+    loading = true;
 
     List<CategoriesAndSubCategoryModel> categories =
         await FirebaseDataSource().getCategories();
 
-    //changeLoadingState();
+    changeLoadingState();
 
     return categories;
   }
 
-  Future<List<BrandModel>> getBrands() async {
+
+  Future<List<CategoriesAndSubCategoryModel>> getSubCategories(
+      String categoryID) async {
+    loading = true;
+
+    List<CategoriesAndSubCategoryModel> subCategories =
+    await FirebaseDataSource().getSubCategories(categoryID);
 
     changeLoadingState();
+
+    return subCategories;
+  }
+
+  Future<List<BrandModel>> getBrands() async {
+
+    loading = true;
 
     List<BrandModel> brands = await FirebaseDataSource().getBrands();
 
@@ -43,7 +57,7 @@ class SharedState extends ChangeNotifier {
 
   Future<BrandModel> getBrand(String brandID) async {
 
-    loading=true;
+    loading = true;
 
     BrandModel brands = await FirebaseDataSource().getBrand(brandID);
 

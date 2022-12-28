@@ -6,7 +6,7 @@ class ResetPasswordState extends ChangeNotifier{
 
   Future<void> resetPassword(String email) async {
 
-    changeLoadingState();
+    loading = true;
 
     await FirebaseDataSource().resetPassword(email);
 
