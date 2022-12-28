@@ -94,5 +94,6 @@
   "Added successfully": "تمت الاضافة بنجاح",
   "No Data": "لا يوجد بيانات",
   "Edited successfully": "تم التعديل بنجاح",
-  "this field is Required": "هذا الحقل مطلوب"
+  "this field is Required": "هذا الحقل مطلوب",
+  "Select category first":"يجب اختيار التصنيف اولا"
 }

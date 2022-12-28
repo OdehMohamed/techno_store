@@ -421,7 +421,7 @@ class _NewProductState extends State<NewProduct> {
                                             }
                                             return SizedBox();
                                           })
-                                          : SizedBox(),
+                                          : Center (child :Text("Select category first".tr(),style: TextStyle(color: Colors.grey),textAlign: TextAlign.center,)),
                                       // DropdownButtonFormField(
                                       //   isExpanded: true,
                                       //   hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
