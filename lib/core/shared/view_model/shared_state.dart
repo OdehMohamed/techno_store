@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
+import '../../../data_source/user_info.dart';
 import '../model/brand_model.dart';
 import '../model/create_user_account_model.dart';
 
@@ -14,7 +15,12 @@ class SharedState extends ChangeNotifier {
 
     changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().signUp(email, password, createUserAccountModel);
+    await FirebaseDataSource().signUp(email, password, createUserAccountModel).then((value) {
+      UserInfo.userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
+      UserInfo.userName = createUserAccountModel.name;
+      UserInfo.userPhoto = createUserAccountModel.photo;
+      UserInfo.userType = createUserAccountModel.type;
+    });
 
     changeLoadingState();
   }

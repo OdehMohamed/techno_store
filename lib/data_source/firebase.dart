@@ -117,6 +117,24 @@ class FirebaseDataSource {
     }
   }
 
+  Future<CreateUserAccountModel?> getUserInfo(String uid) async {
+    CreateUserAccountModel? createUserAccountModel;
+    try{
+      await firebaseFirestore
+          .collection("user")
+          .doc(uid)
+          .get()
+          .then((value) {
+        createUserAccountModel = CreateUserAccountModel.fromJson(value.data()!);
+      });
+    }
+    catch(e){
+
+    }
+
+    return createUserAccountModel;
+  }
+
 ////
 ////
 ////

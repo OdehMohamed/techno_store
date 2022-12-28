@@ -18,6 +18,7 @@ import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../data_source/user_info.dart';
 import '../../../shared/utilities.dart';
 import '../../../shared/widget_utilities.dart';
 
@@ -134,7 +135,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 height: 10,
               ),
               WidgetUtilities.autoSizeText(
-                "My name ",
+                  UserInfo.userName ?? "My name ",
               ),
               Flexible(
                   child: ListView(
