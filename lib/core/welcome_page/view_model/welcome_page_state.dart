@@ -5,7 +5,8 @@ class WelcomePageState extends ChangeNotifier {
   bool loading = false;
 
   Future<void> signOut() async {
-    loading = true;
+
+    changeLoadingState(isLoading : true);
 
     try {
       await FirebaseDataSource().signOut();
@@ -16,8 +17,13 @@ class WelcomePageState extends ChangeNotifier {
     changeLoadingState();
   }
 
-  void changeLoadingState() {
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

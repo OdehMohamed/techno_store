@@ -1,5 +1,6 @@
 class CategoriesAndSubCategoryModel {
   String? _id;
+  String? _parentId;
   String? _arName;
   String? _enName;
 
@@ -15,6 +16,8 @@ class CategoriesAndSubCategoryModel {
 
   String? get id => _id;
   set id(String? id) => _id = id;
+  String? get parentId => _parentId;
+  set parentId(String? parentId) => _parentId = parentId;
   String? get arName => _arName;
   set arName(String? arName) => _arName = arName;
   String? get enName => _enName;

@@ -6,14 +6,19 @@ class ResetPasswordState extends ChangeNotifier{
 
   Future<void> resetPassword(String email) async {
 
-    loading = true;
+    changeLoadingState(isLoading : true);
 
     await FirebaseDataSource().resetPassword(email);
 
     changeLoadingState();
   }
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

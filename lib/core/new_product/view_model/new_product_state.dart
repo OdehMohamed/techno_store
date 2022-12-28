@@ -8,22 +8,27 @@ class NewProductState extends ChangeNotifier{
 
   Future<void> addProduct(ProductModel productModel) async {
 
-    loading = true;
+    changeLoadingState(isLoading : true);
 
      await FirebaseDataSource().addProduct(productModel);
 
     changeLoadingState();
 
   }
-  Future<void> editProduct(String productId, ProductModel productModel) async {
-    loading = true;
+  Future<void> editProduct(ProductModel productModel) async {
+    changeLoadingState(isLoading : true);
 
-    await FirebaseDataSource().editProduct(productId, productModel);
+    await FirebaseDataSource().editProduct(productModel);
 
     changeLoadingState();
   }
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

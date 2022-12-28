@@ -6,7 +6,7 @@ class StoreState extends ChangeNotifier{
   bool loading = false;
 
   Future<List<ProductModel>> getProducts(String subCategoryId) async {
-    loading = true;
+    changeLoadingState(isLoading : true);
 
     List<ProductModel> products =  await FirebaseDataSource().getProducts(subCategoryId);
 
@@ -15,8 +15,13 @@ class StoreState extends ChangeNotifier{
     return products;
   }
 
-  void changeLoadingState() {
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

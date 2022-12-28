@@ -14,8 +14,13 @@ class FavoriteItemsState extends ChangeNotifier{
     return products;
   }
 
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

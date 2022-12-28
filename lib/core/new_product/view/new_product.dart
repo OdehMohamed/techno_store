@@ -553,8 +553,10 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: (){
+                                        print(_formKey.currentState!.validate());
                                         if (_formKey.currentState!.validate()) {
                                           // call function
+                                          print("kkkkkkkkkkkkkkkkkmkmkmkmmkm");
                                         }
                                       },
                                       child: Container(

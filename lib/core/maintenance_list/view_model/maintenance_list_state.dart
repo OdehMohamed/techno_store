@@ -9,7 +9,8 @@ class MaintenanceListState extends ChangeNotifier{
   Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
       String status) async {
 
-    loading=true;
+    changeLoadingState(isLoading : true);
+
     List<MaintenanceDeviceModel> devices = await FirebaseDataSource().getDevicesInMaintenance(status);
 
     changeLoadingState();
@@ -17,8 +18,13 @@ class MaintenanceListState extends ChangeNotifier{
     return devices;
   }
 
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

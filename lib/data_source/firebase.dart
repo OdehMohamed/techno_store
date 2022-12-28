@@ -46,11 +46,11 @@ class FirebaseDataSource {
     }
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password, CreateUserAccountModel createUserAccountModel) async {
     try {
       await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) => print(value.user?.email));
+          .then((value) => saveUserInfo(createUserAccountModel));
     } catch (e, v) {
       Message.showErrorToastMessage(e.toString());
       print(e.toString() + "----->" + v.toString());
@@ -214,6 +214,7 @@ class FirebaseDataSource {
           CategoriesAndSubCategoryModel subCategory =
               CategoriesAndSubCategoryModel.fromJson(element.data());
           subCategory.id = element.id;
+          subCategory.parentId = categoryID;
           subCategories.add(subCategory);
         }
       });
@@ -307,7 +308,9 @@ class FirebaseDataSource {
           .get()
           .then((value) {
         for (var element in value.docs) {
-          products.add(ProductModel.fromJson(element.data()));
+          ProductModel product = ProductModel.fromJson(element.data());
+          product.id = element.id;
+          products.add(product);
           print(element.data().toString());
         }
       });
@@ -325,10 +328,10 @@ class FirebaseDataSource {
         .then((value) => print(value.id));
   }
 
-  Future<void> editProduct(String productId, ProductModel productModel) async {
+  Future<void> editProduct(ProductModel productModel) async {
     await firebaseFirestore
         .collection("products")
-        .doc(productId)
+        .doc(productModel.id)
         .update(productModel.toJson())
         .then((value) {
       print("Updated");
@@ -491,10 +494,10 @@ class FirebaseDataSource {
     try {
       await firebaseFirestore
           .collection("brands")
-          .doc(brandID)
+          .where('name', isEqualTo: brandID)
           .get()
           .then((value) {
-        brand = BrandModel.fromJson(value.data()!);
+        brand = BrandModel.fromJson(value.docs.first.data());
       });
     } catch (e) {
       print(e.toString());

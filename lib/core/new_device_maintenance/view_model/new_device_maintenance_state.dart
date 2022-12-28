@@ -10,7 +10,7 @@ class NewDeviceMaintenanceState extends ChangeNotifier{
   Future<void> addDeviceToMaintenance(
       MaintenanceDeviceModel maintenanceDeviceModel) async {
 
-    loading = true;
+    changeLoadingState(isLoading : true);
 
     await FirebaseDataSource().addDeviceToMaintenance(maintenanceDeviceModel);
 
@@ -19,14 +19,19 @@ class NewDeviceMaintenanceState extends ChangeNotifier{
   Future<void> editDeviceInMaintenance(
       String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
 
-    loading = true;
+    changeLoadingState(isLoading : true);
 
     await FirebaseDataSource().editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
 
     changeLoadingState();
   }
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

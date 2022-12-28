@@ -9,7 +9,9 @@ class TrackPhonePageState extends ChangeNotifier{
   bool loading = false;
   Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
       String phoneNumber) async {
-    loading=true;
+
+    changeLoadingState(isLoading : true);
+
     List<MaintenanceDeviceModel> devices = await FirebaseDataSource().checkDeviceStatus(phoneNumber);
 
     changeLoadingState();
@@ -17,8 +19,13 @@ class TrackPhonePageState extends ChangeNotifier{
     return devices;
   }
 
-  void changeLoadingState(){
-    loading ? loading = false : loading = true;
+  void changeLoadingState({bool? isLoading}) {
+    if(isLoading != null){
+      loading = isLoading;
+    }
+    else{
+      loading ? loading = false : loading = true;
+    }
     refresh();
   }
 

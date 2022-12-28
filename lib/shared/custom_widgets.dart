@@ -112,6 +112,7 @@ class FormValidatorDropdown<T> extends StatelessWidget {
         return InputDecorator(
           decoration: InputDecoration(
             label: Text(label),
+            errorText: state.errorText
           ),
           //SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
           child: Opacity(
@@ -123,7 +124,7 @@ class FormValidatorDropdown<T> extends StatelessWidget {
               value: dropDownValue,
               onChanged: (T? newValue) async {
                 onChanged!(newValue as T);
-                //state.didChange(newValue);
+                state.didChange(newValue);
               },
               items: items,
             ),
@@ -141,3 +142,58 @@ class FormValidatorDropdown<T> extends StatelessWidget {
     );
   }
 }
+
+
+
+//
+// class FormValidatorDropdown<T> extends StatelessWidget {
+//   const FormValidatorDropdown(
+//       {required this.label,
+//         required this.name,
+//         this.onChanged,
+//         required this.items,
+//         required this.dropDownValue,
+//         this.showErrorText = true,
+//         this.optional = false,
+//         Key? key})
+//       : super(key: key);
+//
+//   final String label;
+//   final String name;
+//   final bool showErrorText;
+//   final bool optional;
+//   final ValueChanged<T>? onChanged;
+//   final T? dropDownValue;
+//   final List<DropdownMenuItem<T>> items;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return FormBuilderField(
+//       autovalidateMode: AutovalidateMode.always,
+//       name: name,
+//       builder: (FormFieldState<T> state) {
+//         return InputDecorator(
+//           decoration: SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
+//           child: DropdownButton<T>(
+//             isExpanded: true,
+//             underline: const SizedBox.shrink(),
+//             iconSize: SSCUI.SMALL_ICON_SIZE,
+//             value: dropDownValue,
+//             onChanged: (T? newValue) async {
+//               onChanged!(newValue as T);
+//               state.didChange(newValue);
+//             },
+//             items: items,
+//           ),
+//         );
+//       },
+//       validator: FormBuilderValidators.compose([
+//         if (!optional)
+//           FormBuilderValidators.required(
+//               errorText: showErrorText
+//                   ? AppLocalization.of(context).getTranslatedValues("this_field_is_required")
+//                   : ' '),
+//       ]),
+//     );
+//   }
+// }

@@ -1,4 +1,5 @@
 class ProductModel {
+  String? _id;
   String? _arName;
   String? _enName;
   String? _brandID;
@@ -9,7 +10,8 @@ class ProductModel {
   List<String>? _favoriteList;
 
   ProductModel(
-      {String? arName,
+      {
+      String? arName,
       String? enName,
       String? brandID,
       double? price,
@@ -17,6 +19,7 @@ class ProductModel {
       List<String>? photo,
       String? subCategoryID,
       List<String>? favoriteList}) {
+
     if (arName != null) {
       this._arName = arName;
     }
@@ -43,6 +46,8 @@ class ProductModel {
     }
   }
 
+  String? get id => _id;
+  set id(String? id) => _id = id;
   String? get arName => _arName;
   set arName(String? arName) => _arName = arName;
   String? get enName => _enName;
