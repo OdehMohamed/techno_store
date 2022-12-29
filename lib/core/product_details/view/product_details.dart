@@ -41,7 +41,7 @@ class _ProductDetailsState extends State<ProductDetails> {
       else {
         widget.product.favoriteList?.add("1212");
       }
-      productDetailsState.updateFavorites("DX1NsPWTF2ufN5RI5azw", widget.product.favoriteList!);
+      productDetailsState.updateFavorites(widget.product.id!, widget.product.favoriteList!);
       setState(() {});
     }
     double width = MediaQuery.of(context).size.width;
@@ -116,7 +116,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         TextButton(
                                         child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
                                         onPressed: () {
-                                          productDetailsState.deleteProduct("RWTxDPcjXDsmC4dqrX1J");
+                                          productDetailsState.deleteProduct(widget.product.id!);
                                           Message.showLongToastMessage("Deleted".tr());
                                           Navigator.pop(context);
                                           Navigator.pop(context);

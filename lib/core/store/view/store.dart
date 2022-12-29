@@ -21,101 +21,19 @@ class Store extends StatefulWidget {
   State<Store> createState() => _StoreState();
 }
 
-var categories = [
-  'Devices',
-  'Accessories',
-  'Covers',
-  'Screen protectors',
-];
-var sub_categories = [
-  'Item 1',
-  'Item 2',
-  'Item 3',
-  'Item 4',
-  'Item 5',
-];
-String category_dropdown_value = 'Devices';
-String? sub_category_dropdown_value;
-int gridNumber=2;
 
-List<Color> backgroundColor = [
-  Colors.white,
-  Colors.transparent,
-  Colors.transparent
-];
-List<Color> textColor = [
-  ColorUtilities.secondary,
-  ColorUtilities.white,
-  ColorUtilities.white,
-];
-List <Color> gridIconColor = [
-  Color.fromRGBO(76, 127, 158, 1),
-  Colors.black
-];
-
-void changeStatus(int status) {
-  switch (status) {
-    case 0:
-      {
-        backgroundColor = [
-          ColorUtilities.white,
-          Colors.transparent,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.secondary,
-          ColorUtilities.white,
-          ColorUtilities.white,
-        ];
-        break;
-      }
-    case 1:
-      {
-        backgroundColor = [
-          Colors.transparent,
-          ColorUtilities.white,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.white,
-          ColorUtilities.secondary,
-          ColorUtilities.white,
-        ];
-        break;
-      }
-    case 2:
-      {
-        backgroundColor = [
-          Colors.transparent,
-          Colors.transparent,
-          ColorUtilities.white,
-        ];
-        textColor = [
-          ColorUtilities.white,
-          ColorUtilities.white,
-          ColorUtilities.secondary
-        ];
-        break;
-      }
-    default:
-      {
-        backgroundColor = [
-          Colors.white,
-          Colors.transparent,
-          Colors.transparent
-        ];
-        textColor = [
-          ColorUtilities.secondary,
-          ColorUtilities.white,
-          ColorUtilities.white,
-        ];
-        break;
-      }
-  }
-}
 
 class _StoreState extends State<Store> {
+  int gridNumber=2;
 
+  List<Color> backgroundColor = [
+  ];
+  List<Color> textColor = [
+  ];
+  List <Color> gridIconColor = [
+    Color.fromRGBO(76, 127, 158, 1),
+    Colors.black
+  ];
   late SharedState sharedState;
   late Future getCategoriesFuture;
   Future? getSubCategoriesFuture;
@@ -123,15 +41,22 @@ class _StoreState extends State<Store> {
   CategoriesAndSubCategoryModel? selectedSubCategory;
 
   late StoreState storeState;
-  late Future<List<ProductModel>> productList ;
+  Future<List<ProductModel>>? productList ;
+  void changeSubCategory(int index, String subCategoryID) {
+    productList= storeState.getProducts(subCategoryID);
+    for (int i=0;i<backgroundColor.length;i++){
+      backgroundColor[i] = Colors.transparent;
+      textColor[i] = Colors.black;
+    }
+    backgroundColor[index] = ColorUtilities.backgroundContainer;
+    textColor[index] = ColorUtilities.secondary;
+  }
 
   @override
   void initState() {
     storeState=context.read<StoreState>();
     sharedState = context.read<SharedState>();
     getCategoriesFuture = sharedState.getCategories();
-
-    productList= storeState.getProducts('3N7ICfyqonoRodcOAEEk');
     super.initState();
   }
   void changeGridLength(int length){
@@ -258,252 +183,208 @@ class _StoreState extends State<Store> {
                   ),
                   child: Center(
                       child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
-                        margin: EdgeInsets.only(top: height * 0.08),
                         child: WidgetUtilities.autoSizeText(
                           "Store",
                           textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
                         ),
                       ),
-                      Flexible(child: Container()),
-                      Row(children: [
-                        Container(
-                          width: width*0.35,
-                          padding: EdgeInsets.only(right: 30,left: 30),
-                          child:
-                          FutureBuilder(
-                              future: getCategoriesFuture,
+                      Container(
+                        height: height*0.1,
+                        child:
+                        Row(children: [
+                          Container(
+                            width: width*0.35,
+                            padding: EdgeInsets.only(right: 30,left: 30),
+                            child:
+                            FutureBuilder(
+                                future: getCategoriesFuture,
+                                builder: (context, AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<CategoriesAndSubCategoryModel>
+                                    futureCategories = snapshot.data;
+                                    if(selectedCategory == null && futureCategories.isNotEmpty){
+                                      selectedCategory = futureCategories.first;
+                                      getSubCategoriesFuture = sharedState
+                                          .getSubCategories(selectedCategory!.id!);
+                                      selectedSubCategory = null;
+                                    }
+
+                                    return FormValidatorDropdown<
+                                        CategoriesAndSubCategoryModel>(
+                                      optional: true,
+                                      name: "CategoryName",
+                                      dropDownValue: selectedCategory,
+                                      onChanged: (newValue) {
+                                        selectedCategory = newValue;
+                                        getSubCategoriesFuture = sharedState
+                                            .getSubCategories(newValue.id!);
+                                        selectedSubCategory = null;
+                                        setState(() {});
+                                      },
+                                      items: List.generate(
+                                          futureCategories.length,
+                                              (index) => DropdownMenuItem<
+                                              CategoriesAndSubCategoryModel>(
+                                            value:
+                                            futureCategories[index],
+                                            child: Text(StringUtilities
+                                                .getStringByLanguage(
+                                                context,
+                                                futureCategories[
+                                                index]
+                                                    .arName,
+                                                futureCategories[
+                                                index]
+                                                    .enName)),
+                                          )),
+                                      label: "Categories".tr(),
+                                    );
+                                  }
+                                  return SizedBox();
+                                }),
+                            // DropdownButton(
+                            //   dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
+                            //   isExpanded: true,
+                            //   underline: SizedBox(),
+                            //   value: category_dropdown_value,
+                            //   icon: const Icon(Icons.keyboard_arrow_down,color: Colors.white,),
+                            //   items: categories.map((String items) {
+                            //     return DropdownMenuItem(
+                            //       value: items,
+                            //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                            //     );
+                            //   }).toList(),
+                            //   onChanged: (String? newValue) {
+                            //     setState(() {
+                            //       category_dropdown_value = newValue!;
+                            //     });
+                            //   },
+                            // ),
+                          ),
+                          getSubCategoriesFuture != null
+                              ? FutureBuilder(
+                              future: getSubCategoriesFuture,
                               builder: (context, AsyncSnapshot snapshot) {
                                 if (snapshot.hasData) {
                                   List<CategoriesAndSubCategoryModel>
-                                  futureCategories = snapshot.data;
-                                  if(selectedCategory == null && futureCategories.isNotEmpty){
-                                    selectedCategory = futureCategories.first;
-                                    getSubCategoriesFuture = sharedState
-                                        .getSubCategories(selectedCategory!.id!);
-                                    selectedSubCategory = null;
+                                  futureSubCategories = snapshot.data;
+                                  if (backgroundColor.length!=futureSubCategories.length||textColor.length!=futureSubCategories.length){
+                                    productList= storeState.getProducts(futureSubCategories.first.id!);
+                                    backgroundColor=[];
+                                    textColor=[];
+                                    for(int i =0;i<futureSubCategories.length;i++){
+                                      backgroundColor.add(Colors.transparent,);
+                                      textColor.add(Colors.white);
+                                    }
+                                    backgroundColor[0]=ColorUtilities.backgroundContainer;
+                                    textColor[0]=ColorUtilities.secondary;
                                   }
-
-                                  return FormValidatorDropdown<
-                                      CategoriesAndSubCategoryModel>(
-                                    name: "CategoryName",
-                                    dropDownValue: selectedCategory,
-                                    onChanged: (newValue) {
-                                      selectedCategory = newValue;
-                                      getSubCategoriesFuture = sharedState
-                                          .getSubCategories(newValue.id!);
-                                      selectedSubCategory = null;
-                                      setState(() {});
-                                    },
-                                    items: List.generate(
-                                        futureCategories.length,
-                                            (index) => DropdownMenuItem<
-                                            CategoriesAndSubCategoryModel>(
-                                          value:
-                                          futureCategories[index],
-                                          child: Text(StringUtilities
-                                              .getStringByLanguage(
-                                              context,
-                                              futureCategories[
-                                              index]
-                                                  .arName,
-                                              futureCategories[
-                                              index]
-                                                  .enName)),
-                                        )),
-                                    label: "Categories".tr(),
-                                  );
+                                  return
+                                   Container(
+                                     width: width*0.6,
+                                     child:  SingleChildScrollView(
+                                     scrollDirection: Axis.horizontal,
+                                     child: Row(
+                                         children: List.generate(
+                                           futureSubCategories.length,
+                                               (index) => InkWell(
+                                             child: Container(
+                                               padding: EdgeInsets.only(
+                                                   top: 5, bottom: 5, left: 10, right: 10),
+                                               decoration: BoxDecoration(
+                                                   color: backgroundColor[index],
+                                                   borderRadius: BorderRadius.circular(15)),
+                                               child: Text(StringUtilities
+                                                   .getStringByLanguage(
+                                                   context,
+                                                   futureSubCategories[
+                                                   index]
+                                                       .arName,
+                                                   futureSubCategories[
+                                                   index]
+                                                       .enName),style: TextStyle(color: textColor[index]),),
+                                             ),
+                                             onTap: () {
+                                               changeSubCategory(index,futureSubCategories[index].id!);
+                                               setState(() {});
+                                             },
+                                           ),
+                                         )
+                                     ),
+                                   ),);
                                 }
                                 return SizedBox();
-                              }),
-                          // DropdownButton(
-                          //   dropdownColor: Color.fromRGBO(76, 127, 158, 0.9),
-                          //   isExpanded: true,
-                          //   underline: SizedBox(),
-                          //   value: category_dropdown_value,
-                          //   icon: const Icon(Icons.keyboard_arrow_down,color: Colors.white,),
-                          //   items: categories.map((String items) {
-                          //     return DropdownMenuItem(
-                          //       value: items,
-                          //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
-                          //     );
-                          //   }).toList(),
-                          //   onChanged: (String? newValue) {
-                          //     setState(() {
-                          //       category_dropdown_value = newValue!;
-                          //     });
-                          //   },
-                          // ),
-                        ),
-                        getSubCategoriesFuture != null
-                            ? FutureBuilder(
-                            future: getSubCategoriesFuture,
-                            builder: (context, AsyncSnapshot snapshot) {
-                              if (snapshot.hasData) {
-                                List<CategoriesAndSubCategoryModel>
-                                futureSubCategories = snapshot.data;
-                                return
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: List.generate(
-                                      futureSubCategories.length,
-                                      (index) => InkWell(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              top: 5, bottom: 5, left: 10, right: 10),
-                                          decoration: BoxDecoration(
-                                              color: backgroundColor[0],
-                                              borderRadius: BorderRadius.circular(15)),
-                                          child: Text(StringUtilities
-                                              .getStringByLanguage(
-                                              context,
-                                              futureSubCategories[
-                                              index]
-                                                  .arName,
-                                              futureSubCategories[
-                                              index]
-                                                  .enName)),
-                                        ),
-                                        onTap: () {
-                                          changeStatus(0);
-                                          setState(() {});
-                                        },
-                                      ),
-                                    )
-                                  ),
-                                  );
-                                ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsets.zero,
-                                    itemCount: futureSubCategories.length,
-                                    itemBuilder:(context,index)
-                                    {
-                                      return
-                                      InkWell(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              top: 5, bottom: 5, left: 10, right: 10),
-                                          decoration: BoxDecoration(
-                                              color: backgroundColor[0],
-                                              borderRadius: BorderRadius.circular(15)),
-                                          child: Text(StringUtilities
-                                              .getStringByLanguage(
-                                              context,
-                                              futureSubCategories[
-                                              index]
-                                                  .arName,
-                                              futureSubCategories[
-                                              index]
-                                                  .enName)),
-                                        ),
-                                        onTap: () {
-                                          changeStatus(0);
-                                          setState(() {});
-                                        },
-                                      );
-                                    }
-                                );
-
-
-                                  FormValidatorDropdown<
-                                    CategoriesAndSubCategoryModel>(
-                                  name: "SubCategoryName",
-                                  dropDownValue: selectedSubCategory,
-                                  onChanged: (newValue) {
-                                    selectedSubCategory = newValue;
-                                    setState(() {});
-                                  },
-                                  items: List.generate(
-                                      futureSubCategories.length,
-                                          (index) => DropdownMenuItem<
-                                          CategoriesAndSubCategoryModel>(
-                                        value:
-                                        futureSubCategories[
-                                        index],
-                                        child: Text(StringUtilities
-                                            .getStringByLanguage(
-                                            context,
-                                            futureSubCategories[
-                                            index]
-                                                .arName,
-                                            futureSubCategories[
-                                            index]
-                                                .enName)),
-                                      )),
-                                  label: "Sub Categories",
-                                );
-                              }
-                              return SizedBox();
-                            })
-                            : SizedBox(),
-                        // Container(
-                        //   width: width * 0.65,
-                        //   child: SingleChildScrollView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     child: Row(
-                        //       children: [
-                        //         InkWell(
-                        //           child: Container(
-                        //             padding: EdgeInsets.only(
-                        //                 top: 5, bottom: 5, left: 10, right: 10),
-                        //             decoration: BoxDecoration(
-                        //                 color: backgroundColor[0],
-                        //                 borderRadius: BorderRadius.circular(15)),
-                        //             child: Text(
-                        //               "Phones",
-                        //               style: TextStyle(
-                        //                   color: textColor[0], fontSize: 14),
-                        //             ),
-                        //           ),
-                        //           onTap: () {
-                        //             changeStatus(0);
-                        //             setState(() {});
-                        //           },
-                        //         ),
-                        //         InkWell(
-                        //           child: Container(
-                        //             padding: EdgeInsets.only(
-                        //                 top: 5, bottom: 5, left: 10, right: 10),
-                        //             decoration: BoxDecoration(
-                        //                 color: backgroundColor[1],
-                        //                 borderRadius: BorderRadius.circular(25)),
-                        //             child: Text(
-                        //               "Laptops",
-                        //               style: TextStyle(
-                        //                   color: textColor[1], fontSize: 14),
-                        //             ),
-                        //           ),
-                        //           onTap: () {
-                        //             changeStatus(1);
-                        //             setState(() {});
-                        //           },
-                        //         ),
-                        //         InkWell(
-                        //           child: Container(
-                        //             padding: EdgeInsets.only(
-                        //                 top: 5, bottom: 5, left: 10, right: 10),
-                        //             decoration: BoxDecoration(
-                        //                 color: backgroundColor[2],
-                        //                 borderRadius: BorderRadius.circular(25)),
-                        //             child: Text(
-                        //               "Tablets",
-                        //               style: TextStyle(
-                        //                   color: textColor[2], fontSize: 14),
-                        //             ),
-                        //           ),
-                        //           onTap: () {
-                        //             changeStatus(2);
-                        //             setState(() {});
-                        //           },
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // )
-                      ])
+                              })
+                              : SizedBox(),
+                          // Container(
+                          //   width: width * 0.65,
+                          //   child: SingleChildScrollView(
+                          //     scrollDirection: Axis.horizontal,
+                          //     child: Row(
+                          //       children: [
+                          //         InkWell(
+                          //           child: Container(
+                          //             padding: EdgeInsets.only(
+                          //                 top: 5, bottom: 5, left: 10, right: 10),
+                          //             decoration: BoxDecoration(
+                          //                 color: backgroundColor[0],
+                          //                 borderRadius: BorderRadius.circular(15)),
+                          //             child: Text(
+                          //               "Phones",
+                          //               style: TextStyle(
+                          //                   color: textColor[0], fontSize: 14),
+                          //             ),
+                          //           ),
+                          //           onTap: () {
+                          //             changeStatus(0);
+                          //             setState(() {});
+                          //           },
+                          //         ),
+                          //         InkWell(
+                          //           child: Container(
+                          //             padding: EdgeInsets.only(
+                          //                 top: 5, bottom: 5, left: 10, right: 10),
+                          //             decoration: BoxDecoration(
+                          //                 color: backgroundColor[1],
+                          //                 borderRadius: BorderRadius.circular(25)),
+                          //             child: Text(
+                          //               "Laptops",
+                          //               style: TextStyle(
+                          //                   color: textColor[1], fontSize: 14),
+                          //             ),
+                          //           ),
+                          //           onTap: () {
+                          //             changeStatus(1);
+                          //             setState(() {});
+                          //           },
+                          //         ),
+                          //         InkWell(
+                          //           child: Container(
+                          //             padding: EdgeInsets.only(
+                          //                 top: 5, bottom: 5, left: 10, right: 10),
+                          //             decoration: BoxDecoration(
+                          //                 color: backgroundColor[2],
+                          //                 borderRadius: BorderRadius.circular(25)),
+                          //             child: Text(
+                          //               "Tablets",
+                          //               style: TextStyle(
+                          //                   color: textColor[2], fontSize: 14),
+                          //             ),
+                          //           ),
+                          //           onTap: () {
+                          //             changeStatus(2);
+                          //             setState(() {});
+                          //           },
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // )
+                        ]),
+                      )
                     ],
                   ))),
             ),
@@ -554,11 +435,14 @@ class _StoreState extends State<Store> {
                         FutureBuilder<List<ProductModel>>(
                           future: productList,
                           builder: (context,snapshot){
-                            if (snapshot.connectionState==ConnectionState.waiting){
+                            if (snapshot.connectionState==ConnectionState.waiting||snapshot.data==null){
                               return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
                             }
                             else if(snapshot.hasData){
                               List<ProductModel> devices= snapshot.data as List<ProductModel>;
+                              if (devices.isEmpty){
+                                return Center(child: Text("No Data".tr()),);
+                              }
                               return
                                 GridView.builder(
                                 padding: EdgeInsets.all(10),

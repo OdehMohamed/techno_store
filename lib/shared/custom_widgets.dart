@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
@@ -134,11 +135,11 @@ class FormValidatorDropdown<T> extends StatelessWidget {
       },
       validator: FormBuilderValidators.compose([
         if (!optional)
-          FormBuilderValidators.required(
-              errorText: showErrorText
-                  ? "this_field_is_required"
-                  : ' '),
-      ]),
+    FormBuilderValidators.required(
+        errorText: showErrorText
+            ? "this field is Required".tr()
+            : ' '),
+    ]),
     );
   }
 }

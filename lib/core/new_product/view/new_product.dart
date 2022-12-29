@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -5,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/new_product/view_model/new_product_state.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
+import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:techno_store/shared/message.dart';
 
 import '../../../shared/custom_widgets.dart';
 import '../../../shared/string_utilities.dart';
@@ -40,25 +43,6 @@ class _NewProductState extends State<NewProduct> {
   final ar_title_controller = TextEditingController();
   final description_controller = TextEditingController();
   final price_controller = TextEditingController();
-
-  var categories = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
-  var brands = [
-    "brand1",
-    "brand2"
-  ];
-  var sub_categories = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
   String? category_dropdown_value;
   String? sub_category_dropdown_value;
   String? brand_dropdown_value;
@@ -350,29 +334,6 @@ class _NewProductState extends State<NewProduct> {
                                              }
                                              return SizedBox();
                                            }),
-                                      // DropdownButtonFormField(
-                                      //   isExpanded: true,
-                                      //   hint: WidgetUtilities.autoSizeText("Category",textStyle: TextStyle(color: Colors.black)),
-                                      //   value: category_dropdown_value,
-                                      //   icon: const Icon(Icons.keyboard_arrow_down),
-                                      //   items: categories.map((String items) {
-                                      //     return DropdownMenuItem(
-                                      //       value: items,
-                                      //       child: WidgetUtilities.autoSizeText(items ,textStyle: TextStyle(color: Colors.black)),
-                                      //     );
-                                      //   }).toList(),
-                                      //   onChanged: (String? newValue) {
-                                      //     setState(() {
-                                      //       category_dropdown_value = newValue!;
-                                      //     });
-                                      //   },
-                                      //   validator: (value) {
-                                      //     if (value == null ) {
-                                      //       return "Please Enter".tr()+" "+"Category".tr();
-                                      //     }
-                                      //     return null;
-                                      //   },
-                                      // ),
                                     ),
                                     Container(
                                       width: width*0.35,
@@ -422,29 +383,6 @@ class _NewProductState extends State<NewProduct> {
                                             return SizedBox();
                                           })
                                           : Center (child :Text("Select category first".tr(),style: TextStyle(color: Colors.grey),textAlign: TextAlign.center,)),
-                                      // DropdownButtonFormField(
-                                      //   isExpanded: true,
-                                      //   hint: WidgetUtilities.autoSizeText("Sub-Categories",textStyle: TextStyle(color: Colors.black)),
-                                      //   value: sub_category_dropdown_value,
-                                      //   icon: const Icon(Icons.keyboard_arrow_down),
-                                      //   items: sub_categories.map((String items) {
-                                      //     return DropdownMenuItem(
-                                      //       value: items,
-                                      //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                      //     );
-                                      //   }).toList(),
-                                      //   onChanged: (String? newValue) {
-                                      //     setState(() {
-                                      //       sub_category_dropdown_value = newValue!;
-                                      //     });
-                                      //   },
-                                      //   validator: (value) {
-                                      //     if (value == null ) {
-                                      //       return "Please Enter".tr()+" "+"Sub-Categories".tr();
-                                      //     }
-                                      //     return null;
-                                      //   },
-                                      // ),
                                     ),
                                   ],),
                                 SizedBox(height: 15,),
@@ -519,29 +457,6 @@ class _NewProductState extends State<NewProduct> {
                                             }
                                             return SizedBox();
                                           }),
-                                      // DropdownButtonFormField(
-                                      //   isExpanded: true,
-                                      //   hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.black)),
-                                      //   value: brand_dropdown_value,
-                                      //   icon: const Icon(Icons.keyboard_arrow_down),
-                                      //   items: brands.map((String items) {
-                                      //     return DropdownMenuItem(
-                                      //       value: items,
-                                      //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                      //     );
-                                      //   }).toList(),
-                                      //   onChanged: (String? newValue) {
-                                      //     setState(() {
-                                      //       brand_dropdown_value = newValue!;
-                                      //     });
-                                      //   },
-                                      //   validator: (value) {
-                                      //     if (value == null ) {
-                                      //       return "Please Enter".tr()+" "+"Price".tr();
-                                      //     }
-                                      //     return null;
-                                      //   },
-                                      // ),
                                     ),
 
                                   ],
@@ -553,10 +468,20 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: (){
-                                        print(_formKey.currentState!.validate());
                                         if (_formKey.currentState!.validate()) {
-                                          // call function
-                                          print("kkkkkkkkkkkkkkkkkmkmkmkmmkm");
+                                          ProductModel product = ProductModel(
+                                            enName: en_title_controller.text ,
+                                            arName: ar_title_controller.text,
+                                            description: description_controller.text,
+                                            subCategoryID: selectedSubCategory?.id,
+                                            price: double.parse(price_controller.text),
+                                            brandID: selectedBrand?.name,
+                                            photo: photoPaths,
+                                            favoriteList: []
+                                          );
+                                          newProductState.addProduct(product);
+                                          Message.showLongToastMessage("Added successfully".tr());
+                                          Navigator.pop(context);
                                         }
                                       },
                                       child: Container(
