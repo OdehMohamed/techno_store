@@ -145,7 +145,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                     margin: EdgeInsets.all(width*0.05),
                     width: width*0.1,
                     height: height*0.07,
-                    child: Image.network(brandImgUrl!,fit: BoxFit.fill,),
+                    child: Image.network(brandImgUrl,fit: BoxFit.fill,),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
