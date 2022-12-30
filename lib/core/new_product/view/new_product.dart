@@ -289,7 +289,7 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     Container(
                                       width: width*0.35,
-                                      height: height*0.1,
+                                      height: height*0.15,
                                       padding: EdgeInsets.only(left: 10,right: 10),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
@@ -337,7 +337,7 @@ class _NewProductState extends State<NewProduct> {
                                     ),
                                     Container(
                                       width: width*0.35,
-                                      height: height*0.1,
+                                      height: height*0.15,
                                       padding: EdgeInsets.only(left: 10,right: 10),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
@@ -391,7 +391,7 @@ class _NewProductState extends State<NewProduct> {
                                   children: [
                                     Container(
                                       width: width*0.35,
-                                      height: height*0.1,
+                                      height: height*0.15,
 
                                       padding: EdgeInsets.only(left: 20,right: 20),
                                       decoration: BoxDecoration(
@@ -421,9 +421,9 @@ class _NewProductState extends State<NewProduct> {
                                     ),
                                     Container(
                                       width: width*0.35,
-                                      height: height*0.1,
+                                      height: height*0.15,
 
-                                      padding: EdgeInsets.only(left: 10,right: 10),
+                                      padding: EdgeInsets.only(left: 20,right: 20),
                                       decoration: BoxDecoration(
                                         color: ColorUtilities.white,
                                         border: Border.all(color: Colors.grey),
