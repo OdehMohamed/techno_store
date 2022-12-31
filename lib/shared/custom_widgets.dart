@@ -123,10 +123,10 @@ class FormValidatorDropdown<T> extends StatelessWidget {
               underline: const SizedBox.shrink(),
               //iconSize: SSCUI.SMALL_ICON_SIZE,
               value: dropDownValue,
-              onChanged: (T? newValue) async {
+              onChanged: onChanged!=null?(T? newValue) async {
                 onChanged!(newValue as T);
                 state.didChange(newValue);
-              },
+              }:null,
               items: items,
             ),
           ),
