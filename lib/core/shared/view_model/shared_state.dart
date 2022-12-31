@@ -3,24 +3,74 @@ import 'package:flutter/cupertino.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
-import '../../../data_source/user_info.dart';
 import '../model/brand_model.dart';
 import '../model/create_user_account_model.dart';
 
 class SharedState extends ChangeNotifier {
   bool loading = false;
 
+  String? _userId;
+  String? _userEmail;
+  String? _userName;
+  String? _userPhoto;
+  int? _userType;
+
+  String? get userId => _userId;
+  set userId(String? userId) => _userId = userId;
+
+  String? get userEmail => _userEmail;
+  set userEmail(String? userEmail) => _userEmail = userEmail;
+
+  String? get userName => _userName;
+  set userName(String? userName) => _userName = userName;
+
+  String? get userPhoto => _userPhoto;
+  set userPhoto(String? userPhoto) => _userPhoto = userPhoto;
+
+  int? get userType => _userType;
+  set userType(int? userType) => _userType = userType;
+
+  Future<void> updateUserInfo(String uid,
+      {CreateUserAccountModel? createUserAccountModel}) async {
+    if (createUserAccountModel == null) {
+      createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
+    }
+
+    if (createUserAccountModel != null) {
+      userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
+      userEmail = FirebaseDataSource().firebaseAuth.currentUser?.email;
+      userName = createUserAccountModel.name;
+      userPhoto = createUserAccountModel.photo;
+      userType = createUserAccountModel.type;
+    }
+
+    refresh();
+  }
+
   Future<void> signUp(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
-
     changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().signUp(email, password, createUserAccountModel).then((value) {
-      UserInfo.userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
-      UserInfo.userName = createUserAccountModel.name;
-      UserInfo.userPhoto = createUserAccountModel.photo;
-      UserInfo.userType = createUserAccountModel.type;
+    await FirebaseDataSource()
+        .signUp(email, password, createUserAccountModel)
+        .then((value) {
+      updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid,
+          createUserAccountModel: createUserAccountModel);
     });
+
+    changeLoadingState();
+  }
+
+  Future<void> createNewUserFromAdmin(String email, String password,
+      CreateUserAccountModel createUserAccountModel) async {
+    changeLoadingState(isLoading: true);
+
+    print("first uid" + FirebaseDataSource().firebaseAuth.currentUser!.uid);
+
+    await FirebaseDataSource().signUp(email, password, createUserAccountModel);
+
+    print("second uid" + FirebaseDataSource().firebaseAuth.currentUser!.uid);
+
 
     changeLoadingState();
   }
@@ -36,13 +86,12 @@ class SharedState extends ChangeNotifier {
     return categories;
   }
 
-
   Future<List<CategoriesAndSubCategoryModel>> getSubCategories(
       String categoryID) async {
     changeLoadingState(isLoading: true);
 
     List<CategoriesAndSubCategoryModel> subCategories =
-    await FirebaseDataSource().getSubCategories(categoryID);
+        await FirebaseDataSource().getSubCategories(categoryID);
 
     changeLoadingState();
 
@@ -50,7 +99,6 @@ class SharedState extends ChangeNotifier {
   }
 
   Future<List<BrandModel>> getBrands() async {
-
     changeLoadingState(isLoading: true);
 
     List<BrandModel> brands = await FirebaseDataSource().getBrands();
@@ -61,7 +109,6 @@ class SharedState extends ChangeNotifier {
   }
 
   Future<BrandModel> getBrand(String brandID) async {
-
     changeLoadingState(isLoading: true);
 
     BrandModel brands = await FirebaseDataSource().getBrand(brandID);
@@ -72,10 +119,9 @@ class SharedState extends ChangeNotifier {
   }
 
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

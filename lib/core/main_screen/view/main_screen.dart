@@ -11,9 +11,10 @@ import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
-
 import '../../../shared/widget_utilities.dart';
 import 'package:techno_store/shared/message.dart';
+
+import '../../shared/view_model/shared_state.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -54,11 +55,13 @@ class _SignInState extends State<SignIn> {
   final login_email = TextEditingController();
   final login_password = TextEditingController();
   late MainScreenState mainScreenState;
+  late SharedState sharedState;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     mainScreenState = context.read<MainScreenState>();
+    sharedState = context.read<SharedState>();
     super.initState();
   }
 
@@ -72,6 +75,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     mainScreenState = context.watch<MainScreenState>();
+    sharedState = context.watch<SharedState>();
     String lang = context.locale == Locale("en") ? "ar" : "en";
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -226,7 +230,11 @@ class _SignInState extends State<SignIn> {
                             if (_formKey.currentState!.validate()) {
                               try {
                                 mainScreenState.signIn(
-                                    login_email.text, login_password.text);
+                                    login_email.text, login_password.text).then((value) {
+                                      if(FirebaseDataSource().firebaseAuth.currentUser != null && FirebaseDataSource().firebaseAuth.currentUser?.uid != null){
+                                        sharedState.updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid);
+                                      }
+                                });
                               } catch (e) {
                                 Message.showErrorToastMessage(
                                     "Wrong inputs or you are not signed up");

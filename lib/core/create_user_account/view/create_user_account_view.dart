@@ -10,7 +10,6 @@ import 'package:techno_store/core/new_device_maintenance/view/new_device_mainten
 import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-
 import '../../../shared/widget_utilities.dart';
 import '../../shared/view_model/shared_state.dart';
 
@@ -300,6 +299,8 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                       CreateUserAccountModel(
                                           name: fullname_controller.text, photo: photoPath))
                                       .then((value) => Navigator.pop(context));
+                                    String s = createUserAccountState.userName ?? "";
+                                    print("pleassse : " + s);
                                 }
                               },
                               child: Container(

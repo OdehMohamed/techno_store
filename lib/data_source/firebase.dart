@@ -46,7 +46,8 @@ class FirebaseDataSource {
     }
   }
 
-  Future<void> signUp(String email, String password, CreateUserAccountModel createUserAccountModel) async {
+  Future<void> signUp(String email, String password,
+      CreateUserAccountModel createUserAccountModel) async {
     try {
       await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password)
@@ -119,18 +120,11 @@ class FirebaseDataSource {
 
   Future<CreateUserAccountModel?> getUserInfo(String uid) async {
     CreateUserAccountModel? createUserAccountModel;
-    try{
-      await firebaseFirestore
-          .collection("user")
-          .doc(uid)
-          .get()
-          .then((value) {
+    try {
+      await firebaseFirestore.collection("users").doc(uid).get().then((value) {
         createUserAccountModel = CreateUserAccountModel.fromJson(value.data()!);
       });
-    }
-    catch(e){
-
-    }
+    } catch (e) {}
 
     return createUserAccountModel;
   }
