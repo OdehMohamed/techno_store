@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
@@ -58,6 +59,25 @@ class FirebaseDataSource {
     }
   }
 
+  Future<void> sinUpByAdmin(String email, String password,
+      CreateUserAccountModel createUserAccountModel) async {
+    FirebaseApp app = await Firebase.initializeApp(
+        name: 'Secondary', options: Firebase.app().options);
+    try {
+      await FirebaseAuth.instanceFor(app: app)
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) =>
+              saveUserInfo(createUserAccountModel, uid: value.user?.uid));
+    } on FirebaseAuthException catch (e) {
+      // Do something with exception. This try/catch is here to make sure
+      // that even if the user creation fails, app.delete() runs, if is not,
+      // next time Firebase.initializeApp() will fail as the previous one was
+      // not deleted.
+    }
+
+    await app.delete();
+  }
+
   Future<void> signOut() async {
     try {
       await firebaseAuth.signOut();
@@ -100,8 +120,8 @@ class FirebaseDataSource {
   ////
   ////
 
-  Future<void> saveUserInfo(
-      CreateUserAccountModel createUserAccountModel) async {
+  Future<void> saveUserInfo(CreateUserAccountModel createUserAccountModel,
+      {String? uid}) async {
     Map<String, dynamic> data = createUserAccountModel.toJson();
 
     try {
@@ -111,7 +131,7 @@ class FirebaseDataSource {
 
       await firebaseFirestore
           .collection("users")
-          .doc(firebaseAuth.currentUser?.uid)
+          .doc(uid ?? firebaseAuth.currentUser?.uid)
           .set(data);
     } catch (e, v) {
       print(e.toString() + " -----> " + v.toString());

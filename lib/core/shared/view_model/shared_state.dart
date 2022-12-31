@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/data_source/firebase.dart';
@@ -10,16 +11,12 @@ class SharedState extends ChangeNotifier {
   bool loading = false;
 
   String? _userId;
-  String? _userEmail;
   String? _userName;
   String? _userPhoto;
   int? _userType;
 
   String? get userId => _userId;
   set userId(String? userId) => _userId = userId;
-
-  String? get userEmail => _userEmail;
-  set userEmail(String? userEmail) => _userEmail = userEmail;
 
   String? get userName => _userName;
   set userName(String? userName) => _userName = userName;
@@ -32,13 +29,13 @@ class SharedState extends ChangeNotifier {
 
   Future<void> updateUserInfo(String uid,
       {CreateUserAccountModel? createUserAccountModel}) async {
+    print(uid);
     if (createUserAccountModel == null) {
       createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
     }
 
     if (createUserAccountModel != null) {
       userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
-      userEmail = FirebaseDataSource().firebaseAuth.currentUser?.email;
       userName = createUserAccountModel.name;
       userPhoto = createUserAccountModel.photo;
       userType = createUserAccountModel.type;
@@ -65,12 +62,7 @@ class SharedState extends ChangeNotifier {
       CreateUserAccountModel createUserAccountModel) async {
     changeLoadingState(isLoading: true);
 
-    print("first uid" + FirebaseDataSource().firebaseAuth.currentUser!.uid);
-
-    await FirebaseDataSource().signUp(email, password, createUserAccountModel);
-
-    print("second uid" + FirebaseDataSource().firebaseAuth.currentUser!.uid);
-
+    FirebaseDataSource().sinUpByAdmin(email, password, createUserAccountModel);
 
     changeLoadingState();
   }
