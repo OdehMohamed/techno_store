@@ -32,6 +32,7 @@ List<Color> textColor = [
 
 class _MaintinanceListState extends State<MaintinanceList> {
   late MaintenanceListState maintenanceListState;
+  late SharedState sharedState;
   late Future<List<MaintenanceDeviceModel>> deviceList;
   void changeStatus(int status) {
     switch (status) {
@@ -103,6 +104,8 @@ class _MaintinanceListState extends State<MaintinanceList> {
   @override
   void initState() {
     maintenanceListState=context.read<MaintenanceListState>();
+    sharedState=context.read<SharedState>();
+
     deviceList = maintenanceListState.getDevicesInMaintenance(theStatus);
 
   }
@@ -110,6 +113,8 @@ class _MaintinanceListState extends State<MaintinanceList> {
   @override
   Widget build(BuildContext context) {
     maintenanceListState=context.watch<MaintenanceListState>();
+    sharedState=context.watch<SharedState>();
+
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     Widget card(MaintenanceDeviceModel device) {
@@ -196,13 +201,13 @@ class _MaintinanceListState extends State<MaintinanceList> {
 
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton:sharedState.userType==2 ? FloatingActionButton(
         child: Icon(Icons.add,color: ColorUtilities.secondary,),
         backgroundColor: Colors.white,
         onPressed: () {
           Utilities.navigatorWithBack(context, NewDeviceMaintanace(editable: false,));
       },
-      ),
+      ):null,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,

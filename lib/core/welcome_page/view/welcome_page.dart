@@ -97,7 +97,17 @@ class _WelcomePageState extends State<WelcomePage> {
     }
 
     String lang = context.locale == Locale("en") ? "ar" : "en";
-
+    CircleAvatar profile_image=CircleAvatar(
+        backgroundImage: AssetImage("assets/images/defaultImg.png"),
+        backgroundColor: Colors.white,);
+    if (sharedState.userPhoto != null){
+      if (sharedState.userPhoto!.isNotEmpty) {
+        profile_image = CircleAvatar(
+          backgroundImage: NetworkImage(sharedState.userPhoto!),
+          backgroundColor: Colors.white,
+        );
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -134,10 +144,8 @@ class _WelcomePageState extends State<WelcomePage> {
                 margin: EdgeInsets.only(top: height * 0.07),
                 width: 100,
                 height: 100,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage("assets/images/defaultImg.png"),
-                  backgroundColor: Colors.white,
-                )),
+                child:profile_image
+            ),
             SizedBox(
               height: 10,
             ),
@@ -166,10 +174,12 @@ class _WelcomePageState extends State<WelcomePage> {
                     ), () {
                   Utilities.navigatorWithBack(context, TrackPhonePage());
                 }),
+                sharedState.userType!=1?
                 card("Maintenance",
                     Icon(Icons.add_to_home_screen, color: Colors.white60), () {
                   Utilities.navigatorWithBack(context, MaintinanceList());
-                }),
+                }):SizedBox(),
+                sharedState.userType==0?
                 card(
                     "Add new Employee",
                     Icon(
@@ -177,7 +187,8 @@ class _WelcomePageState extends State<WelcomePage> {
                       color: Colors.white60,
                     ), () {
                   Utilities.navigatorWithBack(context, NewUserAdminSide());
-                }),
+                }):SizedBox(),
+                sharedState.userType==0?
                 card(
                     "Add new Product",
                     Icon(
@@ -188,7 +199,8 @@ class _WelcomePageState extends State<WelcomePage> {
                     context,
                     MaterialPageRoute(builder: (context) => NewProduct()),
                   );
-                }),
+                }):SizedBox(),
+                sharedState.userType==0?
                 card(
                     "Manage Categories",
                     Icon(
@@ -199,7 +211,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     context,
                     MaterialPageRoute(builder: (context) => manageCategory()),
                   );
-                }),
+                }):SizedBox(),
               ],
             )),
             InkWell(
@@ -309,8 +321,11 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                         InkWell(
                           onTap: () {
+                            sharedState.userType!=1?
                             Utilities.navigatorWithBack(
-                                context, MaintinanceList());
+                                context, MaintinanceList()):
+                            Utilities.navigatorWithBack(
+                                context, TrackPhonePage());
                           },
                           child: Container(
                               decoration: BoxDecoration(

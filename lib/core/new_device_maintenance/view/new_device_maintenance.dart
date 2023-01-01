@@ -60,22 +60,54 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
 
   late NewDeviceMaintenanceState newDeviceMaintenanceState;
   List<int> patternValue=[];
-  var brands = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
-  String? brand_value;
   String? status_value;
   late bool phoneValid ;
   String phoneCode ="+962";
   late PhoneNumber number;
+
+  bool name_priv = false;
+  bool address_priv = false;
+  bool phone_priv = false;
+  bool model_priv = false;
+  bool color_priv = false;
+  bool IMEI_priv = false;
+  bool pin_priv = false;
+  bool problem_priv = false;
+  bool notes_priv = false;
+  bool accessoires_priv = false;
+  bool price_priv = false;
+  bool estimated_time_priv = false;
+  bool notes2_priv = false;
+  bool status_priv=false;
+  bool brand_priv=false;
+
+  void privilagesManager(){
+    name_priv=true;
+    address_priv=true;
+    phone_priv=true;
+    model_priv=true;
+    color_priv=true;
+    IMEI_priv=true;
+    pin_priv=true;
+    accessoires_priv=true;
+    brand_priv=true;
+    if (sharedState.userType==0){
+      problem_priv=true;
+      notes_priv=true;
+      notes2_priv=true;
+      price_priv=true;
+      estimated_time_priv=true;
+      status_priv=true;
+    }
+    else if (sharedState.userType==2){
+      problem_priv=true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
+    newDeviceMaintenanceState=context.read<NewDeviceMaintenanceState>();
     sharedState = context.read<SharedState>();
     getBrandsFuture = sharedState.getBrands();
 
@@ -96,8 +128,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       estimated_time_controller.text = widget.maintenanceDevice!.estimatedTime!;
       notes2_controller.text = widget.maintenanceDevice!.notes!;
       patternList=widget.maintenanceDevice!.pattern!;
-      brand_value=widget.maintenanceDevice!.brandID;
       status_value=widget.maintenanceDevice!.status;
+      privilagesManager();
     }
     else{
        phoneValid = false;
@@ -128,11 +160,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     }
     );
   }
-  @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-    newDeviceMaintenanceState=context.read<NewDeviceMaintenanceState>();
-  }
+
   @override
   void dispose() {
     name_controller.dispose();
@@ -217,6 +245,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextFormField(
+                                  enabled: !name_priv,
                                   controller: name_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -243,6 +272,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: InternationalPhoneNumberInput(
+                                  isEnabled: !phone_priv,
                                   hintText: "Phone number".tr(),
                                   errorMessage: "Invalid phone number".tr(),
                                   onInputChanged: (PhoneNumber number) {
@@ -279,6 +309,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextFormField(
+                                  enabled: !address_priv,
                                   controller: address_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -323,15 +354,22 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       if (snapshot.hasData) {
                                         List<BrandModel>
                                         futureBrands = snapshot.data;
+                                        if (widget.editable){
+                                          for(int i=0;i<futureBrands.length;i++){
+                                            if (futureBrands[i].name==widget.maintenanceDevice!.brandID){
+                                              selectedBrand = futureBrands[i];
+                                              break;
+                                            }
+                                          }
+                                        }
                                         return FormValidatorDropdown<
                                             BrandModel>(
                                           name: "BrandName",
                                           dropDownValue: selectedBrand,
-                                          onChanged: (newValue) {
+                                          onChanged: !brand_priv ?(newValue) {
                                             selectedBrand = newValue;
-                                            print(selectedBrand?.name);
                                             setState(() {});
-                                          },
+                                          }:null,
                                           items: List.generate(
                                               futureBrands.length,
                                                   (index) => DropdownMenuItem<
@@ -345,29 +383,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       }
                                       return SizedBox();
                                     }),
-                                // DropdownButtonFormField(
-                                //   isExpanded: true,
-                                //   hint: WidgetUtilities.autoSizeText("Device Brand",textStyle: TextStyle(color: Colors.grey)),
-                                //   value: brand_value,
-                                //   icon: const Icon(Icons.keyboard_arrow_down),
-                                //   items: brands.map((String items) {
-                                //     return DropdownMenuItem(
-                                //       value: items,
-                                //       child: WidgetUtilities.autoSizeText(items,textStyle: TextStyle(color: Colors.black)),
-                                //     );
-                                //   }).toList(),
-                                //   onChanged: (String? newValue) {
-                                //     setState(() {
-                                //       brand_value = newValue!;
-                                //     });
-                                //   },
-                                //   validator: (value) {
-                                //     if (value == null ) {
-                                //       return "Please Enter".tr()+" "+"Device Brand".tr();
-                                //     }
-                                //     return null;
-                                //   },
-                                // ),
                               ),
                               SizedBox(
                                 height: 30,
@@ -380,6 +395,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextFormField(
+                                  enabled: !model_priv,
                                   controller: model_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -407,6 +423,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextFormField(
+                                  enabled: !color_priv,
                                   controller: color_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -434,6 +451,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextField(
+                                  enabled: !IMEI_priv,
                                   controller: IMEI_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -460,6 +478,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       Container(
                                         width: width * 0.5,
                                         child: TextField(
+                                          enabled: !pin_priv,
                                           controller: pin_controller,
                                           style: TextStyle(color: Colors.black),
                                           decoration: InputDecoration(
@@ -584,6 +603,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextFormField(
+                                  enabled: !problem_priv,
                                   controller: problem_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -629,11 +649,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       child: WidgetUtilities.autoSizeText(status,textStyle: TextStyle(color: Colors.black)),
                                     );
                                   }).toList(),
-                                  onChanged: (String? newValue) {
+                                  onChanged: !status_priv? (String? newValue) {
                                     setState(() {
                                       status_value = newValue!;
                                     });
-                                  },
+                                  }:null,
                                   validator: (value) {
                                     if (value == null ) {
                                       return "Please Enter".tr()+" "+"Device Status".tr();
@@ -653,6 +673,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextField(
+                                  enabled: !notes_priv,
                                   controller: notes_controller,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -675,6 +696,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextField(
+                                  enabled: !accessoires_priv,
                                   controller: accessoires_controller,
                                   style: TextStyle(color: Colors.black),
                                   keyboardType: TextInputType.multiline,
@@ -701,6 +723,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: TextFormField(
+                                      enabled: !price_priv,
                                       controller: price_controller,
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
@@ -729,6 +752,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: TextFormField(
+                                      enabled: !estimated_time_priv,
                                       controller: estimated_time_controller,
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
@@ -759,6 +783,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextField(
+                                  enabled: !notes2_priv,
                                   controller: notes2_controller,
                                   style: TextStyle(color: Colors.black),
                                   keyboardType: TextInputType.multiline,
@@ -777,6 +802,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  sharedState.userType!=0?
                                   ElevatedButton(
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
@@ -891,7 +917,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         }
                                       }
                                     },
-                                    child: Container(
+                                    child:Container(
                                       width: width * 0.2,
                                       child: WidgetUtilities.autoSizeText(
                                         widget.editable?"Save":"Create",
@@ -903,7 +929,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       textStyle: TextStyle(
                                           fontSize: 16, color: Colors.white),
                                     ),
-                                  ),
+                                  ):SizedBox(),
                                   ElevatedButton(
                                     onPressed: () {
                                       Navigator.pop(context);

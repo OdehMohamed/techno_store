@@ -11,6 +11,7 @@ import 'package:techno_store/shared/message.dart';
 import 'package:techno_store/shared/utilities.dart';
 
 import '../../../shared/widget_utilities.dart';
+import '../../shared/view_model/shared_state.dart';
 
 class ProductDetails extends StatefulWidget {
   final ProductModel product ;
@@ -21,25 +22,30 @@ class ProductDetails extends StatefulWidget {
 class _ProductDetailsState extends State<ProductDetails> {
   @override
   late ProductDetailsState productDetailsState;
+  late SharedState sharedState;
+
   bool favourite = false;
   @override
   void initState() {
-    if (widget.product.favoriteList!.contains("1212")){
+    sharedState = context.read<SharedState>();
+    productDetailsState=context.read<ProductDetailsState>();
+    if (widget.product.favoriteList!.contains(sharedState.userId)){
       favourite=true;
     }
-    productDetailsState=context.read<ProductDetailsState>();
+
     super.initState();
   }
   Widget build(BuildContext context) {
     productDetailsState=context.watch<ProductDetailsState>();
+    sharedState = context.watch<SharedState>();
 
     void changeFavourite(){
       favourite=!favourite;
-      if (widget.product.favoriteList!.contains("1212")){
-        widget.product.favoriteList?.remove("1212");
+      if (widget.product.favoriteList!.contains(sharedState.userId)){
+        widget.product.favoriteList?.remove(sharedState.userId);
       }
       else {
-        widget.product.favoriteList?.add("1212");
+        widget.product.favoriteList?.add(sharedState.userId!);
       }
       productDetailsState.updateFavorites(widget.product.id!, widget.product.favoriteList!);
       setState(() {});
@@ -93,6 +99,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            sharedState.userType==0?
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -116,10 +123,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         TextButton(
                                         child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
                                         onPressed: () {
-                                          productDetailsState.deleteProduct(widget.product.id!);
-                                          Message.showLongToastMessage("Deleted".tr());
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
+                                          productDetailsState.deleteProduct(widget.product.id!).then((value) => (){
+                                            Message.showLongToastMessage("Deleted".tr());
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          });
                                         },
                                         ),
                                         TextButton(
@@ -135,7 +143,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   },
                                 ),
                               ],
-                            ),
+                            ):SizedBox(),
                             InkWell(
                               child:favourite?
                               Icon(CupertinoIcons.heart_fill,color:Colors.red,size: 35,):
