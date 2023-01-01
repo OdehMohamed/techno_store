@@ -29,7 +29,8 @@ class SharedState extends ChangeNotifier {
 
   Future<void> updateUserInfo(String uid,
       {CreateUserAccountModel? createUserAccountModel}) async {
-    print(uid);
+    changeLoadingState(isLoading: true);
+
     if (createUserAccountModel == null) {
       createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
     }
@@ -58,13 +59,15 @@ class SharedState extends ChangeNotifier {
     changeLoadingState();
   }
 
-  Future<void> createNewUserFromAdmin(String email, String password,
+  Future<bool> createNewUserFromAdmin(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
     changeLoadingState(isLoading: true);
 
-    FirebaseDataSource().sinUpByAdmin(email, password, createUserAccountModel);
+    bool response = await FirebaseDataSource().sinUpByAdmin(email, password, createUserAccountModel);
 
     changeLoadingState();
+
+    return response;
   }
 
   Future<List<CategoriesAndSubCategoryModel>> getCategories() async {
@@ -100,10 +103,10 @@ class SharedState extends ChangeNotifier {
     return brands;
   }
 
-  Future<BrandModel> getBrand(String brandID) async {
+  Future<BrandModel?> getBrand(String brandID) async {
     changeLoadingState(isLoading: true);
 
-    BrandModel brands = await FirebaseDataSource().getBrand(brandID);
+    BrandModel? brands = await FirebaseDataSource().getBrand(brandID);
 
     changeLoadingState();
 

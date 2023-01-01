@@ -4,17 +4,15 @@ import 'package:techno_store/data_source/firebase.dart';
 class WelcomePageState extends ChangeNotifier {
   bool loading = false;
 
-  Future<void> signOut() async {
+  Future<bool> signOut() async {
 
     changeLoadingState(isLoading : true);
 
-    try {
-      await FirebaseDataSource().signOut();
-    } catch (e) {
-      print("EEEEEEEEEEERRRRRRRRROOOOOOOORRRRRRRRRR");
-    }
+      bool response = await FirebaseDataSource().signOut();
 
     changeLoadingState();
+
+    return response;
   }
 
   void changeLoadingState({bool? isLoading}) {

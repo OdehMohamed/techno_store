@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -36,31 +37,43 @@ class FirebaseDataSource {
   /////
   /////
 
-  Future<void> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password) async {
     try {
       await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password)
           .then((value) => print(value.user?.email));
-    } catch (e, v) {
-      print(e.toString() + "----->" + v.toString());
-      rethrow;
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
-  Future<void> signUp(String email, String password,
+  Future<bool> signUp(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
     try {
       await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => saveUserInfo(createUserAccountModel));
-    } catch (e, v) {
-      Message.showErrorToastMessage(e.toString());
-      print(e.toString() + "----->" + v.toString());
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
-  Future<void> sinUpByAdmin(String email, String password,
+  Future<bool> sinUpByAdmin(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
+    bool response = true;
+
     FirebaseApp app = await Firebase.initializeApp(
         name: 'Secondary', options: Firebase.app().options);
     try {
@@ -69,39 +82,60 @@ class FirebaseDataSource {
           .then((value) =>
               saveUserInfo(createUserAccountModel, uid: value.user?.uid));
     } on FirebaseAuthException catch (e) {
-      // Do something with exception. This try/catch is here to make sure
-      // that even if the user creation fails, app.delete() runs, if is not,
-      // next time Firebase.initializeApp() will fail as the previous one was
-      // not deleted.
+      Message.showErrorToastMessage(e.message.toString());
+      response = false;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+      response = false;
     }
 
     await app.delete();
+
+    return response;
   }
 
-  Future<void> signOut() async {
+  Future<bool> signOut() async {
     try {
       await firebaseAuth.signOut();
-    } catch (e, v) {
-      print(e.toString() + "----->" + v.toString());
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<bool> resetPassword(String email) async {
     try {
       await firebaseAuth
           .sendPasswordResetEmail(email: email)
           .onError((error, stackTrace) => print(error));
-    } catch (e, v) {
-      print(e.toString() + " -----> " + v.toString());
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
-  Future<void> sendEmailVerification() async {
+  Future<bool> sendEmailVerification() async {
     try {
       await firebaseAuth.currentUser?.sendEmailVerification();
-    } catch (e, v) {
-      print(e.toString() + " -----> " + v.toString());
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
   ////
@@ -120,7 +154,7 @@ class FirebaseDataSource {
   ////
   ////
 
-  Future<void> saveUserInfo(CreateUserAccountModel createUserAccountModel,
+  Future<bool> saveUserInfo(CreateUserAccountModel createUserAccountModel,
       {String? uid}) async {
     Map<String, dynamic> data = createUserAccountModel.toJson();
 
@@ -133,9 +167,13 @@ class FirebaseDataSource {
           .collection("users")
           .doc(uid ?? firebaseAuth.currentUser?.uid)
           .set(data);
-    } catch (e, v) {
-      print(e.toString() + " -----> " + v.toString());
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
   Future<CreateUserAccountModel?> getUserInfo(String uid) async {
@@ -144,7 +182,9 @@ class FirebaseDataSource {
       await firebaseFirestore.collection("users").doc(uid).get().then((value) {
         createUserAccountModel = CreateUserAccountModel.fromJson(value.data()!);
       });
-    } catch (e) {}
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
 
     return createUserAccountModel;
   }
@@ -165,7 +205,7 @@ class FirebaseDataSource {
 ////
 ////
 
-  Future<String> uploadPhoto(String photo) async {
+  Future<String?> uploadPhoto(String photo) async {
     try {
       if (photo != "") {
         final snapshot = await firebaseStorage
@@ -176,11 +216,11 @@ class FirebaseDataSource {
         //to save the link of the photo
         return await snapshot.ref.getDownloadURL();
       }
-    } catch (e, v) {
-      print(e.toString() + " -----> " + v.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
 
-    return "";
+    return null;
   }
 
 ////
@@ -210,26 +250,44 @@ class FirebaseDataSource {
           categories.add(category);
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
 
     return categories;
   }
 
-  Future<void> addCategory(
+  Future<bool> addCategory(
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    await firebaseFirestore
-        .collection("categories")
-        .add(categoriesAndSubCategoryModel.toJson())
-        .then((value) => print(value.id));
+    try {
+      await firebaseFirestore
+          .collection("categories")
+          .add(categoriesAndSubCategoryModel.toJson())
+          .then((value) => print(value.id));
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
-  Future<void> editCategory(String categoryID,
+  Future<bool> editCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    await firebaseFirestore
-        .collection("categories")
-        .doc(categoryID)
-        .update(categoriesAndSubCategoryModel.toJson())
-        .then((value) => print("Updated"));
+    try {
+      await firebaseFirestore
+          .collection("categories")
+          .doc(categoryID)
+          .update(categoriesAndSubCategoryModel.toJson())
+          .then((value) => print("Updated"));
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
   Future<List<CategoriesAndSubCategoryModel>> getSubCategories(
@@ -250,70 +308,108 @@ class FirebaseDataSource {
           subCategories.add(subCategory);
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
 
     return subCategories;
   }
 
-  Future<void> addSubCategory(String categoryID,
+  Future<bool> addSubCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    await firebaseFirestore
-        .collection("categories")
-        .doc(categoryID)
-        .collection("sub-categories")
-        .add(categoriesAndSubCategoryModel.toJson())
-        .then((value) {
-      print(value.id);
-    });
-  }
-
-  Future<void> editSubCategories(String categoryID, String subCategoryID,
-      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    await firebaseFirestore
-        .collection("categories")
-        .doc(categoryID)
-        .collection("sub-categories")
-        .doc(subCategoryID)
-        .update(categoriesAndSubCategoryModel.toJson())
-        .then((value) {
-      print("Updated");
-    });
-  }
-
-  Future<void> deleteCategory(String categoryId) async {
-    int subCategoriesLength = 0;
-    await firebaseFirestore
-        .collection("categories")
-        .doc(categoryId)
-        .collection("sub-categories")
-        .get()
-        .then((value) {
-      subCategoriesLength = value.docs.length;
-    });
-
-    print(subCategoriesLength);
-
-    if (subCategoriesLength == null || subCategoriesLength == 0) {
-      firebaseFirestore
+    try {
+      await firebaseFirestore
           .collection("categories")
-          .doc(categoryId)
-          .delete()
-          .then((value) => print("delete"));
+          .doc(categoryID)
+          .collection("sub-categories")
+          .add(categoriesAndSubCategoryModel.toJson())
+          .then((value) {
+        print(value.id);
+      });
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
   }
 
-  Future<void> deleteSubCategory(
-      String categoryId, String subCategoryId) async {
-    List<ProductModel> products = await getProducts(subCategoryId);
-    if (products.isEmpty) {
-      firebaseFirestore
+  Future<bool> editSubCategories(String categoryID, String subCategoryID,
+      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
+    try {
+      await firebaseFirestore
+          .collection("categories")
+          .doc(categoryID)
+          .collection("sub-categories")
+          .doc(subCategoryID)
+          .update(categoriesAndSubCategoryModel.toJson())
+          .then((value) {
+        print("Updated");
+      });
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
+  }
+
+  Future<bool> deleteCategory(String categoryId) async {
+    try {
+      int subCategoriesLength = 0;
+      await firebaseFirestore
           .collection("categories")
           .doc(categoryId)
           .collection("sub-categories")
-          .doc(subCategoryId)
-          .delete()
-          .then((value) => print("deleted"));
+          .get()
+          .then((value) {
+        subCategoriesLength = value.docs.length;
+      });
+
+      if (subCategoriesLength == null || subCategoriesLength == 0) {
+        firebaseFirestore
+            .collection("categories")
+            .doc(categoryId)
+            .delete()
+            .then((value) => print("delete"));
+
+        return true;
+      } else {
+        Message.showErrorToastMessage("subCategoryMustBeEmpty".tr());
+        return false;
+      }
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
+
+    return false;
+  }
+
+  Future<bool> deleteSubCategory(
+      String categoryId, String subCategoryId) async {
+    try {
+      List<ProductModel> products = await getProducts(subCategoryId);
+      if (products.isEmpty) {
+        firebaseFirestore
+            .collection("categories")
+            .doc(categoryId)
+            .collection("sub-categories")
+            .doc(subCategoryId)
+            .delete()
+            .then((value) => print("deleted"));
+
+        return true;
+      } else {
+        Message.showErrorToastMessage("thereAreProductsInSubCategory".tr());
+        return false;
+      }
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
 ////
@@ -347,35 +443,48 @@ class FirebaseDataSource {
         }
       });
     } catch (e) {
-      print(e.toString());
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
 
     return products;
   }
 
-  Future<void> addProduct(ProductModel productModel) async {
-    await firebaseFirestore
-        .collection("products")
-        .add(productModel.toJson())
-        .then((value) => print(value.id));
+  Future<bool> addProduct(ProductModel productModel) async {
+    try {
+      await firebaseFirestore.collection("products").add(productModel.toJson());
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
-  Future<void> editProduct(ProductModel productModel) async {
-    await firebaseFirestore
-        .collection("products")
-        .doc(productModel.id)
-        .update(productModel.toJson())
-        .then((value) {
-      print("Updated");
-    });
+  Future<bool> editProduct(ProductModel productModel) async {
+    try {
+      await firebaseFirestore
+          .collection("products")
+          .doc(productModel.id)
+          .update(productModel.toJson());
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
-  Future<void> deleteProduct(String productId) async {
-    await firebaseFirestore
-        .collection('products')
-        .doc(productId)
-        .delete()
-        .then((value) => print(productId + " -->deleted"));
+  Future<bool> deleteProduct(String productId) async {
+    try {
+      await firebaseFirestore.collection('products').doc(productId).delete();
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
   ////
@@ -394,37 +503,58 @@ class FirebaseDataSource {
   Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
       String status) async {
     List<MaintenanceDeviceModel> devices = [];
-    await firebaseFirestore
-        .collection("maintenanceDevices")
-        .where("status", isEqualTo: status)
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        devices.add(MaintenanceDeviceModel.fromJson(element.data()));
-      }
-    });
+
+    try {
+      await firebaseFirestore
+          .collection("maintenanceDevices")
+          .where("status", isEqualTo: status)
+          .get()
+          .then((value) async {
+        for (var element in value.docs) {
+          MaintenanceDeviceModel? maintenanceDeviceModel =
+              MaintenanceDeviceModel.fromJson(element.data());
+          if (maintenanceDeviceModel.brandID != null) {
+            maintenanceDeviceModel.brandModel =
+                await getBrand(maintenanceDeviceModel.brandID!);
+          }
+          devices.add(maintenanceDeviceModel);
+        }
+      });
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
 
     return devices;
   }
 
-  Future<void> addDeviceToMaintenance(
+  Future<bool> addDeviceToMaintenance(
       MaintenanceDeviceModel maintenanceDeviceModel) async {
-    await firebaseFirestore
-        .collection("maintenanceDevices")
-        .doc(maintenanceDeviceModel.id)
-        .set(maintenanceDeviceModel.toJson())
-        .then((value) => print("new device added"));
+    try {
+      await firebaseFirestore
+          .collection("maintenanceDevices")
+          .doc(maintenanceDeviceModel.id)
+          .set(maintenanceDeviceModel.toJson());
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
-  Future<void> editDeviceInMaintenance(
+  Future<bool> editDeviceInMaintenance(
       String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
-    await firebaseFirestore
-        .collection("maintenanceDevices")
-        .doc(deviceID)
-        .update(maintenanceDeviceModel.toJson())
-        .then((value) {
-      print("Updated");
-    });
+    try {
+      await firebaseFirestore
+          .collection("maintenanceDevices")
+          .doc(deviceID)
+          .update(maintenanceDeviceModel.toJson());
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
   Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
@@ -441,7 +571,9 @@ class FirebaseDataSource {
           devices.add(MaintenanceDeviceModel.fromJson(element.data()));
         }
       });
-    } catch (e) {}
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
 
     return devices;
   }
@@ -472,22 +604,26 @@ class FirebaseDataSource {
         }
       });
     } catch (e) {
-      print(e.toString());
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
 
     return products;
   }
 
-  Future<void> updateFavorites(
+  Future<bool> updateFavorites(
       String productID, List<String> favoriteList) async {
     try {
       await firebaseFirestore
           .collection("products")
           .doc(productID)
-          .update({"favoriteList": favoriteList}).then((value) {
-        print("Updated");
-      });
-    } catch (e) {}
+          .update({"favoriteList": favoriteList});
+
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
   }
 
 ////
@@ -515,14 +651,14 @@ class FirebaseDataSource {
         }
       });
     } catch (e) {
-      print(e.toString());
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
 
     return brands;
   }
 
-  Future<BrandModel> getBrand(String brandID) async {
-    late BrandModel brand;
+  Future<BrandModel?> getBrand(String brandID) async {
+    BrandModel? brand;
     try {
       await firebaseFirestore
           .collection("brands")
@@ -532,7 +668,7 @@ class FirebaseDataSource {
         brand = BrandModel.fromJson(value.docs.first.data());
       });
     } catch (e) {
-      print(e.toString());
+      Message.showErrorToastMessage("somethingWentWrong".tr());
     }
 
     return brand;

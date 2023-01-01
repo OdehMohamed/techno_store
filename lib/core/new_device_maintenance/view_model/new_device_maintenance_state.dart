@@ -3,33 +3,37 @@ import 'package:techno_store/data_source/firebase.dart';
 
 import '../../shared/model/maintenance_device_model.dart';
 
-class NewDeviceMaintenanceState extends ChangeNotifier{
+class NewDeviceMaintenanceState extends ChangeNotifier {
   bool loading = false;
 
-
-  Future<void> addDeviceToMaintenance(
+  Future<bool> addDeviceToMaintenance(
       MaintenanceDeviceModel maintenanceDeviceModel) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
-
-    await FirebaseDataSource().addDeviceToMaintenance(maintenanceDeviceModel);
+    bool response = await FirebaseDataSource()
+        .addDeviceToMaintenance(maintenanceDeviceModel);
 
     changeLoadingState();
+
+    return response;
   }
-  Future<void> editDeviceInMaintenance(
+
+  Future<bool> editDeviceInMaintenance(
       String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
-
-    await FirebaseDataSource().editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
+    bool response = await FirebaseDataSource()
+        .editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
 
     changeLoadingState();
+
+    return response;
   }
+
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

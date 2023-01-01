@@ -4,13 +4,15 @@ import 'package:techno_store/data_source/firebase.dart';
 class ResetPasswordState extends ChangeNotifier{
   bool loading = false;
 
-  Future<void> resetPassword(String email) async {
+  Future<bool> resetPassword(String email) async {
 
     changeLoadingState(isLoading : true);
 
-    await FirebaseDataSource().resetPassword(email);
+    bool response = await FirebaseDataSource().resetPassword(email);
 
     changeLoadingState();
+
+    return response;
   }
   void changeLoadingState({bool? isLoading}) {
     if(isLoading != null){

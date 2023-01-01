@@ -3,30 +3,33 @@ import 'package:flutter/cupertino.dart';
 import '../../../data_source/firebase.dart';
 import '../../shared/model/productModel.dart';
 
-class NewProductState extends ChangeNotifier{
+class NewProductState extends ChangeNotifier {
   bool loading = false;
 
-  Future<void> addProduct(ProductModel productModel) async {
+  Future<bool> addProduct(ProductModel productModel) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
+    bool response = await FirebaseDataSource().addProduct(productModel);
 
-     await FirebaseDataSource().addProduct(productModel);
+    changeLoadingState();
+
+    return response;
+  }
+
+  Future<bool> editProduct(ProductModel productModel) async {
+    changeLoadingState(isLoading: true);
+
+    bool response = await FirebaseDataSource().editProduct(productModel);
 
     changeLoadingState();
 
+    return response;
   }
-  Future<void> editProduct(ProductModel productModel) async {
-    changeLoadingState(isLoading : true);
 
-    await FirebaseDataSource().editProduct(productModel);
-
-    changeLoadingState();
-  }
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import 'brand_model.dart';
+
 class MaintenanceDeviceModel {
   String? _id = Uuid().v4();
   String? _customerName;
@@ -18,6 +20,7 @@ class MaintenanceDeviceModel {
   String? _notes;
   String? _devicePassword;
   List<int>? _pattern;
+  BrandModel? _brandModel;
 
   MaintenanceDeviceModel(
       {String? customerName,
@@ -35,7 +38,8 @@ class MaintenanceDeviceModel {
         String? estimatedTime,
         String? notes,
         String? devicePassword,
-        List<int>? pattern}) {
+        List<int>? pattern,
+        BrandModel? brandModel}) {
     if (customerName != null) {
       this._customerName = customerName;
     }
@@ -84,6 +88,9 @@ class MaintenanceDeviceModel {
     if (pattern != null) {
       this._pattern = pattern;
     }
+    if (brandModel != null) {
+      this._brandModel = brandModel;
+    }
   }
 
   String? get id => _id;
@@ -120,6 +127,8 @@ class MaintenanceDeviceModel {
   set devicePassword(String? devicePassword) => _devicePassword = devicePassword;
   List<int>? get pattern => _pattern;
   set pattern(List<int>? pattern) => _pattern = pattern;
+  BrandModel? get brandModel => _brandModel;
+  set brandModel(BrandModel? brandModel) => _brandModel = brandModel;
 
   MaintenanceDeviceModel.fromJson(Map<String, dynamic> json) {
     _id = json['id'];

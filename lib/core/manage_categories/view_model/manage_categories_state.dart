@@ -6,67 +6,79 @@ import '../../shared/model/category_and_sub_category_model.dart';
 class ManageCategories extends ChangeNotifier {
   bool loading = false;
 
-  Future<void> addCategory(
+  Future<bool> addCategory(
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().addCategory(categoriesAndSubCategoryModel);
+    bool response =
+        await FirebaseDataSource().addCategory(categoriesAndSubCategoryModel);
 
     changeLoadingState();
+
+    return response;
   }
 
-  Future<void> editCategory(String categoryID,
+  Future<bool> editCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource()
+    bool response = await FirebaseDataSource()
         .editCategory(categoryID, categoriesAndSubCategoryModel);
 
     changeLoadingState();
+
+    return response;
   }
 
-  Future<void> addSubCategory(String categoryID,
+  Future<bool> addSubCategory(String categoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource()
+    bool response = await FirebaseDataSource()
         .addSubCategory(categoryID, categoriesAndSubCategoryModel);
 
     changeLoadingState();
+
+    return response;
   }
 
-  Future<void> editSubCategories(String categoryID, String subCategoryID,
+  Future<bool> editSubCategories(String categoryID, String subCategoryID,
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().editSubCategories(
+    bool response = await FirebaseDataSource().editSubCategories(
         categoryID, subCategoryID, categoriesAndSubCategoryModel);
 
     changeLoadingState();
+
+    return response;
   }
 
-  Future<void> deleteCategory(String categoryId) async {
-    changeLoadingState(isLoading : true);
+  Future<bool> deleteCategory(String categoryId) async {
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().deleteCategory(categoryId);
+    bool response = await FirebaseDataSource().deleteCategory(categoryId);
 
     changeLoadingState();
+
+    return response;
   }
 
-  Future<void> deleteSubCategory(
+  Future<bool> deleteSubCategory(
       String categoryId, String subCategoryId) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().deleteSubCategory(categoryId, subCategoryId);
+    bool response =
+        await FirebaseDataSource().deleteSubCategory(categoryId, subCategoryId);
 
     changeLoadingState();
+    return response;
   }
 
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

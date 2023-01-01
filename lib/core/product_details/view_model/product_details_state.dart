@@ -5,26 +5,32 @@ import '../../shared/model/productModel.dart';
 class ProductDetailsState extends ChangeNotifier {
   bool loading = false;
 
-  Future<void> deleteProduct(String productId) async {
-    changeLoadingState(isLoading : true);
+  Future<bool> deleteProduct(String productId) async {
+    changeLoadingState(isLoading: true);
 
-    FirebaseDataSource().deleteProduct(productId);
+    bool response = await FirebaseDataSource().deleteProduct(productId);
 
     changeLoadingState();
+
+    return response;
   }
-  Future<void> updateFavorites(
+
+  Future<bool> updateFavorites(
       String productID, List<String> favoriteList) async {
-    changeLoadingState(isLoading : true);
+    changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource().updateFavorites(productID, favoriteList);
+    bool response =
+        await FirebaseDataSource().updateFavorites(productID, favoriteList);
 
     changeLoadingState();
+
+    return response;
   }
+
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

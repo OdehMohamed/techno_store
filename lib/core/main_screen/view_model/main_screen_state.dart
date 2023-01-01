@@ -5,16 +5,13 @@ import 'package:techno_store/data_source/firebase.dart';
 class MainScreenState extends ChangeNotifier {
   bool loading = false;
 
-  Future<void> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password) async {
     changeLoadingState(isLoading: true);
-    try {
-      await FirebaseDataSource().signIn(email, password);
-
-    } catch (e) {
-      print("EEEEEEEEEEERRRRRRRRROOOOOOOORRRRRRRRRR");
-    }
+     bool b =  await FirebaseDataSource().signIn(email, password);
 
     changeLoadingState();
+
+    return b;
   }
 
   void changeLoadingState({bool? isLoading}) {
