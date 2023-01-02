@@ -25,6 +25,15 @@ class _ResetPasswordState extends State<ResetPassword> {
     resetPasswordState = context.read<ResetPasswordState>();
     super.initState();
   }
+  resetMessage(value){
+    if (value) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please check your email or spam'.tr()),
+      )
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     resetPasswordState=context.watch<ResetPasswordState>();
@@ -112,13 +121,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                         ElevatedButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                            resetPasswordState.resetPassword(email_controller.text).then((value) {
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content:  Text('Please check your email or spam'.tr()),
-                              )
-                              );
-                            });
+                            resetPasswordState.resetPassword(email_controller.text).then((value) => resetMessage(value));
                             }
                           },
                           child: Container(

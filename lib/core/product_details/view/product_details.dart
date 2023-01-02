@@ -40,7 +40,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     sharedState = context.watch<SharedState>();
     favoriteChangeMessage (bool value,String msg){
       if (value){
-        Message.showLongToastMessage(msg.tr());
+        Message.showShortToastMessage(msg.tr());
         setState(() {});
       }
     }

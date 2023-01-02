@@ -8,6 +8,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 
+import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
 import '../../shared/model/create_user_account_model.dart';
 import '../../shared/view_model/shared_state.dart';
@@ -40,6 +41,12 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
     sharedState = context.watch<SharedState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    createdSuccessfullyMessage(value){
+      if (value){
+        Message.showLongToastMessage("Created ");
+        Navigator.pop(context);
+      }
+    }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -333,9 +340,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                               CreateUserAccountModel(
                                                   name: fullname_controller.text,
                                                   photo: photoPath,
-                                                  type: int.parse(usertype)))
-                                          .then(
-                                              (value) => Navigator.pop(context));
+                                                  type: int.parse(usertype))).then((value) => createdSuccessfullyMessage(value));
                                     }
                                   },
                                   child: Container(

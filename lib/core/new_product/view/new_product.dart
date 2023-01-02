@@ -52,9 +52,13 @@ class _NewProductState extends State<NewProduct> {
     sharedState = context.read<SharedState>();
     getCategoriesFuture = sharedState.getCategories();
     getBrandsFuture = sharedState.getBrands();
-
-
     super.initState();
+  }
+  addedMessage(bool value){
+    if (value){
+      Message.showLongToastMessage("Added successfully".tr());
+      Navigator.pop(context);
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -479,9 +483,7 @@ class _NewProductState extends State<NewProduct> {
                                             photo: photoPaths,
                                             favoriteList: []
                                           );
-                                          newProductState.addProduct(product);
-                                          Message.showLongToastMessage("Added successfully".tr());
-                                          Navigator.pop(context);
+                                          newProductState.addProduct(product).then((value) => addedMessage(value));
                                         }
                                       },
                                       child: Container(
