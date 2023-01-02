@@ -101,5 +101,7 @@
   "Deleted": "تم الحذف",
   "somethingWentWrong" : "حدث خطأ ما",
   "subCategoryMustBeEmpty" : "يجب ان لا يكون هناك اي تصنيف فرعي في هذا التصنيف الرئيسي",
-  "thereAreProductsInSubCategory" : "يجب ألا يكون هناك أي منتجات في هذا التصنيف الفرعي"
+  "thereAreProductsInSubCategory" : "يجب ألا يكون هناك أي منتجات في هذا التصنيف الفرعي",
+  "Added to favorite": "تمت الاضافة الى المفضلة",
+  "Removed from favorite": "ازالة من المفضلة"
 }

@@ -101,5 +101,7 @@
   "Deleted": "Deleted successfully",
   "somethingWentWrong" : "Something went wrong",
   "subCategoryMustBeEmpty" : "There should not be any sub-category in the this main category",
-  "thereAreProductsInSubCategory" : "There should not be any products in this sub-category"
+  "thereAreProductsInSubCategory" : "There should not be any products in this sub-category",
+  "Added to favorite": "Added to favorite",
+  "Removed from favorite": "Removed from favorite"
 }

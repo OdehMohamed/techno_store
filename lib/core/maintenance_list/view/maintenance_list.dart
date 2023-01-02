@@ -133,7 +133,6 @@ class _MaintinanceListState extends State<MaintinanceList> {
           break;
         }
       }
-      String? brandImgUrl="https://firebasestorage.googleapis.com/v0/b/technostore-86118.appspot.com/o/Images%2Fapple_logo.png?alt=media";
           return InkWell(
             child:  Container(
               width: width*0.9,
@@ -150,7 +149,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                     margin: EdgeInsets.all(width*0.05),
                     width: width*0.1,
                     height: height*0.07,
-                    child: Image.network(brandImgUrl,fit: BoxFit.fill,),
+                    child: Image.network(device.brandModel!.logo!,fit: BoxFit.fill,),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

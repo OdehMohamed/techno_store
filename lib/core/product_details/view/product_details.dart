@@ -38,17 +38,32 @@ class _ProductDetailsState extends State<ProductDetails> {
   Widget build(BuildContext context) {
     productDetailsState=context.watch<ProductDetailsState>();
     sharedState = context.watch<SharedState>();
+    favoriteChangeMessage (bool value,String msg){
+      if (value){
+        Message.showLongToastMessage(msg.tr());
+        setState(() {});
+      }
+    }
 
     void changeFavourite(){
+      String msg="";
       favourite=!favourite;
       if (widget.product.favoriteList!.contains(sharedState.userId)){
         widget.product.favoriteList?.remove(sharedState.userId);
+        msg = "Removed from favorite";
       }
       else {
         widget.product.favoriteList?.add(sharedState.userId!);
+        msg = "Added to favorite";
       }
-      productDetailsState.updateFavorites(widget.product.id!, widget.product.favoriteList!);
-      setState(() {});
+      productDetailsState.updateFavorites(widget.product.id!, widget.product.favoriteList!).then((value) => favoriteChangeMessage(value,msg)) ;
+    }
+    deleteMessage (bool value){
+        if (value){
+        Message.showLongToastMessage("Deleted".tr());
+        Navigator.pop(context);
+        Navigator.pop(context);
+        }
     }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -123,11 +138,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         TextButton(
                                         child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
                                         onPressed: () {
-                                          productDetailsState.deleteProduct(widget.product.id!).then((value) => (){
-                                            Message.showLongToastMessage("Deleted".tr());
-                                            Navigator.pop(context);
-                                            Navigator.pop(context);
-                                          });
+                                          productDetailsState.deleteProduct(widget.product.id!).then((value) => deleteMessage(value));
                                         },
                                         ),
                                         TextButton(
