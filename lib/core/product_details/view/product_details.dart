@@ -121,7 +121,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 InkWell(
                                   child :Icon(Icons.edit,color: ColorUtilities.secondary,size: 35),
                                   onTap: (){
-                                    //Utilities.navigatorWithBack(context, NewProduct(widget.product,true));
+                                    Utilities.navigatorWithBack(context, NewProduct(editable: true,edit_product: widget.product,));
                                   },
                                 ),
                                 SizedBox(width: width*0.05,),

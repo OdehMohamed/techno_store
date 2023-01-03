@@ -197,7 +197,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     ), () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NewProduct()),
+                    MaterialPageRoute(builder: (context) => NewProduct(editable: false,)),
                   );
                 }):SizedBox(),
                 sharedState.userType==0?

@@ -19,7 +19,10 @@ import '../../shared/model/category_and_sub_category_model.dart';
 import '../../shared/view_model/shared_state.dart';
 
 class NewProduct extends StatefulWidget {
-  const NewProduct({Key? key}) : super(key: key);
+  final ProductModel? edit_product;
+  final bool editable;
+
+  const NewProduct({Key? key, this.edit_product,required this.editable}) : super(key: key);
 
   @override
   State<NewProduct> createState() => _NewProductState();
@@ -36,7 +39,7 @@ class _NewProductState extends State<NewProduct> {
   BrandModel? selectedBrand;
   CategoriesAndSubCategoryModel? selectedCategory;
   CategoriesAndSubCategoryModel? selectedSubCategory;
-
+  List<String> deletedList=[];
   final _formKey = GlobalKey<FormState>();
   List<String> photoPaths=[];
   final en_title_controller = TextEditingController();
@@ -52,6 +55,13 @@ class _NewProductState extends State<NewProduct> {
     sharedState = context.read<SharedState>();
     getCategoriesFuture = sharedState.getCategories();
     getBrandsFuture = sharedState.getBrands();
+    if (widget.editable){
+      en_title_controller.text=widget.edit_product!.enName!;
+      ar_title_controller.text=widget.edit_product!.arName!;
+      description_controller.text=widget.edit_product!.description!;
+      price_controller.text=widget.edit_product!.price!.toString();
+      photoPaths=widget.edit_product!.photo!;
+    }
     super.initState();
   }
   addedMessage(bool value){
@@ -136,6 +146,11 @@ class _NewProductState extends State<NewProduct> {
                                             child:Container(margin: EdgeInsets.all(10),
                                                 child:Stack(
                                                   children: [
+                                                    photoPaths[i].contains("https://firebasestorage.googleapis.com/v0/b/technostore")?
+                                                    Image.network(
+                                                      photoPaths[i] ,
+                                                      fit: BoxFit.fill,
+                                                    ) :
                                                     Image.file(
                                                       File(photoPaths[i]),
                                                       fit: BoxFit.fill,
@@ -146,6 +161,9 @@ class _NewProductState extends State<NewProduct> {
                                                         InkWell(
                                                           child: Icon(Icons.cancel,color: Colors.red,size: 30,),
                                                           onTap: (){
+                                                            if (photoPaths[i].contains("https://firebasestorage.googleapis.com/v0/b/technostore")){
+                                                              deletedList.add(photoPaths[i]);
+                                                            }
                                                             photoPaths.remove(photoPaths[i]);
                                                             setState(() {});
                                                           },
@@ -306,6 +324,16 @@ class _NewProductState extends State<NewProduct> {
                                              if (snapshot.hasData) {
                                                List<CategoriesAndSubCategoryModel>
                                                futureCategories = snapshot.data;
+                                               if (widget.editable&&selectedCategory==null){
+                                                 print("in");
+                                                 for(int i=0;i<futureCategories.length;i++){
+                                                   if (futureCategories[i].id==widget.edit_product!.CategoryID!){
+                                                     selectedCategory=futureCategories[i];
+                                                     getSubCategoriesFuture = sharedState
+                                                         .getSubCategories(selectedCategory!.id!);
+                                                   }
+                                                 }
+                                               }
                                                return FormValidatorDropdown<
                                                    CategoriesAndSubCategoryModel>(
                                                  name: "CategoryName",
@@ -356,6 +384,13 @@ class _NewProductState extends State<NewProduct> {
                                             if (snapshot.hasData) {
                                               List<CategoriesAndSubCategoryModel>
                                               futureSubCategories = snapshot.data;
+                                              if (widget.editable&&selectedSubCategory==null){
+                                                for(int i=0;i<futureSubCategories.length;i++){
+                                                  if (futureSubCategories[i].id==widget.edit_product!.subCategoryID){
+                                                    selectedSubCategory=futureSubCategories[i];
+                                                  }
+                                                }
+                                              }
                                               return FormValidatorDropdown<
                                                   CategoriesAndSubCategoryModel>(
                                                 name: "SubCategoryName",
@@ -440,6 +475,13 @@ class _NewProductState extends State<NewProduct> {
                                             if (snapshot.hasData) {
                                               List<BrandModel>
                                               futureBrands = snapshot.data;
+                                              if (widget.editable&&selectedBrand==null){
+                                                for (int i =0;i<futureBrands.length;i++){
+                                                  if (futureBrands[i].name==widget.edit_product!.brandID){
+                                                    setState(() {selectedBrand=futureBrands[i];});
+                                                  }
+                                                }
+                                              }
                                               return FormValidatorDropdown<
                                                   BrandModel>(
                                                 name: "BrandName",
@@ -473,22 +515,39 @@ class _NewProductState extends State<NewProduct> {
                                     ElevatedButton(
                                       onPressed: (){
                                         if (_formKey.currentState!.validate()) {
-                                          ProductModel product = ProductModel(
-                                            enName: en_title_controller.text ,
-                                            arName: ar_title_controller.text,
-                                            description: description_controller.text,
-                                            subCategoryID: selectedSubCategory?.id,
-                                            price: double.parse(price_controller.text),
-                                            brandID: selectedBrand?.name,
-                                            photo: photoPaths,
-                                            favoriteList: []
-                                          );
-                                          newProductState.addProduct(product).then((value) => addedMessage(value));
+                                          if(widget.editable){
+                                            widget.edit_product!.enName=en_title_controller.text;
+                                            widget.edit_product!.arName=ar_title_controller.text;
+                                            widget.edit_product!.price=double.parse(price_controller.text);
+                                            widget.edit_product!.description=description_controller.text;
+                                            widget.edit_product!.brandID=selectedBrand!.name;
+                                            widget.edit_product!.subCategoryID=selectedSubCategory!.id;
+                                            //newProductState.editProduct(widget.edit_product!);
+                                            print(widget.edit_product.toString());
+                                            print(deletedList);
+                                          }
+                                          else
+                                            {
+                                            ProductModel product = ProductModel(
+                                              enName: en_title_controller.text ,
+                                              arName: ar_title_controller.text,
+                                              description: description_controller.text,
+                                              CategoryID: selectedCategory?.id,
+                                              subCategoryID: selectedSubCategory?.id,
+                                              price: double.parse(price_controller.text),
+                                              brandID: selectedBrand?.name,
+                                              photo: photoPaths,
+                                              favoriteList: []
+                                            );
+                                            newProductState.addProduct(product).then((value) => addedMessage(value));
+                                          }
                                         }
                                       },
                                       child: Container(
                                         width: width*0.2,
-                                        child: WidgetUtilities.autoSizeText("Create",textAlign: TextAlign.center,),
+                                        child: widget.editable?
+                                             WidgetUtilities.autoSizeText("Save",textAlign: TextAlign.center,)
+                                            :WidgetUtilities.autoSizeText("Create",textAlign: TextAlign.center,),
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         primary: ColorUtilities.secondary,

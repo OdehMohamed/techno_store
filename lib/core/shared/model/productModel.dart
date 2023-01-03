@@ -6,6 +6,7 @@ class ProductModel {
   double? _price;
   String? _description;
   List<String>? _photo;
+  String? _CategoryID;
   String? _subCategoryID;
   List<String>? _favoriteList;
 
@@ -17,6 +18,7 @@ class ProductModel {
       double? price,
       String? description,
       List<String>? photo,
+      String? CategoryID,
       String? subCategoryID,
       List<String>? favoriteList}) {
 
@@ -37,6 +39,9 @@ class ProductModel {
     }
     if (photo != null) {
       this._photo = photo;
+    }
+    if (CategoryID != null) {
+      this._CategoryID = CategoryID;
     }
     if (subCategoryID != null) {
       this._subCategoryID = subCategoryID;
@@ -60,6 +65,8 @@ class ProductModel {
   set description(String? description) => _description = description;
   List<String>? get photo => _photo;
   set photo(List<String>? photo) => _photo = photo;
+  String? get CategoryID => _CategoryID;
+  set CategoryID(String? CategoryID) => _CategoryID = CategoryID;
   String? get subCategoryID => _subCategoryID;
   set subCategoryID(String? subCategoryID) => _subCategoryID = subCategoryID;
   List<String>? get favoriteList => _favoriteList;
@@ -72,6 +79,7 @@ class ProductModel {
     _price = json['price'];
     _description = json['description'];
     _photo = json['photo'].cast<String>();
+    _CategoryID = json['CategoryID'];
     _subCategoryID = json['subCategoryID'];
     _favoriteList = json['favoriteList'].cast<String>();
   }
@@ -84,8 +92,10 @@ class ProductModel {
     data['price'] = this._price;
     data['description'] = this._description;
     data['photo'] = this._photo;
+    data['CategoryID'] = this._CategoryID;
     data['subCategoryID'] = this._subCategoryID;
     data['favoriteList'] = this._favoriteList;
     return data;
   }
+
 }

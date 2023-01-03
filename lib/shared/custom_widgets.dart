@@ -109,6 +109,7 @@ class FormValidatorDropdown<T> extends StatelessWidget {
     return FormBuilderField(
       autovalidateMode: AutovalidateMode.always,
       name: name,
+      initialValue: dropDownValue,
       builder: (FormFieldState<T> state) {
         return InputDecorator(
           decoration: InputDecoration(
