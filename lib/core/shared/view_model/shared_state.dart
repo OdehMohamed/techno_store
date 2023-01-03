@@ -54,12 +54,18 @@ class SharedState extends ChangeNotifier {
       CreateUserAccountModel createUserAccountModel) async {
     changeLoadingState(isLoading: true);
 
-    await FirebaseDataSource()
-        .signUp(email, password, createUserAccountModel)
-        .then((value) {
-      updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid,
-          createUserAccountModel: createUserAccountModel);
-    });
+    try{
+      await FirebaseDataSource()
+          .signUp(email, password, createUserAccountModel)
+          .then((value) {
+        updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid,
+            createUserAccountModel: createUserAccountModel);
+      });
+    }
+    catch(e){
+
+    }
+   
 
     changeLoadingState();
   }
