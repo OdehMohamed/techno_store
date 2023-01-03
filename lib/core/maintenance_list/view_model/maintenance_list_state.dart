@@ -3,26 +3,27 @@ import 'package:techno_store/data_source/firebase.dart';
 
 import '../../shared/model/maintenance_device_model.dart';
 
-class MaintenanceListState extends ChangeNotifier{
+class MaintenanceListState extends ChangeNotifier {
   bool loading = false;
 
   Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
       String status) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
+    List<MaintenanceDeviceModel> devices = [];
+    try {
+      devices = await FirebaseDataSource().getDevicesInMaintenance(status);
+    } catch (e) {}
 
-    List<MaintenanceDeviceModel> devices = await FirebaseDataSource().getDevicesInMaintenance(status);
-
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
 
     return devices;
   }
 
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

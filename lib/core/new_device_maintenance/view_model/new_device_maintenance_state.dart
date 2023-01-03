@@ -10,10 +10,12 @@ class NewDeviceMaintenanceState extends ChangeNotifier {
       MaintenanceDeviceModel maintenanceDeviceModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource()
-        .addDeviceToMaintenance(maintenanceDeviceModel);
-
-    changeLoadingState();
+    bool response = false;
+    try {
+      response = await FirebaseDataSource()
+          .addDeviceToMaintenance(maintenanceDeviceModel);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -22,10 +24,14 @@ class NewDeviceMaintenanceState extends ChangeNotifier {
       String deviceID, MaintenanceDeviceModel maintenanceDeviceModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource()
-        .editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
+    bool response = false;
 
-    changeLoadingState();
+    try {
+      response = await FirebaseDataSource()
+          .editDeviceInMaintenance(deviceID, maintenanceDeviceModel);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return response;
   }

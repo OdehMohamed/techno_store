@@ -10,10 +10,13 @@ class ManageCategories extends ChangeNotifier {
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response =
-        await FirebaseDataSource().addCategory(categoriesAndSubCategoryModel);
+    bool response = false;
+    try {
+      response =
+          await FirebaseDataSource().addCategory(categoriesAndSubCategoryModel);
+    } catch (e) {}
 
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -22,10 +25,14 @@ class ManageCategories extends ChangeNotifier {
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource()
-        .editCategory(categoryID, categoriesAndSubCategoryModel);
+    bool response = false;
 
-    changeLoadingState();
+    try {
+      response = await FirebaseDataSource()
+          .editCategory(categoryID, categoriesAndSubCategoryModel);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -34,10 +41,14 @@ class ManageCategories extends ChangeNotifier {
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource()
-        .addSubCategory(categoryID, categoriesAndSubCategoryModel);
+    bool response = false;
 
-    changeLoadingState();
+    try {
+      response = await FirebaseDataSource()
+          .addSubCategory(categoryID, categoriesAndSubCategoryModel);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -46,10 +57,13 @@ class ManageCategories extends ChangeNotifier {
       CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().editSubCategories(
-        categoryID, subCategoryID, categoriesAndSubCategoryModel);
+    bool response = false;
+    try {
+      response = await FirebaseDataSource().editSubCategories(
+          categoryID, subCategoryID, categoriesAndSubCategoryModel);
+    } catch (e) {}
 
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -57,9 +71,11 @@ class ManageCategories extends ChangeNotifier {
   Future<bool> deleteCategory(String categoryId) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().deleteCategory(categoryId);
-
-    changeLoadingState();
+    bool response = false;
+    try {
+      response = await FirebaseDataSource().deleteCategory(categoryId);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -68,10 +84,12 @@ class ManageCategories extends ChangeNotifier {
       String categoryId, String subCategoryId) async {
     changeLoadingState(isLoading: true);
 
-    bool response =
-        await FirebaseDataSource().deleteSubCategory(categoryId, subCategoryId);
-
-    changeLoadingState();
+    bool response = false;
+    try {
+      response = await FirebaseDataSource()
+          .deleteSubCategory(categoryId, subCategoryId);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
     return response;
   }
 

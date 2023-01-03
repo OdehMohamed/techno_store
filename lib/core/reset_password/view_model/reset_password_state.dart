@@ -1,24 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
-class ResetPasswordState extends ChangeNotifier{
+class ResetPasswordState extends ChangeNotifier {
   bool loading = false;
 
   Future<bool> resetPassword(String email) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
+    bool response = false;
 
-    bool response = await FirebaseDataSource().resetPassword(email);
-
-    changeLoadingState();
+    try {
+      response = await FirebaseDataSource().resetPassword(email);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
 
     return response;
   }
+
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();

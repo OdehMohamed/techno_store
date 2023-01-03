@@ -8,9 +8,13 @@ class ProductDetailsState extends ChangeNotifier {
   Future<bool> deleteProduct(String productId) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().deleteProduct(productId);
+    bool response = false;
 
-    changeLoadingState();
+    try {
+      response = await FirebaseDataSource().deleteProduct(productId);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -19,10 +23,13 @@ class ProductDetailsState extends ChangeNotifier {
       String productID, List<String> favoriteList) async {
     changeLoadingState(isLoading: true);
 
-    bool response =
-        await FirebaseDataSource().updateFavorites(productID, favoriteList);
+    bool response = false;
+    try {
+      response =
+          await FirebaseDataSource().updateFavorites(productID, favoriteList);
+    } catch (e) {}
 
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
 
     return response;
   }

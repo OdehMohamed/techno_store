@@ -9,9 +9,13 @@ class NewProductState extends ChangeNotifier {
   Future<bool> addProduct(ProductModel productModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().addProduct(productModel);
+    bool response = false;
 
-    changeLoadingState();
+    try {
+      await FirebaseDataSource().addProduct(productModel);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -19,9 +23,11 @@ class NewProductState extends ChangeNotifier {
   Future<bool> editProduct(ProductModel productModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().editProduct(productModel);
-
-    changeLoadingState();
+    bool response = false;
+    try {
+      response = await FirebaseDataSource().editProduct(productModel);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
 
     return response;
   }

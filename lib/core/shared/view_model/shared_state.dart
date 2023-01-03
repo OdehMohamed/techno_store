@@ -31,7 +31,7 @@ class SharedState extends ChangeNotifier {
       {CreateUserAccountModel? createUserAccountModel}) async {
     changeLoadingState(isLoading: true);
 
-    try{
+    try {
       if (createUserAccountModel == null) {
         createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
       }
@@ -42,10 +42,7 @@ class SharedState extends ChangeNotifier {
         userPhoto = createUserAccountModel.photo;
         userType = createUserAccountModel.type;
       }
-    }catch(e){
-
-    }
-
+    } catch (e) {}
 
     changeLoadingState(isLoading: false);
   }
@@ -54,29 +51,29 @@ class SharedState extends ChangeNotifier {
       CreateUserAccountModel createUserAccountModel) async {
     changeLoadingState(isLoading: true);
 
-    try{
+    try {
       await FirebaseDataSource()
           .signUp(email, password, createUserAccountModel)
           .then((value) {
         updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid,
             createUserAccountModel: createUserAccountModel);
       });
-    }
-    catch(e){
+    } catch (e) {}
 
-    }
-   
-
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
   }
 
   Future<bool> createNewUserFromAdmin(String email, String password,
       CreateUserAccountModel createUserAccountModel) async {
     changeLoadingState(isLoading: true);
 
-    bool response = await FirebaseDataSource().sinUpByAdmin(email, password, createUserAccountModel);
+    bool response = false;
+    try {
+      response = await FirebaseDataSource()
+          .sinUpByAdmin(email, password, createUserAccountModel);
+    } catch (e) {}
 
-    changeLoadingState();
+    changeLoadingState(isLoading: false);
 
     return response;
   }
@@ -84,10 +81,13 @@ class SharedState extends ChangeNotifier {
   Future<List<CategoriesAndSubCategoryModel>> getCategories() async {
     changeLoadingState(isLoading: true);
 
-    List<CategoriesAndSubCategoryModel> categories =
-        await FirebaseDataSource().getCategories();
+    List<CategoriesAndSubCategoryModel> categories = [];
 
-    changeLoadingState();
+    try {
+      categories = await FirebaseDataSource().getCategories();
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return categories;
   }
@@ -96,10 +96,13 @@ class SharedState extends ChangeNotifier {
       String categoryID) async {
     changeLoadingState(isLoading: true);
 
-    List<CategoriesAndSubCategoryModel> subCategories =
-        await FirebaseDataSource().getSubCategories(categoryID);
+    List<CategoriesAndSubCategoryModel> subCategories = [];
 
-    changeLoadingState();
+    try {
+      subCategories = await FirebaseDataSource().getSubCategories(categoryID);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return subCategories;
   }
@@ -107,9 +110,13 @@ class SharedState extends ChangeNotifier {
   Future<List<BrandModel>> getBrands() async {
     changeLoadingState(isLoading: true);
 
-    List<BrandModel> brands = await FirebaseDataSource().getBrands();
+    List<BrandModel> brands = [];
 
-    changeLoadingState();
+    try {
+      brands = await FirebaseDataSource().getBrands();
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return brands;
   }
@@ -117,9 +124,13 @@ class SharedState extends ChangeNotifier {
   Future<BrandModel?> getBrand(String brandID) async {
     changeLoadingState(isLoading: true);
 
-    BrandModel? brands = await FirebaseDataSource().getBrand(brandID);
+    BrandModel? brands;
 
-    changeLoadingState();
+    try {
+      brands = await FirebaseDataSource().getBrand(brandID);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
 
     return brands;
   }

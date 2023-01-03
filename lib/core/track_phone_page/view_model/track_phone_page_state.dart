@@ -4,26 +4,26 @@ import 'package:techno_store/data_source/firebase.dart';
 
 import '../../shared/model/maintenance_device_model.dart';
 
-class TrackPhonePageState extends ChangeNotifier{
-
+class TrackPhonePageState extends ChangeNotifier {
   bool loading = false;
   Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
       String phoneNumber) async {
+    changeLoadingState(isLoading: true);
 
-    changeLoadingState(isLoading : true);
+    List<MaintenanceDeviceModel> devices = [];
 
-    List<MaintenanceDeviceModel> devices = await FirebaseDataSource().checkDeviceStatus(phoneNumber);
-
-    changeLoadingState();
+    try {
+      devices = await FirebaseDataSource().checkDeviceStatus(phoneNumber);
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
 
     return devices;
   }
 
   void changeLoadingState({bool? isLoading}) {
-    if(isLoading != null){
+    if (isLoading != null) {
       loading = isLoading;
-    }
-    else{
+    } else {
       loading ? loading = false : loading = true;
     }
     refresh();
