@@ -599,8 +599,9 @@ class FirebaseDataSource {
           .get()
           .then((value) {
         for (var element in value.docs) {
-          products.add(ProductModel.fromJson(element.data()));
-          print(element.data().toString());
+          ProductModel product = ProductModel.fromJson(element.data());
+          product.id = element.id;
+          products.add(product);
         }
       });
     } catch (e) {
