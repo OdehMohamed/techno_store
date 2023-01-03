@@ -566,9 +566,16 @@ class FirebaseDataSource {
           .collection("maintenanceDevices")
           .where("phoneNumber", isEqualTo: phoneNumber)
           .get()
-          .then((value) {
+          .then((value) async {
         for (var element in value.docs) {
-          devices.add(MaintenanceDeviceModel.fromJson(element.data()));
+          //devices.add(MaintenanceDeviceModel.fromJson(element.data()));
+          MaintenanceDeviceModel? maintenanceDeviceModel =
+          MaintenanceDeviceModel.fromJson(element.data());
+          if (maintenanceDeviceModel.brandID != null) {
+            maintenanceDeviceModel.brandModel =
+                await getBrand(maintenanceDeviceModel.brandID!);
+          }
+          devices.add(maintenanceDeviceModel);
         }
       });
     } catch (e) {

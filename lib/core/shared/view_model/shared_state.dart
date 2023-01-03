@@ -31,18 +31,23 @@ class SharedState extends ChangeNotifier {
       {CreateUserAccountModel? createUserAccountModel}) async {
     changeLoadingState(isLoading: true);
 
-    if (createUserAccountModel == null) {
-      createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
+    try{
+      if (createUserAccountModel == null) {
+        createUserAccountModel = await FirebaseDataSource().getUserInfo(uid);
+      }
+
+      if (createUserAccountModel != null) {
+        userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
+        userName = createUserAccountModel.name;
+        userPhoto = createUserAccountModel.photo;
+        userType = createUserAccountModel.type;
+      }
+    }catch(e){
+
     }
 
-    if (createUserAccountModel != null) {
-      userId = FirebaseDataSource().firebaseAuth.currentUser?.uid;
-      userName = createUserAccountModel.name;
-      userPhoto = createUserAccountModel.photo;
-      userType = createUserAccountModel.type;
-    }
 
-    refresh();
+    changeLoadingState(isLoading: false);
   }
 
   Future<void> signUp(String email, String password,
