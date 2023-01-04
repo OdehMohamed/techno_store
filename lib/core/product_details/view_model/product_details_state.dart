@@ -5,13 +5,13 @@ import '../../shared/model/productModel.dart';
 class ProductDetailsState extends ChangeNotifier {
   bool loading = false;
 
-  Future<bool> deleteProduct(String productId) async {
+  Future<bool> deleteProduct(ProductModel productModel) async {
     changeLoadingState(isLoading: true);
 
     bool response = false;
 
     try {
-      response = await FirebaseDataSource().deleteProduct(productId);
+      response = await FirebaseDataSource().deleteProduct(productModel);
     } catch (e) {}
 
     changeLoadingState(isLoading: false);

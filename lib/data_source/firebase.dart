@@ -223,6 +223,16 @@ class FirebaseDataSource {
     return null;
   }
 
+  Future<void> deletePhoto(String photo) async {
+    try {
+      if (photo != "") {
+        await firebaseStorage.refFromURL(photo).delete();
+      }
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+  }
+
 ////
 ////
 ////
@@ -451,6 +461,19 @@ class FirebaseDataSource {
 
   Future<bool> addProduct(ProductModel productModel) async {
     try {
+      if (productModel.photo != null) {
+        List<String> uploadedPhotos = [];
+
+        for (String photo in productModel.photo!) {
+          String? photoPath = await uploadPhoto(photo);
+          if (photoPath != null) {
+            uploadedPhotos.add(photoPath);
+          }
+        }
+
+        productModel.photo = uploadedPhotos;
+      }
+
       await firebaseFirestore.collection("products").add(productModel.toJson());
 
       return true;
@@ -461,8 +484,30 @@ class FirebaseDataSource {
     return false;
   }
 
-  Future<bool> editProduct(ProductModel productModel) async {
+  Future<bool> editProduct(
+      ProductModel productModel, List<String> deletedPhotos) async {
     try {
+      if (deletedPhotos.isNotEmpty) {
+        for (String deletedPhoto in deletedPhotos) {
+          if (deletedPhoto.startsWith("https://firebasestorage")) {
+            await deletePhoto(deletedPhoto);
+          }
+        }
+      }
+
+      if (productModel.photo != null) {
+        List<String> uploadedPhotos = [];
+
+        for (String photo in productModel.photo!) {
+          String? photoPath = await uploadPhoto(photo);
+          if (photoPath != null) {
+            uploadedPhotos.add(photoPath);
+          }
+        }
+
+        productModel.photo = uploadedPhotos;
+      }
+
       await firebaseFirestore
           .collection("products")
           .doc(productModel.id)
@@ -476,9 +521,18 @@ class FirebaseDataSource {
     return false;
   }
 
-  Future<bool> deleteProduct(String productId) async {
+  Future<bool> deleteProduct(ProductModel productModel) async {
     try {
-      await firebaseFirestore.collection('products').doc(productId).delete();
+      if (productModel.photo != null) {
+        for (String photo in productModel.photo!) {
+          await deletePhoto(photo);
+        }
+      }
+
+      await firebaseFirestore
+          .collection('products')
+          .doc(productModel.id)
+          .delete();
       return true;
     } catch (e) {
       Message.showErrorToastMessage("somethingWentWrong".tr());
@@ -570,7 +624,7 @@ class FirebaseDataSource {
         for (var element in value.docs) {
           //devices.add(MaintenanceDeviceModel.fromJson(element.data()));
           MaintenanceDeviceModel? maintenanceDeviceModel =
-          MaintenanceDeviceModel.fromJson(element.data());
+              MaintenanceDeviceModel.fromJson(element.data());
           if (maintenanceDeviceModel.brandID != null) {
             maintenanceDeviceModel.brandModel =
                 await getBrand(maintenanceDeviceModel.brandID!);

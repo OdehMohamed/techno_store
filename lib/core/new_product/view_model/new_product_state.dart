@@ -20,12 +20,14 @@ class NewProductState extends ChangeNotifier {
     return response;
   }
 
-  Future<bool> editProduct(ProductModel productModel) async {
+  Future<bool> editProduct(
+      ProductModel productModel, List<String> deletedPhotos) async {
     changeLoadingState(isLoading: true);
 
     bool response = false;
     try {
-      response = await FirebaseDataSource().editProduct(productModel);
+      response =
+          await FirebaseDataSource().editProduct(productModel, deletedPhotos);
     } catch (e) {}
     changeLoadingState(isLoading: false);
 

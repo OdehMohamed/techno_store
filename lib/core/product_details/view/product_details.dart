@@ -138,7 +138,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         TextButton(
                                         child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
                                         onPressed: () {
-                                          productDetailsState.deleteProduct(widget.product.id!).then((value) => deleteMessage(value));
+                                          productDetailsState.deleteProduct(widget.product).then((value) => deleteMessage(value));
                                         },
                                         ),
                                         TextButton(
