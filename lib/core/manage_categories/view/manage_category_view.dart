@@ -64,6 +64,12 @@ class _manageCategoryState extends State<manageCategory> {
   bool sub_category_flag=false;
   @override
   Widget build(BuildContext context) {
+    feedbackMessage(bool value,String msg){
+      if (value){
+        Navigator.pop(context);
+        Message.showLongToastMessage(msg.tr());
+      }
+    }
     sharedState = context.watch<SharedState>();
     manageCategoriesState=context.watch<ManageCategories>();
 
@@ -332,10 +338,7 @@ class _manageCategoryState extends State<manageCategory> {
                                                                     manageCategoriesState.addCategory(CategoriesAndSubCategoryModel(
                                                                       enName: new_category_name_controller_en.text,
                                                                       arName: new_category_name_controller_ar.text,
-                                                                    )).then((value) => (){
-                                                                      Navigator.pop(context);
-                                                                      Message.showLongToastMessage("Added successfully");
-                                                                    });
+                                                                    )).then((value) => feedbackMessage(value, "Added successfully"));
                                                                   }
                                                                 },
                                                                 child:
@@ -624,10 +627,7 @@ class _manageCategoryState extends State<manageCategory> {
                                                                           manageCategoriesState.addSubCategory(add_sub_category_selectedCategory!.id!,CategoriesAndSubCategoryModel(
                                                                             enName: new_sub_category_controller_en.text,
                                                                             arName: new_sub_category_controller_ar.text,
-                                                                          )).then((value) => (){
-                                                                            Navigator.pop(context);
-                                                                            Message.showLongToastMessage("Added successfully");
-                                                                          });
+                                                                          )).then((value) => feedbackMessage(value, "Added successfully"));
                                                                         }
                                                                       },
                                                                       child: Text(
@@ -759,18 +759,14 @@ class _manageCategoryState extends State<manageCategory> {
                               onPressed: () {
                                 if (_edit_delete_fields_key.currentState!.validate()&&_drop_down_list_key.currentState!.validate()){
                                   if (sub_category_flag){
-                                    manageCategoriesState.editSubCategories(selectedCategory!.id!,selectedSubCategory!.id!, selectedCategory!).then((value) => (){
-                                      Navigator.pop(context);
-                                      Message.showLongToastMessage("Edited successfully".tr());
-                                    });
+                                    selectedSubCategory!.arName=edit_name_controller_ar.text;
+                                    selectedSubCategory!.enName=edit_name_controller_en.text;
+                                    manageCategoriesState.editSubCategories(selectedCategory!.id!,selectedSubCategory!.id!, selectedSubCategory!).then((value) => feedbackMessage(value, "Edited successfully"));
                                   }
                                   else {
                                     selectedCategory!.arName=edit_name_controller_ar.text;
                                     selectedCategory!.enName=edit_name_controller_en.text;
-                                    manageCategoriesState.editCategory(selectedCategory!.id!, selectedCategory!).then((value) => (){
-                                      Navigator.pop(context);
-                                      Message.showLongToastMessage("Edited successfully".tr());
-                                    });
+                                    manageCategoriesState.editCategory(selectedCategory!.id!, selectedCategory!).then((value) => feedbackMessage(value, "Edited successfully"));
                                   }
                                 }
                               },
@@ -791,18 +787,12 @@ class _manageCategoryState extends State<manageCategory> {
                                 onPressed: () {
                                   if (sub_category_flag){
                                     if (_drop_down_list_key.currentState!.validate()){
-                                      manageCategoriesState.deleteSubCategory(selectedCategory!.id!,selectedSubCategory!.id!).then((value) => (){
-                                        Navigator.pop(context);
-                                        Message.showLongToastMessage("Deleted".tr());
-                                      });
+                                      manageCategoriesState.deleteSubCategory(selectedCategory!.id!,selectedSubCategory!.id!).then((value) => feedbackMessage(value, "Deleted"));
                                     }
                                   }
                                   else {
                                     if (_drop_down_list_key.currentState!.validate()){
-                                      manageCategoriesState.deleteCategory(selectedCategory!.id!).then((value) => (){
-                                        Navigator.pop(context);
-                                        Message.showLongToastMessage("Deleted".tr());
-                                      });
+                                      manageCategoriesState.deleteCategory(selectedCategory!.id!).then((value) => feedbackMessage(value, "Deleted"));
                                     }
                                   }
                                 },

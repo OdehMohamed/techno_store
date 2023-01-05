@@ -317,6 +317,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           }
                           else if(snapshot.hasData){
                             List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
+                            if (devices.isEmpty){
+                              return Center(child: Text("No Data".tr()),);
+                            }
                             return ListView.builder(
                                 padding: EdgeInsets.zero,
                                 itemCount: devices.length,

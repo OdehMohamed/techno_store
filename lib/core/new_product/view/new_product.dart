@@ -64,17 +64,18 @@ class _NewProductState extends State<NewProduct> {
     }
     super.initState();
   }
-  addedMessage(bool value){
-    if (value){
-      Message.showLongToastMessage("Added successfully".tr());
-      Navigator.pop(context);
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
+    feedbackMessage(bool value,String msg){
+      print ("hi"+value.toString());
+      if (value){
+        Message.showLongToastMessage(msg.tr());
+        Navigator.pop(context);
+      }
+    }
     newProductState= context.watch<NewProductState>();
     sharedState= context.watch<SharedState>();
-
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -522,7 +523,7 @@ class _NewProductState extends State<NewProduct> {
                                             widget.edit_product!.description=description_controller.text;
                                             widget.edit_product!.brandID=selectedBrand!.name;
                                             widget.edit_product!.subCategoryID=selectedSubCategory!.id;
-                                            newProductState.editProduct(widget.edit_product!,deletedList);
+                                            newProductState.editProduct(widget.edit_product!,deletedList).then((value) => feedbackMessage(value,"Added successfully"));
                                           }
                                           else
                                             {
@@ -537,7 +538,7 @@ class _NewProductState extends State<NewProduct> {
                                               photo: photoPaths,
                                               favoriteList: []
                                             );
-                                            newProductState.addProduct(product).then((value) => addedMessage(value));
+                                            newProductState.addProduct(product).then((value) => feedbackMessage(value,"Edited successfully"));
                                           }
                                         }
                                       },

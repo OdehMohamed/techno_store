@@ -260,8 +260,19 @@ class _StoreState extends State<Store> {
                                       if (snapshot.hasData) {
                                         List<CategoriesAndSubCategoryModel>
                                         futureSubCategories = snapshot.data;
-                                        if (backgroundColor.length!=futureSubCategories.length||textColor.length!=futureSubCategories.length){
+                                        if (selectedSubCategory==null){
                                           productList= storeState.getProducts(futureSubCategories.first.id!);
+                                          selectedSubCategory=futureSubCategories.first;
+                                          backgroundColor=[];
+                                          textColor=[];
+                                          for(int i =0;i<futureSubCategories.length;i++){
+                                            backgroundColor.add(Colors.transparent,);
+                                            textColor.add(Colors.white);
+                                          }
+                                          backgroundColor[0]=ColorUtilities.backgroundContainer;
+                                          textColor[0]=ColorUtilities.secondary;
+                                        }
+                                        if (backgroundColor.length!=futureSubCategories.length||textColor.length!=futureSubCategories.length){
                                           backgroundColor=[];
                                           textColor=[];
                                           for(int i =0;i<futureSubCategories.length;i++){
