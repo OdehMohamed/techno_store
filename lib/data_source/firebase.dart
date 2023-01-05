@@ -499,9 +499,13 @@ class FirebaseDataSource {
         List<String> uploadedPhotos = [];
 
         for (String photo in productModel.photo!) {
-          String? photoPath = await uploadPhoto(photo);
-          if (photoPath != null) {
-            uploadedPhotos.add(photoPath);
+          if (!photo.startsWith("https://firebasestorage")) {
+            String? photoPath = await uploadPhoto(photo);
+            if (photoPath != null) {
+              uploadedPhotos.add(photoPath);
+            }
+          } else {
+            uploadedPhotos.add(photo);
           }
         }
 
