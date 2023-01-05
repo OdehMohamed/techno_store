@@ -133,119 +133,124 @@ class _favoraitItemsState extends State<favoraitItems> {
       ),
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
-      body:  Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                width: width,
-                height: height*0.25,
-                decoration: const BoxDecoration(
-                  color:ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                  ),
-                ),
-                child:Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top:height*0.13),
-                          child: WidgetUtilities.autoSizeText("Favorite",textStyle: TextStyle(fontSize: 24,color: ColorUtilities.textColor)),
-                        ),
-                      ],
-                    )
-                )
-            ),
-          ),
-          Container(
-            color:ColorUtilities.secondary,
-            child: Container (
-                width: width,
-                height: height*0.75,
-                decoration: const BoxDecoration(
-                  color:   ColorUtilities.backgroundContainer,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
-                  ),
-                ),
-                child:Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child:    Row(mainAxisAlignment: MainAxisAlignment.center,children: [
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(15),
-                            child: Center(child:
-                            Icon(Icons.grid_view_rounded,color: gridIconColor[0],size: 30,),),
-                          ),
-                          onTap: (){
-                            changeGridLength(2);
-                            setState(() {});
-                          },
-                        ),
-                        InkWell(
-                          child: Container(
-                            margin: EdgeInsets.all(15),
-                            child: Center(child:
-                            Icon(Icons.format_list_bulleted,color: gridIconColor[1],size: 30,),),
-                          ),
-                          onTap: (){
-                            changeGridLength(1);
-                            setState(() {});
-                          },
-                        )
-                      ]
-                      ),
+      body:  RefreshIndicator(
+        onRefresh: ()async{
+          initState();
+        },
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  width: width,
+                  height: height*0.25,
+                  decoration: const BoxDecoration(
+                    color:ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
                     ),
-
-                    Expanded(
-                      child: FutureBuilder<List<ProductModel>> (
-                        future:favoriteDevices ,
-                        builder: (context , snapshot){
-                          if (snapshot.connectionState==ConnectionState.waiting){
-                            return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
-                          }
-                          else if(snapshot.hasData){
-                            List<ProductModel> devices= snapshot.data as List<ProductModel>;
-                            if (devices.isEmpty){
-                              return Center(child: Text("No Data".tr()),);
-                            }
-                            return
-                              GridView.builder(
-                                padding: EdgeInsets.all(10),
-                                itemCount: devices.length,
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
-                                    crossAxisCount: gridNumber,
-                                    crossAxisSpacing: 1.0,
-                                    mainAxisSpacing: 5
-                                ), itemBuilder: (BuildContext context, int index) {
-                                if (gridNumber==1){
-                                  return listCard(devices[index]);
-                                }
-                                return gridCard(devices[index]);
-                              },
-                              );
-                          }
-                          else  if (snapshot.data!.isEmpty){
-                            return Center(child: Text("No Data".tr()),);
-                          }
-                          else {
-                            return Center(child: Text("Error".tr()),);
-                          }
-                        },
+                  ),
+                  child:Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top:height*0.13),
+                            child: WidgetUtilities.autoSizeText("Favorite",textStyle: TextStyle(fontSize: 24,color: ColorUtilities.textColor)),
+                          ),
+                        ],
                       )
-                    )
-                  ],
-                )
+                  )
+              ),
             ),
-          )
-        ],
-      ),
+            Container(
+              color:ColorUtilities.secondary,
+              child: Container (
+                  width: width,
+                  height: height*0.75,
+                  decoration: const BoxDecoration(
+                    color:   ColorUtilities.backgroundContainer,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                    ),
+                  ),
+                  child:Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 30),
+                        child:    Row(mainAxisAlignment: MainAxisAlignment.center,children: [
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              child: Center(child:
+                              Icon(Icons.grid_view_rounded,color: gridIconColor[0],size: 30,),),
+                            ),
+                            onTap: (){
+                              changeGridLength(2);
+                              setState(() {});
+                            },
+                          ),
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.all(15),
+                              child: Center(child:
+                              Icon(Icons.format_list_bulleted,color: gridIconColor[1],size: 30,),),
+                            ),
+                            onTap: (){
+                              changeGridLength(1);
+                              setState(() {});
+                            },
+                          )
+                        ]
+                        ),
+                      ),
+
+                      Expanded(
+                          child: FutureBuilder<List<ProductModel>> (
+                            future:favoriteDevices ,
+                            builder: (context , snapshot){
+                              if (snapshot.connectionState==ConnectionState.waiting){
+                                return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
+                              }
+                              else if(snapshot.hasData){
+                                List<ProductModel> devices= snapshot.data as List<ProductModel>;
+                                if (devices.isEmpty){
+                                  return Center(child: Text("No Data".tr()),);
+                                }
+                                return
+                                  GridView.builder(
+                                    padding: EdgeInsets.all(10),
+                                    itemCount: devices.length,
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        childAspectRatio: gridNumber==2?(1 / 1):(1/0.5),
+                                        crossAxisCount: gridNumber,
+                                        crossAxisSpacing: 1.0,
+                                        mainAxisSpacing: 5
+                                    ), itemBuilder: (BuildContext context, int index) {
+                                    if (gridNumber==1){
+                                      return listCard(devices[index]);
+                                    }
+                                    return gridCard(devices[index]);
+                                  },
+                                  );
+                              }
+                              else  if (snapshot.data!.isEmpty){
+                                return Center(child: Text("No Data".tr()),);
+                              }
+                              else {
+                                return Center(child: Text("Error".tr()),);
+                              }
+                            },
+                          )
+                      )
+                    ],
+                  )
+              ),
+            )
+          ],
+        ),
+      )
     );
   }
 }

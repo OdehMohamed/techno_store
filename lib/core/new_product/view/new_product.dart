@@ -522,9 +522,7 @@ class _NewProductState extends State<NewProduct> {
                                             widget.edit_product!.description=description_controller.text;
                                             widget.edit_product!.brandID=selectedBrand!.name;
                                             widget.edit_product!.subCategoryID=selectedSubCategory!.id;
-                                            //newProductState.editProduct(widget.edit_product!);
-                                            print(widget.edit_product.toString());
-                                            print(deletedList);
+                                            newProductState.editProduct(widget.edit_product!,deletedList);
                                           }
                                           else
                                             {

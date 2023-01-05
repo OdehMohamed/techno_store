@@ -213,128 +213,133 @@ class _MaintinanceListState extends State<MaintinanceList> {
       ),
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                width: width,
-                height: height * 0.25,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                  ),
-                ),
-                child: Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: height * 0.13),
-                      child: WidgetUtilities.autoSizeText("Mobile List",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
+      body: RefreshIndicator(
+        onRefresh: () async {
+          initState();
+          },
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  width: width,
+                  height: height * 0.25,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
                     ),
-                    Flexible(child: Container()),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      InkWell(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: 5, bottom: 5, left: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: backgroundColor[0],
-                              borderRadius: BorderRadius.circular(15)),
-                          child: WidgetUtilities.autoSizeText(
-                            "Fixed",
-                            textStyle: TextStyle(color: textColor[0], fontSize: 18),
-                          ),
-                        ),
-                        onTap: () {
-                          changeStatus(0);
-                          setState(() {});
-                        },
-                      ),
-                      InkWell(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: 5, bottom: 5, left: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: backgroundColor[1],
-                              borderRadius: BorderRadius.circular(25)),
-                          child: WidgetUtilities.autoSizeText(
-                            "under review",
-                            textStyle: TextStyle(color: textColor[1], fontSize: 18),
-                          ),
-                        ),
-                        onTap: () {
-                          changeStatus(1);
-                          setState(() {});
-                        },
-                      ),
-                      InkWell(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: 5, bottom: 5, left: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: backgroundColor[2],
-                              borderRadius: BorderRadius.circular(25)),
-                          child: WidgetUtilities.autoSizeText(
-                            "in maintenance",
-                            textStyle: TextStyle(color: textColor[2], fontSize: 18),
-                          ),
-                        ),
-                        onTap: () {
-                          changeStatus(2);
-                          setState(() {});
-                        },
-                      ),
-                    ])
-                  ],
-                ))),
-          ),
-          Container(
-            color: ColorUtilities.secondary,
-            child: Container(
-                width: width,
-                height: height * 0.75,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.backgroundContainer,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
                   ),
-                ),
-                child: Container(
-                    margin: EdgeInsets.only(right: 20, left: 20),
-                    padding: EdgeInsets.only(top: 30, bottom: 10),
-                    child: FutureBuilder<List<MaintenanceDeviceModel>>(
-                      future: deviceList,
-                      builder: (context,snapshot){
-                        if (snapshot.connectionState==ConnectionState.waiting){
-                          return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
-                        }
-                        else if(snapshot.hasData){
-                          List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
-                          return ListView.builder(
-                            padding: EdgeInsets.zero,
-                              itemCount: devices.length,
-                              itemBuilder:(context,index)
-                              {
-                                return card(devices[index]);
-                              }
-                          );
-                        }
-                        else  if (snapshot.data!.isEmpty){
-                          return Center(child: Text("No Data".tr()),);
-                        }
-                        else {
-                          return Center(child: Text("Error".tr()),);
-                        }
-                      },
-                    )
-                )
+                  child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                              margin: EdgeInsets.only(top: height * 0.13),
+                              child: WidgetUtilities.autoSizeText("Mobile List",textStyle: TextStyle(fontSize: 20,color: ColorUtilities.textColor))
+                          ),
+                          Flexible(child: Container()),
+                          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            InkWell(
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    top: 5, bottom: 5, left: 10, right: 10),
+                                decoration: BoxDecoration(
+                                    color: backgroundColor[0],
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: WidgetUtilities.autoSizeText(
+                                  "Fixed",
+                                  textStyle: TextStyle(color: textColor[0], fontSize: 18),
+                                ),
+                              ),
+                              onTap: () {
+                                changeStatus(0);
+                                setState(() {});
+                              },
+                            ),
+                            InkWell(
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    top: 5, bottom: 5, left: 10, right: 10),
+                                decoration: BoxDecoration(
+                                    color: backgroundColor[1],
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: WidgetUtilities.autoSizeText(
+                                  "under review",
+                                  textStyle: TextStyle(color: textColor[1], fontSize: 18),
+                                ),
+                              ),
+                              onTap: () {
+                                changeStatus(1);
+                                setState(() {});
+                              },
+                            ),
+                            InkWell(
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    top: 5, bottom: 5, left: 10, right: 10),
+                                decoration: BoxDecoration(
+                                    color: backgroundColor[2],
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: WidgetUtilities.autoSizeText(
+                                  "in maintenance",
+                                  textStyle: TextStyle(color: textColor[2], fontSize: 18),
+                                ),
+                              ),
+                              onTap: () {
+                                changeStatus(2);
+                                setState(() {});
+                              },
+                            ),
+                          ])
+                        ],
+                      ))),
             ),
-          )
-        ],
-      ),
+            Container(
+              color: ColorUtilities.secondary,
+              child: Container(
+                  width: width,
+                  height: height * 0.75,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.backgroundContainer,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                    ),
+                  ),
+                  child: Container(
+                      margin: EdgeInsets.only(right: 20, left: 20),
+                      padding: EdgeInsets.only(top: 30, bottom: 10),
+                      child: FutureBuilder<List<MaintenanceDeviceModel>>(
+                        future: deviceList,
+                        builder: (context,snapshot){
+                          if (snapshot.connectionState==ConnectionState.waiting){
+                            return Center (child :Container(width: 50,height: 50,child: CircularProgressIndicator(),));
+                          }
+                          else if(snapshot.hasData){
+                            List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
+                            return ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount: devices.length,
+                                itemBuilder:(context,index)
+                                {
+                                  return card(devices[index]);
+                                }
+                            );
+                          }
+                          else  if (snapshot.data!.isEmpty){
+                            return Center(child: Text("No Data".tr()),);
+                          }
+                          else {
+                            return Center(child: Text("Error".tr()),);
+                          }
+                        },
+                      )
+                  )
+              ),
+            )
+          ],
+        ),
+      )
     );
   }
 }

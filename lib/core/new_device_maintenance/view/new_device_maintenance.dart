@@ -354,7 +354,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       if (snapshot.hasData) {
                                         List<BrandModel>
                                         futureBrands = snapshot.data;
-                                        if (widget.editable){
+                                        if (widget.editable&&selectedBrand==null){
+
                                           for(int i=0;i<futureBrands.length;i++){
                                             if (futureBrands[i].name==widget.maintenanceDevice!.brandID){
                                               selectedBrand = futureBrands[i];
@@ -876,7 +877,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   }
                                                 }
                                               }
-                                              Navigator.pop(context);
+                                              Navigator.pop(context,true);
                                             }
                                           });
                                         }
@@ -911,7 +912,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ).then((value) {
                                             Message.showLongToastMessage(
                                                 "Added successfully".tr());
-                                            Navigator.pop(context);
+                                            Navigator.pop(context,true);
                                           }
                                           );
                                         }
