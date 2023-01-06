@@ -153,6 +153,7 @@ class _SignInState extends State<SignIn> {
                   child:Form(
                     key: _formKey,
                     child:  Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(
                           decoration: BoxDecoration(
@@ -186,7 +187,6 @@ class _SignInState extends State<SignIn> {
                             },
                           ),
                         ),
-                        SizedBox(height: height*0.05),
                         Container(
                           decoration: BoxDecoration(
                             color: ColorUtilities.white,
@@ -222,70 +222,70 @@ class _SignInState extends State<SignIn> {
                             },
                           ),
                         ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                mainScreenState.signIn(
-                                    login_email.text, login_password.text).then((value) {
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    mainScreenState.signIn(
+                                        login_email.text, login_password.text).then((value) {
                                       if(FirebaseDataSource().firebaseAuth.currentUser != null && FirebaseDataSource().firebaseAuth.currentUser?.uid != null){
                                         sharedState.updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid);
                                       }
-                                });
-                              } catch (e) {
-                                Message.showErrorToastMessage(
-                                    "Wrong inputs or you are not signed up");
-                              }
-                            }
-                          },
-                          child: Container(
-                            width: width * 0.5,
-                            height: height * 0.06,
-                            child: Center(
-                                child: WidgetUtilities.autoSizeText(
-                                  "Login",
-                                  textAlign: TextAlign.center,
-                                )),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorUtilities.secondary,
-                            textStyle:
-                            TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                                    });
+                                  } catch (e) {
+                                    Message.showErrorToastMessage(
+                                        "Wrong inputs or you are not signed up");
+                                  }
+                                }
+                              },
+                              child: Container(
+                                width: width * 0.5,
+                                height: height * 0.06,
+                                child: Center(
+                                    child: WidgetUtilities.autoSizeText(
+                                      "Login",
+                                      textAlign: TextAlign.center,
+                                    )),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorUtilities.secondary,
+                                textStyle:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(height: 15,),
+                            WidgetUtilities.autoSizeText(
+                              "or",
+                              textStyle: TextStyle(color: Colors.grey),
+                            ),
+                            SizedBox(height: 15,),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CreateUserAccount()),
+                                );
+                              },
+                              child: Container(
+                                width: width * 0.5,
+                                height: height * 0.06,
+                                child: Center(
+                                    child: WidgetUtilities.autoSizeText(
+                                      "Create new Account",
+                                      textAlign: TextAlign.center,
+                                    )),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromRGBO(128, 128, 128, 1),
+                                textStyle:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 15),
-                        WidgetUtilities.autoSizeText(
-                          "or",
-                          textStyle: TextStyle(color: Colors.grey),
-                        ),
-                        SizedBox(height: 15),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CreateUserAccount()),
-                            );
-                          },
-                          child: Container(
-                            width: width * 0.5,
-                            height: height * 0.06,
-                            child: Center(
-                                child: WidgetUtilities.autoSizeText(
-                                  "Create new Account",
-                                  textAlign: TextAlign.center,
-                                )),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Color.fromRGBO(128, 128, 128, 1),
-                            textStyle:
-                            TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(height: 35),
                         InkWell(
                           child: Text(
                             "Forget password".tr() + "?".tr(),
