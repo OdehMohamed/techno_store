@@ -523,7 +523,7 @@ class _NewProductState extends State<NewProduct> {
                                             widget.edit_product!.description=description_controller.text;
                                             widget.edit_product!.brandID=selectedBrand!.name;
                                             widget.edit_product!.subCategoryID=selectedSubCategory!.id;
-                                            newProductState.editProduct(widget.edit_product!,deletedList).then((value) => feedbackMessage(value,"Added successfully"));
+                                            newProductState.editProduct(widget.edit_product!,deletedList).then((value) => feedbackMessage(value,"Edited successfully"));
                                           }
                                           else
                                             {
@@ -538,7 +538,7 @@ class _NewProductState extends State<NewProduct> {
                                               photo: photoPaths,
                                               favoriteList: []
                                             );
-                                            newProductState.addProduct(product).then((value) => feedbackMessage(value,"Edited successfully"));
+                                            newProductState.addProduct(product).then((value) => feedbackMessage(value,"Added successfully"));
                                           }
                                         }
                                       },

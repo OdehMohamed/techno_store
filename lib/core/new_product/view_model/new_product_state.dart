@@ -12,6 +12,7 @@ class NewProductState extends ChangeNotifier {
     bool response = false;
 
     try {
+      response=
       await FirebaseDataSource().addProduct(productModel);
     } catch (e) {}
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -176,7 +178,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     width: width*0.5,
                                     alignment: Alignment.center,
                                     child:Container(margin: EdgeInsets.all(10),child:GestureDetector(
-                                        child: InkWell(child: Image.network(widget.product.photo![i]),
+                                        child: InkWell(child:
+                                        widget.product.photo![i].contains("https://firebasestorage.googleapis.com/v0/b/technostore")?
+                                        Image.network(widget.product.photo![i])
+                                            :Image.file(File(widget.product.photo![i])),
                                           onTap: ()  {
                                             showDialog<Image>(
                                               context: context,
