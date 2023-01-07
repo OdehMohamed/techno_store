@@ -61,7 +61,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                     children: [
                       WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
                       SizedBox(width: 30,),
-                      WidgetUtilities.autoSizeText(device.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+                      WidgetUtilities.autoSizeText(device.price.toString()+"ILS".tr(),textStyle: TextStyle(color: Colors.black54)),
                     ],
                   ),
                   Container(
@@ -100,7 +100,7 @@ class _favoraitItemsState extends State<favoraitItems> {
               ),
               WidgetUtilities.autoSizeText(name!,textStyle: TextStyle(color: Colors.black)),
               SizedBox(height: 5,),
-              WidgetUtilities.autoSizeText(device.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black54)),
+              WidgetUtilities.autoSizeText(device.price.toString()+"ILS".tr(),textStyle: TextStyle(color: Colors.black54)),
               SizedBox(height: 5,),
             ],
           ),

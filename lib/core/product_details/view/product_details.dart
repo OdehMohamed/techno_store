@@ -209,7 +209,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ):
                                   Image.asset("assets/images/defaultProductImage.png")
                           ),
-                          WidgetUtilities.autoSizeText(widget.product.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
+                          WidgetUtilities.autoSizeText(widget.product.price.toString()+"ILS".tr(),textStyle: TextStyle(color: Colors.black)),
                           Container(
                             width: width * 0.8,
                             height: height * 0.2,
