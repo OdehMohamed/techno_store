@@ -485,7 +485,7 @@ class _NewProductState extends State<NewProduct> {
                                                   if (widget.editable&&selectedBrand==null){
                                                     for (int i =0;i<futureBrands.length;i++){
                                                       if (futureBrands[i].name==widget.edit_product!.brandID){
-                                                        setState(() {selectedBrand=futureBrands[i];});
+                                                        selectedBrand=futureBrands[i];
                                                       }
                                                     }
                                                   }
@@ -495,7 +495,6 @@ class _NewProductState extends State<NewProduct> {
                                                     dropDownValue: selectedBrand,
                                                     onChanged: (newValue) {
                                                       selectedBrand = newValue;
-                                                      setState(() {});
                                                     },
                                                     items: List.generate(
                                                         futureBrands.length,
