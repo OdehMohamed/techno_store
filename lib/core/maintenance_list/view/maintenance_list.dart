@@ -180,7 +180,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                           Flexible(child: Container()),
                           Container(child: Row(children: [
                             WidgetUtilities.autoSizeText(device.price!,textStyle: TextStyle(color: Colors.black54)),
-                            WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
+                            WidgetUtilities.autoSizeText("ILS",textStyle: TextStyle(color: Colors.black54)),
                           ],
                           ),
                           ),

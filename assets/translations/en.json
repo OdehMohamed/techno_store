@@ -105,5 +105,6 @@
   "Added to favorite": "Added to favorite",
   "Removed from favorite": "Removed from favorite",
   "Created Successfully": "Created Successfully",
-  "loading" : "Loading"
+  "loading" : "Loading",
+  "ILS": " ILS "
 }

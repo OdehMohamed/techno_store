@@ -69,7 +69,6 @@ class _NewProductState extends State<NewProduct> {
   @override
   Widget build(BuildContext context) {
     feedbackMessage(bool value,String msg){
-      print ("hi"+value.toString());
       if (value){
         Message.showLongToastMessage(msg.tr());
         Navigator.pop(context);

@@ -62,7 +62,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   List<int> patternValue=[];
   String? status_value;
   late bool phoneValid ;
-  String phoneCode ="+962";
+  String phoneCode ="+970";
   late PhoneNumber number;
 
   bool name_priv = false;
@@ -133,8 +133,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     }
     else{
        phoneValid = false;
-       phoneCode = "+962";
-       number = PhoneNumber(isoCode: 'JO');
+       phoneCode = "+970";
+       number = PhoneNumber(isoCode: 'PS');
        i=0;
        patternList=[];
     }

@@ -21,8 +21,8 @@ class TrackPhonePage extends StatefulWidget {
 
 class _TrackPhonePageState extends State<TrackPhonePage> {
   bool phoneValid = false;
-  String phoneCode = "+962";
-  PhoneNumber number = PhoneNumber(isoCode: 'JO');
+  String phoneCode = "+970";
+  PhoneNumber number = PhoneNumber(isoCode: 'PS');
   final phoneController = TextEditingController();
   late TrackPhonePageState trackPhonePageState;
 
@@ -136,7 +136,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                     WidgetUtilities.autoSizeText("Estimated cost",textStyle: TextStyle(color: Colors.black)),
                     Row(children: [
                       WidgetUtilities.autoSizeText(device.price!,textStyle: TextStyle(color: Colors.grey)),
-                      WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.grey)),
+                      WidgetUtilities.autoSizeText("ILS",textStyle: TextStyle(color: Colors.grey)),
                     ],)
                     ],),
                   Row(
@@ -248,7 +248,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           Flexible(child: Container()),
                           Container(child: Row(children: [
                             WidgetUtilities.autoSizeText(device.price!,textStyle: TextStyle(color: Colors.black54)),
-                            WidgetUtilities.autoSizeText("JD",textStyle: TextStyle(color: Colors.black54)),
+                            WidgetUtilities.autoSizeText("ILS",textStyle: TextStyle(color: Colors.black54)),
                           ],
                           ),
                           ),
