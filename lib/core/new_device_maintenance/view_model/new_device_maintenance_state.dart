@@ -46,6 +46,7 @@ class NewDeviceMaintenanceState extends ChangeNotifier {
   }
 
   void refresh() {
-    notifyListeners();
+    Future.delayed(Duration.zero, notifyListeners);
+    //notifyListeners();
   }
 }

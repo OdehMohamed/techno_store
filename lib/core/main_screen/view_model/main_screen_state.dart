@@ -29,6 +29,7 @@ class MainScreenState extends ChangeNotifier {
   }
 
   void refresh() {
-    notifyListeners();
+    Future.delayed(Duration.zero, notifyListeners);
+    //notifyListeners();
   }
 }

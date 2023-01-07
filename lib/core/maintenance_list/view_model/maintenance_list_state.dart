@@ -30,6 +30,7 @@ class MaintenanceListState extends ChangeNotifier {
   }
 
   void refresh() {
-    notifyListeners();
+    Future.delayed(Duration.zero, notifyListeners);
+    //notifyListeners();
   }
 }

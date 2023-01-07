@@ -67,6 +67,15 @@ class _WelcomePageState extends State<WelcomePage> {
     Widget card(String title, Icon icon, tap()) {
       return Column(
         children: [
+          // Consumer<SharedState>(
+          //     builder: (context, profile, child) {
+          //       if (FirebaseDataSource().firebaseAuth.currentUser != null &&
+          //           FirebaseDataSource().firebaseAuth.currentUser?.uid != null &&
+          //           sharedState.userId == null) {
+          //         sharedState
+          //             .updateUserInfo(FirebaseDataSource().firebaseAuth.currentUser!.uid);
+          //       }
+          //       return SizedBox();}),
           InkWell(
             onTap: tap,
             child: Container(

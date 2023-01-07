@@ -44,6 +44,7 @@ class ProductDetailsState extends ChangeNotifier {
   }
 
   void refresh() {
-    notifyListeners();
+    Future.delayed(Duration.zero, notifyListeners);
+    //notifyListeners();
   }
 }
