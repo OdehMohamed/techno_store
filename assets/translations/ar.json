@@ -105,5 +105,6 @@
   "Added to favorite": "تمت الاضافة الى المفضلة",
   "Removed from favorite": "ازالة من المفضلة",
   "Created Successfully": "تمت الاضافة بنجاح",
-  "loading" : "جارِ التحميل"
+  "loading" : "جارِ التحميل",
+  "check spam" : "الرجاء التحقق من الإيميلات المجهولة (spam)"
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/utilities.dart';
 
 import '../../../shared/message.dart';
 import '../../../shared/widget_utilities.dart';
@@ -86,10 +87,20 @@ class _ResetPasswordState extends State<ResetPassword> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          WidgetUtilities.autoSizeText(
-                            "We will send an Email to reset your password",
-                            textAlign: TextAlign.center,
-                            textStyle: TextStyle(color: Colors.black)
+                          Column(
+                            children: [
+                              WidgetUtilities.autoSizeText(
+                                  "We will send an Email to reset your password",
+                                  textAlign: TextAlign.center,
+                                  textStyle: TextStyle(color: Colors.black)
+                              ),
+                              Padding(padding: Utilities.getDefaultTBPadding() * 5),
+                              WidgetUtilities.autoSizeText(
+                                  "check spam",
+                                  textAlign: TextAlign.center,
+                                  textStyle: TextStyle(color: Colors.redAccent)
+                              ),
+                            ],
                           ),
                           Container(
                             padding: EdgeInsets.only(left: 20, right: 20),
