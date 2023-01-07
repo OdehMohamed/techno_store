@@ -159,7 +159,7 @@ class _WelcomePageState extends State<WelcomePage> {
               height: 10,
             ),
             WidgetUtilities.autoSizeText(
-              sharedState.userName ?? "My name ",
+              sharedState.userName ?? "loading",
             ),
             Flexible(
                 child: ListView(
