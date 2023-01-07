@@ -16,28 +16,35 @@ class ResetPassword extends StatefulWidget {
   State<ResetPassword> createState() => _ResetPasswordState();
 }
 
-final email_controller = TextEditingController();
-final _formKey = GlobalKey<FormState>();
-
 class _ResetPasswordState extends State<ResetPassword> {
+  final email_controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   late ResetPasswordState resetPasswordState;
   @override
   void initState() {
     resetPasswordState = context.read<ResetPasswordState>();
     super.initState();
   }
-  resetMessage(value){
+
+  @override
+  void dispose() {
+    email_controller.dispose();
+    super.dispose();
+  }
+
+  resetMessage(value) {
     if (value) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please check your email or spam'.tr()),
-      )
-      );
+      ));
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    resetPasswordState=context.watch<ResetPasswordState>();
+    resetPasswordState = context.watch<ResetPasswordState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -48,7 +55,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Column(
@@ -65,10 +72,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                     ),
                   ),
                   child: Center(
-                    child: WidgetUtilities.autoSizeText(
-                      "Reset Password".tr(),
-                      textStyle: TextStyle(fontSize: 22,color: ColorUtilities.textColor)
-                    ),
+                    child: WidgetUtilities.autoSizeText("Reset Password".tr(),
+                        textStyle: TextStyle(
+                            fontSize: 22, color: ColorUtilities.textColor)),
                   )),
             ),
             Container(
@@ -92,51 +98,56 @@ class _ResetPasswordState extends State<ResetPassword> {
                               WidgetUtilities.autoSizeText(
                                   "We will send an Email to reset your password",
                                   textAlign: TextAlign.center,
-                                  textStyle: TextStyle(color: Colors.black)
-                              ),
-                              Padding(padding: Utilities.getDefaultTBPadding() * 5),
-                              WidgetUtilities.autoSizeText(
-                                  "check spam",
+                                  textStyle: TextStyle(color: Colors.black)),
+                              Padding(
+                                  padding: Utilities.getDefaultTBPadding() * 5),
+                              WidgetUtilities.autoSizeText("check spam",
                                   textAlign: TextAlign.center,
-                                  textStyle: TextStyle(color: Colors.redAccent)
-                              ),
+                                  textStyle:
+                                      TextStyle(color: Colors.redAccent)),
                             ],
                           ),
                           Container(
-                            padding: EdgeInsets.only(left: 20, right: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Form(
-                              key: _formKey,
-                              child: TextFormField(
-                                controller: email_controller,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Please Enter your Email'.tr(),
-                                  hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 16),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Please Enter".tr()+" "+"Email".tr();
-                                  }
-                                  if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(value)) {
-                                    return "Please Enter".tr()+" "+"valid Email".tr();
-                                  }
-                                  return null;
-                                },
+                              padding: EdgeInsets.only(left: 20, right: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                            )
-                          ),
+                              child: Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                  controller: email_controller,
+                                  style: TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Please Enter your Email'.tr(),
+                                    hintStyle: TextStyle(
+                                        color: Colors.grey, fontSize: 16),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "Please Enter".tr() +
+                                          " " +
+                                          "Email".tr();
+                                    }
+                                    if (!RegExp(
+                                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                        .hasMatch(value)) {
+                                      return "Please Enter".tr() +
+                                          " " +
+                                          "valid Email".tr();
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              )),
                           ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                              resetPasswordState.resetPassword(email_controller.text).then((value) => resetMessage(value));
+                                resetPasswordState
+                                    .resetPassword(email_controller.text)
+                                    .then((value) => resetMessage(value));
                               }
                             },
                             child: Container(
