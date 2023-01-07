@@ -20,33 +20,45 @@ class NewUserAdminSide extends StatefulWidget {
   State<NewUserAdminSide> createState() => _NewUserAdminSideState();
 }
 
-final fullname_controller = TextEditingController();
-final email_controller = TextEditingController();
-final password_controller = TextEditingController();
-final re_password_controller = TextEditingController();
-
 class _NewUserAdminSideState extends State<NewUserAdminSide> {
+  final fullname_controller = TextEditingController();
+  final email_controller = TextEditingController();
+  final password_controller = TextEditingController();
+  final re_password_controller = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
   late SharedState sharedState;
-  @override
-  void setState(VoidCallback fn) {
-    sharedState = context.read<SharedState>();
-    super.setState(fn);
-  }
 
   String photoPath = "";
   String usertype = "2";
+
+  @override
+  void initState() {
+    sharedState = context.read<SharedState>();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    fullname_controller.dispose();
+    email_controller.dispose();
+    password_controller.dispose();
+    re_password_controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     sharedState = context.watch<SharedState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    createdSuccessfullyMessage(value){
-      if (value){
+    createdSuccessfullyMessage(value) {
+      if (value) {
         Message.showLongToastMessage("Created ");
         Navigator.pop(context);
       }
     }
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -57,7 +69,7 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
           inAsyncCall: sharedState.loading,
           child: SingleChildScrollView(
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());
               },
               child: Column(
@@ -76,7 +88,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                         child: Center(
                           child: WidgetUtilities.autoSizeText("New Account",
                               textStyle: TextStyle(
-                                  color: ColorUtilities.textColor, fontSize: 20)),
+                                  color: ColorUtilities.textColor,
+                                  fontSize: 20)),
                         )),
                   ),
                   Container(
@@ -95,17 +108,20 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                             child: Form(
                               key: _formKey,
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Stack(
                                     children: [
                                       Container(
                                           decoration: BoxDecoration(
                                             color: ColorUtilities.white,
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Color.fromRGBO(0, 0, 0, 0.4),
+                                                color: Color.fromRGBO(
+                                                    0, 0, 0, 0.4),
                                                 blurRadius: 20,
                                                 offset: Offset(0, 15),
                                               ),
@@ -134,19 +150,20 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                                     decoration: BoxDecoration(
                                                         color: Colors.green,
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                50)),
+                                                            BorderRadius
+                                                                .circular(50)),
                                                     child: Center(
                                                       child: Text("+"),
                                                     )),
                                                 onTap: () async {
-                                                  final result = await FilePicker
-                                                      .platform
-                                                      .pickFiles(
+                                                  final result =
+                                                      await FilePicker.platform
+                                                          .pickFiles(
                                                     type: FileType.image,
                                                   );
                                                   if (result != null) {
-                                                    final file = result.files.first;
+                                                    final file =
+                                                        result.files.first;
 
                                                     setState(() {
                                                       photoPath = file.path!;
@@ -264,7 +281,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                         }
                                         if (value !=
                                             re_password_controller.value.text) {
-                                          return "Passwords does not match".tr();
+                                          return "Passwords does not match"
+                                              .tr();
                                         }
                                         return null;
                                       },
@@ -299,7 +317,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                         }
                                         if (value !=
                                             password_controller.value.text) {
-                                          return "Passwords does not match".tr();
+                                          return "Passwords does not match"
+                                              .tr();
                                         }
                                         return null;
                                       },
@@ -316,7 +335,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                           });
                                         }),
                                     WidgetUtilities.autoSizeText("Reception",
-                                        textStyle: TextStyle(color: Colors.black)),
+                                        textStyle:
+                                            TextStyle(color: Colors.black)),
                                     Radio(
                                         value: "3",
                                         groupValue: usertype,
@@ -327,7 +347,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                           });
                                         }),
                                     WidgetUtilities.autoSizeText("Maintenance",
-                                        textStyle: TextStyle(color: Colors.black)),
+                                        textStyle:
+                                            TextStyle(color: Colors.black)),
                                   ]),
                                   ElevatedButton(
                                     onPressed: () async {
@@ -342,9 +363,13 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                                 email_controller.text,
                                                 password_controller.text,
                                                 CreateUserAccountModel(
-                                                    name: fullname_controller.text,
+                                                    name: fullname_controller
+                                                        .text,
                                                     photo: photoPath,
-                                                    type: int.parse(usertype))).then((value) => createdSuccessfullyMessage(value));
+                                                    type: int.parse(usertype)))
+                                            .then((value) =>
+                                                createdSuccessfullyMessage(
+                                                    value));
                                       }
                                     },
                                     child: Container(
