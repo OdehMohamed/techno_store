@@ -594,10 +594,8 @@ class _NewProductState extends State<NewProduct> {
                                                   if (futureBrands[i].name ==
                                                       widget.edit_product!
                                                           .brandID) {
-                                                    setState(() {
                                                       selectedBrand =
                                                           futureBrands[i];
-                                                    });
                                                   }
                                                 }
                                               }
@@ -607,7 +605,6 @@ class _NewProductState extends State<NewProduct> {
                                                 dropDownValue: selectedBrand,
                                                 onChanged: (newValue) {
                                                   selectedBrand = newValue;
-                                                  setState(() {});
                                                 },
                                                 items: List.generate(
                                                     futureBrands.length,
