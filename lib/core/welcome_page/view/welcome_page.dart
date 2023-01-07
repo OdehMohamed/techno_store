@@ -183,7 +183,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     ), () {
                   Utilities.navigatorWithBack(context, TrackPhonePage());
                 }),
-                sharedState.userType!=1?
+                sharedState.userType==0||sharedState.userType==2||sharedState.userType==3?
                 card("Maintenance",
                     Icon(Icons.add_to_home_screen, color: Colors.white60), () {
                   Utilities.navigatorWithBack(context, MaintinanceList());
