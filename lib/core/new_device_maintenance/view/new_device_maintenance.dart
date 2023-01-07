@@ -194,772 +194,777 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       ),
       extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              color:ColorUtilities.backgroundContainer,
-              child: Container(
-                  width: width,
-                  height: height * 0.25,
-                  decoration: const BoxDecoration(
-                    color: ColorUtilities.secondary,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
+        child: GestureDetector(
+          onTap: (){
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Column(
+            children: [
+              Container(
+                color:ColorUtilities.backgroundContainer,
+                child: Container(
+                    width: width,
+                    height: height * 0.25,
+                    decoration: const BoxDecoration(
+                      color: ColorUtilities.secondary,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(50),
+                      ),
                     ),
-                  ),
-                  child: Center(
-                      child: WidgetUtilities.autoSizeText("Device Maintenance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
-                  )),
-            ),
-            Container(
-              color:ColorUtilities.secondary,
-              child: Container(
-                  width: width,
-                  height: height * 0.75,
-                  decoration: const BoxDecoration(
-                    color: ColorUtilities.backgroundContainer,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(50),
+                    child: Center(
+                        child: WidgetUtilities.autoSizeText("Device Maintenance",textStyle: TextStyle(color: ColorUtilities.textColor,fontSize: 20))
+                    )),
+              ),
+              Container(
+                color:ColorUtilities.secondary,
+                child: Container(
+                    width: width,
+                    height: height * 0.75,
+                    decoration: const BoxDecoration(
+                      color: ColorUtilities.backgroundContainer,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(50),
+                      ),
                     ),
-                  ),
-                  child: Container(
-                    margin: EdgeInsets.all(30),
-                    child: SingleChildScrollView(
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              SizedBox(
-                                height: 30,
-                              ),
-                              WidgetUtilities.autoSizeText("Customer Information",textStyle: TextStyle(color: Colors.black)),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
+                    child: Container(
+                      margin: EdgeInsets.all(30),
+                      child: SingleChildScrollView(
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(
+                                  height: 30,
                                 ),
-                                child: TextFormField(
-                                  enabled: !name_priv,
-                                  controller: name_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Name'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr()+" "+"Name".tr();
-                                    }
-                                    return null;
-                                  },
+                                WidgetUtilities.autoSizeText("Customer Information",textStyle: TextStyle(color: Colors.black)),
+                                SizedBox(
+                                  height: 30,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: InternationalPhoneNumberInput(
-                                  isEnabled: !phone_priv,
-                                  hintText: "Phone number".tr(),
-                                  errorMessage: "Invalid phone number".tr(),
-                                  onInputChanged: (PhoneNumber number) {
-                                    phoneCode = number.dialCode!;
-                                  },
-                                  onInputValidated: (bool value) {
-                                    phoneValid = value;
-                                  },
-                                  selectorConfig: SelectorConfig(
-                                    selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                                  ),
-                                  ignoreBlank: false,
-                                  autoValidateMode:
-                                  AutovalidateMode.always,
-                                  selectorTextStyle: TextStyle(color: Colors.black),
-                                  initialValue: number,
-                                  textFieldController: phone_controller,
-                                  formatInput: false,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                    signed: true,
-                                    decimal: true,
-                                  ),
-                                  inputBorder: OutlineInputBorder(),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextFormField(
-                                  enabled: !address_priv,
-                                  controller: address_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Address'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr()+" "+"Address".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              WidgetUtilities.autoSizeText("Device Information",textStyle: TextStyle(color: Colors.black)),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child:
-                                FutureBuilder(
-                                    future: getBrandsFuture,
-                                    builder: (context, AsyncSnapshot snapshot) {
-                                      if (snapshot.hasData) {
-                                        List<BrandModel>
-                                        futureBrands = snapshot.data;
-                                        if (widget.editable&&selectedBrand==null){
-
-                                          for(int i=0;i<futureBrands.length;i++){
-                                            if (futureBrands[i].name==widget.maintenanceDevice!.brandID){
-                                              selectedBrand = futureBrands[i];
-                                              break;
-                                            }
-                                          }
-                                        }
-                                        return FormValidatorDropdown<
-                                            BrandModel>(
-                                          name: "BrandName",
-                                          dropDownValue: selectedBrand,
-                                          onChanged: !brand_priv ?(newValue) {
-                                            selectedBrand = newValue;
-                                            setState(() {});
-                                          }:null,
-                                          items: List.generate(
-                                              futureBrands.length,
-                                                  (index) => DropdownMenuItem<
-                                                      BrandModel>(
-                                                value:
-                                                futureBrands[index],
-                                                child: Text(futureBrands[index].name!),
-                                              )),
-                                          label: "Device Brand".tr(),
-                                        );
-                                      }
-                                      return SizedBox();
-                                    }),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextFormField(
-                                  enabled: !model_priv,
-                                  controller: model_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Device Model'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr()+" "+"Device Model".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextFormField(
-                                  enabled: !color_priv,
-                                  controller: color_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Color'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr()+" "+"Color".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextField(
-                                  enabled: !IMEI_priv,
-                                  controller: IMEI_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'IMEI Number'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
                                   decoration: BoxDecoration(
                                     color: ColorUtilities.white,
                                     border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(5),
-                                        bottomLeft: Radius.circular(5)),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: width * 0.5,
-                                        child: TextField(
-                                          enabled: !pin_priv,
-                                          controller: pin_controller,
-                                          style: TextStyle(color: Colors.black),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'PIN'.tr(),
-                                            hintStyle: TextStyle(
-                                                color: Colors.grey, fontSize: 16),
-                                          ),
-                                        ),
-                                      ),
-                                      Flexible(child: Container()),
-                                      InkWell(
-                                        child: Container(
-                                          width: width * 0.2,
-                                          height: height * 0.09,
-                                          color: Colors.green,
-                                          child: Center(
-                                            child: WidgetUtilities.autoSizeText(
-                                              "Pattern".tr(),
+                                  child: TextFormField(
+                                    enabled: !name_priv,
+                                    controller: name_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Name'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr()+" "+"Name".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: InternationalPhoneNumberInput(
+                                    isEnabled: !phone_priv,
+                                    hintText: "Phone number".tr(),
+                                    errorMessage: "Invalid phone number".tr(),
+                                    onInputChanged: (PhoneNumber number) {
+                                      phoneCode = number.dialCode!;
+                                    },
+                                    onInputValidated: (bool value) {
+                                      phoneValid = value;
+                                    },
+                                    selectorConfig: SelectorConfig(
+                                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                                    ),
+                                    ignoreBlank: false,
+                                    autoValidateMode:
+                                    AutovalidateMode.always,
+                                    selectorTextStyle: TextStyle(color: Colors.black),
+                                    initialValue: number,
+                                    textFieldController: phone_controller,
+                                    formatInput: false,
+                                    keyboardType: TextInputType.numberWithOptions(
+                                      signed: true,
+                                      decimal: true,
+                                    ),
+                                    inputBorder: OutlineInputBorder(),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    enabled: !address_priv,
+                                    controller: address_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Address'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr()+" "+"Address".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                WidgetUtilities.autoSizeText("Device Information",textStyle: TextStyle(color: Colors.black)),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child:
+                                  FutureBuilder(
+                                      future: getBrandsFuture,
+                                      builder: (context, AsyncSnapshot snapshot) {
+                                        if (snapshot.hasData) {
+                                          List<BrandModel>
+                                          futureBrands = snapshot.data;
+                                          if (widget.editable&&selectedBrand==null){
+
+                                            for(int i=0;i<futureBrands.length;i++){
+                                              if (futureBrands[i].name==widget.maintenanceDevice!.brandID){
+                                                selectedBrand = futureBrands[i];
+                                                break;
+                                              }
+                                            }
+                                          }
+                                          return FormValidatorDropdown<
+                                              BrandModel>(
+                                            name: "BrandName",
+                                            dropDownValue: selectedBrand,
+                                            onChanged: !brand_priv ?(newValue) {
+                                              selectedBrand = newValue;
+                                              setState(() {});
+                                            }:null,
+                                            items: List.generate(
+                                                futureBrands.length,
+                                                    (index) => DropdownMenuItem<
+                                                        BrandModel>(
+                                                  value:
+                                                  futureBrands[index],
+                                                  child: Text(futureBrands[index].name!),
+                                                )),
+                                            label: "Device Brand".tr(),
+                                          );
+                                        }
+                                        return SizedBox();
+                                      }),
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    enabled: !model_priv,
+                                    controller: model_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Device Model'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr()+" "+"Device Model".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    enabled: !color_priv,
+                                    controller: color_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Color'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr()+" "+"Color".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextField(
+                                    enabled: !IMEI_priv,
+                                    controller: IMEI_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'IMEI Number'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                    decoration: BoxDecoration(
+                                      color: ColorUtilities.white,
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(5),
+                                          bottomLeft: Radius.circular(5)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: width * 0.5,
+                                          child: TextField(
+                                            enabled: !pin_priv,
+                                            controller: pin_controller,
+                                            style: TextStyle(color: Colors.black),
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'PIN'.tr(),
+                                              hintStyle: TextStyle(
+                                                  color: Colors.grey, fontSize: 16),
                                             ),
                                           ),
                                         ),
-                                        onTap: () async {
-                                          secondTimer=null;
-                                          startDraw();
-                                          await showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return StatefulBuilder(builder: (context,StateSetter setState){
-                                                if( secondTimer==null){
-                                                  secondTimer = Timer.periodic(Duration(milliseconds:500), (Timer t) {
-                                                    setState(() {});
-                                                  });
-                                                }
-                                                if (drawingList.length==patternList.length){
-                                                  setState((){});
-                                                  secondTimer?.cancel();
-                                                }
-                                                return  AlertDialog(
-                                                    backgroundColor: ColorUtilities.white,
-                                                    content: Container(
-                                                      height: height * 0.5,
-                                                      width: width,
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                        children: [
-                                                          Container(
-                                                              height: height * 0.4,
-                                                              width: width,
-                                                              child: AbsorbPointer(
-                                                                absorbing: widget.editable,
-                                                                child: PatternLock(
-                                                                  selectedColor:
-                                                                  Colors.blue,
-                                                                  pointRadius: 8,
-                                                                  showInput: true,
-                                                                  dimension: 3,
-                                                                  relativePadding: 0.7,
-                                                                  selectThreshold: 25,
-                                                                  fillPoints: true,
-                                                                  onInputComplete:
-                                                                      (List<int> input) {
-                                                                    patternValue = input;
-                                                                    print(patternValue);
-                                                                  },
-                                                                  setUsed: drawingList,
-                                                                ),
-                                                              )
-                                                          ),
-                                                          InkWell(
-                                                            child: Container(
-                                                                width: width * 0.2,
-                                                                height: height * 0.05,
-                                                                decoration: BoxDecoration(
-                                                                    color: Colors.green,
-                                                                    borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                        5)),
-                                                                child: Center(
-                                                                  child: WidgetUtilities.autoSizeText(
-                                                                    "Save".tr(),
+                                        Flexible(child: Container()),
+                                        InkWell(
+                                          child: Container(
+                                            width: width * 0.2,
+                                            height: height * 0.09,
+                                            color: Colors.green,
+                                            child: Center(
+                                              child: WidgetUtilities.autoSizeText(
+                                                "Pattern".tr(),
+                                              ),
+                                            ),
+                                          ),
+                                          onTap: () async {
+                                            secondTimer=null;
+                                            startDraw();
+                                            await showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return StatefulBuilder(builder: (context,StateSetter setState){
+                                                  if( secondTimer==null){
+                                                    secondTimer = Timer.periodic(Duration(milliseconds:500), (Timer t) {
+                                                      setState(() {});
+                                                    });
+                                                  }
+                                                  if (drawingList.length==patternList.length){
+                                                    setState((){});
+                                                    secondTimer?.cancel();
+                                                  }
+                                                  return  AlertDialog(
+                                                      backgroundColor: ColorUtilities.white,
+                                                      content: Container(
+                                                        height: height * 0.5,
+                                                        width: width,
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                          children: [
+                                                            Container(
+                                                                height: height * 0.4,
+                                                                width: width,
+                                                                child: AbsorbPointer(
+                                                                  absorbing: widget.editable,
+                                                                  child: PatternLock(
+                                                                    selectedColor:
+                                                                    Colors.blue,
+                                                                    pointRadius: 8,
+                                                                    showInput: true,
+                                                                    dimension: 3,
+                                                                    relativePadding: 0.7,
+                                                                    selectThreshold: 25,
+                                                                    fillPoints: true,
+                                                                    onInputComplete:
+                                                                        (List<int> input) {
+                                                                      patternValue = input;
+                                                                      print(patternValue);
+                                                                    },
+                                                                    setUsed: drawingList,
                                                                   ),
-                                                                )),
-                                                            onTap: () {
-                                                              Navigator.pop(context);
-                                                            },
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                );
-                                              });
-                                            },
-                                          );
+                                                                )
+                                                            ),
+                                                            InkWell(
+                                                              child: Container(
+                                                                  width: width * 0.2,
+                                                                  height: height * 0.05,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.green,
+                                                                      borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                          5)),
+                                                                  child: Center(
+                                                                    child: WidgetUtilities.autoSizeText(
+                                                                      "Save".tr(),
+                                                                    ),
+                                                                  )),
+                                                              onTap: () {
+                                                                Navigator.pop(context);
+                                                              },
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                  );
+                                                });
+                                              },
+                                            );
 
+                                          },
+                                        )
+                                      ],
+                                    )),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                WidgetUtilities.autoSizeText("Maintenance Information",textStyle: TextStyle(color: Colors.black)),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    enabled: !problem_priv,
+                                    controller: problem_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'The problem'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr()+" "+"The problem".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: DropdownButtonFormField(
+                                    isExpanded: true,
+                                    hint: WidgetUtilities.autoSizeText("Device Status",textStyle: TextStyle(color: Colors.grey)),
+                                    value: status_value,
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Device Status'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                    items: status.map((String status) {
+                                      return DropdownMenuItem(
+                                        value: status,
+                                        child: WidgetUtilities.autoSizeText(status,textStyle: TextStyle(color: Colors.black)),
+                                      );
+                                    }).toList(),
+                                    onChanged: !status_priv? (String? newValue) {
+                                      setState(() {
+                                        status_value = newValue!;
+                                      });
+                                    }:null,
+                                    validator: (value) {
+                                      if (value == null ) {
+                                        return "Please Enter".tr()+" "+"Device Status".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextField(
+                                    enabled: !notes_priv,
+                                    controller: notes_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Notes'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  height: 100,
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextField(
+                                    enabled: !accessoires_priv,
+                                    controller: accessoires_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Accessories'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: width * 0.4,
+                                      padding: EdgeInsets.only(left: 10,right: 10),
+                                      decoration: BoxDecoration(
+                                        color: ColorUtilities.white,
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: TextFormField(
+                                        enabled: !price_priv,
+                                        controller: price_controller,
+                                        style: TextStyle(color: Colors.black),
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Price'.tr(),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey, fontSize: 16),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty ) {
+                                            return "Please Enter".tr()+" "+"Price".tr();
+                                          }
+                                          return null;
                                         },
-                                      )
-                                    ],
-                                  )),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              WidgetUtilities.autoSizeText("Maintenance Information",textStyle: TextStyle(color: Colors.black)),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextFormField(
-                                  enabled: !problem_priv,
-                                  controller: problem_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'The problem'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr()+" "+"The problem".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: DropdownButtonFormField(
-                                  isExpanded: true,
-                                  hint: WidgetUtilities.autoSizeText("Device Status",textStyle: TextStyle(color: Colors.grey)),
-                                  value: status_value,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Device Status'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                  items: status.map((String status) {
-                                    return DropdownMenuItem(
-                                      value: status,
-                                      child: WidgetUtilities.autoSizeText(status,textStyle: TextStyle(color: Colors.black)),
-                                    );
-                                  }).toList(),
-                                  onChanged: !status_priv? (String? newValue) {
-                                    setState(() {
-                                      status_value = newValue!;
-                                    });
-                                  }:null,
-                                  validator: (value) {
-                                    if (value == null ) {
-                                      return "Please Enter".tr()+" "+"Device Status".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextField(
-                                  enabled: !notes_priv,
-                                  controller: notes_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Notes'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                height: 100,
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextField(
-                                  enabled: !accessoires_priv,
-                                  controller: accessoires_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Accessories'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: width * 0.4,
-                                    padding: EdgeInsets.only(left: 10,right: 10),
-                                    decoration: BoxDecoration(
-                                      color: ColorUtilities.white,
-                                      border: Border.all(color: Colors.grey),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: TextFormField(
-                                      enabled: !price_priv,
-                                      controller: price_controller,
-                                      style: TextStyle(color: Colors.black),
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Price'.tr(),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey, fontSize: 16),
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty ) {
-                                          return "Please Enter".tr()+" "+"Price".tr();
-                                        }
-                                        return null;
-                                      },
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
-                                    width: width * 0.4,
-                                    padding: EdgeInsets.only(left: 10,right: 10),
-                                    decoration: BoxDecoration(
-                                      color: ColorUtilities.white,
-                                      border: Border.all(color: Colors.grey),
-                                      borderRadius: BorderRadius.circular(5),
+                                    SizedBox(
+                                      width: 10,
                                     ),
-                                    child: TextFormField(
-                                      enabled: !estimated_time_priv,
-                                      controller: estimated_time_controller,
-                                      style: TextStyle(color: Colors.black),
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Estimated Time'.tr(),
-                                        hintStyle: TextStyle(
-                                            color: Colors.grey, fontSize: 16),
+                                    Container(
+                                      width: width * 0.4,
+                                      padding: EdgeInsets.only(left: 10,right: 10),
+                                      decoration: BoxDecoration(
+                                        color: ColorUtilities.white,
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Please Enter".tr()+" "+"Estimated Time".tr();
-                                        }
-                                        return null;
-                                      },
+                                      child: TextFormField(
+                                        enabled: !estimated_time_priv,
+                                        controller: estimated_time_controller,
+                                        style: TextStyle(color: Colors.black),
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Estimated Time'.tr(),
+                                          hintStyle: TextStyle(
+                                              color: Colors.grey, fontSize: 16),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Please Enter".tr()+" "+"Estimated Time".tr();
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Container(
+                                  height: 100,
+                                  padding: EdgeInsets.only(left: 10,right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextField(
+                                    enabled: !notes2_priv,
+                                    controller: notes2_controller,
+                                    style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.multiline,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: 'Notes'.tr(),
+                                      hintStyle:
+                                      TextStyle(color: Colors.grey, fontSize: 16),
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                height: 100,
-                                padding: EdgeInsets.only(left: 10,right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: TextField(
-                                  enabled: !notes2_priv,
-                                  controller: notes2_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Notes'.tr(),
-                                    hintStyle:
-                                    TextStyle(color: Colors.grey, fontSize: 16),
-                                  ),
+                                SizedBox(
+                                  height: 15,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  sharedState.userType!=0?
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        if (widget.editable) {
-                                          widget.maintenanceDevice?.customerName=name_controller.text;
-                                          widget.maintenanceDevice?.phoneNumber=phoneCode+"-"+phone_controller.text;
-                                          widget.maintenanceDevice?.address=address_controller.text;
-                                          widget.maintenanceDevice?.brandID= selectedBrand?.name;
-                                          widget.maintenanceDevice?.deviceModel=model_controller.text;
-                                          widget.maintenanceDevice?.color=color_controller.text;
-                                          widget.maintenanceDevice?.devicePassword=pin_controller.text;
-                                          widget.maintenanceDevice?.imeiNumber=IMEI_controller.text;
-                                          widget.maintenanceDevice?.problem=problem_controller.text;
-                                          widget.maintenanceDevice?.status=status_value;
-                                          widget.maintenanceDevice?.problemNotes=notes_controller.text;
-                                          widget.maintenanceDevice?.accessories=accessoires_controller.text;
-                                          widget.maintenanceDevice?.price=price_controller.text;
-                                          widget.maintenanceDevice?.estimatedTime=estimated_time_controller.text;
-                                          widget.maintenanceDevice?.notes=notes2_controller.text;
-                                          widget.maintenanceDevice?.pattern=patternList;
-                                          newDeviceMaintenanceState.editDeviceInMaintenance(
-                                              widget.maintenanceDevice!.id!,
-                                              widget.maintenanceDevice!
-                                          ).then((value) async {
-                                            {
-                                              Message.showLongToastMessage(
-                                                  "Edited successfully".tr());
-                                              if (status_value=="Fixed"){
-                                                String message = "Dear Mr/Ms " +name_controller.text+ "\nHello from TECHNO Store team\n\nwe would like to inform you that your device "+ model_controller.text +" is Fixed\n\nThank you for choosing TECHNO Store";
-                                                String phone = phoneCode+phone_controller.text;
-                                                if (Platform.isAndroid) {
-                                                  try {
-                                                    bool launched =
-                                                    await launch(
-                                                        "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
-                                                        forceSafariVC: false,
-                                                        forceWebView: false);
-                                                    if (!launched) {
-                                                      print("inside fallback");
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    sharedState.userType!=0?
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          if (widget.editable) {
+                                            widget.maintenanceDevice?.customerName=name_controller.text;
+                                            widget.maintenanceDevice?.phoneNumber=phoneCode+"-"+phone_controller.text;
+                                            widget.maintenanceDevice?.address=address_controller.text;
+                                            widget.maintenanceDevice?.brandID= selectedBrand?.name;
+                                            widget.maintenanceDevice?.deviceModel=model_controller.text;
+                                            widget.maintenanceDevice?.color=color_controller.text;
+                                            widget.maintenanceDevice?.devicePassword=pin_controller.text;
+                                            widget.maintenanceDevice?.imeiNumber=IMEI_controller.text;
+                                            widget.maintenanceDevice?.problem=problem_controller.text;
+                                            widget.maintenanceDevice?.status=status_value;
+                                            widget.maintenanceDevice?.problemNotes=notes_controller.text;
+                                            widget.maintenanceDevice?.accessories=accessoires_controller.text;
+                                            widget.maintenanceDevice?.price=price_controller.text;
+                                            widget.maintenanceDevice?.estimatedTime=estimated_time_controller.text;
+                                            widget.maintenanceDevice?.notes=notes2_controller.text;
+                                            widget.maintenanceDevice?.pattern=patternList;
+                                            newDeviceMaintenanceState.editDeviceInMaintenance(
+                                                widget.maintenanceDevice!.id!,
+                                                widget.maintenanceDevice!
+                                            ).then((value) async {
+                                              {
+                                                Message.showLongToastMessage(
+                                                    "Edited successfully".tr());
+                                                if (status_value=="Fixed"){
+                                                  String message = "Dear Mr/Ms " +name_controller.text+ "\nHello from TECHNO Store team\n\nwe would like to inform you that your device "+ model_controller.text +" is Fixed\n\nThank you for choosing TECHNO Store";
+                                                  String phone = phoneCode+phone_controller.text;
+                                                  if (Platform.isAndroid) {
+                                                    try {
+                                                      bool launched =
+                                                      await launch(
+                                                          "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
+                                                          forceSafariVC: false,
+                                                          forceWebView: false);
+                                                      if (!launched) {
+                                                        print("inside fallback");
+                                                        await launch(
+                                                            "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
+                                                            forceSafariVC: false,
+                                                            forceWebView: false);
+                                                      }
+                                                    } catch (e) {
                                                       await launch(
                                                           "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
                                                           forceSafariVC: false,
                                                           forceWebView: false);
                                                     }
-                                                  } catch (e) {
-                                                    await launch(
-                                                        "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
-                                                        forceSafariVC: false,
-                                                        forceWebView: false);
                                                   }
-                                                }
-                                                else if (Platform.isIOS){
-                                                  try {
-                                                    bool launched =
-                                                    await launch(
-                                                        "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
-                                                        forceSafariVC: false,
-                                                        forceWebView: false);
-                                                    if (!launched) {
-                                                      print("inside fallback");
+                                                  else if (Platform.isIOS){
+                                                    try {
+                                                      bool launched =
+                                                      await launch(
+                                                          "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
+                                                          forceSafariVC: false,
+                                                          forceWebView: false);
+                                                      if (!launched) {
+                                                        print("inside fallback");
+                                                        await launch(
+                                                            "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
+                                                            forceSafariVC: false,
+                                                            forceWebView: false);
+                                                      }
+                                                    } catch (e) {
                                                       await launch(
                                                           "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
                                                           forceSafariVC: false,
                                                           forceWebView: false);
                                                     }
-                                                  } catch (e) {
-                                                    await launch(
-                                                        "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
-                                                        forceSafariVC: false,
-                                                        forceWebView: false);
                                                   }
                                                 }
+                                                Navigator.pop(context,true);
                                               }
+                                            });
+                                          }
+                                          else {
+                                            newDeviceMaintenanceState
+                                                .addDeviceToMaintenance(
+                                                MaintenanceDeviceModel(
+                                                    customerName: name_controller
+                                                        .text,
+                                                    phoneNumber: phoneCode
+                                                        .toString() + "-" +
+                                                        phone_controller.text,
+                                                    address: address_controller.text,
+                                                    brandID: selectedBrand?.name,
+                                                    deviceModel: model_controller
+                                                        .text,
+                                                    color: color_controller.text,
+                                                    devicePassword:pin_controller.text,
+                                                    imeiNumber: IMEI_controller.text,
+                                                    problem: problem_controller.text,
+                                                    status: status_value,
+                                                    problemNotes: notes_controller
+                                                        .text,
+                                                    accessories: accessoires_controller
+                                                        .text,
+                                                    price: price_controller.text,
+                                                    estimatedTime: estimated_time_controller
+                                                        .text,
+                                                    notes: notes2_controller.text,
+                                                    pattern: patternValue
+                                                )
+                                            ).then((value) {
+                                              Message.showLongToastMessage(
+                                                  "Added successfully".tr());
                                               Navigator.pop(context,true);
                                             }
-                                          });
-                                        }
-                                        else {
-                                          newDeviceMaintenanceState
-                                              .addDeviceToMaintenance(
-                                              MaintenanceDeviceModel(
-                                                  customerName: name_controller
-                                                      .text,
-                                                  phoneNumber: phoneCode
-                                                      .toString() + "-" +
-                                                      phone_controller.text,
-                                                  address: address_controller.text,
-                                                  brandID: selectedBrand?.name,
-                                                  deviceModel: model_controller
-                                                      .text,
-                                                  color: color_controller.text,
-                                                  devicePassword:pin_controller.text,
-                                                  imeiNumber: IMEI_controller.text,
-                                                  problem: problem_controller.text,
-                                                  status: status_value,
-                                                  problemNotes: notes_controller
-                                                      .text,
-                                                  accessories: accessoires_controller
-                                                      .text,
-                                                  price: price_controller.text,
-                                                  estimatedTime: estimated_time_controller
-                                                      .text,
-                                                  notes: notes2_controller.text,
-                                                  pattern: patternValue
-                                              )
-                                          ).then((value) {
-                                            Message.showLongToastMessage(
-                                                "Added successfully".tr());
-                                            Navigator.pop(context,true);
+                                            );
                                           }
-                                          );
                                         }
-                                      }
-                                    },
-                                    child:Container(
-                                      width: width * 0.2,
-                                      child: WidgetUtilities.autoSizeText(
-                                        widget.editable?"Save":"Create",
-                                        textAlign: TextAlign.center,
+                                      },
+                                      child:Container(
+                                        width: width * 0.2,
+                                        child: WidgetUtilities.autoSizeText(
+                                          widget.editable?"Save":"Create",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: ColorUtilities.secondary,
+                                        textStyle: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                    ):SizedBox(),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        width: width * 0.2,
+                                        child: WidgetUtilities.autoSizeText(
+                                          "Cancel",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Color.fromRGBO(128, 128, 128, 1),
+                                        textStyle: TextStyle(
+                                            fontSize: 16, color: Colors.white),
                                       ),
                                     ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: ColorUtilities.secondary,
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                                  ):SizedBox(),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Container(
-                                      width: width * 0.2,
-                                      child: WidgetUtilities.autoSizeText(
-                                        "Cancel",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color.fromRGBO(128, 128, 128, 1),
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                            ],
-                          ),
-                        )
-                    ),
-                  )),
-            )
-          ],
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                              ],
+                            ),
+                          )
+                      ),
+                    )),
+              )
+            ],
+          ),
         ),
       )
     );

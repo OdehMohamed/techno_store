@@ -75,154 +75,159 @@ class _ProductDetailsState extends State<ProductDetails> {
         backgroundColor: Colors.transparent,
       ),
       extendBodyBehindAppBar: true,
-      body: Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                width: width,
-                height: height * 0.25,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
+      body: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  width: width,
+                  height: height * 0.25,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: WidgetUtilities.autoSizeText(
-                    context.locale==Locale("en")?widget.product.enName!:widget.product.arName!,
-                      textStyle: TextStyle(color: ColorUtilities.textColor,
-                        fontSize: 20
-                      ),
-                  ),
-                )),
-          ),
-          Container(
-            color:ColorUtilities.secondary,
-            child: Container(
-                width: width,
-                height: height * 0.75,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.backgroundContainer,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
-                  ),
-                ),
-                child: Container(
-                    margin: EdgeInsets.only(right: 40, left: 40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            sharedState.userType==0?
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                InkWell(
-                                  child :Icon(Icons.edit,color: ColorUtilities.secondary,size: 35),
-                                  onTap: (){
-                                    Utilities.navigatorWithBack(context, NewProduct(editable: true,edit_product: widget.product,));
-                                  },
-                                ),
-                                SizedBox(width: width*0.05,),
-                                InkWell(
-                                  child :Icon(CupertinoIcons.delete,color: Colors.red,size: 35),
-                                  onTap: (){
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return  AlertDialog(
-                                          title: Text("Delete warning".tr()),
-                                          content: Text("Are you sure you want to delete this product?".tr()),
-                                          actions: [
-                                        TextButton(
-                                        child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
-                                        onPressed: () {
-                                          productDetailsState.deleteProduct(widget.product).then((value) => deleteMessage(value));
-                                        },
-                                        ),
-                                        TextButton(
-                                        child: Text("Cancel".tr()),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        )
-                                          ],
-                                        );;
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ):SizedBox(),
-                            InkWell(
-                              child:favourite?
-                              Icon(CupertinoIcons.heart_fill,color:Colors.red,size: 35,):
-                              Icon(CupertinoIcons.heart,color: Color.fromRGBO(76, 127, 158, 1),size: 35),
-                              onTap: (){
-                                changeFavourite();
-                              },
-                            ),
-                          ],
+                  child: Center(
+                    child: WidgetUtilities.autoSizeText(
+                      context.locale==Locale("en")?widget.product.enName!:widget.product.arName!,
+                        textStyle: TextStyle(color: ColorUtilities.textColor,
+                          fontSize: 20
                         ),
-                        Container(
-                            width: width*0.6,
-                            height: height*0.3,
-                            child: widget.product.photo!.isNotEmpty? ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: List.generate(
-                                widget.product.photo!.length,
-                                    (i) => Container(
-                                    width: width*0.5,
-                                    alignment: Alignment.center,
-                                    child:Container(margin: EdgeInsets.all(10),child:GestureDetector(
-                                        child: InkWell(child:
-                                        widget.product.photo![i].contains("https://firebasestorage.googleapis.com/v0/b/technostore")?
-                                        Image.network(widget.product.photo![i])
-                                            :Image.file(File(widget.product.photo![i])),
-                                          onTap: ()  {
-                                            showDialog<Image>(
-                                              context: context,
-                                              builder: (BuildContext context) => AlertDialog(
-                                                content: Container(
-                                                  width: width,
-                                                  height: width,
-                                                  child:
-                                                  PhotoView(
-                                                    backgroundDecoration:BoxDecoration(color: Colors.transparent),
-                                                    imageProvider: NetworkImage(widget.product.photo![i]),
+                    ),
+                  )),
+            ),
+            Container(
+              color:ColorUtilities.secondary,
+              child: Container(
+                  width: width,
+                  height: height * 0.75,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.backgroundContainer,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                    ),
+                  ),
+                  child: Container(
+                      margin: EdgeInsets.only(right: 40, left: 40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              sharedState.userType==0?
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                    child :Icon(Icons.edit,color: ColorUtilities.secondary,size: 35),
+                                    onTap: (){
+                                      Utilities.navigatorWithBack(context, NewProduct(editable: true,edit_product: widget.product,));
+                                    },
+                                  ),
+                                  SizedBox(width: width*0.05,),
+                                  InkWell(
+                                    child :Icon(CupertinoIcons.delete,color: Colors.red,size: 35),
+                                    onTap: (){
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return  AlertDialog(
+                                            title: Text("Delete warning".tr()),
+                                            content: Text("Are you sure you want to delete this product?".tr()),
+                                            actions: [
+                                          TextButton(
+                                          child: Text("Delete".tr(),style: TextStyle(color: Colors.red),),
+                                          onPressed: () {
+                                            productDetailsState.deleteProduct(widget.product).then((value) => deleteMessage(value));
+                                          },
+                                          ),
+                                          TextButton(
+                                          child: Text("Cancel".tr()),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          )
+                                            ],
+                                          );;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ):SizedBox(),
+                              InkWell(
+                                child:favourite?
+                                Icon(CupertinoIcons.heart_fill,color:Colors.red,size: 35,):
+                                Icon(CupertinoIcons.heart,color: Color.fromRGBO(76, 127, 158, 1),size: 35),
+                                onTap: (){
+                                  changeFavourite();
+                                },
+                              ),
+                            ],
+                          ),
+                          Container(
+                              width: width*0.6,
+                              height: height*0.3,
+                              child: widget.product.photo!.isNotEmpty? ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: List.generate(
+                                  widget.product.photo!.length,
+                                      (i) => Container(
+                                      width: width*0.5,
+                                      alignment: Alignment.center,
+                                      child:Container(margin: EdgeInsets.all(10),child:GestureDetector(
+                                          child: InkWell(child:
+                                          widget.product.photo![i].contains("https://firebasestorage.googleapis.com/v0/b/technostore")?
+                                          Image.network(widget.product.photo![i])
+                                              :Image.file(File(widget.product.photo![i])),
+                                            onTap: ()  {
+                                              showDialog<Image>(
+                                                context: context,
+                                                builder: (BuildContext context) => AlertDialog(
+                                                  content: Container(
+                                                    width: width,
+                                                    height: width,
+                                                    child:
+                                                    PhotoView(
+                                                      backgroundDecoration:BoxDecoration(color: Colors.transparent),
+                                                      imageProvider: NetworkImage(widget.product.photo![i]),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            );
+                                              );
 
-                                          },)
-                                    ))
+                                            },)
+                                      ))
+                                  ),
                                 ),
-                              ),
-                            ):
-                                Image.asset("assets/images/defaultProductImage.png")
-                        ),
-                        WidgetUtilities.autoSizeText(widget.product.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
-                        Container(
-                          width: width * 0.8,
-                          height: height * 0.2,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: ColorUtilities.white,
+                              ):
+                                  Image.asset("assets/images/defaultProductImage.png")
                           ),
-                          child: SingleChildScrollView(
-                              child: Container(
-                            margin: EdgeInsets.all(10),
-                            child: Text(widget.product.description!,style: TextStyle(color: Colors.black))
-                          )),
-                        )
-                      ],
-                    ))),
-          )
-        ],
+                          WidgetUtilities.autoSizeText(widget.product.price.toString()+"JD".tr(),textStyle: TextStyle(color: Colors.black)),
+                          Container(
+                            width: width * 0.8,
+                            height: height * 0.2,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: ColorUtilities.white,
+                            ),
+                            child: SingleChildScrollView(
+                                child: Container(
+                              margin: EdgeInsets.all(10),
+                              child: Text(widget.product.description!,style: TextStyle(color: Colors.black))
+                            )),
+                          )
+                        ],
+                      ))),
+            )
+          ],
+        ),
       ),
     );
   }

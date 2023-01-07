@@ -275,143 +275,148 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
         centerTitle: true,
       ),
       extendBodyBehindAppBar: true,
-      body: Column(
-        children: [
-          Container(
-            color: ColorUtilities.backgroundContainer,
-            child: Container(
-                padding: EdgeInsets.only(top: height * 0.1),
-                width: width,
-                height: height * 0.4,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.secondary,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 100,
-                      child: Image.asset(
-                        "assets/images/logo.png",
-                        fit: BoxFit.fill,
-                        color: Colors.white,
-                      ),
+      body: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          children: [
+            Container(
+              color: ColorUtilities.backgroundContainer,
+              child: Container(
+                  padding: EdgeInsets.only(top: height * 0.1),
+                  width: width,
+                  height: height * 0.4,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
                     ),
-                  ],
-                )),
-          ),
-          Container(
-            color: ColorUtilities.secondary,
-            child: Container(
-                width: width,
-                height: height * 0.6,
-                decoration: const BoxDecoration(
-                  color: ColorUtilities.backgroundContainer,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
                   ),
-                ),
-                child: Container(
-                  padding: EdgeInsets.only(left: 20, right: 20),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        height: height * 0.05,
-                      ),
-                      WidgetUtilities.autoSizeText(
-                        "From Here You can track your mobile",
-                        textAlign: TextAlign.center,
-                        textStyle: TextStyle(color: Colors.black)
-                      ),
-                      SizedBox(
-                        height: height * 0.07,
-                      ),
-                      InternationalPhoneNumberInput(
-                        errorMessage: "Invalid phone number".tr(),
-                        hintText: "Phone number".tr(),
-                        onInputChanged: (PhoneNumber number) {
-                          phoneCode = number.dialCode!;
-                        },
-                        onInputValidated: (bool value) {
-                          phoneValid = value;
-                        },
-                        selectorConfig: SelectorConfig(
-                          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                        ),
-                        ignoreBlank: false,
-                        autoValidateMode: AutovalidateMode.always,
-                        selectorTextStyle: TextStyle(color: Colors.black),
-                        initialValue: number,
-                        textFieldController: phoneController,
-                        formatInput: false,
-                        keyboardType: TextInputType.numberWithOptions(
-                          signed: true,
-                          decimal: true,
-                        ),
-                        inputBorder: OutlineInputBorder(),
-                      ),
-                      Expanded(child: Container()),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (phoneValid) {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return
-                                  FutureBuilder<List<MaintenanceDeviceModel>>
-                                    (future: trackPhonePageState.checkDeviceStatus(phoneCode+"-"+phoneController.text),
-                                    builder: (context, snapshot){
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return Container(child:CircularProgressIndicator(),height: height*0.7,margin: EdgeInsets.all(width*0.4),);
-                                      }
-                                      else if (snapshot.data!.isEmpty){
-                                        return Center(child: Text("No Data".tr()),);
-                                      }
-                                      else if(snapshot.hasData){
-                                        List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
-                                        return ListView.builder(
-                                            itemCount: devices.length,
-                                            itemBuilder:(context,index)
-                                            {
-                                              return card(
-                                                  devices[index]
-                                              );
-                                            }
-                                            );
-                                      }
-                                      else {
-                                        return Center(child: Text("Error".tr()),);
-                                      }
-                                    });
-                              },
-                            );
-                          }
-                          },
-                        child: Container(
-                            width: width * 0.4,
-                            height: height * 0.07,
-                            child: Center(
-                              child: WidgetUtilities.autoSizeText(
-                                "Check Status",
-                                textAlign: TextAlign.center,
-                              ),
-                            )),
-                        style: ElevatedButton.styleFrom(
-                          primary: ColorUtilities.secondary,
-                          textStyle:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                      Container(
+                        width: 150,
+                        height: 100,
+                        child: Image.asset(
+                          "assets/images/logo.png",
+                          fit: BoxFit.fill,
+                          color: Colors.white,
                         ),
                       ),
-                      Expanded(child: Container())
                     ],
+                  )),
+            ),
+            Container(
+              color: ColorUtilities.secondary,
+              child: Container(
+                  width: width,
+                  height: height * 0.6,
+                  decoration: const BoxDecoration(
+                    color: ColorUtilities.backgroundContainer,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                    ),
                   ),
-                )),
-          )
-        ],
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: height * 0.05,
+                        ),
+                        WidgetUtilities.autoSizeText(
+                          "From Here You can track your mobile",
+                          textAlign: TextAlign.center,
+                          textStyle: TextStyle(color: Colors.black)
+                        ),
+                        SizedBox(
+                          height: height * 0.07,
+                        ),
+                        InternationalPhoneNumberInput(
+                          errorMessage: "Invalid phone number".tr(),
+                          hintText: "Phone number".tr(),
+                          onInputChanged: (PhoneNumber number) {
+                            phoneCode = number.dialCode!;
+                          },
+                          onInputValidated: (bool value) {
+                            phoneValid = value;
+                          },
+                          selectorConfig: SelectorConfig(
+                            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                          ),
+                          ignoreBlank: false,
+                          autoValidateMode: AutovalidateMode.always,
+                          selectorTextStyle: TextStyle(color: Colors.black),
+                          initialValue: number,
+                          textFieldController: phoneController,
+                          formatInput: false,
+                          keyboardType: TextInputType.numberWithOptions(
+                            signed: true,
+                            decimal: true,
+                          ),
+                          inputBorder: OutlineInputBorder(),
+                        ),
+                        Expanded(child: Container()),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (phoneValid) {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return
+                                    FutureBuilder<List<MaintenanceDeviceModel>>
+                                      (future: trackPhonePageState.checkDeviceStatus(phoneCode+"-"+phoneController.text),
+                                      builder: (context, snapshot){
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return Container(child:CircularProgressIndicator(),height: height*0.7,margin: EdgeInsets.all(width*0.4),);
+                                        }
+                                        else if (snapshot.data!.isEmpty){
+                                          return Center(child: Text("No Data".tr()),);
+                                        }
+                                        else if(snapshot.hasData){
+                                          List<MaintenanceDeviceModel> devices= snapshot.data as List<MaintenanceDeviceModel>;
+                                          return ListView.builder(
+                                              itemCount: devices.length,
+                                              itemBuilder:(context,index)
+                                              {
+                                                return card(
+                                                    devices[index]
+                                                );
+                                              }
+                                              );
+                                        }
+                                        else {
+                                          return Center(child: Text("Error".tr()),);
+                                        }
+                                      });
+                                },
+                              );
+                            }
+                            },
+                          child: Container(
+                              width: width * 0.4,
+                              height: height * 0.07,
+                              child: Center(
+                                child: WidgetUtilities.autoSizeText(
+                                  "Check Status",
+                                  textAlign: TextAlign.center,
+                                ),
+                              )),
+                          style: ElevatedButton.styleFrom(
+                            primary: ColorUtilities.secondary,
+                            textStyle:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                        Expanded(child: Container())
+                      ],
+                    ),
+                  )),
+            )
+          ],
+        ),
       ),
     );
   }
