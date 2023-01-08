@@ -108,5 +108,6 @@
   "loading" : "Loading",
   "check spam" : "Please check your spam",
   "loading" : "Loading",
-  "ILS": " ILS "
+  "ILS": " ILS ",
+  "there is no sub-categories at this category": "there is no sub-categories at this category"
 }

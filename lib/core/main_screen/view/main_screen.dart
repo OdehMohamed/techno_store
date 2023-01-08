@@ -244,7 +244,7 @@ class _SignInState extends State<SignIn> {
                                     if (_formKey.currentState!.validate()) {
                                       try {
                                         mainScreenState
-                                            .signIn(login_email.text,
+                                            .signIn(login_email.text.trim(),
                                                 login_password.text)
                                             .then((value) {
                                           if (FirebaseDataSource()

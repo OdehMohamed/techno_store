@@ -273,12 +273,12 @@ class _manageCategoryState extends State<manageCategory> {
                                                                             hintText:
                                                                                 'New Category'.tr() + "enLang".tr(),
                                                                             hintStyle:
-                                                                                TextStyle(color: Colors.grey, fontSize: 14),
+                                                                                TextStyle(color: Colors.grey, fontSize: 10),
                                                                           ),
                                                                           validator:
                                                                               (value) {
                                                                             if (value == null ||
-                                                                                value.isEmpty) {
+                                                                                value.trim().isEmpty) {
                                                                               return "Please Enter".tr() + " " + "New Category".tr() + "enLang";
                                                                             }
                                                                             return null;
@@ -318,12 +318,12 @@ class _manageCategoryState extends State<manageCategory> {
                                                                             hintText:
                                                                                 'New Category'.tr() + "arLang".tr(),
                                                                             hintStyle:
-                                                                                TextStyle(color: Colors.grey, fontSize: 14),
+                                                                                TextStyle(color: Colors.grey, fontSize: 10),
                                                                           ),
                                                                           validator:
                                                                               (value) {
                                                                             if (value == null ||
-                                                                                value.isEmpty) {
+                                                                                value.trim().isEmpty) {
                                                                               return "Please Enter".tr() + " " + "New Category".tr() + "arLang";
                                                                             }
                                                                             return null;
@@ -348,8 +348,8 @@ class _manageCategoryState extends State<manageCategory> {
                                                                             .validate()) {
                                                                           manageCategoriesState
                                                                               .addCategory(CategoriesAndSubCategoryModel(
-                                                                                enName: new_category_name_controller_en.text,
-                                                                                arName: new_category_name_controller_ar.text,
+                                                                                enName: new_category_name_controller_en.text.trim(),
+                                                                                arName: new_category_name_controller_ar.text.trim(),
                                                                               ))
                                                                               .then((value) => feedbackMessage(value, "Added successfully"));
                                                                         }
@@ -406,229 +406,391 @@ class _manageCategoryState extends State<manageCategory> {
                                                 List<CategoriesAndSubCategoryModel>
                                                     futureSubCategories =
                                                     snapshot.data;
-                                                return Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            sub_category_flag =
-                                                                true;
-                                                          });
-                                                        },
-                                                        child: FormValidatorDropdown<
-                                                            CategoriesAndSubCategoryModel>(
-                                                          name:
-                                                              "SubCategoryName",
-                                                          dropDownValue:
-                                                              selectedSubCategory,
-                                                          optional:
-                                                              !sub_category_flag,
-                                                          onChanged:
-                                                              sub_category_flag
-                                                                  ? (newValue) {
-                                                                      selectedSubCategory =
-                                                                          newValue;
-                                                                      setState(
-                                                                          () {});
-                                                                    }
-                                                                  : null,
-                                                          items: List.generate(
-                                                              futureSubCategories
-                                                                  .length,
-                                                              (index) =>
-                                                                  DropdownMenuItem<
-                                                                      CategoriesAndSubCategoryModel>(
-                                                                    value: futureSubCategories[
-                                                                        index],
-                                                                    child: Text(StringUtilities.getStringByLanguage(
-                                                                        context,
-                                                                        futureSubCategories[index]
-                                                                            .arName,
-                                                                        futureSubCategories[index]
-                                                                            .enName)),
-                                                                  )),
-                                                          label:
-                                                              "Sub-Categories"
-                                                                  .tr(),
+                                                if (futureSubCategories.isEmpty) {
+                                                  return Container(
+                                                    width: Utilities
+                                                      .getDeviceWidth(
+                                                      context),
+                                                    height: Utilities
+                                                        .getDeviceHeight(
+                                                        context) *
+                                                        0.15,
+                                                    child:(Center(
+                                                        child:WidgetUtilities
+                                                        .autoSizeText("there is no sub-categories at this category",
+                                                            textStyle: TextStyle(color: Colors.black)))),);
+                                                }
+                                                else {
+                                                  return Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              sub_category_flag =
+                                                              true;
+                                                            });
+                                                          },
+                                                          child: FormValidatorDropdown<
+                                                              CategoriesAndSubCategoryModel>(
+                                                            name:
+                                                            "SubCategoryName",
+                                                            dropDownValue:
+                                                            selectedSubCategory,
+                                                            optional:
+                                                            !sub_category_flag,
+                                                            onChanged:
+                                                            sub_category_flag
+                                                                ? (newValue) {
+                                                              selectedSubCategory =
+                                                                  newValue;
+                                                              setState(
+                                                                      () {});
+                                                            }
+                                                                : null,
+                                                            items: List
+                                                                .generate(
+                                                                futureSubCategories
+                                                                    .length,
+                                                                    (index) =>
+                                                                    DropdownMenuItem<
+                                                                        CategoriesAndSubCategoryModel>(
+                                                                      value: futureSubCategories[
+                                                                      index],
+                                                                      child: Text(
+                                                                          StringUtilities
+                                                                              .getStringByLanguage(
+                                                                              context,
+                                                                              futureSubCategories[index]
+                                                                                  .arName,
+                                                                              futureSubCategories[index]
+                                                                                  .enName)),
+                                                                    )),
+                                                            label:
+                                                            "Sub-Categories"
+                                                                .tr(),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Column(
-                                                      children: [
-                                                        InkWell(
-                                                          child: Icon(
-                                                            Icons
-                                                                .add_circle_outlined,
-                                                            color: Colors.green,
-                                                            size: 30,
-                                                          ),
-                                                          onTap: () async {
-                                                            await showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  new_sub_category_controller_en
-                                                                          .text =
-                                                                      new_sub_category_controller_ar
-                                                                          .text = "";
-                                                                  return StatefulBuilder(builder:
-                                                                      (context,
-                                                                          StateSetter
-                                                                              setState) {
-                                                                    return AlertDialog(
-                                                                      title:
-                                                                          Container(
-                                                                        width: Utilities.getDeviceWidth(
-                                                                            context),
-                                                                        height: Utilities.getDeviceHeight(context) *
-                                                                            0.05,
-                                                                        child: WidgetUtilities.autoSizeText(
-                                                                            "Add sub-category",
-                                                                            textStyle:
-                                                                                TextStyle(color: Colors.black),
-                                                                            textAlign: TextAlign.center),
-                                                                      ),
-                                                                      content: Container(
-                                                                          width: Utilities.getDeviceWidth(context),
-                                                                          height: Utilities.getDeviceHeight(context) * 0.4,
-                                                                          child: Form(
-                                                                            key:
-                                                                                _new_sub_category_key,
-                                                                            child:
-                                                                                Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                              children: [
-                                                                                FutureBuilder(
-                                                                                    future: getCategoriesFuture,
-                                                                                    builder: (context, AsyncSnapshot snapshot) {
-                                                                                      if (snapshot.hasData) {
-                                                                                        List<CategoriesAndSubCategoryModel> futureCategories = snapshot.data;
-                                                                                        return FormValidatorDropdown<CategoriesAndSubCategoryModel>(
-                                                                                          name: "CategoryName",
-                                                                                          dropDownValue: add_sub_category_selectedCategory,
-                                                                                          onChanged: (newValue) {
-                                                                                            add_sub_category_selectedCategory = newValue;
-                                                                                            setState(() {});
-                                                                                          },
-                                                                                          items: List.generate(
-                                                                                              futureCategories.length,
-                                                                                              (index) => DropdownMenuItem<CategoriesAndSubCategoryModel>(
-                                                                                                    value: futureCategories[index],
-                                                                                                    child: Text(StringUtilities.getStringByLanguage(context, futureCategories[index].arName, futureCategories[index].enName)),
-                                                                                                  )),
-                                                                                          label: "Categories".tr(),
-                                                                                        );
-                                                                                      }
-                                                                                      return SizedBox();
-                                                                                    }),
-                                                                                Container(
-                                                                                  width: Utilities.getDeviceWidth(context) * 0.5,
-                                                                                  margin: EdgeInsets.only(top: 20),
-                                                                                  padding: EdgeInsets.only(left: 20, right: 20),
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: ColorUtilities.white,
-                                                                                    border: Border.all(color: Colors.grey),
-                                                                                    borderRadius: BorderRadius.circular(5),
-                                                                                  ),
-                                                                                  child: TextField(
-                                                                                    controller: new_sub_category_controller_en,
-                                                                                    style: TextStyle(color: Colors.black),
-                                                                                    decoration: InputDecoration(
-                                                                                      border: InputBorder.none,
-                                                                                      hintText: 'New Sub-Category'.tr() + "enLang".tr(),
-                                                                                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                Container(
-                                                                                  width: Utilities.getDeviceWidth(context) * 0.5,
-                                                                                  margin: EdgeInsets.only(top: 20),
-                                                                                  padding: EdgeInsets.only(left: 20, right: 20),
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: ColorUtilities.white,
-                                                                                    border: Border.all(color: Colors.grey),
-                                                                                    borderRadius: BorderRadius.circular(5),
-                                                                                  ),
-                                                                                  child: TextField(
-                                                                                    controller: new_sub_category_controller_ar,
-                                                                                    style: TextStyle(color: Colors.black),
-                                                                                    decoration: InputDecoration(
-                                                                                      border: InputBorder.none,
-                                                                                      hintText: 'New Sub-Category'.tr() + "arLang".tr(),
-                                                                                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
+                                                      Column(
+                                                        children: [
+                                                          InkWell(
+                                                            child: Icon(
+                                                              Icons
+                                                                  .add_circle_outlined,
+                                                              color: Colors
+                                                                  .green,
+                                                              size: 30,
+                                                            ),
+                                                            onTap: () async {
+                                                              await showDialog(
+                                                                  context:
+                                                                  context,
+                                                                  builder:
+                                                                      (
+                                                                      BuildContext
+                                                                      context) {
+                                                                    new_sub_category_controller_en
+                                                                        .text =
+                                                                        new_sub_category_controller_ar
+                                                                            .text =
+                                                                    "";
+                                                                    return StatefulBuilder(
+                                                                        builder:
+                                                                            (
+                                                                            context,
+                                                                            StateSetter
+                                                                            setState) {
+                                                                          return AlertDialog(
+                                                                            title:
+                                                                            Container(
+                                                                              width: Utilities
+                                                                                  .getDeviceWidth(
+                                                                                  context),
+                                                                              height: Utilities
+                                                                                  .getDeviceHeight(
+                                                                                  context) *
+                                                                                  0.05,
+                                                                              child: WidgetUtilities
+                                                                                  .autoSizeText(
+                                                                                  "Add sub-category",
+                                                                                  textStyle:
+                                                                                  TextStyle(
+                                                                                      color: Colors
+                                                                                          .black),
+                                                                                  textAlign: TextAlign
+                                                                                      .center),
                                                                             ),
-                                                                          )),
-                                                                      actions: [
-                                                                        Center(
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.center,
-                                                                            children: [
-                                                                              ElevatedButton(
-                                                                                onPressed: () {
-                                                                                  if (_new_sub_category_key.currentState!.validate()) {
-                                                                                    manageCategoriesState
-                                                                                        .addSubCategory(
-                                                                                            add_sub_category_selectedCategory!.id!,
-                                                                                            CategoriesAndSubCategoryModel(
-                                                                                              enName: new_sub_category_controller_en.text,
-                                                                                              arName: new_sub_category_controller_ar.text,
-                                                                                            ))
-                                                                                        .then((value) => feedbackMessage(value, "Added successfully"));
-                                                                                  }
-                                                                                },
-                                                                                child: Text("Add".tr()),
-                                                                                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                                                              ),
-                                                                              SizedBox(
-                                                                                width: 30,
-                                                                              ),
-                                                                              ElevatedButton(
-                                                                                onPressed: () {
-                                                                                  Navigator.pop(context);
-                                                                                },
-                                                                                child: Text("Cancel").tr(),
-                                                                                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                                                                              ),
+                                                                            content: Container(
+                                                                                width: Utilities
+                                                                                    .getDeviceWidth(
+                                                                                    context),
+                                                                                height: Utilities
+                                                                                    .getDeviceHeight(
+                                                                                    context) *
+                                                                                    0.4,
+                                                                                child: Form(
+                                                                                  key:
+                                                                                  _new_sub_category_key,
+                                                                                  child:
+                                                                                  Column(
+                                                                                    mainAxisAlignment: MainAxisAlignment
+                                                                                        .spaceEvenly,
+                                                                                    children: [
+                                                                                      FutureBuilder(
+                                                                                          future: getCategoriesFuture,
+                                                                                          builder: (
+                                                                                              context,
+                                                                                              AsyncSnapshot snapshot) {
+                                                                                            if (snapshot
+                                                                                                .hasData) {
+                                                                                              List<
+                                                                                                  CategoriesAndSubCategoryModel> futureCategories = snapshot
+                                                                                                  .data;
+                                                                                              return FormValidatorDropdown<
+                                                                                                  CategoriesAndSubCategoryModel>(
+                                                                                                name: "CategoryName",
+                                                                                                dropDownValue: add_sub_category_selectedCategory,
+                                                                                                onChanged: (
+                                                                                                    newValue) {
+                                                                                                  add_sub_category_selectedCategory =
+                                                                                                      newValue;
+                                                                                                  setState(() {});
+                                                                                                },
+                                                                                                items: List
+                                                                                                    .generate(
+                                                                                                    futureCategories
+                                                                                                        .length,
+                                                                                                        (
+                                                                                                        index) =>
+                                                                                                        DropdownMenuItem<
+                                                                                                            CategoriesAndSubCategoryModel>(
+                                                                                                          value: futureCategories[index],
+                                                                                                          child: Text(
+                                                                                                              StringUtilities
+                                                                                                                  .getStringByLanguage(
+                                                                                                                  context,
+                                                                                                                  futureCategories[index]
+                                                                                                                      .arName,
+                                                                                                                  futureCategories[index]
+                                                                                                                      .enName)),
+                                                                                                        )),
+                                                                                                label: "Categories"
+                                                                                                    .tr(),
+                                                                                              );
+                                                                                            }
+                                                                                            return SizedBox();
+                                                                                          }),
+                                                                                      Container(
+                                                                                        width: Utilities
+                                                                                            .getDeviceWidth(
+                                                                                            context) *
+                                                                                            0.5,
+                                                                                        margin: EdgeInsets
+                                                                                            .only(
+                                                                                            top: 20),
+                                                                                        padding: EdgeInsets
+                                                                                            .only(
+                                                                                            left: 20,
+                                                                                            right: 20),
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: ColorUtilities
+                                                                                              .white,
+                                                                                          border: Border
+                                                                                              .all(
+                                                                                              color: Colors
+                                                                                                  .grey),
+                                                                                          borderRadius: BorderRadius
+                                                                                              .circular(
+                                                                                              5),
+                                                                                        ),
+                                                                                        child: TextFormField(
+                                                                                          validator: (
+                                                                                              value) {
+                                                                                            if (value ==
+                                                                                                null ||
+                                                                                                value
+                                                                                                    .trim()
+                                                                                                    .isEmpty) {
+                                                                                              return "Please Enter"
+                                                                                                  .tr() +
+                                                                                                  " " +
+                                                                                                  "New Sub-Category"
+                                                                                                      .tr() +
+                                                                                                  "enLang"
+                                                                                                      .tr();
+                                                                                            }
+                                                                                            return null;
+                                                                                          },
+                                                                                          controller: new_sub_category_controller_en,
+                                                                                          style: TextStyle(
+                                                                                              color: Colors
+                                                                                                  .black),
+                                                                                          decoration: InputDecoration(
+                                                                                            border: InputBorder
+                                                                                                .none,
+                                                                                            hintText: 'New Sub-Category'
+                                                                                                .tr() +
+                                                                                                "enLang"
+                                                                                                    .tr(),
+                                                                                            hintStyle: TextStyle(
+                                                                                                color: Colors
+                                                                                                    .grey,
+                                                                                                fontSize: 10),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                      Container(
+                                                                                        width: Utilities
+                                                                                            .getDeviceWidth(
+                                                                                            context) *
+                                                                                            0.5,
+                                                                                        margin: EdgeInsets
+                                                                                            .only(
+                                                                                            top: 20),
+                                                                                        padding: EdgeInsets
+                                                                                            .only(
+                                                                                            left: 20,
+                                                                                            right: 20),
+                                                                                        decoration: BoxDecoration(
+                                                                                          color: ColorUtilities
+                                                                                              .white,
+                                                                                          border: Border
+                                                                                              .all(
+                                                                                              color: Colors
+                                                                                                  .grey),
+                                                                                          borderRadius: BorderRadius
+                                                                                              .circular(
+                                                                                              5),
+                                                                                        ),
+                                                                                        child: TextFormField(
+                                                                                          validator: (
+                                                                                              value) {
+                                                                                            if (value ==
+                                                                                                null ||
+                                                                                                value
+                                                                                                    .trim()
+                                                                                                    .isEmpty) {
+                                                                                              return "Please Enter"
+                                                                                                  .tr() +
+                                                                                                  " " +
+                                                                                                  "New Sub-Category"
+                                                                                                      .tr() +
+                                                                                                  "arLang"
+                                                                                                      .tr();
+                                                                                            }
+                                                                                            return null;
+                                                                                          },
+                                                                                          controller: new_sub_category_controller_ar,
+                                                                                          style: TextStyle(
+                                                                                              color: Colors
+                                                                                                  .black),
+                                                                                          decoration: InputDecoration(
+                                                                                            border: InputBorder
+                                                                                                .none,
+                                                                                            hintText: 'New Sub-Category'
+                                                                                                .tr() +
+                                                                                                "arLang"
+                                                                                                    .tr(),
+                                                                                            hintStyle: TextStyle(
+                                                                                                color: Colors
+                                                                                                    .grey,
+                                                                                                fontSize: 10),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                )),
+                                                                            actions: [
+                                                                              Center(
+                                                                                child:
+                                                                                Row(
+                                                                                  mainAxisAlignment:
+                                                                                  MainAxisAlignment
+                                                                                      .center,
+                                                                                  children: [
+                                                                                    ElevatedButton(
+                                                                                      onPressed: () {
+                                                                                        if (_new_sub_category_key
+                                                                                            .currentState!
+                                                                                            .validate()) {
+                                                                                          manageCategoriesState
+                                                                                              .addSubCategory(
+                                                                                              add_sub_category_selectedCategory!
+                                                                                                  .id!,
+                                                                                              CategoriesAndSubCategoryModel(
+                                                                                                enName: new_sub_category_controller_en
+                                                                                                    .text
+                                                                                                    .trim(),
+                                                                                                arName: new_sub_category_controller_ar
+                                                                                                    .text
+                                                                                                    .trim(),
+                                                                                              ))
+                                                                                              .then((
+                                                                                              value) =>
+                                                                                              feedbackMessage(
+                                                                                                  value,
+                                                                                                  "Added successfully"));
+                                                                                        }
+                                                                                      },
+                                                                                      child: Text(
+                                                                                          "Add"
+                                                                                              .tr()),
+                                                                                      style: ElevatedButton
+                                                                                          .styleFrom(
+                                                                                          backgroundColor: Colors
+                                                                                              .green),
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 30,
+                                                                                    ),
+                                                                                    ElevatedButton(
+                                                                                      onPressed: () {
+                                                                                        Navigator
+                                                                                            .pop(
+                                                                                            context);
+                                                                                      },
+                                                                                      child: Text(
+                                                                                          "Cancel")
+                                                                                          .tr(),
+                                                                                      style: ElevatedButton
+                                                                                          .styleFrom(
+                                                                                          backgroundColor: Colors
+                                                                                              .grey),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              )
                                                                             ],
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
+                                                                          );
+                                                                        });
                                                                   });
+                                                            },
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          sub_category_flag
+                                                              ? InkWell(
+                                                              child: Icon(
+                                                                Icons
+                                                                    .near_me_disabled,
+                                                                color: Colors
+                                                                    .grey,
+                                                                size: 30,
+                                                              ),
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  change_sub_category_flag();
                                                                 });
-                                                          },
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        sub_category_flag
-                                                            ? InkWell(
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .near_me_disabled,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                  size: 30,
-                                                                ),
-                                                                onTap: () {
-                                                                  setState(() {
-                                                                    change_sub_category_flag();
-                                                                  });
-                                                                })
-                                                            : SizedBox(),
-                                                      ],
-                                                    )
-                                                  ],
-                                                );
+                                                              })
+                                                              : SizedBox(),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  );
+                                                }
                                               }
                                               return SizedBox();
                                             })
@@ -659,10 +821,10 @@ class _manageCategoryState extends State<manageCategory> {
                                           hintText:
                                               'New Name'.tr() + "enLang".tr(),
                                           hintStyle: TextStyle(
-                                              color: Colors.grey, fontSize: 16),
+                                              color: Colors.grey, fontSize: 13),
                                         ),
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null || value.trim().isEmpty) {
                                             return "Please Enter".tr() +
                                                 " " +
                                                 "New Name".tr() +
@@ -691,10 +853,10 @@ class _manageCategoryState extends State<manageCategory> {
                                           hintText:
                                               'New Name'.tr() + "arLang".tr(),
                                           hintStyle: TextStyle(
-                                              color: Colors.grey, fontSize: 16),
+                                              color: Colors.grey, fontSize: 13),
                                         ),
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null || value.trim().isEmpty) {
                                             return "Please Enter".tr() +
                                                 " " +
                                                 "New Name".tr() +
@@ -723,9 +885,9 @@ class _manageCategoryState extends State<manageCategory> {
                                             .validate()) {
                                       if (sub_category_flag) {
                                         selectedSubCategory!.arName =
-                                            edit_name_controller_ar.text;
+                                            edit_name_controller_ar.text.trim();
                                         selectedSubCategory!.enName =
-                                            edit_name_controller_en.text;
+                                            edit_name_controller_en.text.trim();
                                         manageCategoriesState
                                             .editSubCategories(
                                                 selectedCategory!.id!,
@@ -735,9 +897,9 @@ class _manageCategoryState extends State<manageCategory> {
                                                 value, "Edited successfully"));
                                       } else {
                                         selectedCategory!.arName =
-                                            edit_name_controller_ar.text;
+                                            edit_name_controller_ar.text.trim();
                                         selectedCategory!.enName =
-                                            edit_name_controller_en.text;
+                                            edit_name_controller_en.text.trim();
                                         manageCategoriesState
                                             .editCategory(selectedCategory!.id!,
                                                 selectedCategory!)

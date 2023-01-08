@@ -227,16 +227,10 @@ class _StoreState extends State<Store> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Container(
-                            child: WidgetUtilities.autoSizeText("Store",
-                                textStyle: TextStyle(
-                                    fontSize: 22,
-                                    color: ColorUtilities.textColor)),
-                          ),
-                          Container(
-                            height: height * 0.1,
-                            child: Row(children: [
+                            height: height * 0.2,
+                            child: Column(children: [
                               Container(
-                                width: width * 0.35,
+                                width: width * 0.85,
                                 padding: EdgeInsets.only(right: 30, left: 30),
                                 child: FutureBuilder(
                                     future: getCategoriesFuture,
@@ -288,6 +282,7 @@ class _StoreState extends State<Store> {
                                       return SizedBox();
                                     }),
                               ),
+                              SizedBox(height: 5,),
                               getSubCategoriesFuture != null
                                   ? FutureBuilder(
                                       future: getSubCategoriesFuture,
@@ -297,7 +292,13 @@ class _StoreState extends State<Store> {
                                           List<CategoriesAndSubCategoryModel>
                                               futureSubCategories =
                                               snapshot.data;
-                                          if (selectedSubCategory == null) {
+                                          if (futureSubCategories.isEmpty){
+                                            productList = storeState
+                                                .getProducts("hi");
+                                            getSubCategoriesFuture=null;
+                                            return SizedBox();
+                                          }
+                                          else if (selectedSubCategory == null) {
                                             productList = storeState
                                                 .getProducts(futureSubCategories
                                                     .first.id!);
@@ -453,12 +454,7 @@ class _StoreState extends State<Store> {
                               if (snapshot.connectionState ==
                                       ConnectionState.waiting ||
                                   snapshot.data == null) {
-                                return Center(
-                                    child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  child: CircularProgressIndicator(),
-                                ));
+                                return SizedBox();
                               } else if (snapshot.hasData) {
                                 List<ProductModel> devices =
                                     snapshot.data as List<ProductModel>;

@@ -108,5 +108,6 @@
   "loading" : "جارِ التحميل",
   "check spam" : "الرجاء التحقق من الإيميلات المجهولة (spam)",
   "loading" : "جارِ التحميل",
-  "ILS": " شيكل "
+  "ILS": " شيكل ",
+  "there is no sub-categories at this category": "لا يوجد تصنيفات فرعية داخل هذا التصنيف"
 }

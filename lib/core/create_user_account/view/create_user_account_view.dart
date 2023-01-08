@@ -217,14 +217,14 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                             color: Colors.grey, fontSize: 16),
                                       ),
                                       validator: (value) {
-                                        if (value == null || value.isEmpty) {
+                                        if (value == null || value.trim().isEmpty) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "Email".tr();
                                         }
                                         if (!RegExp(
                                                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                            .hasMatch(value)) {
+                                            .hasMatch(value.trim())) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "valid Email".tr();
@@ -319,7 +319,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                                       if (_formKey.currentState!.validate()) {
                                         await createUserAccountState
                                             .signUp(
-                                                email_controller.text,
+                                                email_controller.text.trim(),
                                                 password_controller.text,
                                                 CreateUserAccountModel(
                                                     name: fullname_controller

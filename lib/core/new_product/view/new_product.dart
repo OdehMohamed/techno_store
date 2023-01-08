@@ -395,7 +395,6 @@ class _NewProductState extends State<NewProduct> {
                                                   snapshot.data;
                                               if (widget.editable &&
                                                   selectedCategory == null) {
-                                                print("in");
                                                 for (int i = 0;
                                                     i < futureCategories.length;
                                                     i++) {

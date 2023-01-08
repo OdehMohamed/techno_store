@@ -226,14 +226,14 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                             color: Colors.grey, fontSize: 16),
                                       ),
                                       validator: (value) {
-                                        if (value == null || value.isEmpty) {
+                                        if (value == null || value.trim().isEmpty) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "Email".tr();
                                         }
                                         if (!RegExp(
                                                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                            .hasMatch(value)) {
+                                            .hasMatch(value.trim())) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "valid Email".tr();
@@ -353,14 +353,9 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                   ElevatedButton(
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        print(fullname_controller.text);
-                                        print(email_controller.text);
-                                        print(password_controller.text);
-                                        print(re_password_controller.text);
-                                        print(usertype);
                                         await sharedState
                                             .createNewUserFromAdmin(
-                                                email_controller.text,
+                                                email_controller.text.trim(),
                                                 password_controller.text,
                                                 CreateUserAccountModel(
                                                     name: fullname_controller
