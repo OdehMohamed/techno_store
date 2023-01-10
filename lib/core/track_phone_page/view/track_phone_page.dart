@@ -348,7 +348,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
               child: Container(
                   padding: EdgeInsets.only(top: height * 0.1),
                   width: width,
-                  height: height * 0.4,
+                  height: height * 0.3,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
@@ -371,7 +371,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.6,
+                  height: height * 0.7,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),
@@ -389,6 +389,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         SizedBox(
                           height: height * 0.07,
                         ),
+                        Expanded(child: Container()),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),

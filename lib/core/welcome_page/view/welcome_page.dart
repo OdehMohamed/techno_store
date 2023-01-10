@@ -284,12 +284,12 @@ class _WelcomePageState extends State<WelcomePage> {
                         height: 20,
                       ),
                       Container(
-                        width: 150,
-                        height: 150,
+                        width: 200,
+                        height: 200,
                         child: Image.asset(
                           "assets/images/logo.png",
                           fit: BoxFit.fill,
-                          color: Colors.white,
+                          color: ColorUtilities.backgroundContainer,
                         ),
                       ),
                     ],

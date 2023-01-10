@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   final address_controller = TextEditingController();
   final phone_controller = TextEditingController();
   final model_controller = TextEditingController();
-  final color_controller = TextEditingController();
   final IMEI_controller = TextEditingController();
   final pin_controller = TextEditingController();
   final notes_controller = TextEditingController();
@@ -101,6 +101,20 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   List<bool> pre_check_list =[
     false,false,false,false,false
   ];
+  List<Color> colors=[
+    Color(0xff000000),
+    Color(0xffffd700),
+    Color(0xffc0c0c0),
+    Color(0xff9c27b0),
+    Color(0xffffffff),
+    Color(0xff2196f3),
+    Color(0xff000080),
+    Color(0xfff44336),
+    Color(0xff4caf50),
+  ];
+  bool colorPickerFlag=false;
+  Color placeholderColor = Color(0xfff1a200);
+  Color selectedColor = Color(0xff000000);
   List<String> pre_check_list_notes =[
 
   ];
@@ -154,13 +168,19 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+  }
+
+  @override
   void initState() {
     super.initState();
     newDeviceMaintenanceState = context.read<NewDeviceMaintenanceState>();
     sharedState = context.read<SharedState>();
     getBrandsFuture = sharedState.getBrands();
-
     if (widget.editable != null && widget.editable) {
+
+      selectedColor=Color(int.parse(widget.maintenanceDevice!.color!));
       pre_check_list_scratches_controller.text=widget.maintenanceDevice!.preCheckListNotes![0];
       pre_check_list_cracks_controller.text=widget.maintenanceDevice!.preCheckListNotes![1];
       pre_check_list_liquid_controller.text=widget.maintenanceDevice!.preCheckListNotes![2];
@@ -172,12 +192,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       replaced_part_controller.text=widget.maintenanceDevice!.replaceParts!;
       String phone = widget.maintenanceDevice!.phoneNumber!.split("-").last;
       phoneCode = widget.maintenanceDevice!.phoneNumber!.split("-").first;
+
       number = PhoneNumber(
           dialCode: phoneCode,
           isoCode: PhoneNumber.getISO2CodeByPrefix(phoneCode),
           phoneNumber: phone);
       model_controller.text = widget.maintenanceDevice!.deviceModel!;
-      color_controller.text = widget.maintenanceDevice!.color!;
       IMEI_controller.text = widget.maintenanceDevice!.imeiNumber!;
       pin_controller.text = widget.maintenanceDevice!.devicePassword!;
       selectedProblem = widget.maintenanceDevice!.problem!;
@@ -226,7 +246,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     address_controller.dispose();
     phone_controller.dispose();
     model_controller.dispose();
-    color_controller.dispose();
     IMEI_controller.dispose();
     pin_controller.dispose();
     notes_controller.dispose();
@@ -505,34 +524,72 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               SizedBox(
                                 height: 15,
                               ),
-                              Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: TextFormField(
-                                  enabled: !color_priv,
-                                  controller: color_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    label: Row(children: [
-                                      Text("Color".tr()),
-                                      Text(" *",style: TextStyle(color: Colors.red),),
-                                    ]),
-                                    labelStyle: TextStyle(
-                                        color: Colors.grey, fontSize: 16),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter".tr() +
-                                          " " +
-                                          "Color".tr();
-                                    }
-                                    return null;
-                                  },
+                              AbsorbPointer(
+                               absorbing: color_priv,
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Container(
+                                          width: width*0.8,
+                                          height: height*0.35,
+                                          child:
+                                          BlockPicker(
+                                            useInShowDialog: false,
+                                            availableColors: colors,
+                                            onColorChanged: (value){
+                                              setState(() {
+                                                selectedColor=value;
+                                              });
+                                            },
+                                            pickerColor:placeholderColor,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text("Current".tr()+" "),
+                                                Container(
+                                                  width: 25,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      color: selectedColor,
+                                                      borderRadius: BorderRadius.circular(25)
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            InkWell(
+                                                child: Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  child: Image.asset("assets/images/color_logo.png"),
+                                                ),
+                                                onTap: (){
+                                                  setState((){
+                                                    colorPickerFlag = !colorPickerFlag;
+                                                  });
+                                                }
+                                            ),
+                                          ],
+                                        ),
+                                        colorPickerFlag?
+                                        ColorPicker(
+                                            pickerAreaHeightPercent: 0.3,
+                                            enableAlpha: false,
+                                            labelTypes: [],
+                                            pickerColor: selectedColor,
+                                            onColorChanged: (value){
+                                              setState((){
+                                                selectedColor=value;
+                                              });
+                                            })
+                                            :SizedBox()
+                                      ],
+                                    )
+                                  ],
                                 ),
                               ),
                               SizedBox(
@@ -1284,7 +1341,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                     model_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.color =
-                                                    color_controller.text;
+                                                    selectedColor.value.toString();
                                                 widget.maintenanceDevice
                                                         ?.devicePassword =
                                                     pin_controller.text;
@@ -1396,14 +1453,14 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                         context, true);
                                                   }
                                                 });
-                                              } else {
+                                              }
+                                              else {
                                                 pre_check_list_notes.clear();
                                                 pre_check_list_notes.add(pre_check_list_scratches_controller.text);
                                                 pre_check_list_notes.add(pre_check_list_cracks_controller.text);
                                                 pre_check_list_notes.add(pre_check_list_liquid_controller.text);
                                                 pre_check_list_notes.add(pre_check_list_missing_parts_controller.text);
                                                 pre_check_list_notes.add(pre_check_list_others_controller.text);
-
                                                 newDeviceMaintenanceState
                                                     .addDeviceToMaintenance(MaintenanceDeviceModel(
                                                   replacedParts: replaced_part_controller.text,
@@ -1425,8 +1482,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                         deviceModel:
                                                             model_controller
                                                                 .text,
-                                                        color: color_controller
-                                                            .text,
+                                                        color: selectedColor.value.toString(),
                                                         devicePassword:
                                                             pin_controller.text,
                                                         imeiNumber:
