@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/utilities.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../shared/custom_widgets.dart';
@@ -78,7 +79,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     "not determined"
   ];
   String? selectedTime;
-  var status = ["Fixed", "in maintenance"];
+  var status = ["Fixed", "in maintenance","Delivered"];
   final name_controller = TextEditingController();
   final address_controller = TextEditingController();
   final phone_controller = TextEditingController();
@@ -93,10 +94,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   final pre_check_list_liquid_controller=TextEditingController();
   final pre_check_list_missing_parts_controller=TextEditingController();
   final pre_check_list_others_controller=TextEditingController();
-  final replaced_part_controller=TextEditingController();
 
   List<bool> accessories =[
     false,false,false,false,false,false,false,false
+  ];
+  List<bool> replacedParts =[
+    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false
   ];
   List<bool> pre_check_list =[
     false,false,false,false,false
@@ -189,7 +192,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       pre_check_list=widget.maintenanceDevice!.preCheckList!;
       name_controller.text = widget.maintenanceDevice!.customerName!;
       address_controller.text = widget.maintenanceDevice!.address!;
-      replaced_part_controller.text=widget.maintenanceDevice!.replaceParts!;
+      replacedParts=widget.maintenanceDevice!.replaceParts!;
       String phone = widget.maintenanceDevice!.phoneNumber!.split("-").last;
       phoneCode = widget.maintenanceDevice!.phoneNumber!.split("-").first;
 
@@ -256,7 +259,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     pre_check_list_liquid_controller.dispose();
     pre_check_list_missing_parts_controller.dispose();
     pre_check_list_others_controller.dispose();
-    replaced_part_controller.dispose();
     timer?.cancel();
     secondTimer?.cancel();
     super.dispose();
@@ -1222,7 +1224,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         ),
                                         border: InputBorder.none,
                                         labelStyle: TextStyle(
-                                            color: Colors.grey, fontSize: 16),
+                                            color: Colors.grey, fontSize: 12),
                                       ),
                                       items: times.map((String time_value) {
                                         return DropdownMenuItem(
@@ -1282,27 +1284,218 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               ),
                               sharedState.userType==3?
                               Container(
-                                height: 100,
-                                padding: EdgeInsets.only(left: 10, right: 10),
+                                padding: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(width: 1,color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
                                 ),
-                                child: TextField(
-                                  controller: replaced_part_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    labelText: 'Replaced parts'.tr(),
-                                    labelStyle: TextStyle(
-                                        color: Colors.grey, fontSize: 16),
-                                  ),
+                                child: Table(
+                                  children: [
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            title: Text("screen".tr(),),
+                                            value: replacedParts[0],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[0]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("battery".tr()),
+                                            value: replacedParts[1],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[1]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            title: Text("device back".tr()),
+                                            value: replacedParts[2],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[2]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("FRB".tr()),
+                                            value:  replacedParts[3],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[3]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            title: Text("software").tr(),
+                                            value:  replacedParts[4],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[4]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            title: Text("charging base").tr(),
+                                            value:  replacedParts[5],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[5]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("volume button".tr()),
+                                            value:  replacedParts[6],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[6]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("power button".tr()),
+                                            value:  replacedParts[7],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[7]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),]),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("microphone".tr()),
+                                            value:  replacedParts[8],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[8]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("body".tr()),
+                                            value:  replacedParts[9],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[9]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("IC".tr()),
+                                            value:  replacedParts[10],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[10]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("camera glass".tr()),
+                                            value:  replacedParts[11],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[11]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("main camera".tr()),
+                                            value:  replacedParts[12],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[12]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("selfie camera".tr()),
+                                            value:  replacedParts[13],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[13]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    ),
+                                    TableRow(
+                                        children: [
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("open icloud".tr()),
+                                            value:  replacedParts[14],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[14]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                          CheckboxListTile(
+                                            enabled: !accessoires_priv,
+                                            title: Text("others".tr()),
+                                            value:  replacedParts[15],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                replacedParts[15]=newValue!;
+                                              });
+                                            },
+                                            controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                          ),
+                                        ]
+                                    )
+                                  ],
                                 ),
                               )
-                                  :SizedBox(),
+                                :SizedBox(),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -1321,7 +1514,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 pre_check_list_notes.add(pre_check_list_others_controller.text);
                                                 widget.maintenanceDevice?.preCheckListNotes=pre_check_list_notes;
                                                 widget.maintenanceDevice?.preCheckList=pre_check_list;
-                                                widget.maintenanceDevice?.replacedParts=replaced_part_controller.text;
+                                                widget.maintenanceDevice?.replacedParts=replacedParts;
                                                 widget.maintenanceDevice
                                                         ?.customerName =
                                                     name_controller.text;
@@ -1463,7 +1656,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 pre_check_list_notes.add(pre_check_list_others_controller.text);
                                                 newDeviceMaintenanceState
                                                     .addDeviceToMaintenance(MaintenanceDeviceModel(
-                                                  replacedParts: replaced_part_controller.text,
+                                                  replacedParts: replacedParts,
                                                   preCheckListNotes: pre_check_list_notes,
                                                         preCheckList: pre_check_list,
                                                         customerName:
@@ -1554,7 +1747,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               ),
                             ],
                           ),
-                        )),
+                            )),
                       )),
                 )
               ],

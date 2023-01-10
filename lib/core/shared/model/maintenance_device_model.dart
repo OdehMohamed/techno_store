@@ -14,7 +14,7 @@ class MaintenanceDeviceModel {
   String? _problem;
   String? _status;
   String? _problemNotes;
-  String? _replacedParts;
+  List<bool>? _replacedParts;
   List<bool>? _accessories;
   List<bool>? _preCheckList;
   List<String>? _preCheckListNotes;
@@ -36,7 +36,7 @@ class MaintenanceDeviceModel {
         String? problem,
         String? status,
         String? problemNotes,
-        String? replacedParts,
+        List<bool>? replacedParts,
         List<bool>? accessories,
         String? price,
         String? estimatedTime,
@@ -139,8 +139,8 @@ class MaintenanceDeviceModel {
   String? get notes => _notes;
   set notes(String? notes) => _notes = notes;
   String? get devicePassword => _devicePassword;
-  set replacedParts(String? replacedParts) => _replacedParts = replacedParts;
-  String? get replaceParts => _replacedParts;
+  set replacedParts(List<bool>? replacedParts) => _replacedParts = replacedParts;
+  List<bool>? get replaceParts => _replacedParts;
   set devicePassword(String? devicePassword) => _devicePassword = devicePassword;
   List<int>? get pattern => _pattern;
   set pattern(List<int>? pattern) => _pattern = pattern;
@@ -171,7 +171,7 @@ class MaintenanceDeviceModel {
     _notes = json['notes'];
     _devicePassword = json['devicePassword'];
     _pattern = json['pattern'].cast<int>();
-    _replacedParts=json['replacedParts'];
+    _replacedParts=json['replacedParts'].cast<bool>();
   }
 
   Map<String, dynamic> toJson() {

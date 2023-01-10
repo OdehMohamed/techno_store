@@ -319,7 +319,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       margin: EdgeInsets.all(10),
                                       child: Text(widget.product.description!,
                                           style:
-                                          TextStyle(color: Colors.black)))),
+                                          TextStyle(color: Colors.black)
+                                      )
+                                  )
+                              ),
                             )
                           ],
                         ),

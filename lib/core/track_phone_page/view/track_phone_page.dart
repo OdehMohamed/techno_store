@@ -11,6 +11,7 @@ import 'package:techno_store/shared/color_utilities.dart';
 import '../../../shared/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
 import '../../shared/view_model/shared_state.dart';
+import '../../track_device_details/view/trackDeviceDetails.dart';
 
 class TrackPhonePage extends StatefulWidget {
   const TrackPhonePage({Key? key}) : super(key: key);
@@ -44,182 +45,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    showStatus(MaintenanceDeviceModel device) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          Icon statusIcon;
-          switch (device.status) {
-            case "Fixed":
-              {
-                statusIcon = Icon(
-                  FontAwesome5.check_circle,
-                  color: Colors.green,
-                  size: 40,
-                );
-                break;
-              }
-            case "under review":
-              {
-                statusIcon = Icon(
-                  Icons.person_search,
-                  color: Colors.orange,
-                  size: 40,
-                );
-                break;
-              }
-            default:
-              {
-                statusIcon = Icon(
-                  Icons.precision_manufacturing,
-                  color: Colors.yellow,
-                  size: 40,
-                );
-                break;
-              }
-          }
-          return AlertDialog(
-            backgroundColor: ColorUtilities.white,
-            content: Container(
-              height: height * 0.6,
-              width: width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        WidgetUtilities.autoSizeText(
-                          "Status",
-                          textStyle: TextStyle(
-                            color: Color.fromRGBO(0, 0, 0, 0.7),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        statusIcon,
-                        SizedBox(
-                          height: 10,
-                        ),
-                        WidgetUtilities.autoSizeText(device.status!,
-                            textStyle: TextStyle(color: Colors.green))
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText("Owner name",
-                          textStyle: TextStyle(color: Colors.black)),
-                      WidgetUtilities.autoSizeText(device.customerName!,
-                          textStyle: TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText("Device Brand",
-                          textStyle: TextStyle(color: Colors.black)),
-                      WidgetUtilities.autoSizeText(device.deviceModel!,
-                          textStyle: TextStyle(color: Colors.grey)),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                          width: 30,
-                          height: 30,
-                          child: Image.network(device.brandModel!.logo!))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText("Estimated Time",
-                          textStyle: TextStyle(color: Colors.black)),
-                      Row(
-                        children: [
-                          WidgetUtilities.autoSizeText(device.estimatedTime!,
-                              textStyle: TextStyle(color: Colors.grey)),
-                        ],
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText("Estimated cost",
-                          textStyle: TextStyle(color: Colors.black)),
-                      Row(
-                        children: [
-                          WidgetUtilities.autoSizeText(device.price!,
-                              textStyle: TextStyle(color: Colors.grey)),
-                          WidgetUtilities.autoSizeText("ILS",
-                              textStyle: TextStyle(color: Colors.grey)),
-                        ],
-                      )
-                    ],
-                  ),
-                  device.replaceParts!.isNotEmpty?
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText("Replaced parts",
-                          textStyle: TextStyle(color: Colors.black)),
-                      WidgetUtilities.autoSizeText(device.replaceParts!,
-                          textStyle: TextStyle(color: Colors.grey)),
-                    ],
-                  ):SizedBox(),
-                  Row(
-                    children: [
-                      WidgetUtilities.autoSizeText("Notes",
-                          textStyle: TextStyle(color: Colors.black)),
-                      WidgetUtilities.autoSizeText(device.notes!,
-                          textStyle: TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.green,
-                          ),
-                          width: width / 2,
-                          height: height / 20,
-                          child: Center(
-                            child: WidgetUtilities.autoSizeText(
-                              "Close",
-                              textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: width / 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    }
-
     Widget card(MaintenanceDeviceModel device) {
       Icon statusIcon;
       switch (device.status) {
@@ -228,9 +53,9 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
             statusIcon = Icon(FontAwesome5.check_circle, color: Colors.green);
             break;
           }
-        case "under review":
+        case "Delivered":
           {
-            statusIcon = Icon(Icons.person_search, color: Colors.orange);
+            statusIcon = Icon(Icons.done_all, color: Colors.green);
             break;
           }
         default:
@@ -323,7 +148,12 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
           ),
         ),
         onTap: () {
-          showStatus(device);
+          Navigator.push(context,  MaterialPageRoute(
+              builder: (context) => TrackDeviceDetails(
+                maintenanceDevice: device,
+              )
+          ),
+          );
         },
       );
     }

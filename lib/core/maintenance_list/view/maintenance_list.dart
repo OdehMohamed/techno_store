@@ -23,10 +23,14 @@ String theStatus = "Fixed";
 List<Color> backgroundColor = [
   Colors.white,
   Colors.transparent,
+  Colors.transparent,
+
 ];
 List<Color> textColor = [
   ColorUtilities.secondary,
   ColorUtilities.white,
+  ColorUtilities.white,
+
 ];
 
 class _MaintinanceListState extends State<MaintinanceList> {
@@ -41,9 +45,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
           backgroundColor = [
             ColorUtilities.white,
             Colors.transparent,
+            Colors.transparent,
+
           ];
           textColor = [
             ColorUtilities.secondary,
+            ColorUtilities.white,
             ColorUtilities.white,
           ];
           break;
@@ -53,9 +60,26 @@ class _MaintinanceListState extends State<MaintinanceList> {
           theStatus = "in maintenance";
           backgroundColor = [
             Colors.transparent,
+            ColorUtilities.white,
+            Colors.transparent
+          ];
+          textColor = [
+            ColorUtilities.white,
+            ColorUtilities.secondary,
+            ColorUtilities.white
+          ];
+          break;
+        }
+      case 2:
+        {
+          theStatus = "Delivered";
+          backgroundColor = [
+            Colors.transparent,
+            Colors.transparent,
             ColorUtilities.white
           ];
           textColor = [
+            ColorUtilities.white,
             ColorUtilities.white,
             ColorUtilities.secondary
           ];
@@ -67,9 +91,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
           backgroundColor = [
             ColorUtilities.white,
             Colors.transparent,
+            Colors.transparent,
+
           ];
           textColor = [
             ColorUtilities.secondary,
+            ColorUtilities.white,
             ColorUtilities.white,
           ];
           break;
@@ -101,6 +128,10 @@ class _MaintinanceListState extends State<MaintinanceList> {
             statusIcon = Icon(FontAwesome5.check_circle, color: Colors.green);
             break;
           }
+        case "Delivered":{
+          statusIcon = Icon(Icons.done_all, color: Colors.green);
+          break;
+        }
         default:
           {
             statusIcon = Icon(
@@ -289,6 +320,24 @@ class _MaintinanceListState extends State<MaintinanceList> {
                                 ),
                                 onTap: () {
                                   changeStatus(1);
+                                  setState(() {});
+                                },
+                              ),
+                              InkWell(
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 10, right: 10),
+                                  decoration: BoxDecoration(
+                                      color: backgroundColor[2],
+                                      borderRadius: BorderRadius.circular(25)),
+                                  child: WidgetUtilities.autoSizeText(
+                                    "Delivered",
+                                    textStyle: TextStyle(
+                                        color: textColor[2], fontSize: 18),
+                                  ),
+                                ),
+                                onTap: () {
+                                  changeStatus(2);
                                   setState(() {});
                                 },
                               ),
