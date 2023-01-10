@@ -35,6 +35,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   @override
   void dispose() {
     phoneController.dispose();
+    super.dispose();
   }
 
   @override
@@ -143,8 +144,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         children: [
                           WidgetUtilities.autoSizeText(device.estimatedTime!,
                               textStyle: TextStyle(color: Colors.grey)),
-                          WidgetUtilities.autoSizeText("days",
-                              textStyle: TextStyle(color: Colors.grey)),
                         ],
                       )
                     ],
@@ -164,6 +163,16 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                       )
                     ],
                   ),
+                  device.replaceParts!.isNotEmpty?
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      WidgetUtilities.autoSizeText("Replaced parts",
+                          textStyle: TextStyle(color: Colors.black)),
+                      WidgetUtilities.autoSizeText(device.replaceParts!,
+                          textStyle: TextStyle(color: Colors.grey)),
+                    ],
+                  ):SizedBox(),
                   Row(
                     children: [
                       WidgetUtilities.autoSizeText("Notes",
@@ -290,8 +299,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             children: [
                               WidgetUtilities.autoSizeText(
                                   device.estimatedTime!,
-                                  textStyle: TextStyle(color: Colors.black54)),
-                              WidgetUtilities.autoSizeText("days",
                                   textStyle: TextStyle(color: Colors.black54)),
                             ],
                           ),

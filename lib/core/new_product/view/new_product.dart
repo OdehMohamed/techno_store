@@ -142,80 +142,77 @@ class _NewProductState extends State<NewProduct> {
                               children: [
                                 Container(
                                     decoration: BoxDecoration(
-                                      color: ColorUtilities.white,
                                       borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Color.fromRGBO(0, 0, 0, 0.4),
-                                          blurRadius: 20,
-                                          offset: Offset(0, 15),
-                                        ),
-                                      ],
                                     ),
-                                    height: height * 0.4,
                                     child: photoPaths.isNotEmpty
-                                        ? ListView(
-                                            scrollDirection: Axis.horizontal,
-                                            children: List.generate(
-                                              photoPaths.length,
+                                        ? Container(
+                                      height: height * 0.5,
+                                      width: width*0.8,
+                                      child: ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                          photoPaths.length,
                                               (i) => Container(
-                                                  width: width * 0.4,
-                                                  alignment: Alignment.center,
-                                                  child: Container(
-                                                      margin:
-                                                          EdgeInsets.all(10),
-                                                      child: Stack(
+                                              child: Container(
+                                                  margin:
+                                                  EdgeInsets.all(10),
+                                                  child: Stack(
+                                                    children: [
+                                                      photoPaths[i].contains(
+                                                          "https://firebasestorage.googleapis.com/v0/b/technostore")
+                                                          ? Image.network(
+                                                        photoPaths[i],
+                                                        fit: BoxFit
+                                                            .fill,
+                                                      )
+                                                          : Image.file(
+                                                        File(
+                                                            photoPaths[
+                                                            i]),
+                                                        fit: BoxFit
+                                                            .fill,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .end,
                                                         children: [
-                                                          photoPaths[i].contains(
-                                                                  "https://firebasestorage.googleapis.com/v0/b/technostore")
-                                                              ? Image.network(
-                                                                  photoPaths[i],
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                )
-                                                              : Image.file(
-                                                                  File(
-                                                                      photoPaths[
-                                                                          i]),
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              InkWell(
-                                                                child: Icon(
-                                                                  Icons.cancel,
-                                                                  color: Colors
-                                                                      .red,
-                                                                  size: 30,
-                                                                ),
-                                                                onTap: () {
-                                                                  if (photoPaths[
-                                                                          i]
-                                                                      .contains(
-                                                                          "https://firebasestorage.googleapis.com/v0/b/technostore")) {
-                                                                    deletedList.add(
-                                                                        photoPaths[
-                                                                            i]);
-                                                                  }
-                                                                  photoPaths.remove(
-                                                                      photoPaths[
-                                                                          i]);
-                                                                  setState(
+                                                          InkWell(
+                                                            child: Icon(
+                                                              Icons.cancel,
+                                                              color: Colors
+                                                                  .red,
+                                                              size: 30,
+                                                            ),
+                                                            onTap: () {
+                                                              if (photoPaths[
+                                                              i]
+                                                                  .contains(
+                                                                  "https://firebasestorage.googleapis.com/v0/b/technostore")) {
+                                                                deletedList.add(
+                                                                    photoPaths[
+                                                                    i]);
+                                                              }
+                                                              photoPaths.remove(
+                                                                  photoPaths[
+                                                                  i]);
+                                                              setState(
                                                                       () {});
-                                                                },
-                                                              )
-                                                            ],
-                                                          ),
+                                                            },
+                                                          )
                                                         ],
-                                                      ))),
-                                            ),
-                                          )
-                                        : Image.asset(
-                                            "assets/images/defaultProductImage.png")),
+                                                      ),
+                                                    ],
+                                                  ))),
+                                        ),
+                                      ),
+                                    )
+                                        :Container(
+                                      width: 200,
+                                      height: 200,
+                                      child:  Image.asset(
+                                          "assets/images/defaultProductImage.png")),
+                                    ),
                                 SizedBox(
                                   height: 15,
                                 ),

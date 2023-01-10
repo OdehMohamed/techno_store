@@ -23,12 +23,10 @@ String theStatus = "Fixed";
 List<Color> backgroundColor = [
   Colors.white,
   Colors.transparent,
-  Colors.transparent
 ];
 List<Color> textColor = [
   ColorUtilities.secondary,
   ColorUtilities.white,
-  ColorUtilities.white
 ];
 
 class _MaintinanceListState extends State<MaintinanceList> {
@@ -43,40 +41,21 @@ class _MaintinanceListState extends State<MaintinanceList> {
           backgroundColor = [
             ColorUtilities.white,
             Colors.transparent,
-            Colors.transparent
           ];
           textColor = [
             ColorUtilities.secondary,
             ColorUtilities.white,
-            ColorUtilities.white
           ];
           break;
         }
       case 1:
         {
-          theStatus = "under review";
-          backgroundColor = [
-            Colors.transparent,
-            ColorUtilities.white,
-            Colors.transparent
-          ];
-          textColor = [
-            ColorUtilities.white,
-            ColorUtilities.secondary,
-            ColorUtilities.white
-          ];
-          break;
-        }
-      case 2:
-        {
           theStatus = "in maintenance";
           backgroundColor = [
             Colors.transparent,
-            Colors.transparent,
             ColorUtilities.white
           ];
           textColor = [
-            ColorUtilities.white,
             ColorUtilities.white,
             ColorUtilities.secondary
           ];
@@ -88,11 +67,9 @@ class _MaintinanceListState extends State<MaintinanceList> {
           backgroundColor = [
             ColorUtilities.white,
             Colors.transparent,
-            Colors.transparent
           ];
           textColor = [
             ColorUtilities.secondary,
-            ColorUtilities.white,
             ColorUtilities.white,
           ];
           break;
@@ -105,8 +82,8 @@ class _MaintinanceListState extends State<MaintinanceList> {
   void initState() {
     maintenanceListState = context.read<MaintenanceListState>();
     sharedState = context.read<SharedState>();
-
     deviceList = maintenanceListState.getDevicesInMaintenance(theStatus);
+    super.initState();
   }
 
   @override
@@ -122,11 +99,6 @@ class _MaintinanceListState extends State<MaintinanceList> {
         case "Fixed":
           {
             statusIcon = Icon(FontAwesome5.check_circle, color: Colors.green);
-            break;
-          }
-        case "under review":
-          {
-            statusIcon = Icon(Icons.person_search, color: Colors.orange);
             break;
           }
         default:
@@ -196,8 +168,6 @@ class _MaintinanceListState extends State<MaintinanceList> {
                               WidgetUtilities.autoSizeText(
                                   device.estimatedTime!,
                                   textStyle: TextStyle(color: Colors.black54)),
-                              WidgetUtilities.autoSizeText("days",
-                                  textStyle: TextStyle(color: Colors.black54)),
                             ],
                           ),
                         ),
@@ -256,7 +226,11 @@ class _MaintinanceListState extends State<MaintinanceList> {
         resizeToAvoidBottomInset: false,
         body: RefreshIndicator(
           onRefresh: () async {
-            initState();
+           setState(() {
+             maintenanceListState = context.read<MaintenanceListState>();
+             sharedState = context.read<SharedState>();
+             deviceList = maintenanceListState.getDevicesInMaintenance(theStatus);
+           });
           },
           child: Column(
             children: [
@@ -311,31 +285,13 @@ class _MaintinanceListState extends State<MaintinanceList> {
                                       color: backgroundColor[1],
                                       borderRadius: BorderRadius.circular(25)),
                                   child: WidgetUtilities.autoSizeText(
-                                    "under review",
+                                    "in maintenance",
                                     textStyle: TextStyle(
                                         color: textColor[1], fontSize: 18),
                                   ),
                                 ),
                                 onTap: () {
                                   changeStatus(1);
-                                  setState(() {});
-                                },
-                              ),
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[2],
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: WidgetUtilities.autoSizeText(
-                                    "in maintenance",
-                                    textStyle: TextStyle(
-                                        color: textColor[2], fontSize: 18),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(2);
                                   setState(() {});
                                 },
                               ),

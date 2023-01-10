@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pattern_lock/pattern_lock.dart';
 import 'package:provider/provider.dart';
-import 'package:techno_store/core/manage_categories/view/manage_category_view.dart';
 import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/shared/color_utilities.dart';
@@ -43,8 +42,42 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   late SharedState sharedState;
   late Future getBrandsFuture;
   BrandModel? selectedBrand;
-
-  var status = ["Fixed", "in maintenance", "under review"];
+  var problem = [
+    "not working",
+    "screen",
+    "battery",
+    "charging base",
+    "service",
+    "check",
+    "selfie camera",
+    "main camera",
+    "internal headset",
+    "external headset",
+    "microphone",
+    "touch screen",
+    "fingerprint",
+    "device back",
+    "software",
+    "open gmail",
+    "open icloud",
+    "volume button",
+    "power button"
+  ];
+  String? selectedProblem;
+  var times = [
+    "30 min",
+    "1 Hour",
+    "2 Hours",
+    "3 Hours",
+    "4 Hours",
+    "5 Hours",
+    "6 Hours",
+    "7 Hours",
+    "8 Hours",
+    "not determined"
+  ];
+  String? selectedTime;
+  var status = ["Fixed", "in maintenance"];
   final name_controller = TextEditingController();
   final address_controller = TextEditingController();
   final phone_controller = TextEditingController();
@@ -52,13 +85,25 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   final color_controller = TextEditingController();
   final IMEI_controller = TextEditingController();
   final pin_controller = TextEditingController();
-  final problem_controller = TextEditingController();
   final notes_controller = TextEditingController();
-  final accessoires_controller = TextEditingController();
   final price_controller = TextEditingController();
-  final estimated_time_controller = TextEditingController();
   final notes2_controller = TextEditingController();
+  final pre_check_list_scratches_controller=TextEditingController();
+  final pre_check_list_cracks_controller=TextEditingController();
+  final pre_check_list_liquid_controller=TextEditingController();
+  final pre_check_list_missing_parts_controller=TextEditingController();
+  final pre_check_list_others_controller=TextEditingController();
+  final replaced_part_controller=TextEditingController();
 
+  List<bool> accessories =[
+    false,false,false,false,false,false,false,false
+  ];
+  List<bool> pre_check_list =[
+    false,false,false,false,false
+  ];
+  List<String> pre_check_list_notes =[
+
+  ];
   late NewDeviceMaintenanceState newDeviceMaintenanceState;
   List<int> patternValue = [];
   String? status_value;
@@ -66,6 +111,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   String phoneCode = "+970";
   late PhoneNumber number;
 
+  //false = can edit , true = can't edit (disabled)
   bool name_priv = false;
   bool address_priv = false;
   bool phone_priv = false;
@@ -81,8 +127,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   bool notes2_priv = false;
   bool status_priv = false;
   bool brand_priv = false;
-
+  bool check_list_priv=false;
   void privilagesManager() {
+    if (sharedState.userType==3){
+      pin_priv=true;
+      return;
+    }
     name_priv = true;
     address_priv = true;
     phone_priv = true;
@@ -92,6 +142,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     pin_priv = true;
     accessoires_priv = true;
     brand_priv = true;
+    check_list_priv=true;
     if (sharedState.userType == 0) {
       problem_priv = true;
       notes_priv = true;
@@ -99,8 +150,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       price_priv = true;
       estimated_time_priv = true;
       status_priv = true;
-    } else if (sharedState.userType == 2) {
-      problem_priv = true;
     }
   }
 
@@ -112,8 +161,15 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     getBrandsFuture = sharedState.getBrands();
 
     if (widget.editable != null && widget.editable) {
+      pre_check_list_scratches_controller.text=widget.maintenanceDevice!.preCheckListNotes![0];
+      pre_check_list_cracks_controller.text=widget.maintenanceDevice!.preCheckListNotes![1];
+      pre_check_list_liquid_controller.text=widget.maintenanceDevice!.preCheckListNotes![2];
+      pre_check_list_missing_parts_controller.text=widget.maintenanceDevice!.preCheckListNotes![3];
+      pre_check_list_others_controller.text=widget.maintenanceDevice!.preCheckListNotes![4];
+      pre_check_list=widget.maintenanceDevice!.preCheckList!;
       name_controller.text = widget.maintenanceDevice!.customerName!;
       address_controller.text = widget.maintenanceDevice!.address!;
+      replaced_part_controller.text=widget.maintenanceDevice!.replaceParts!;
       String phone = widget.maintenanceDevice!.phoneNumber!.split("-").last;
       phoneCode = widget.maintenanceDevice!.phoneNumber!.split("-").first;
       number = PhoneNumber(
@@ -124,11 +180,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       color_controller.text = widget.maintenanceDevice!.color!;
       IMEI_controller.text = widget.maintenanceDevice!.imeiNumber!;
       pin_controller.text = widget.maintenanceDevice!.devicePassword!;
-      problem_controller.text = widget.maintenanceDevice!.problem!;
+      selectedProblem = widget.maintenanceDevice!.problem!;
       notes_controller.text = widget.maintenanceDevice!.problemNotes!;
-      accessoires_controller.text = widget.maintenanceDevice!.accessories!;
+      accessories= widget.maintenanceDevice!.accessories!;
       price_controller.text = widget.maintenanceDevice!.price!;
-      estimated_time_controller.text = widget.maintenanceDevice!.estimatedTime!;
+      selectedTime = widget.maintenanceDevice!.estimatedTime!;
       notes2_controller.text = widget.maintenanceDevice!.notes!;
       patternList = widget.maintenanceDevice!.pattern!;
       status_value = widget.maintenanceDevice!.status;
@@ -173,12 +229,15 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     color_controller.dispose();
     IMEI_controller.dispose();
     pin_controller.dispose();
-    problem_controller.dispose();
     notes_controller.dispose();
-    accessoires_controller.dispose();
     price_controller.dispose();
-    estimated_time_controller.dispose();
     notes2_controller.dispose();
+    pre_check_list_scratches_controller.dispose();
+    pre_check_list_cracks_controller.dispose();
+    pre_check_list_liquid_controller.dispose();
+    pre_check_list_missing_parts_controller.dispose();
+    pre_check_list_others_controller.dispose();
+    replaced_part_controller.dispose();
     timer?.cancel();
     secondTimer?.cancel();
     super.dispose();
@@ -263,8 +322,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Name'.tr(),
-                                    hintStyle: TextStyle(
+                                    label: Row(children: [
+                                      Text("Name".tr()),
+                                      Text(" *",style: TextStyle(color: Colors.red),),
+                                    ]),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                   validator: (value) {
@@ -330,8 +392,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Address'.tr(),
-                                    hintStyle: TextStyle(
+                                    label: Row(children: [
+                                      Text("Address".tr()),
+                                      Text(" *",style: TextStyle(color: Colors.red),),
+                                    ]),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                   validator: (value) {
@@ -404,7 +469,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                         futureBrands[index]
                                                             .name!),
                                                   )),
-                                          label: "Device Brand".tr(),
+                                          label: "Device Brand".tr()+ " * ",
                                         );
                                       }
                                       return SizedBox();
@@ -426,8 +491,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Device Model'.tr(),
-                                    hintStyle: TextStyle(
+                                    label: Row(children: [
+                                      Text("Device Model".tr()),
+                                      Text(" *",style: TextStyle(color: Colors.red),),
+                                    ]),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                   validator: (value) {
@@ -456,8 +524,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Color'.tr(),
-                                    hintStyle: TextStyle(
+                                    label: Row(children: [
+                                      Text("Color".tr()),
+                                      Text(" *",style: TextStyle(color: Colors.red),),
+                                    ]),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                   validator: (value) {
@@ -486,8 +557,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'IMEI Number'.tr(),
-                                    hintStyle: TextStyle(
+                                    labelText: 'IMEI Number'.tr(),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                 ),
@@ -513,8 +584,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           style: TextStyle(color: Colors.black),
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
-                                            hintText: 'PIN'.tr(),
-                                            hintStyle: TextStyle(
+                                            labelText: 'PIN'.tr(),
+                                            labelStyle: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 16),
                                           ),
@@ -657,18 +728,40 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   border: Border.all(color: Colors.grey),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: TextFormField(
-                                  enabled: !problem_priv,
-                                  controller: problem_controller,
+                                child: DropdownButtonFormField(
+                                  isExpanded: true,
+                                  value: selectedProblem,
+                                  icon: const Icon(Icons.keyboard_arrow_down),
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
+                                    label: Row(
+                                      children: [
+                                        Text("The problem".tr()),
+                                        Text(" * ",style: TextStyle(color: Colors.red),)
+                                      ],
+                                    ),
                                     border: InputBorder.none,
-                                    hintText: 'The problem'.tr(),
-                                    hintStyle: TextStyle(
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
+                                  items: problem.map((String problem_value) {
+                                    return DropdownMenuItem(
+                                      value: problem_value,
+                                      child: WidgetUtilities.autoSizeText(
+                                          problem_value,
+                                          textStyle:
+                                          TextStyle(color: Colors.black)),
+                                    );
+                                  }).toList(),
+                                  onChanged: !problem_priv
+                                      ? (String? newValue) {
+                                    setState(() {
+                                      selectedProblem = newValue!;
+                                    });
+                                  }
+                                      : null,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) {
+                                    if (value == null) {
                                       return "Please Enter".tr() +
                                           " " +
                                           "The problem".tr();
@@ -689,16 +782,18 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 ),
                                 child: DropdownButtonFormField(
                                   isExpanded: true,
-                                  hint: WidgetUtilities.autoSizeText(
-                                      "Device Status",
-                                      textStyle: TextStyle(color: Colors.grey)),
                                   value: status_value,
                                   icon: const Icon(Icons.keyboard_arrow_down),
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
+                                    label: Row(
+                                      children: [
+                                        Text("Device Status".tr()),
+                                        Text(" * ",style: TextStyle(color: Colors.red),)
+                                      ],
+                                    ),
                                     border: InputBorder.none,
-                                    hintText: 'Device Status'.tr(),
-                                    hintStyle: TextStyle(
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                   items: status.map((String status) {
@@ -731,6 +826,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 height: 15,
                               ),
                               Container(
+                                height: 100,
                                 padding: EdgeInsets.only(left: 10, right: 10),
                                 decoration: BoxDecoration(
                                   color: ColorUtilities.white,
@@ -740,11 +836,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 child: TextField(
                                   enabled: !notes_priv,
                                   controller: notes_controller,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Notes'.tr(),
-                                    hintStyle: TextStyle(
+                                    labelText: 'Notes'.tr() + "(hidden)".tr(),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                 ),
@@ -753,26 +851,274 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 height: 15,
                               ),
                               Container(
-                                height: 100,
                                 padding: EdgeInsets.only(left: 10, right: 10),
                                 decoration: BoxDecoration(
                                   color: ColorUtilities.white,
                                   border: Border.all(color: Colors.grey),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: TextField(
-                                  enabled: !accessoires_priv,
-                                  controller: accessoires_controller,
-                                  style: TextStyle(color: Colors.black),
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Accessories'.tr(),
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey, fontSize: 16),
+                                child:  Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 10,),
+                                    Text("Accessories".tr(),style: TextStyle(color: Colors.grey)),
+                                    Table(
+                                      children: [
+                                        TableRow(
+                                          children: [
+                                            CheckboxListTile(
+                                              enabled: !accessoires_priv,
+                                              title: Text("pen".tr()),
+                                              value: accessories[0],
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  accessories[0]=newValue!;
+                                                });
+                                              },
+                                              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                            ),
+                                            CheckboxListTile(
+                                              enabled: !accessoires_priv,
+                                              title: Text("battery".tr()),
+                                              value: accessories[1],
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  accessories[1]=newValue!;
+                                                });
+                                              },
+                                              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                            ),
+                                          ]
+                                        ),
+                                        TableRow(
+                                          children: [
+                                            CheckboxListTile(
+                                              enabled: !accessoires_priv,
+                                              title: Text("cover".tr()),
+                                              value: accessories[2],
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  accessories[2]=newValue!;
+                                                });
+                                              },
+                                              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                            ),
+                                            CheckboxListTile(
+                                              enabled: !accessoires_priv,
+                                              title: Text("sd card".tr()),
+                                              value:  accessories[3],
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  accessories[3]=newValue!;
+                                                });
+                                              },
+                                              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                            ),
+                                          ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              CheckboxListTile(
+                                                enabled: !accessoires_priv,
+                                                title: Text("sim card".tr()),
+                                                value:  accessories[4],
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    accessories[4]=newValue!;
+                                                  });
+                                                },
+                                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                              ),
+                                              CheckboxListTile(
+                                                enabled: !accessoires_priv,
+                                                title: Text("device box".tr()),
+                                                value:  accessories[5],
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    accessories[5]=newValue!;
+                                                  });
+                                                },
+                                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                              ),
+                                            ]
+                                        ),
+                                        TableRow(
+                                            children: [
+                                              CheckboxListTile(
+                                                enabled: !accessoires_priv,
+                                                title: Text("charger".tr()),
+                                                value:  accessories[6],
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    accessories[6]=newValue!;
+                                                  });
+                                                },
+                                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                              ),
+                                              CheckboxListTile(
+                                                enabled: !accessoires_priv,
+                                                title: Text("headphones".tr()),
+                                                value:  accessories[7],
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    accessories[7]=newValue!;
+                                                  });
+                                                },
+                                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                              ),
+                                            ]
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Container(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                ),
+                                  child:  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 10,),
+                                      Text("Device status when received".tr(),style: TextStyle(color: Colors.grey)),
+                                      Table(
+                                        children: [
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !check_list_priv,
+                                                  title: Text("scratches".tr()),
+                                                  value: pre_check_list[0],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      pre_check_list[0]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+                                                ),
+                                                TextFormField(
+                                                  enabled: !check_list_priv,
+                                                  controller: pre_check_list_scratches_controller,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Notes'.tr(),
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.grey, fontSize: 16),
+                                                  ),
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !check_list_priv,
+                                                  title: Text("Cracks".tr()),
+                                                  value: pre_check_list[1],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      pre_check_list[1]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+                                                ),
+                                                TextFormField(
+                                                  enabled: !check_list_priv,
+                                                  controller: pre_check_list_cracks_controller,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Notes'.tr(),
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.grey, fontSize: 16),
+                                                  ),
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !check_list_priv,
+                                                  title: Text("Liquid".tr()),
+                                                  value: pre_check_list[2],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      pre_check_list[2]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+                                                ),
+                                                TextFormField(
+                                                  enabled: !check_list_priv,
+                                                  controller: pre_check_list_liquid_controller,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Notes'.tr(),
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.grey, fontSize: 16),
+                                                  ),
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !check_list_priv,
+                                                  title: Text("Missing Parts".tr()),
+                                                  value: pre_check_list[3],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      pre_check_list[3]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+                                                ),
+                                                TextFormField(
+                                                  enabled: !check_list_priv,
+                                                  controller: pre_check_list_missing_parts_controller,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Notes'.tr(),
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.grey, fontSize: 16),
+                                                  ),
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !check_list_priv,
+                                                  title: Text("others".tr()),
+                                                  value: pre_check_list[4],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      pre_check_list[4]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+                                                ),
+                                                TextFormField(
+                                                  enabled: !check_list_priv,
+                                                  controller: pre_check_list_others_controller,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Notes'.tr(),
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.grey, fontSize: 16),
+                                                  ),
+                                                ),
+                                              ]
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
                               ),
                               SizedBox(
                                 height: 15,
@@ -794,18 +1140,10 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        hintText: 'Price'.tr(),
-                                        hintStyle: TextStyle(
+                                        labelText: 'Price'.tr(),
+                                        labelStyle: TextStyle(
                                             color: Colors.grey, fontSize: 16),
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Please Enter".tr() +
-                                              " " +
-                                              "Price".tr();
-                                        }
-                                        return null;
-                                      },
                                     ),
                                   ),
                                   SizedBox(
@@ -813,25 +1151,46 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   ),
                                   Container(
                                     width: width * 0.4,
-                                    padding:
-                                        EdgeInsets.only(left: 10, right: 10),
+                                    padding: EdgeInsets.only(left: 10, right: 10),
                                     decoration: BoxDecoration(
                                       color: ColorUtilities.white,
                                       border: Border.all(color: Colors.grey),
                                       borderRadius: BorderRadius.circular(5),
                                     ),
-                                    child: TextFormField(
-                                      enabled: !estimated_time_priv,
-                                      controller: estimated_time_controller,
+                                    child: DropdownButtonFormField(
+                                      isExpanded: true,
+                                      value: selectedTime,
+                                      icon: const Icon(Icons.keyboard_arrow_down),
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
+                                        label: Row(
+                                          children: [
+                                            Text("Estimated Time".tr()),
+                                            Text(" * ",style: TextStyle(color: Colors.red),)
+                                          ],
+                                        ),
                                         border: InputBorder.none,
-                                        hintText: 'Estimated Time'.tr(),
-                                        hintStyle: TextStyle(
+                                        labelStyle: TextStyle(
                                             color: Colors.grey, fontSize: 16),
                                       ),
+                                      items: times.map((String time_value) {
+                                        return DropdownMenuItem(
+                                          value: time_value,
+                                          child: WidgetUtilities.autoSizeText(
+                                              time_value,
+                                              textStyle:
+                                              TextStyle(color: Colors.black)),
+                                        );
+                                      }).toList(),
+                                      onChanged: !estimated_time_priv
+                                          ? (String? newValue) {
+                                        setState(() {
+                                          selectedTime = newValue!;
+                                        });
+                                      }
+                                          : null,
                                       validator: (value) {
-                                        if (value == null || value.isEmpty) {
+                                        if (value == null) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "Estimated Time".tr();
@@ -861,8 +1220,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                   maxLines: null,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Notes'.tr(),
-                                    hintStyle: TextStyle(
+                                    labelText: 'Notes'.tr(),
+                                    labelStyle: TextStyle(
                                         color: Colors.grey, fontSize: 16),
                                   ),
                                 ),
@@ -870,9 +1229,32 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               SizedBox(
                                 height: 15,
                               ),
+                              sharedState.userType==3?
+                              Container(
+                                height: 100,
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                decoration: BoxDecoration(
+                                  color: ColorUtilities.white,
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: TextField(
+                                  controller: replaced_part_controller,
+                                  style: TextStyle(color: Colors.black),
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    labelText: 'Replaced parts'.tr(),
+                                    labelStyle: TextStyle(
+                                        color: Colors.grey, fontSize: 16),
+                                  ),
+                                ),
+                              )
+                                  :SizedBox(),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   sharedState.userType != 0
                                       ? ElevatedButton(
@@ -880,6 +1262,15 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               if (widget.editable) {
+                                                pre_check_list_notes.clear();
+                                                pre_check_list_notes.add(pre_check_list_scratches_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_cracks_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_liquid_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_missing_parts_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_others_controller.text);
+                                                widget.maintenanceDevice?.preCheckListNotes=pre_check_list_notes;
+                                                widget.maintenanceDevice?.preCheckList=pre_check_list;
+                                                widget.maintenanceDevice?.replacedParts=replaced_part_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.customerName =
                                                     name_controller.text;
@@ -908,7 +1299,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                     IMEI_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.problem =
-                                                    problem_controller.text;
+                                                    selectedProblem;
                                                 widget.maintenanceDevice
                                                     ?.status = status_value;
                                                 widget.maintenanceDevice
@@ -916,14 +1307,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                     notes_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.accessories =
-                                                    accessoires_controller.text;
+                                                    accessories;
                                                 widget.maintenanceDevice
                                                         ?.price =
                                                     price_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.estimatedTime =
-                                                    estimated_time_controller
-                                                        .text;
+                                                    selectedTime;
                                                 widget.maintenanceDevice
                                                         ?.notes =
                                                     notes2_controller.text;
@@ -1013,8 +1403,18 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   }
                                                 });
                                               } else {
+                                                pre_check_list_notes.clear();
+                                                pre_check_list_notes.add(pre_check_list_scratches_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_cracks_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_liquid_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_missing_parts_controller.text);
+                                                pre_check_list_notes.add(pre_check_list_others_controller.text);
+
                                                 newDeviceMaintenanceState
                                                     .addDeviceToMaintenance(MaintenanceDeviceModel(
+                                                  replacedParts: replaced_part_controller.text,
+                                                  preCheckListNotes: pre_check_list_notes,
+                                                        preCheckList: pre_check_list,
                                                         customerName:
                                                             name_controller
                                                                 .text,
@@ -1039,20 +1439,17 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                             IMEI_controller
                                                                 .text,
                                                         problem:
-                                                            problem_controller
-                                                                .text,
+                                                            selectedProblem,
                                                         status: status_value,
                                                         problemNotes:
                                                             notes_controller
                                                                 .text,
                                                         accessories:
-                                                            accessoires_controller
-                                                                .text,
+                                                            accessories,
                                                         price: price_controller
                                                             .text,
                                                         estimatedTime:
-                                                            estimated_time_controller
-                                                                .text,
+                                                            selectedTime,
                                                         notes: notes2_controller
                                                             .text,
                                                         pattern: patternValue))
@@ -1087,6 +1484,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       Navigator.pop(context);
                                     },
                                     child: Container(
+                                      margin: EdgeInsets.only(),
                                       width: width * 0.2,
                                       child: WidgetUtilities.autoSizeText(
                                         "Cancel",

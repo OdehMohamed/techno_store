@@ -164,9 +164,11 @@ class _WelcomePageState extends State<WelcomePage> {
             Flexible(
                 child: ListView(
               children: [
+                sharedState.userType!=3?
                 card("Favorite", Icon(Icons.star, color: Colors.yellow), () {
                   Utilities.navigatorWithBack(context, favoraitItems());
-                }),
+                }):SizedBox(),
+                sharedState.userType!=3?
                 card(
                     "Store",
                     Icon(
@@ -174,7 +176,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       color: Colors.white60,
                     ), () {
                   Utilities.navigatorWithBack(context, Store());
-                }),
+                }):SizedBox(),
                 card(
                     "Check My Device",
                     Icon(
@@ -300,7 +302,7 @@ class _WelcomePageState extends State<WelcomePage> {
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.6,
+                  height: height * 0.55,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                     borderRadius: BorderRadius.only(
@@ -314,6 +316,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         SizedBox(
                           height: height * 0.05,
                         ),
+                        sharedState.userType!=3?
                         InkWell(
                           onTap: () {
                             Navigator.push(
@@ -323,7 +326,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(20),
                                 color: ColorUtilities.secondary,
                               ),
                               width: 200,
@@ -331,6 +334,29 @@ class _WelcomePageState extends State<WelcomePage> {
                               child: Center(
                                 child: WidgetUtilities.autoSizeText(
                                   "Store",
+                                  textStyle: TextStyle(
+                                      fontSize: 22,
+                                      color: ColorUtilities.textColor),
+                                ),
+                              )),
+                        ):
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => TrackPhonePage()),
+                            );
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: ColorUtilities.secondary,
+                              ),
+                              width: 200,
+                              height: 90,
+                              child: Center(
+                                child: WidgetUtilities.autoSizeText(
+                                  "Check Status",
                                   textStyle: TextStyle(
                                       fontSize: 22,
                                       color: ColorUtilities.textColor),
@@ -350,7 +376,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(20),
                                 color: ColorUtilities.secondary,
                               ),
                               width: 200,
@@ -365,67 +391,81 @@ class _WelcomePageState extends State<WelcomePage> {
                               )),
                         ),
                         Flexible(child: Container()),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              child: Icon(
-                                FontAwesome5.whatsapp,
-                                color: Colors.green,
-                                size: 30,
-                              ),
-                              onTap: () {
-                                _launchSocial(
-                                    'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
-                                    'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
-                              },
-                            ),
-                            SizedBox(width: 15),
-                            InkWell(
-                              child: Icon(
-                                FontAwesome5.facebook,
-                                color: Colors.blue,
-                                size: 30,
-                              ),
-                              onTap: () {
-                                _launchSocial('fb://profile/100088001516569',
-                                    'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
-                              },
-                            ),
-                            SizedBox(width: 15),
-                            InkWell(
-                              child: Icon(
-                                FontAwesome5.instagram,
-                                color: Colors.pink,
-                                size: 30,
-                              ),
-                              onTap: () {
-                                _launchSocial(
-                                    'instagram://user?username=techno__store00',
-                                    'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
-                              },
-                            ),
-                            SizedBox(width: 15),
-                            InkWell(
-                              child: Icon(
-                                FontAwesome5.snapchat,
-                                color: Colors.yellowAccent,
-                                size: 30,
-                              ),
-                              onTap: () {
-                                _launchSocial(
-                                    'https://www.snapchat.com/add/technostore0',
-                                    'https://www.snapchat.com/add/technostore0');
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
                       ],
                     ),
                   )),
+            ),
+            Container(
+              color: ColorUtilities.secondary,
+              height: height*0.05,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    child: Icon(
+                      FontAwesome5.whatsapp,
+                      color: Colors.green,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      _launchSocial(
+                          'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
+                          'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                    },
+                  ),
+                  SizedBox(width: 15),
+                  InkWell(
+                    child: Icon(
+                      FontAwesome5.facebook,
+                      color: Colors.blue[200],
+                      size: 30,
+                    ),
+                    onTap: () {
+                      _launchSocial('fb://profile/100088001516569',
+                          'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                    },
+                  ),
+                  SizedBox(width: 15),
+                  InkWell(
+                    child: Icon(
+                      FontAwesome5.instagram,
+                      color: Colors.pink,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      _launchSocial(
+                          'instagram://user?username=techno__store00',
+                          'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                    },
+                  ),
+                  SizedBox(width: 15),
+                  InkWell(
+                    child: Icon(
+                      FontAwesome5.snapchat,
+                      color: Colors.yellow[600],
+                      size: 30,
+                    ),
+                    onTap: () {
+                      _launchSocial(
+                          'https://www.snapchat.com/add/technostore0',
+                          'https://www.snapchat.com/add/technostore0');
+                    },
+                  ),
+                  SizedBox(width: 15),
+                  InkWell(
+                    child: Icon(
+                      Icons.tiktok,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    onTap: () {
+                      _launchSocial(
+                          'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1',
+                          'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1');
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -14,7 +14,10 @@ class MaintenanceDeviceModel {
   String? _problem;
   String? _status;
   String? _problemNotes;
-  String? _accessories;
+  String? _replacedParts;
+  List<bool>? _accessories;
+  List<bool>? _preCheckList;
+  List<String>? _preCheckListNotes;
   String? _price;
   String? _estimatedTime;
   String? _notes;
@@ -33,12 +36,15 @@ class MaintenanceDeviceModel {
         String? problem,
         String? status,
         String? problemNotes,
-        String? accessories,
+        String? replacedParts,
+        List<bool>? accessories,
         String? price,
         String? estimatedTime,
         String? notes,
         String? devicePassword,
         List<int>? pattern,
+        List<bool>? preCheckList,
+        List<String>? preCheckListNotes,
         BrandModel? brandModel}) {
     if (customerName != null) {
       this._customerName = customerName;
@@ -91,6 +97,15 @@ class MaintenanceDeviceModel {
     if (brandModel != null) {
       this._brandModel = brandModel;
     }
+    if (preCheckListNotes != null) {
+      this._preCheckListNotes = preCheckListNotes;
+    }
+    if (preCheckList != null) {
+      this._preCheckList = preCheckList;
+    }
+    if (replacedParts != null) {
+      this._replacedParts = replacedParts;
+    }
   }
 
   String? get id => _id;
@@ -115,8 +130,8 @@ class MaintenanceDeviceModel {
   set status(String? status) => _status = status;
   String? get problemNotes => _problemNotes;
   set problemNotes(String? problemNotes) => _problemNotes = problemNotes;
-  String? get accessories => _accessories;
-  set accessories(String? accessories) => _accessories = accessories;
+  List<bool>? get accessories => _accessories;
+  set accessories(List<bool>? accessories) => _accessories = accessories!;
   String? get price => _price;
   set price(String? price) => _price = price;
   String? get estimatedTime => _estimatedTime;
@@ -124,9 +139,15 @@ class MaintenanceDeviceModel {
   String? get notes => _notes;
   set notes(String? notes) => _notes = notes;
   String? get devicePassword => _devicePassword;
+  set replacedParts(String? replacedParts) => _replacedParts = replacedParts;
+  String? get replaceParts => _replacedParts;
   set devicePassword(String? devicePassword) => _devicePassword = devicePassword;
   List<int>? get pattern => _pattern;
   set pattern(List<int>? pattern) => _pattern = pattern;
+  List<bool>? get preCheckList => _preCheckList;
+  set preCheckList(List<bool>? preCheckList) => _preCheckList = preCheckList;
+  List<String>? get preCheckListNotes => _preCheckListNotes;
+  set preCheckListNotes(List<String>? preCheckListNotes) => _preCheckListNotes = preCheckListNotes;
   BrandModel? get brandModel => _brandModel;
   set brandModel(BrandModel? brandModel) => _brandModel = brandModel;
 
@@ -142,12 +163,15 @@ class MaintenanceDeviceModel {
     _problem = json['problem'];
     _status = json['status'];
     _problemNotes = json['problemNotes'];
-    _accessories = json['accessories'];
+    _accessories = json['accessories'].cast<bool>();
+    _preCheckListNotes = json['preCheckListNotes'].cast<String>();
+    _preCheckList = json['preCheckList'].cast<bool>();
     _price = json['price'];
     _estimatedTime = json['estimatedTime'];
     _notes = json['notes'];
     _devicePassword = json['devicePassword'];
     _pattern = json['pattern'].cast<int>();
+    _replacedParts=json['replacedParts'];
   }
 
   Map<String, dynamic> toJson() {
@@ -169,6 +193,9 @@ class MaintenanceDeviceModel {
     data['notes'] = this._notes;
     data['devicePassword'] = this._devicePassword;
     data['pattern'] = this._pattern;
+    data['preCheckListNotes'] = this._preCheckListNotes;
+    data['preCheckList'] = this._preCheckList;
+    data['replacedParts'] = this._replacedParts;
     return data;
   }
 }

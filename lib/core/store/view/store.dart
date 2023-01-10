@@ -207,7 +207,13 @@ class _StoreState extends State<Store> {
           inAsyncCall: sharedState.loading || storeState.loading,
           child: RefreshIndicator(
             onRefresh: () async {
-              initState();
+             setState(() {
+               selectedCategory = null;
+               selectedSubCategory = null;
+               storeState = context.read<StoreState>();
+               sharedState = context.read<SharedState>();
+               getCategoriesFuture = sharedState.getCategories();
+             });
             },
             child: Column(
               children: [

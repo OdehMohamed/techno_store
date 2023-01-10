@@ -176,7 +176,10 @@ class _favoraitItemsState extends State<favoraitItems> {
         resizeToAvoidBottomInset: false,
         body: RefreshIndicator(
           onRefresh: () async {
-            initState();
+            setState(() {
+              favoriteItemsState = context.read<FavoriteItemsState>();
+              favoriteDevices = favoriteItemsState.getProducts();
+            });
           },
           child: Column(
             children: [
