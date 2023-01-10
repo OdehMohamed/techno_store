@@ -270,9 +270,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                       height: height * 0.25,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                        ),
                       ),
                       child: Center(
                           child: WidgetUtilities.autoSizeText(
@@ -288,9 +285,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                       height: height * 0.75,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.backgroundContainer,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(50),
-                        ),
                       ),
                       child: Container(
                         margin: EdgeInsets.all(30),

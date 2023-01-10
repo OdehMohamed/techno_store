@@ -119,9 +119,6 @@ class _SignInState extends State<SignIn> {
                     height: height * 0.4,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(50),
-                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -148,9 +145,7 @@ class _SignInState extends State<SignIn> {
                   height: height * 0.6,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(50),
-                    ),
+
                   ),
                   child: Container(
                       margin: EdgeInsets.only(top: 30, left: 40, right: 40),

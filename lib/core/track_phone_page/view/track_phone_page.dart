@@ -351,9 +351,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                   height: height * 0.4,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -377,9 +374,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                   height: height * 0.6,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(50),
-                    ),
                   ),
                   child: Container(
                     padding: EdgeInsets.only(left: 20, right: 20),

@@ -108,9 +108,6 @@ class _manageCategoryState extends State<manageCategory> {
                     height: Utilities.getDeviceHeight(context) * 0.2,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(50),
-                      ),
                     ),
                     child: Container(
                       child: WidgetUtilities.autoSizeText("Manage Categories",
@@ -126,9 +123,6 @@ class _manageCategoryState extends State<manageCategory> {
                     height: Utilities.getDeviceHeight(context) * 0.8,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.backgroundContainer,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(50),
-                      ),
                     ),
                     child: Container(
                         padding: EdgeInsets.only(

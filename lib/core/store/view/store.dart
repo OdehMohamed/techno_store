@@ -224,9 +224,6 @@ class _StoreState extends State<Store> {
                       height: height * 0.25,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                        ),
                       ),
                       child: Center(
                           child: Column(
@@ -407,9 +404,6 @@ class _StoreState extends State<Store> {
                       height: height * 0.75,
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(239, 239, 239, 1),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(50),
-                        ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

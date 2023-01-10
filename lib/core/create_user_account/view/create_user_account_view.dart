@@ -73,9 +73,6 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                         height: height * 0.25,
                         decoration: const BoxDecoration(
                           color: ColorUtilities.secondary,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                          ),
                         ),
                         child: Center(
                             child: WidgetUtilities.autoSizeText("New Account",
@@ -90,9 +87,6 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                         height: height * 0.75,
                         decoration: const BoxDecoration(
                           color: Color.fromRGBO(239, 239, 239, 1),
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(50),
-                          ),
                         ),
                         child: Container(
                             margin: EdgeInsets.only(right: 40, left: 40),

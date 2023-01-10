@@ -97,9 +97,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                   height: height * 0.25,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                    ),
                   ),
                   child: Center(
                     child: WidgetUtilities.autoSizeText(
@@ -118,9 +115,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                   height: height * 0.75,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(50),
-                    ),
                   ),
                   child: Container(
                       child: SingleChildScrollView(
