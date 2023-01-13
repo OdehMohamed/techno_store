@@ -35,6 +35,7 @@ class _favoraitItemsState extends State<favoraitItems> {
     favoriteItemsState = context.watch<FavoriteItemsState>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     Widget listCard(ProductModel device) {
       String? name = device.enName;
       context.locale == Locale("en")
@@ -55,12 +56,24 @@ class _favoraitItemsState extends State<favoraitItems> {
                 height: height * 0.4,
                 child: device.photo!.isNotEmpty
                     ? Image.network(
-                        device.photo!.first,
-                        fit: BoxFit.fill,
-                      )
-                    : Image.asset(
-                        "assets/images/defaultProductImage.png",
+                  device.photo!.first,
+                  fit: BoxFit.fill,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
                       ),
+                    );
+                  },
+                )
+                    : Image.asset(
+                  "assets/images/defaultProductImage.png",
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -82,6 +95,17 @@ class _favoraitItemsState extends State<favoraitItems> {
                     width: width * 0.5,
                     child: WidgetUtilities.autoSizeText(device.description!,
                         textStyle: TextStyle(color: Colors.black54)),
+                  ),
+                  Container(
+                    width: width*0.3,
+                    decoration: BoxDecoration(
+                        color: ColorUtilities.secondary,
+                        borderRadius: BorderRadius.circular(15)
+                    ),
+                    padding: EdgeInsets.all(5),
+                    child: Center(
+                      child: Text("Show".tr(),style: TextStyle(color: Colors.white),),
+                    ),
                   )
                 ],
               )
@@ -93,8 +117,8 @@ class _favoraitItemsState extends State<favoraitItems> {
             context,
             MaterialPageRoute(
                 builder: (context) => ProductDetails(
-                      product: device,
-                    )),
+                  product: device,
+                )),
           );
         },
       );
@@ -107,7 +131,7 @@ class _favoraitItemsState extends State<favoraitItems> {
           : name = device.arName;
       return InkWell(
         child: Container(
-          height: height * 0.25,
+          height: height * 0.3,
           decoration: BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.all(5),
@@ -116,15 +140,27 @@ class _favoraitItemsState extends State<favoraitItems> {
             children: [
               Container(
                 width: width * 0.25,
-                height: height * 0.12,
+                height: height * 0.1,
                 child: device.photo!.isNotEmpty
                     ? Image.network(
-                        device.photo!.first,
-                        fit: BoxFit.fill,
-                      )
-                    : Image.asset(
-                        "assets/images/defaultProductImage.png",
+                  device.photo!.first,
+                  fit: BoxFit.fill,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
                       ),
+                    );
+                  },
+                )
+                    : Image.asset(
+                  "assets/images/defaultProductImage.png",
+                ),
               ),
               WidgetUtilities.autoSizeText(name!,
                   textStyle: TextStyle(color: Colors.black)),
@@ -136,6 +172,18 @@ class _favoraitItemsState extends State<favoraitItems> {
               SizedBox(
                 height: 5,
               ),
+              Container(
+                width: width*0.3,
+                decoration: BoxDecoration(
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.circular(15)
+                ),
+                margin: EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Text("Show".tr(),style: TextStyle(color: Colors.white),),
+                ),
+              )
             ],
           ),
         ),
@@ -144,9 +192,11 @@ class _favoraitItemsState extends State<favoraitItems> {
             context,
             MaterialPageRoute(
                 builder: (context) => ProductDetails(
-                      product: device,
-                    )),
-          );
+                  product: device,
+                )),
+          ).then((value) => () {
+            setState(() {});
+          });
         },
       );
     }
@@ -281,7 +331,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                         childAspectRatio: gridNumber == 2
-                                            ? (1 / 1)
+                                            ? (1 / 1.2)
                                             : (1 / 0.5),
                                         crossAxisCount: gridNumber,
                                         crossAxisSpacing: 1.0,

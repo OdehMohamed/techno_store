@@ -18,7 +18,7 @@
   "days": "days",
   "JD" : "JD",
   "Fixed": "Fixed",
-  "in maintenance": "in maintenance",
+  "in maintenance": "In maintenance",
   "under review": "under review",
   "Done": "Done",
   "Fixing": "Fixing",
@@ -157,5 +157,10 @@
   "Current": "Current",
   "body": "body",
   "camera glass": "camera glass",
-  "Delivered": "Delivered"
+  "Delivered": "Delivered",
+  "Contact us:":"Contact us:",
+  "Show": "Show",
+  "vat included": "vat included",
+  "Select Category": "Select Category"
+
 }

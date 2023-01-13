@@ -236,7 +236,7 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
                               ),
                               hideReplaced?TableRow(
                                   children: [
-                                    SizedBox(),SizedBox()
+                                    Container(),Container()
                                   ]
                               ):
                               TableRow(
@@ -259,8 +259,11 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
                               ),
                               TableRow(
                                   children: [
-                                    WidgetUtilities.autoSizeText("Notes",
-                                        textStyle: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: WidgetUtilities.autoSizeText("Notes",
+                                          textStyle: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                    ),
                                     SingleChildScrollView(
                                         child: Container(
                                             margin: EdgeInsets.all(10),

@@ -81,6 +81,14 @@ class _manageCategoryState extends State<manageCategory> {
 
     change_sub_category_flag() {
       sub_category_flag = !sub_category_flag;
+      if (sub_category_flag) {
+        edit_name_controller_en.text = selectedSubCategory!.enName!;
+        edit_name_controller_ar.text = selectedSubCategory!.arName!;
+      }
+      else {
+        edit_name_controller_en.text = selectedCategory!.enName!;
+        edit_name_controller_ar.text = selectedCategory!.arName!;
+      }
     }
 
     return Scaffold(
@@ -163,6 +171,8 @@ class _manageCategoryState extends State<manageCategory> {
                                                                   newValue.id!);
                                                       selectedSubCategory =
                                                           null;
+                                                      edit_name_controller_en.text=selectedCategory!.enName!;
+                                                      edit_name_controller_ar.text=selectedCategory!.arName!;
                                                       setState(() {});
                                                     },
                                                     items: List.generate(
@@ -184,200 +194,6 @@ class _manageCategoryState extends State<manageCategory> {
                                                             )),
                                                     label: "Categories".tr(),
                                                   ),
-                                                ),
-                                                InkWell(
-                                                  child: Icon(
-                                                    Icons.add_circle_outlined,
-                                                    color: Colors.green,
-                                                    size: 30,
-                                                  ),
-                                                  onTap: () async {
-                                                    await showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          new_category_name_controller_en
-                                                                  .text =
-                                                              new_category_name_controller_ar
-                                                                  .text = "";
-                                                          return AlertDialog(
-                                                            title: Container(
-                                                              width: Utilities
-                                                                  .getDeviceWidth(
-                                                                      context),
-                                                              height: Utilities
-                                                                      .getDeviceHeight(
-                                                                          context) *
-                                                                  0.05,
-                                                              child: WidgetUtilities.autoSizeText(
-                                                                  "Add Category",
-                                                                  textStyle: TextStyle(
-                                                                      color: Colors
-                                                                          .black),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center),
-                                                            ),
-                                                            content: Container(
-                                                                width: Utilities
-                                                                    .getDeviceWidth(
-                                                                        context),
-                                                                height: Utilities
-                                                                        .getDeviceHeight(
-                                                                            context) *
-                                                                    0.3,
-                                                                child: Form(
-                                                                  key:
-                                                                      _new_category_key,
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceEvenly,
-                                                                    children: [
-                                                                      Container(
-                                                                        width: Utilities.getDeviceWidth(context) *
-                                                                            0.5,
-                                                                        margin: EdgeInsets.only(
-                                                                            top:
-                                                                                20),
-                                                                        padding: EdgeInsets.only(
-                                                                            left:
-                                                                                20,
-                                                                            right:
-                                                                                20),
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color:
-                                                                              ColorUtilities.white,
-                                                                          border:
-                                                                              Border.all(color: Colors.grey),
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(5),
-                                                                        ),
-                                                                        child:
-                                                                            TextFormField(
-                                                                          controller:
-                                                                              new_category_name_controller_en,
-                                                                          style:
-                                                                              TextStyle(color: Colors.black),
-                                                                          decoration:
-                                                                              InputDecoration(
-                                                                            border:
-                                                                                InputBorder.none,
-                                                                            hintText:
-                                                                                'New Category'.tr() + "enLang".tr(),
-                                                                            hintStyle:
-                                                                                TextStyle(color: Colors.grey, fontSize: 10),
-                                                                          ),
-                                                                          validator:
-                                                                              (value) {
-                                                                            if (value == null ||
-                                                                                value.trim().isEmpty) {
-                                                                              return "Please Enter".tr() + " " + "New Category".tr() + "enLang";
-                                                                            }
-                                                                            return null;
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        width: Utilities.getDeviceWidth(context) *
-                                                                            0.5,
-                                                                        margin: EdgeInsets.only(
-                                                                            top:
-                                                                                20),
-                                                                        padding: EdgeInsets.only(
-                                                                            left:
-                                                                                20,
-                                                                            right:
-                                                                                20),
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color:
-                                                                              ColorUtilities.white,
-                                                                          border:
-                                                                              Border.all(color: Colors.grey),
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(5),
-                                                                        ),
-                                                                        child:
-                                                                            TextFormField(
-                                                                          controller:
-                                                                              new_category_name_controller_ar,
-                                                                          style:
-                                                                              TextStyle(color: Colors.black),
-                                                                          decoration:
-                                                                              InputDecoration(
-                                                                            border:
-                                                                                InputBorder.none,
-                                                                            hintText:
-                                                                                'New Category'.tr() + "arLang".tr(),
-                                                                            hintStyle:
-                                                                                TextStyle(color: Colors.grey, fontSize: 10),
-                                                                          ),
-                                                                          validator:
-                                                                              (value) {
-                                                                            if (value == null ||
-                                                                                value.trim().isEmpty) {
-                                                                              return "Please Enter".tr() + " " + "New Category".tr() + "arLang";
-                                                                            }
-                                                                            return null;
-                                                                          },
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                )),
-                                                            actions: [
-                                                              Center(
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    ElevatedButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        if (_new_category_key
-                                                                            .currentState!
-                                                                            .validate()) {
-                                                                          manageCategoriesState
-                                                                              .addCategory(CategoriesAndSubCategoryModel(
-                                                                                enName: new_category_name_controller_en.text.trim(),
-                                                                                arName: new_category_name_controller_ar.text.trim(),
-                                                                              ))
-                                                                              .then((value) => feedbackMessage(value, "Added successfully"));
-                                                                        }
-                                                                      },
-                                                                      child: Text(
-                                                                          "Add"
-                                                                              .tr()),
-                                                                      style: ElevatedButton.styleFrom(
-                                                                          backgroundColor:
-                                                                              Colors.green),
-                                                                    ),
-                                                                    SizedBox(
-                                                                      width: 30,
-                                                                    ),
-                                                                    ElevatedButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                      },
-                                                                      child: Text(
-                                                                              "Cancel")
-                                                                          .tr(),
-                                                                      style: ElevatedButton.styleFrom(
-                                                                          backgroundColor:
-                                                                              Colors.grey),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              )
-                                                            ],
-                                                          );
-                                                        });
-                                                  },
                                                 ),
                                               ],
                                             );
@@ -421,6 +237,14 @@ class _manageCategoryState extends State<manageCategory> {
                                                         child: InkWell(
                                                           onTap: () {
                                                             setState(() {
+                                                              if (selectedSubCategory==null){
+                                                                edit_name_controller_en.text="";
+                                                                edit_name_controller_ar.text="";
+                                                              }
+                                                              else {
+                                                                edit_name_controller_en.text=selectedSubCategory!.enName!;
+                                                                edit_name_controller_ar.text=selectedSubCategory!.arName!;
+                                                              }
                                                               sub_category_flag =
                                                               true;
                                                             });
@@ -438,6 +262,8 @@ class _manageCategoryState extends State<manageCategory> {
                                                                 ? (newValue) {
                                                               selectedSubCategory =
                                                                   newValue;
+                                                              edit_name_controller_en.text=selectedSubCategory!.enName!;
+                                                              edit_name_controller_ar.text=selectedSubCategory!.arName!;
                                                               setState(
                                                                       () {});
                                                             }

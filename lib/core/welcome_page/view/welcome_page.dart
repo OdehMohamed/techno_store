@@ -19,6 +19,7 @@ import 'package:techno_store/shared/color_utilities.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/utilities.dart';
 import '../../../shared/widget_utilities.dart';
+import '../../selectCategory/view/selectCategory.dart';
 import '../../shared/view_model/shared_state.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -44,7 +45,6 @@ class _WelcomePageState extends State<WelcomePage> {
       bool launched =
           await launch(url, forceSafariVC: false, forceWebView: false);
       if (!launched) {
-        print("inside fallback");
         await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
       }
     } catch (e) {
@@ -121,7 +121,6 @@ class _WelcomePageState extends State<WelcomePage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: WidgetUtilities.autoSizeText("Welcome"),
         backgroundColor: Colors.transparent,
         actions: [
           Container(
@@ -175,7 +174,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       Icons.shopping_cart,
                       color: Colors.white60,
                     ), () {
-                  Utilities.navigatorWithBack(context, Store());
+                  Utilities.navigatorWithBack(context, SelectCategory());
                 }):SizedBox(),
                 card(
                     "Check My Device",
@@ -273,193 +272,250 @@ class _WelcomePageState extends State<WelcomePage> {
               color: ColorUtilities.backgroundContainer,
               child: Container(
                   width: width,
-                  height: height * 0.4,
+                  height: height * 0.2,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 20,
-                      ),
                       Container(
-                        width: 200,
-                        height: 200,
-                        child: Image.asset(
-                          "assets/images/logo.png",
-                          fit: BoxFit.fill,
-                          color: ColorUtilities.backgroundContainer,
-                        ),
+                        padding: EdgeInsets.only(top: height*0.05),
+                          child:Center(
+                              child:
+                             Column(
+                               children: [
+                                 Text("T.E.C.H.N.O",
+                                   style: TextStyle(
+                                     fontSize: width*0.075,
+                                     color: ColorUtilities.backgroundContainer,
+                                     letterSpacing: 3,
+
+                                   ),
+                                 ),
+                                 Container(
+                                   padding: EdgeInsets.only(left: width*0.05),
+                                   child: Text("Store",
+                                     textAlign: TextAlign.center,
+                                     style: TextStyle(
+                                       fontSize: width*0.075,
+                                       color: ColorUtilities.backgroundContainer,
+                                       letterSpacing: 20,
+                                     ),
+                                   ),
+                                 ),
+                               ],
+                             )
+                          )
                       ),
                     ],
-                  )),
+                  )
+              ),
             ),
             Container(
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.55,
+                  height: height * 0.68,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),
                   child: Container(
-                    margin: EdgeInsets.only(top: 30, left: 40, right: 40),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: height * 0.05,
-                        ),
-                        sharedState.userType!=3?
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Store()),
-                            );
-                          },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: ColorUtilities.secondary,
-                              ),
-                              width: 200,
-                              height: 90,
-                              child: Center(
-                                child: WidgetUtilities.autoSizeText(
-                                  "Store",
-                                  textStyle: TextStyle(
-                                      fontSize: 22,
-                                      color: ColorUtilities.textColor),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          sharedState.userType!=3?
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SelectCategory()),
+                              );
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: ColorUtilities.secondary,
                                 ),
-                              )),
-                        ):
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => TrackPhonePage()),
-                            );
-                          },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: ColorUtilities.secondary,
-                              ),
-                              width: 200,
-                              height: 90,
-                              child: Center(
-                                child: WidgetUtilities.autoSizeText(
-                                  "Check Status",
-                                  textStyle: TextStyle(
-                                      fontSize: 22,
-                                      color: ColorUtilities.textColor),
+                                width: width*0.5,
+                                height: height*0.12,
+                                child: Center(
+                                  child: WidgetUtilities.autoSizeText(
+                                    "Store",
+                                    textStyle: TextStyle(
+                                        fontSize: 22,
+                                        color: ColorUtilities.textColor),
+                                  ),
+                                )),
+                          ):
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => TrackPhonePage()),
+                              );
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: ColorUtilities.secondary,
                                 ),
-                              )),
-                        ),
-                        SizedBox(
-                          height: height * 0.05,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            sharedState.userType != 1
-                                ? Utilities.navigatorWithBack(
-                                    context, MaintinanceList())
-                                : Utilities.navigatorWithBack(
-                                    context, TrackPhonePage());
-                          },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: ColorUtilities.secondary,
-                              ),
-                              width: 200,
-                              height: 90,
-                              child: Center(
-                                child: WidgetUtilities.autoSizeText(
-                                  "Maintenance",
-                                  textStyle: TextStyle(
-                                      color: ColorUtilities.textColor,
-                                      fontSize: 22),
+                                width: width*0.5,
+                                height: height*0.12,
+                                child: Center(
+                                  child: WidgetUtilities.autoSizeText(
+                                    "Check Status",
+                                    textStyle: TextStyle(
+                                        fontSize: 22,
+                                        color: ColorUtilities.textColor),
+                                  ),
+                                )),
+                          ),
+                          SizedBox(
+                            height: height * 0.05,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              sharedState.userType != 1
+                                  ? Utilities.navigatorWithBack(
+                                  context, MaintinanceList())
+                                  : Utilities.navigatorWithBack(
+                                  context, TrackPhonePage());
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: ColorUtilities.secondary,
                                 ),
-                              )),
-                        ),
-                        Flexible(child: Container()),
-                      ],
+                                width: width*0.5,
+                                height: height*0.12,
+                                child: Center(
+                                  child: WidgetUtilities.autoSizeText(
+                                    "Maintenance",
+                                    textStyle: TextStyle(
+                                        color: ColorUtilities.textColor,
+                                        fontSize: 22),
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
                   )),
             ),
             Container(
               color: ColorUtilities.secondary,
-              height: height*0.05,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              height: height*0.12,
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  InkWell(
-                    child: Icon(
-                      FontAwesome5.whatsapp,
-                      color: Colors.green,
-                      size: 30,
+                Text("Contact us:".tr(),style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: InkWell(
+                        child: Icon(
+                          FontAwesome5.whatsapp,
+                          color: ColorUtilities.secondary,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _launchSocial(
+                              'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
+                              'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorUtilities.backgroundContainer,
+                        borderRadius: BorderRadius.circular(50)
+                      ),
                     ),
-                    onTap: () {
-                      _launchSocial(
-                          'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
-                          'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
-                    },
-                  ),
-                  SizedBox(width: 15),
-                  InkWell(
-                    child: Icon(
-                      FontAwesome5.facebook,
-                      color: Colors.blue[200],
-                      size: 30,
+                    SizedBox(width: 15),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: InkWell(
+                        child: Icon(
+                          FontAwesome5.facebook,
+                          color: ColorUtilities.secondary,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _launchSocial('fb://profile/100088001516569',
+                              'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: ColorUtilities.backgroundContainer,
+                          borderRadius: BorderRadius.circular(50)
+                      ),
                     ),
-                    onTap: () {
-                      _launchSocial('fb://profile/100088001516569',
-                          'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
-                    },
-                  ),
-                  SizedBox(width: 15),
-                  InkWell(
-                    child: Icon(
-                      FontAwesome5.instagram,
-                      color: Colors.pink,
-                      size: 30,
+                    SizedBox(width: 15),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: InkWell(
+                        child: Icon(
+                          FontAwesome5.instagram,
+                          color: ColorUtilities.secondary,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _launchSocial(
+                              'instagram://user?username=techno__store00',
+                              'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: ColorUtilities.backgroundContainer,
+                          borderRadius: BorderRadius.circular(50)
+                      ),
                     ),
-                    onTap: () {
-                      _launchSocial(
-                          'instagram://user?username=techno__store00',
-                          'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
-                    },
-                  ),
-                  SizedBox(width: 15),
-                  InkWell(
-                    child: Icon(
-                      FontAwesome5.snapchat,
-                      color: Colors.yellow[600],
-                      size: 30,
+                    SizedBox(width: 15),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: InkWell(
+                        child: Icon(
+                          FontAwesome5.snapchat,
+                          color:ColorUtilities.secondary,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _launchSocial(
+                              'https://www.snapchat.com/add/technostore0',
+                              'https://www.snapchat.com/add/technostore0');
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: ColorUtilities.backgroundContainer,
+                          borderRadius: BorderRadius.circular(50)
+                      ),
                     ),
-                    onTap: () {
-                      _launchSocial(
-                          'https://www.snapchat.com/add/technostore0',
-                          'https://www.snapchat.com/add/technostore0');
-                    },
-                  ),
-                  SizedBox(width: 15),
-                  InkWell(
-                    child: Icon(
-                      Icons.tiktok,
-                      color: Colors.black,
-                      size: 30,
+                    SizedBox(width: 15),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child:
+                      InkWell(
+                        child: Icon(
+                          Icons.tiktok,
+                          color: ColorUtilities.secondary,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _launchSocial(
+                              'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1',
+                              'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1');
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: ColorUtilities.backgroundContainer,
+                          borderRadius: BorderRadius.circular(50)
+                      ),
                     ),
-                    onTap: () {
-                      _launchSocial(
-                          'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1',
-                          'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1');
-                    },
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],)
             ),
           ],
         ),

@@ -323,7 +323,6 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                         value: "2",
                                         groupValue: usertype,
                                         onChanged: (value) {
-                                          print(value);
                                           setState(() {
                                             usertype = value.toString();
                                           });
@@ -335,7 +334,6 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                         value: "3",
                                         groupValue: usertype,
                                         onChanged: (value) {
-                                          print(value);
                                           setState(() {
                                             usertype = value.toString();
                                           });

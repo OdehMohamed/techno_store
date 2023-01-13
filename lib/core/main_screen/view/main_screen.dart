@@ -116,24 +116,41 @@ class _SignInState extends State<SignIn> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     width: width,
-                    height: height * 0.4,
+                    height: height * 0.3,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 20,
-                        ),
                         Container(
-                          width: 150,
-                          height: 150,
-                          child: Image.asset(
-                            "assets/images/logo.png",
-                            fit: BoxFit.fill,
-                            color: ColorUtilities.white,
-                          ),
+                          padding: EdgeInsets.only(top: height*0.05),
+                          child:Container(
+                            child:
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                              Text("T.E.C.H.N.O",
+                                style: TextStyle(
+                                    fontSize: width*0.1,
+                                    color: ColorUtilities.backgroundContainer,
+                                    letterSpacing: 3
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(left: width*0.05),
+                                child: Text("Store",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: width*0.1,
+                                      color: ColorUtilities.backgroundContainer,
+                                      letterSpacing: 25
+                                  ),
+                                ),
+                              )
+                            ],)
+                          )
                         ),
                       ],
                     )),
@@ -142,7 +159,7 @@ class _SignInState extends State<SignIn> {
                 color: ColorUtilities.secondary,
                 child: Container(
                   width: width,
-                  height: height * 0.6,
+                  height: height * 0.7,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
 

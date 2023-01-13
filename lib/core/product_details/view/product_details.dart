@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,12 +31,12 @@ class _ProductDetailsState extends State<ProductDetails> {
   late SharedState sharedState;
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final CarouselController _carouselcontroller = CarouselController();
+  int _current = 0;
+
   bool favourite = false;
-  int index=0;
   @override
   void initState() {
-    //impossible number because we can't take the length of the photo array in init state
-    index=0;
     sharedState = context.read<SharedState>();
     productDetailsState = context.read<ProductDetailsState>();
     if (widget.product.favoriteList!.contains(sharedState.userId)) {
@@ -104,7 +105,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ? widget.product.enName!
                           : widget.product.arName!,
                       textStyle: TextStyle(
-                          color: ColorUtilities.textColor, fontSize: 20),
+                          color: ColorUtilities.textColor, fontSize: 26,fontWeight: FontWeight.bold),
                     ),
                   )),
             ),
@@ -209,93 +210,104 @@ class _ProductDetailsState extends State<ProductDetails> {
                              ),
                            ),
                             widget.product.photo!.isNotEmpty?
-                            Row(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                      if (index != 0) {
-                                        index--;
-                                      }
-                                      print(index);
-                                      itemScrollController.scrollTo(
-                                          index: index,
-                                          duration: Duration(seconds: 1),
-                                          curve: Curves.easeOutQuart
-                                      );
-                                  },
-                                  child:  Icon(CupertinoIcons.left_chevron,size: width*0.1,color: Colors.grey),
-                                ),
                                 Container(
-                                    width: width * 0.7,
-                                    height: height * 0.5,
+                                    height: height * 0.4,
                                     margin: EdgeInsets.only(top: 30,bottom: 30),
                                     child:
-                                  ScrollablePositionedList.builder(
-                                    reverse: context.locale==Locale("ar"),
-                                    scrollDirection: Axis.horizontal,
-                                  itemCount:  widget.product.photo!.length,
-                                  itemBuilder: (context, i) =>
-                                      Container(
-                                          child: Container(
-                                            width: width*0.6,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(width: 2,color: ColorUtilities.secondary),
-                                              ),
-                                              margin: EdgeInsets.only(left:5,right: 5),
-                                              child: GestureDetector(
-                                                  child: InkWell(
-                                                    child: widget
-                                                        .product.photo![i]
-                                                        .contains(
-                                                        "https://firebasestorage.googleapis.com/v0/b/technostore")
-                                                        ? Image.network(widget
-                                                        .product.photo![i],fit: BoxFit.fill,)
-                                                        : Image.file(File(widget
-                                                        .product.photo![i]),fit: BoxFit.fill,),
-                                                    onTap: () {
-                                                      showDialog<Image>(
-                                                        context: context,
-                                                        builder: (BuildContext
-                                                        context) =>
-                                                            AlertDialog(
-                                                              content: Container(
-                                                                width: width,
-                                                                height: width,
-                                                                child: PhotoView(
-                                                                  backgroundDecoration:
-                                                                  BoxDecoration(
-                                                                      color: Colors
-                                                                          .transparent),
-                                                                  imageProvider:
-                                                                  NetworkImage(widget
-                                                                      .product
-                                                                      .photo![i]),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                      );
-                                                    },
-                                                  )))),
-                                  itemScrollController: itemScrollController,
-                                  itemPositionsListener: itemPositionsListener,
+                                    CarouselSlider(
+                                      carouselController: _carouselcontroller,
+                                      options: CarouselOptions(
+                                        enlargeCenterPage: true,
+                                        height: 400.0,
+                                        enableInfiniteScroll: false,
+                                          onPageChanged: (index, reason) {
+                                            setState(() {
+                                              _current = index;
+                                            });}
+                                      ),
+                                      items: widget.product.photo?.map((i) {
+                                        return Builder(
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                                child: Container(
+                                                  width: width,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(width: 2,color: ColorUtilities.secondary),
+                                                    ),
+                                                    margin: EdgeInsets.only(left:5,right: 5),
+                                                    child: GestureDetector(
+                                                        child: InkWell(
+                                                          child: i
+                                                              .contains(
+                                                              "https://firebasestorage.googleapis.com/v0/b/technostore")
+                                                              ? Image.network(i,fit: BoxFit.fill,
+                                                              loadingBuilder: (BuildContext context, Widget child,
+                                                                  ImageChunkEvent? loadingProgress) {
+                                                                if (loadingProgress == null) return child;
+                                                                return Center(
+                                                                  child: CircularProgressIndicator(
+                                                                    value: loadingProgress.expectedTotalBytes != null
+                                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                                        loadingProgress.expectedTotalBytes!
+                                                                        : null,
+                                                                  ),
+                                                                );
+                                                              },
+                                                          )
+                                                              : Image.file(File(i),fit: BoxFit.fill,),
+                                                          onTap: () {
+                                                            showDialog<Image>(
+                                                              context: context,
+                                                              builder: (BuildContext
+                                                              context) =>
+                                                                  AlertDialog(
+                                                                    content: Container(
+                                                                      width: width,
+                                                                      height: width,
+                                                                      child: PhotoView(
+                                                                        backgroundDecoration:
+                                                                        BoxDecoration(
+                                                                            color: Colors
+                                                                                .transparent),
+                                                                        imageProvider:
+                                                                        NetworkImage(i),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                            );
+                                                          },
+                                                        )
+                                                    )
+                                                )
+                                            );
+                                          },
+                                        );
+                                      }).toList(),
+                                    )
                                 ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: widget.product.photo!.asMap().entries.map((entry) {
+                                    return GestureDetector(
+                                      onTap: () => _carouselcontroller.animateToPage(entry.key),
+                                      child: Container(
+                                        width: 12.0,
+                                        height: 12.0,
+                                        margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: (Theme.of(context).brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black)
+                                                .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
-                                InkWell(
-                                  onTap: (){
-                                      if (index !=
-                                          widget.product.photo!.length - 1) {
-                                        index++;
-                                      }
-                                      print(index);
-                                      itemScrollController.scrollTo(
-                                          index: index,
-                                          duration: Duration(seconds: 1),
-                                          curve: Curves.easeOutQuart
-                                      );
-                                    },
-                                  child: Icon(CupertinoIcons.right_chevron,size: width*0.1,color: Colors.grey,),
-                                )
+                                SizedBox(height: height*0.05,)
                               ],
                             ):
                                 Container(
@@ -307,23 +319,45 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ,),
                             WidgetUtilities.autoSizeText(
                                 widget.product.price.toString() + "ILS".tr(),
-                                textStyle: TextStyle(color: Colors.black)),
+                                textStyle: TextStyle(color:ColorUtilities.secondary,fontSize: 20)),
+                            SizedBox(height: 10,),
+                            WidgetUtilities.autoSizeText(
+                               "vat included".tr(),
+                                textStyle: TextStyle(fontSize: 14)),
+                            SizedBox(height: 10,),
                             Container(
-                              width: width * 0.8,
-                              height: height * 0.2,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: SingleChildScrollView(
-                                  child: Container(
-                                      margin: EdgeInsets.all(10),
-                                      child: Text(widget.product.description!,
-                                          style:
-                                          TextStyle(color: Colors.black)
+                              margin: EdgeInsets.only(right: 30,left: 30,top: 20),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.all(10),
+                                        child: WidgetUtilities.autoSizeText(
+                                          "Description".tr(),
+                                          textStyle: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),),
                                       )
+                                    ],),
+                                  Divider(thickness: 2,),
+                                  Container(
+                                    width: width * 0.8,
+                                    height: height * 0.2,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: SingleChildScrollView(
+                                        child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            child: Text(widget.product.description!,
+                                                style:
+                                                TextStyle(color: Colors.black)
+                                            )
+                                        )
+                                    ),
                                   )
-                              ),
-                            )
+                                ],
+                              ),),
                           ],
                         ),
                       )

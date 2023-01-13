@@ -594,8 +594,10 @@ class _NewProductState extends State<NewProduct> {
                                                 name: "BrandName",
                                                 dropDownValue: selectedBrand,
                                                 onChanged: (newValue) {
-                                                  selectedBrand = newValue;
-                                                },
+                                                  setState((){
+                                                    selectedBrand = newValue;
+                                                  });
+                                                  },
                                                 items: List.generate(
                                                     futureBrands.length,
                                                     (index) => DropdownMenuItem<

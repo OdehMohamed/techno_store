@@ -93,6 +93,8 @@ class FormValidatorDropdown<T> extends StatelessWidget {
         required this.dropDownValue,
         this.showErrorText = true,
         this.optional = false,
+        this.labelColor=Colors.black54,
+        this.iconColor=Colors.black54,
         Key? key})
       : super(key: key);
 
@@ -103,7 +105,8 @@ class FormValidatorDropdown<T> extends StatelessWidget {
   final ValueChanged<T>? onChanged;
   final T? dropDownValue;
   final List<DropdownMenuItem<T>> items;
-
+  final Color labelColor;
+  final Color iconColor;
   @override
   Widget build(BuildContext context) {
     return FormBuilderField(
@@ -113,13 +116,14 @@ class FormValidatorDropdown<T> extends StatelessWidget {
       builder: (FormFieldState<T> state) {
         return InputDecorator(
           decoration: InputDecoration(
-            label: Text(label),
+            label: Text(label,style: TextStyle(color: labelColor),),
             errorText: state.errorText
           ),
           //SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
           child: Opacity(
             opacity: 1,
             child: DropdownButton<T>(
+              icon: Icon(Icons.arrow_drop_down,color: iconColor),
               isExpanded: true,
               underline: const SizedBox.shrink(),
               //iconSize: SSCUI.SMALL_ICON_SIZE,

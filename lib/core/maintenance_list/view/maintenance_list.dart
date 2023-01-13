@@ -19,21 +19,21 @@ class MaintinanceList extends StatefulWidget {
   State<MaintinanceList> createState() => _MaintinanceListState();
 }
 
-String theStatus = "Fixed";
-List<Color> backgroundColor = [
-  Colors.white,
-  Colors.transparent,
-  Colors.transparent,
-
-];
-List<Color> textColor = [
-  ColorUtilities.secondary,
-  ColorUtilities.white,
-  ColorUtilities.white,
-
-];
-
 class _MaintinanceListState extends State<MaintinanceList> {
+
+  String theStatus = "Fixed";
+  List<Color> backgroundColor = [
+    ColorUtilities.secondary,
+    Colors.transparent,
+    Colors.transparent,
+
+  ];
+  List<Color> textColor = [
+    ColorUtilities.white,
+    ColorUtilities.black,
+    ColorUtilities.black,
+
+  ];
   late MaintenanceListState maintenanceListState;
   late SharedState sharedState;
   late Future<List<MaintenanceDeviceModel>> deviceList;
@@ -43,15 +43,15 @@ class _MaintinanceListState extends State<MaintinanceList> {
         {
           theStatus = "Fixed";
           backgroundColor = [
-            ColorUtilities.white,
+            ColorUtilities.secondary,
             Colors.transparent,
             Colors.transparent,
 
           ];
           textColor = [
-            ColorUtilities.secondary,
             ColorUtilities.white,
-            ColorUtilities.white,
+            ColorUtilities.black,
+            ColorUtilities.black,
           ];
           break;
         }
@@ -60,13 +60,13 @@ class _MaintinanceListState extends State<MaintinanceList> {
           theStatus = "in maintenance";
           backgroundColor = [
             Colors.transparent,
-            ColorUtilities.white,
+            ColorUtilities.secondary,
             Colors.transparent
           ];
           textColor = [
+            ColorUtilities.black,
             ColorUtilities.white,
-            ColorUtilities.secondary,
-            ColorUtilities.white
+            ColorUtilities.black
           ];
           break;
         }
@@ -76,12 +76,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
           backgroundColor = [
             Colors.transparent,
             Colors.transparent,
-            ColorUtilities.white
+            ColorUtilities.secondary
           ];
           textColor = [
-            ColorUtilities.white,
-            ColorUtilities.white,
-            ColorUtilities.secondary
+            ColorUtilities.black,
+            ColorUtilities.black,
+            ColorUtilities.white
           ];
           break;
         }
@@ -89,15 +89,15 @@ class _MaintinanceListState extends State<MaintinanceList> {
         {
           theStatus = "Fixed";
           backgroundColor = [
-            ColorUtilities.white,
+            ColorUtilities.secondary,
             Colors.transparent,
             Colors.transparent,
 
           ];
           textColor = [
-            ColorUtilities.secondary,
             ColorUtilities.white,
-            ColorUtilities.white,
+            ColorUtilities.black,
+            ColorUtilities.black,
           ];
           break;
         }
@@ -159,6 +159,18 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 child: Image.network(
                   device.brandModel!.logo!,
                   fit: BoxFit.fill,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
                 ),
               ),
               Column(
@@ -269,7 +281,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     width: width,
-                    height: height * 0.25,
+                    height: height * 0.15,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
@@ -278,70 +290,12 @@ class _MaintinanceListState extends State<MaintinanceList> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                            margin: EdgeInsets.only(top: height * 0.13),
+                            margin: EdgeInsets.only(top: height * 0.08),
                             child: WidgetUtilities.autoSizeText("Mobile List",
                                 textStyle: TextStyle(
                                     fontSize: 20,
                                     color: ColorUtilities.textColor))),
                         Flexible(child: Container()),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[0],
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: WidgetUtilities.autoSizeText(
-                                    "Fixed",
-                                    textStyle: TextStyle(
-                                        color: textColor[0], fontSize: 18),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(0);
-                                  setState(() {});
-                                },
-                              ),
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[1],
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: WidgetUtilities.autoSizeText(
-                                    "in maintenance",
-                                    textStyle: TextStyle(
-                                        color: textColor[1], fontSize: 18),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(1);
-                                  setState(() {});
-                                },
-                              ),
-                              InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                      color: backgroundColor[2],
-                                      borderRadius: BorderRadius.circular(25)),
-                                  child: WidgetUtilities.autoSizeText(
-                                    "Delivered",
-                                    textStyle: TextStyle(
-                                        color: textColor[2], fontSize: 18),
-                                  ),
-                                ),
-                                onTap: () {
-                                  changeStatus(2);
-                                  setState(() {});
-                                },
-                              ),
-                            ])
                       ],
                     ))),
               ),
@@ -349,49 +303,121 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 color: ColorUtilities.secondary,
                 child: Container(
                     width: width,
-                    height: height * 0.75,
+                    height: height * 0.85,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.backgroundContainer,
                     ),
                     child: Container(
                         margin: EdgeInsets.only(right: 20, left: 20),
                         padding: EdgeInsets.only(top: 30, bottom: 10),
-                        child: FutureBuilder<List<MaintenanceDeviceModel>>(
-                          future: deviceList,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                  child: Container(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(),
-                              ));
-                            } else if (snapshot.hasData) {
-                              List<MaintenanceDeviceModel> devices =
-                                  snapshot.data as List<MaintenanceDeviceModel>;
-                              if (devices.isEmpty) {
-                                return Center(
-                                  child: Text("No Data".tr()),
-                                );
-                              }
-                              return ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  itemCount: devices.length,
-                                  itemBuilder: (context, index) {
-                                    return card(devices[index]);
-                                  });
-                            } else if (snapshot.data!.isEmpty) {
-                              return Center(
-                                child: Text("No Data".tr()),
-                              );
-                            } else {
-                              return Center(
-                                child: Text("Error".tr()),
-                              );
-                            }
-                          },
-                        ))),
+                        child:
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        InkWell(
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(width: 1,color: ColorUtilities.secondary),
+                                                color: backgroundColor[0],
+                                                borderRadius: BorderRadius.circular(5)),
+                                            child: WidgetUtilities.autoSizeText(
+                                              "Fixed",
+                                              textStyle: TextStyle(
+                                                  color: textColor[0], fontSize: 18),
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            changeStatus(0);
+                                            setState(() {});
+                                          },
+                                        ),
+                                        InkWell(
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 5,right: 5),
+                                            padding: EdgeInsets.only(
+                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(width: 1,color: ColorUtilities.secondary),
+                                                color: backgroundColor[1],
+                                                borderRadius: BorderRadius.circular(5)),
+                                            child: WidgetUtilities.autoSizeText(
+                                              "in maintenance",
+                                              textStyle: TextStyle(
+                                                  color: textColor[1], fontSize: 18),
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            changeStatus(1);
+                                            setState(() {});
+                                          },
+                                        ),
+                                        InkWell(
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(width: 1,color: ColorUtilities.secondary),
+                                                color: backgroundColor[2],
+                                                borderRadius: BorderRadius.circular(5)),
+                                            child: WidgetUtilities.autoSizeText(
+                                              "Delivered",
+                                              textStyle: TextStyle(
+                                                  color: textColor[2], fontSize: 18),
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            changeStatus(2);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ]),
+                                  Flexible(
+                                    child:
+                                  FutureBuilder<List<MaintenanceDeviceModel>>(
+                                    future: deviceList,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Center(
+                                            child: Container(
+                                              width: 50,
+                                              height: 50,
+                                              child: CircularProgressIndicator(),
+                                            ));
+                                      } else if (snapshot.hasData) {
+                                        List<MaintenanceDeviceModel> devices =
+                                        snapshot.data as List<MaintenanceDeviceModel>;
+                                        if (devices.isEmpty) {
+                                          return Center(
+                                            child: Text("No Data".tr()),
+                                          );
+                                        }
+                                        return ListView.builder(
+                                            padding: EdgeInsets.zero,
+                                            itemCount: devices.length,
+                                            itemBuilder: (context, index) {
+                                              return card(devices[index]);
+                                            });
+                                      } else if (snapshot.data!.isEmpty) {
+                                        return Center(
+                                          child: Text("No Data".tr()),
+                                        );
+                                      } else {
+                                        return Center(
+                                          child: Text("Error".tr()),
+                                        );
+                                      }
+                                    },
+                                  )
+                                    ,)
+                              ],)
+                    )
+                ),
               )
             ],
           ),

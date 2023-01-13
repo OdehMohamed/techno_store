@@ -232,7 +232,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     if (i == patternList.length) {
       timer?.cancel();
     }
-    print(drawingList);
   }
 
   startDraw() {
@@ -534,7 +533,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       children: [
                                         Container(
                                           width: width*0.8,
-                                          height: height*0.35,
+                                          height: height*0.4,
                                           child:
                                           BlockPicker(
                                             useInShowDialog: false,
@@ -718,8 +717,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                           input) {
                                                                     patternValue =
                                                                         input;
-                                                                    print(
-                                                                        patternValue);
                                                                   },
                                                                   setUsed:
                                                                       drawingList,
@@ -1595,8 +1592,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                   forceWebView:
                                                                       false);
                                                           if (!launched) {
-                                                            print(
-                                                                "inside fallback");
                                                             await launch(
                                                                 "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
                                                                 forceSafariVC:
@@ -1623,8 +1618,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                                   forceWebView:
                                                                       false);
                                                           if (!launched) {
-                                                            print(
-                                                                "inside fallback");
                                                             await launch(
                                                                 "whatsapp://send?phone=$phone&text=${Uri.parse(message)}",
                                                                 forceSafariVC:

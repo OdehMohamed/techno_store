@@ -85,6 +85,18 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                 child: Image.network(
                   device.brandModel!.logo!,
                   fit: BoxFit.fill,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
                 ),
               ),
               Column(
@@ -185,13 +197,23 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      Text("T.E.C.H.N.O",
+                        style: TextStyle(
+                          fontSize: width*0.075,
+                          color: ColorUtilities.backgroundContainer,
+                          letterSpacing: 1,
+
+                        ),
+                      ),
                       Container(
-                        width: 150,
-                        height: 100,
-                        child: Image.asset(
-                          "assets/images/logo.png",
-                          fit: BoxFit.fill,
-                          color: Colors.white,
+                        padding: EdgeInsets.only(left: width*0.05),
+                        child: Text("Store",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: width*0.075,
+                            color: ColorUtilities.backgroundContainer,
+                            letterSpacing: 15,
+                          ),
                         ),
                       ),
                     ],
