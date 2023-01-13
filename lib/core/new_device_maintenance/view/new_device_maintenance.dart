@@ -99,7 +99,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     false,false,false,false,false,false,false,false
   ];
   List<bool> replacedParts =[
-    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false
+    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false
   ];
   List<bool> pre_check_list =[
     false,false,false,false,false
@@ -146,7 +146,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   bool brand_priv = false;
   bool check_list_priv=false;
   void privilagesManager() {
-    if (sharedState.userType==3){
+    if (sharedState.userType==3||sharedState.userType==2){
       pin_priv=true;
       return;
     }
@@ -160,14 +160,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     accessoires_priv = true;
     brand_priv = true;
     check_list_priv=true;
-    if (sharedState.userType == 0) {
-      problem_priv = true;
-      notes_priv = true;
-      notes2_priv = true;
-      price_priv = true;
-      estimated_time_priv = true;
-      status_priv = true;
-    }
+    problem_priv = true;
+    notes_priv = true;
+    notes2_priv = true;
+    price_priv = true;
+    estimated_time_priv = true;
+    status_priv = true;
   }
 
   @override
@@ -296,7 +294,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               "Device Maintenance",
                               textStyle: TextStyle(
                                   color: ColorUtilities.textColor,
-                                  fontSize: 20)))),
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold
+                              )))),
                 ),
                 Container(
                   color: ColorUtilities.secondary,
@@ -319,7 +319,11 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               ),
                               WidgetUtilities.autoSizeText(
                                   "Customer Information",
-                                  textStyle: TextStyle(color: Colors.black)),
+                                  textStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize:16,
+                                    fontWeight: FontWeight.bold
+                                      )),
                               SizedBox(
                                 height: 30,
                               ),
@@ -434,7 +438,8 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 height: 30,
                               ),
                               WidgetUtilities.autoSizeText("Device Information",
-                                  textStyle: TextStyle(color: Colors.black)),
+                                  textStyle: TextStyle(color: Colors.black,fontSize:16,
+                                      fontWeight: FontWeight.bold)),
                               SizedBox(
                                 height: 30,
                               ),
@@ -767,7 +772,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                               ),
                               WidgetUtilities.autoSizeText(
                                   "Maintenance Information",
-                                  textStyle: TextStyle(color: Colors.black)),
+                                  textStyle: TextStyle(color: Colors.black,
+                                      fontSize:16,
+                                      fontWeight: FontWeight.bold)),
                               SizedBox(
                                 height: 30,
                               ),
@@ -918,7 +925,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           children: [
                                             CheckboxListTile(
                                               enabled: !accessoires_priv,
-                                              title: Text("pen".tr()),
+                                              title: WidgetUtilities.autoSizeText("pen",minFontSize: 8,textStyle: TextStyle(
+                                                color: Colors.black,
+                                              )),
                                               value: accessories[0],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -929,7 +938,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             ),
                                             CheckboxListTile(
                                               enabled: !accessoires_priv,
-                                              title: Text("battery".tr()),
+                                              title: WidgetUtilities.autoSizeText("battery",minFontSize: 8,textStyle: TextStyle(
+                                                color: Colors.black,
+                                              )),
                                               value: accessories[1],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -944,7 +955,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           children: [
                                             CheckboxListTile(
                                               enabled: !accessoires_priv,
-                                              title: Text("cover".tr()),
+                                              title: WidgetUtilities.autoSizeText("cover",textStyle: TextStyle(
+                                                color: Colors.black,
+                                              ),minFontSize: 8),
                                               value: accessories[2],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -955,7 +968,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             ),
                                             CheckboxListTile(
                                               enabled: !accessoires_priv,
-                                              title: Text("sd card".tr()),
+                                              title: WidgetUtilities.autoSizeText("sd card",minFontSize: 8,textStyle: TextStyle(
+                                                color: Colors.black,
+                                              )),
                                               value:  accessories[3],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -970,7 +985,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             children: [
                                               CheckboxListTile(
                                                 enabled: !accessoires_priv,
-                                                title: Text("sim card".tr()),
+                                                title: WidgetUtilities.autoSizeText("sim card",minFontSize: 8,textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                ),),
                                                 value:  accessories[4],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -981,7 +998,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               ),
                                               CheckboxListTile(
                                                 enabled: !accessoires_priv,
-                                                title: Text("device box".tr()),
+                                                title: WidgetUtilities.autoSizeText("device box",minFontSize: 8,textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                )),
                                                 value:  accessories[5],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -996,7 +1015,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             children: [
                                               CheckboxListTile(
                                                 enabled: !accessoires_priv,
-                                                title: Text("charger".tr()),
+                                                title: WidgetUtilities.autoSizeText("charger",minFontSize:8,textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                )),
                                                 value:  accessories[6],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1007,7 +1028,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               ),
                                               CheckboxListTile(
                                                 enabled: !accessoires_priv,
-                                                title: Text("headphones".tr()),
+                                                title: WidgetUtilities.autoSizeText("headphones",minFontSize: 8,textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                )),
                                                 value:  accessories[7],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1044,7 +1067,10 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               children: [
                                                 CheckboxListTile(
                                                   enabled: !check_list_priv,
-                                                  title: Text("scratches".tr()),
+                                                  title: WidgetUtilities.autoSizeText("scratches",minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                  ),
                                                   value: pre_check_list[0],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1069,7 +1095,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               children: [
                                                 CheckboxListTile(
                                                   enabled: !check_list_priv,
-                                                  title: Text("Cracks".tr()),
+                                                  title: WidgetUtilities.autoSizeText("Cracks",minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  )),
                                                   value: pre_check_list[1],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1094,7 +1122,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               children: [
                                                 CheckboxListTile(
                                                   enabled: !check_list_priv,
-                                                  title: Text("Liquid".tr()),
+                                                  title: WidgetUtilities.autoSizeText("Liquid",minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  )),
                                                   value: pre_check_list[2],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1119,7 +1149,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               children: [
                                                 CheckboxListTile(
                                                   enabled: !check_list_priv,
-                                                  title: Text("Missing Parts".tr()),
+                                                  title: WidgetUtilities.autoSizeText("Missing Parts",minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  )),
                                                   value: pre_check_list[3],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1144,7 +1176,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               children: [
                                                 CheckboxListTile(
                                                   enabled: !check_list_priv,
-                                                  title: Text("others".tr()),
+                                                  title: WidgetUtilities.autoSizeText("others",minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  )),
                                                   value: pre_check_list[4],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1292,7 +1326,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     TableRow(
                                         children: [
                                           CheckboxListTile(
-                                            title: Text("screen".tr(),),
+                                            title: WidgetUtilities.autoSizeText("screen",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value: replacedParts[0],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1302,7 +1338,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
                                           ),
                                           CheckboxListTile(
-                                            title: Text("battery".tr()),
+                                            title: WidgetUtilities.autoSizeText("battery",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value: replacedParts[1],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1316,7 +1354,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     TableRow(
                                         children: [
                                           CheckboxListTile(
-                                            title: Text("device back".tr()),
+                                            title: WidgetUtilities.autoSizeText("device back",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value: replacedParts[2],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1326,7 +1366,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
                                           ),
                                           CheckboxListTile(
-                                            title: Text("FRB".tr()),
+                                            title: WidgetUtilities.autoSizeText("FRB",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[3],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1340,7 +1382,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                     TableRow(
                                         children: [
                                           CheckboxListTile(
-                                            title: Text("software").tr(),
+                                            title: WidgetUtilities.autoSizeText("software",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[4],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1350,7 +1394,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
                                           ),
                                           CheckboxListTile(
-                                            title: Text("charging base").tr(),
+                                            title: WidgetUtilities.autoSizeText("charging base",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[5],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1365,7 +1411,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         children: [
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("volume button".tr()),
+                                            title: WidgetUtilities.autoSizeText("volume button",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[6],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1376,7 +1424,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ),
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("power button".tr()),
+                                            title: WidgetUtilities.autoSizeText("power button",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[7],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1389,7 +1439,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         children: [
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("microphone".tr()),
+                                            title: WidgetUtilities.autoSizeText("microphone",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[8],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1400,7 +1452,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ),
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("body".tr()),
+                                            title: WidgetUtilities.autoSizeText("body",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[9],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1415,7 +1469,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         children: [
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("IC".tr()),
+                                            title: WidgetUtilities.autoSizeText("IC",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[10],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1426,7 +1482,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ),
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("camera glass".tr()),
+                                            title: WidgetUtilities.autoSizeText("camera glass",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[11],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1441,7 +1499,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         children: [
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("main camera".tr()),
+                                            title: WidgetUtilities.autoSizeText("main camera",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[12],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1452,7 +1512,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ),
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("selfie camera".tr()),
+                                            title: WidgetUtilities.autoSizeText("selfie camera",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[13],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1467,7 +1529,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                         children: [
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("open icloud".tr()),
+                                            title: WidgetUtilities.autoSizeText("open icloud",minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[14],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1478,7 +1542,9 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           ),
                                           CheckboxListTile(
                                             enabled: !accessoires_priv,
-                                            title: Text("others".tr()),
+                                            title: WidgetUtilities.autoSizeText("others".tr(),minFontSize: 8,textStyle: TextStyle(
+                                              color: Colors.black,
+                                            )),
                                             value:  replacedParts[15],
                                             onChanged: (newValue) {
                                               setState(() {

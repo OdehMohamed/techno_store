@@ -335,6 +335,9 @@ class _WelcomePageState extends State<WelcomePage> {
                               );
                             },
                             child: Container(
+                              padding: Utilities.isEnglish(context)?EdgeInsets.only(right: 10):
+                              EdgeInsets.only(left: 10)
+                                ,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: ColorUtilities.secondary,
@@ -342,11 +345,17 @@ class _WelcomePageState extends State<WelcomePage> {
                                 width: width*0.5,
                                 height: height*0.12,
                                 child: Center(
-                                  child: WidgetUtilities.autoSizeText(
-                                    "Store",
-                                    textStyle: TextStyle(
-                                        fontSize: 22,
-                                        color: ColorUtilities.textColor),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.shopping_cart,color: ColorUtilities.white,size: 30,),
+                                      WidgetUtilities.autoSizeText(
+                                        "Store",
+                                        textStyle: TextStyle(
+                                            fontSize: 26,
+                                            color: ColorUtilities.textColor),
+                                      )
+                                    ],
                                   ),
                                 )),
                           ):
@@ -366,12 +375,17 @@ class _WelcomePageState extends State<WelcomePage> {
                                 width: width*0.5,
                                 height: height*0.12,
                                 child: Center(
-                                  child: WidgetUtilities.autoSizeText(
-                                    "Check Status",
-                                    textStyle: TextStyle(
-                                        fontSize: 22,
-                                        color: ColorUtilities.textColor),
-                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                    Icon(Icons.phone_android,color: ColorUtilities.white,size: 30,),
+                                    WidgetUtilities.autoSizeText(
+                                      "Check Status",
+                                      textStyle: TextStyle(
+                                          fontSize: 22,
+                                          color: ColorUtilities.textColor),
+                                    )
+                                  ],),
                                 )),
                           ):
                                   SizedBox(),
@@ -394,11 +408,17 @@ class _WelcomePageState extends State<WelcomePage> {
                                 width: width*0.5,
                                 height: height*0.12,
                                 child: Center(
-                                  child: WidgetUtilities.autoSizeText(
-                                    "Maintenance",
-                                    textStyle: TextStyle(
-                                        color: ColorUtilities.textColor,
-                                        fontSize: 22),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add_to_home_screen,color: Colors.white,size: 30,),
+                                      WidgetUtilities.autoSizeText(
+                                        "Maintenance",
+                                        textStyle: TextStyle(
+                                            color: ColorUtilities.textColor,
+                                            fontSize: 22),
+                                      )
+                                    ],
                                   ),
                                 )),
                           ),

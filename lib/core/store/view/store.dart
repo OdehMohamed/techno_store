@@ -409,6 +409,7 @@ class _StoreState extends State<Store> {
                                                         textStyle: TextStyle(
                                                             color:
                                                             textColor[i]),
+                                                      minFontSize: 8,
                                                       ),)
                                                     ),
                                                     onTap: () {

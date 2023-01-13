@@ -13,11 +13,15 @@ class WidgetUtilities {
   }
 
   static Widget autoSizeText(String text,
-      {TextStyle textStyle = const TextStyle(
-        color: ColorUtilities.textColor,
+  {
+  double minFontSize=12,
+  TextStyle textStyle = const TextStyle(
+          color: ColorUtilities.textColor,
       ),
-      textAlign = TextAlign.start}) {
+        textAlign = TextAlign.start}
+      ) {
     return AutoSizeText(text.tr(),
+        minFontSize: minFontSize,
         style: textStyle,
         textAlign: textAlign,
         softWrap: true,
