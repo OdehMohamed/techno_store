@@ -265,7 +265,8 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
       body: ModalProgressHUD(
-        inAsyncCall: welcomePageState.loading,
+        opacity: 0.3,
+        inAsyncCall: welcomePageState.loading||sharedState.userType==null,
         child: Column(
           children: [
             Container(
@@ -325,7 +326,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          sharedState.userType!=3?
+                          sharedState.userType!=3&&sharedState.userType!=null?
                           InkWell(
                             onTap: () {
                               Navigator.push(
@@ -349,6 +350,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                   ),
                                 )),
                           ):
+                              sharedState.userType!=null?
                           InkWell(
                             onTap: () {
                               Navigator.push(
@@ -371,7 +373,8 @@ class _WelcomePageState extends State<WelcomePage> {
                                         color: ColorUtilities.textColor),
                                   ),
                                 )),
-                          ),
+                          ):
+                                  SizedBox(),
                           SizedBox(
                             height: height * 0.05,
                           ),
