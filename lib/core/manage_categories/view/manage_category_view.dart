@@ -111,9 +111,9 @@ class _manageCategoryState extends State<manageCategory> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     padding: EdgeInsets.only(
-                        top: Utilities.getDeviceHeight(context) * 0.1),
+                        top: Utilities.getDeviceHeight(context) * 0.05),
                     width: Utilities.getDeviceWidth(context),
-                    height: Utilities.getDeviceHeight(context) * 0.2,
+                    height: Utilities.getDeviceHeight(context) * 0.1,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
@@ -128,7 +128,7 @@ class _manageCategoryState extends State<manageCategory> {
                 color: ColorUtilities.secondary,
                 child: Container(
                     width: Utilities.getDeviceWidth(context),
-                    height: Utilities.getDeviceHeight(context) * 0.8,
+                    height: Utilities.getDeviceHeight(context) * 0.9,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.backgroundContainer,
                     ),

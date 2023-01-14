@@ -269,7 +269,7 @@ class _StoreState extends State<Store> {
                   color: ColorUtilities.backgroundContainer,
                   child: Container(
                       width: width,
-                      height: height * 0.15,
+                      height: height * 0.1,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
                       ),
@@ -277,12 +277,11 @@ class _StoreState extends State<Store> {
                           child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(child: Container()),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.only(top: height*0.05,bottom: height*0.03,right: width*0.1,left: width*0.1),
+                                padding: EdgeInsets.only(top: height*0.03),
                                 child: Utilities.isEnglish(context)?
                                 Text(widget.category.enName!,style: TextStyle(color: Colors.white,fontSize: 22),):
                                 Text(widget.category.arName!,style: TextStyle(color: Colors.white,fontSize: 22)),
@@ -296,7 +295,7 @@ class _StoreState extends State<Store> {
                   color: Color.fromRGBO(76, 127, 158, 1),
                   child: Container(
                       width: width,
-                      height: height * 0.85,
+                      height: height * 0.9,
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(239, 239, 239, 1),
                       ),
@@ -409,7 +408,7 @@ class _StoreState extends State<Store> {
                                                         textStyle: TextStyle(
                                                             color:
                                                             textColor[i]),
-                                                      minFontSize: 8,
+                                                      minFontSize: 8, maxLine: 2
                                                       ),)
                                                     ),
                                                     onTap: () {

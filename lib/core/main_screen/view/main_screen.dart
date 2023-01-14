@@ -11,6 +11,7 @@ import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
 import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/shared/utilities.dart';
 import '../../../shared/widget_utilities.dart';
 import 'package:techno_store/shared/message.dart';
 
@@ -116,7 +117,7 @@ class _SignInState extends State<SignIn> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     width: width,
-                    height: height * 0.3,
+                    height: height * 0.15,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
@@ -132,7 +133,7 @@ class _SignInState extends State<SignIn> {
                               children: [
                               Text("T.E.C.H.N.O",
                                 style: TextStyle(
-                                    fontSize: width*0.1,
+                                    fontSize: width*0.08,
                                     color: ColorUtilities.backgroundContainer,
                                     letterSpacing: 3
                                 ),
@@ -143,7 +144,7 @@ class _SignInState extends State<SignIn> {
                                 child: Text("Store",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: width*0.1,
+                                      fontSize: width*0.05,
                                       color: ColorUtilities.backgroundContainer,
                                       letterSpacing: 25
                                   ),
@@ -159,7 +160,7 @@ class _SignInState extends State<SignIn> {
                 color: ColorUtilities.secondary,
                 child: Container(
                   width: width,
-                  height: height * 0.7,
+                  height: height * 0.85,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
 
@@ -171,84 +172,95 @@ class _SignInState extends State<SignIn> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: ColorUtilities.white,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: TextFormField(
-                                controller: login_email,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Icon(
-                                    Icons.perm_identity_outlined,
-                                    color: ColorUtilities.secondary,
-                                    size: 28,
-                                  ),
-                                  hintText: 'Email'.tr(),
-                                  hintStyle: TextStyle(
-                                      color: Colors.grey, fontSize: 16),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Please Enter".tr() +
-                                        " " +
-                                        "Email".tr();
-                                  }
-                                  if (!RegExp(
-                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(value)) {
-                                    return "Please Enter".tr() +
-                                        " " +
-                                        "valid Email".tr();
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: ColorUtilities.white,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: TextFormField(
-                                controller: login_password,
-                                obscureText: true,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Icon(
-                                    Icons.lock_outlined,
-                                    color: ColorUtilities.secondary,
-                                    size: 28,
-                                  ),
-                                  hintText: 'Password'.tr(),
-                                  hintStyle: TextStyle(
-                                      color: Colors.grey, fontSize: 16),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Please Enter".tr() +
-                                        " " +
-                                        "Password".tr();
-                                  }
-                                  if (value.length < 8) {
-                                    return "Password".tr() +
-                                        " " +
-                                        "too short".tr();
-                                  }
-                                  if (value.contains(" ")) {
-                                    return "Password".tr() +
-                                        " " +
-                                        "can't have spaces".tr();
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
+                            Text("Login".tr(),style: TextStyle(
+                              fontSize: 26,
+                              color: ColorUtilities.secondary,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: Utilities.isEnglish(context)?3:0
+                            ),),
+                           Column(
+                             children: [
+                               Container(
+                                 decoration: BoxDecoration(
+                                   color: ColorUtilities.white,
+                                   border: Border.all(color: Colors.grey),
+                                   borderRadius: BorderRadius.circular(5),
+                                 ),
+                                 child: TextFormField(
+                                   controller: login_email,
+                                   style: TextStyle(color: Colors.black),
+                                   decoration: InputDecoration(
+                                     border: InputBorder.none,
+                                     prefixIcon: Icon(
+                                       Icons.perm_identity_outlined,
+                                       color: ColorUtilities.secondary,
+                                       size: 28,
+                                     ),
+                                     hintText: 'Email'.tr(),
+                                     hintStyle: TextStyle(
+                                         color: Colors.grey, fontSize: 16),
+                                   ),
+                                   validator: (value) {
+                                     if (value == null || value.isEmpty) {
+                                       return "Please Enter".tr() +
+                                           " " +
+                                           "Email".tr();
+                                     }
+                                     if (!RegExp(
+                                         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                         .hasMatch(value)) {
+                                       return "Please Enter".tr() +
+                                           " " +
+                                           "valid Email".tr();
+                                     }
+                                     return null;
+                                   },
+                                 ),
+                               ),
+                               SizedBox(height: height*0.05,),
+                               Container(
+                                 decoration: BoxDecoration(
+                                   color: ColorUtilities.white,
+                                   border: Border.all(color: Colors.grey),
+                                   borderRadius: BorderRadius.circular(5),
+                                 ),
+                                 child: TextFormField(
+                                   controller: login_password,
+                                   obscureText: true,
+                                   style: TextStyle(color: Colors.black),
+                                   decoration: InputDecoration(
+                                     border: InputBorder.none,
+                                     prefixIcon: Icon(
+                                       Icons.lock_outlined,
+                                       color: ColorUtilities.secondary,
+                                       size: 28,
+                                     ),
+                                     hintText: 'Password'.tr(),
+                                     hintStyle: TextStyle(
+                                         color: Colors.grey, fontSize: 16),
+                                   ),
+                                   validator: (value) {
+                                     if (value == null || value.isEmpty) {
+                                       return "Please Enter".tr() +
+                                           " " +
+                                           "Password".tr();
+                                     }
+                                     if (value.length < 8) {
+                                       return "Password".tr() +
+                                           " " +
+                                           "too short".tr();
+                                     }
+                                     if (value.contains(" ")) {
+                                       return "Password".tr() +
+                                           " " +
+                                           "can't have spaces".tr();
+                                     }
+                                     return null;
+                                   },
+                                 ),
+                               ),
+                             ],
+                           ),
                             Column(
                               children: [
                                 ElevatedButton(

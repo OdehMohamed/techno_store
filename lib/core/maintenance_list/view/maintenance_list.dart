@@ -125,7 +125,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
       switch (device.status) {
         case "Fixed":
           {
-            statusIcon = Icon(FontAwesome5.check_circle, color: Colors.green);
+            statusIcon =Icon(Icons.done, color: Colors.green);
             break;
           }
         case "Delivered":{
@@ -281,7 +281,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     width: width,
-                    height: height * 0.15,
+                    height: height * 0.1,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
@@ -290,7 +290,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                            margin: EdgeInsets.only(top: height * 0.08),
+                            margin: EdgeInsets.only(top: height * 0.05),
                             child: WidgetUtilities.autoSizeText("Mobile List",
                                 textStyle: TextStyle(
                                     fontSize: 20,
@@ -303,7 +303,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                 color: ColorUtilities.secondary,
                 child: Container(
                     width: width,
-                    height: height * 0.85,
+                    height: height * 0.9,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.backgroundContainer,
                     ),
@@ -320,7 +320,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                                         InkWell(
                                           child: Container(
                                             padding: EdgeInsets.only(
-                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                                top: 10, bottom: 10, left: width*0.028, right: width*0.028),
                                             decoration: BoxDecoration(
                                                 border: Border.all(width: 1,color: ColorUtilities.secondary),
                                                 color: backgroundColor[0],
@@ -340,7 +340,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                                           child: Container(
                                             margin: EdgeInsets.only(left: 5,right: 5),
                                             padding: EdgeInsets.only(
-                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                                top: 10, bottom: 10, left: width*0.028, right: width*0.028),
                                             decoration: BoxDecoration(
                                                 border: Border.all(width: 1,color: ColorUtilities.secondary),
                                                 color: backgroundColor[1],
@@ -359,7 +359,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
                                         InkWell(
                                           child: Container(
                                             padding: EdgeInsets.only(
-                                                top: 10, bottom: 10, left: width*0.04, right: width*0.04),
+                                                top: 10, bottom: 10, left: width*0.028, right: width*0.028),
                                             decoration: BoxDecoration(
                                                 border: Border.all(width: 1,color: ColorUtilities.secondary),
                                                 color: backgroundColor[2],

@@ -237,7 +237,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                 color: ColorUtilities.backgroundContainer,
                 child: Container(
                     width: width,
-                    height: height * 0.25,
+                    height: height * 0.1,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.secondary,
                     ),
@@ -246,7 +246,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(top: height * 0.13),
+                          margin: EdgeInsets.only(top: height * 0.05),
                           child: WidgetUtilities.autoSizeText("Favorite",
                               textStyle: TextStyle(
                                   fontSize: 24,
@@ -259,7 +259,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                 color: ColorUtilities.secondary,
                 child: Container(
                     width: width,
-                    height: height * 0.75,
+                    height: height * 0.9,
                     decoration: const BoxDecoration(
                       color: ColorUtilities.backgroundContainer,
                     ),

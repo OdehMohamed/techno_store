@@ -273,7 +273,7 @@ class _WelcomePageState extends State<WelcomePage> {
               color: ColorUtilities.backgroundContainer,
               child: Container(
                   width: width,
-                  height: height * 0.2,
+                  height: height * 0.15,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
@@ -317,7 +317,7 @@ class _WelcomePageState extends State<WelcomePage> {
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.68,
+                  height: height * 0.73,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),

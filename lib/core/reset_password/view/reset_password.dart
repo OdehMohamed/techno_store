@@ -63,29 +63,31 @@ class _ResetPasswordState extends State<ResetPassword> {
             Container(
               color: ColorUtilities.backgroundContainer,
               child: Container(
+                padding: EdgeInsets.all(height*0.02),
                   width: width,
-                  height: height * 0.25,
+                  height: height * 0.1,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
-                  child: Center(
-                    child: WidgetUtilities.autoSizeText("Reset Password".tr(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children:[ WidgetUtilities.autoSizeText("Reset Password".tr(),
                         textStyle: TextStyle(
-                            fontSize: 22, color: ColorUtilities.textColor)),
+                            fontSize: 22, color: ColorUtilities.textColor))],
                   )),
             ),
             Container(
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.75,
+                  height: height * 0.9,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),
                   child: Container(
                       margin: EdgeInsets.only(right: 40, left: 40),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
                             children: [
@@ -99,6 +101,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   textAlign: TextAlign.center,
                                   textStyle:
                                       TextStyle(color: Colors.redAccent)),
+                              SizedBox(height: height*0.05,),
                             ],
                           ),
                           Container(
@@ -136,6 +139,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   },
                                 ),
                               )),
+                          SizedBox(height: height*0.1,),
                           ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {

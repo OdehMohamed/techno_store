@@ -95,25 +95,28 @@ class _ProductDetailsState extends State<ProductDetails> {
               color: ColorUtilities.backgroundContainer,
               child: Container(
                   width: width,
-                  height: height * 0.25,
+                  height: height * 0.1,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
-                  child: Center(
-                    child: WidgetUtilities.autoSizeText(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:[
+                      SizedBox(height: height*0.03,),
+                      WidgetUtilities.autoSizeText(
                       context.locale == Locale("en")
                           ? widget.product.enName!
                           : widget.product.arName!,
                       textStyle: TextStyle(
                           color: ColorUtilities.textColor, fontSize: 26,fontWeight: FontWeight.bold),
-                    ),
+                    ),]
                   )),
             ),
             Container(
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.75,
+                  height: height * 0.9,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),

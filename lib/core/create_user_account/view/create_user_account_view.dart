@@ -69,22 +69,24 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                   Container(
                     color: Color.fromRGBO(239, 239, 239, 1),
                     child: Container(
+                        padding: EdgeInsets.all(height*0.02),
                         width: width,
-                        height: height * 0.25,
+                        height: height * 0.1,
                         decoration: const BoxDecoration(
                           color: ColorUtilities.secondary,
                         ),
-                        child: Center(
-                            child: WidgetUtilities.autoSizeText("New Account",
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                            children:[ WidgetUtilities.autoSizeText("New Account",
                                 textStyle: TextStyle(
                                     fontSize: 20,
-                                    color: ColorUtilities.textColor)))),
+                                    color: ColorUtilities.textColor))])),
                   ),
                   Container(
                     color: ColorUtilities.secondary,
                     child: Container(
                         width: width,
-                        height: height * 0.75,
+                        height: height * 0.9,
                         decoration: const BoxDecoration(
                           color: Color.fromRGBO(239, 239, 239, 1),
                         ),

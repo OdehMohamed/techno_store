@@ -107,21 +107,23 @@ class _NewProductState extends State<NewProduct> {
                   color: ColorUtilities.backgroundContainer,
                   child: Container(
                       width: width,
-                      height: height * 0.25,
+                      height: height * 0.1,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
                       ),
-                      child: Center(
-                        child: WidgetUtilities.autoSizeText("New Product".tr(),
+                      child: Column(
+                        children:[
+                          SizedBox(height:height*0.05),
+                          WidgetUtilities.autoSizeText("New Product".tr(),
                             textStyle: TextStyle(
-                                color: ColorUtilities.textColor, fontSize: 20)),
+                                color: ColorUtilities.textColor, fontSize: 20)),]
                       )),
                 ),
                 Container(
                   color: ColorUtilities.secondary,
                   child: Container(
                       width: width,
-                      height: height * 0.75,
+                      height: height * 0.9,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.backgroundContainer,
                       ),

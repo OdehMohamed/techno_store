@@ -65,7 +65,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     "volume button",
     "power button"
   ];
-  String? selectedProblem;
   var times = [
     "30 min",
     "1 Hour",
@@ -95,6 +94,10 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
   final pre_check_list_missing_parts_controller=TextEditingController();
   final pre_check_list_others_controller=TextEditingController();
 
+  List<bool> problems=[
+    false,false,false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,false
+  ];
   List<bool> accessories =[
     false,false,false,false,false,false,false,false
   ];
@@ -180,7 +183,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
     sharedState = context.read<SharedState>();
     getBrandsFuture = sharedState.getBrands();
     if (widget.editable != null && widget.editable) {
-
+      problems=widget.maintenanceDevice!.problem!;
       selectedColor=Color(int.parse(widget.maintenanceDevice!.color!));
       pre_check_list_scratches_controller.text=widget.maintenanceDevice!.preCheckListNotes![0];
       pre_check_list_cracks_controller.text=widget.maintenanceDevice!.preCheckListNotes![1];
@@ -201,7 +204,6 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
       model_controller.text = widget.maintenanceDevice!.deviceModel!;
       IMEI_controller.text = widget.maintenanceDevice!.imeiNumber!;
       pin_controller.text = widget.maintenanceDevice!.devicePassword!;
-      selectedProblem = widget.maintenanceDevice!.problem!;
       notes_controller.text = widget.maintenanceDevice!.problemNotes!;
       accessories= widget.maintenanceDevice!.accessories!;
       price_controller.text = widget.maintenanceDevice!.price!;
@@ -285,24 +287,27 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                   color: ColorUtilities.backgroundContainer,
                   child: Container(
                       width: width,
-                      height: height * 0.25,
+                      height: height * 0.1,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
                       ),
-                      child: Center(
-                          child: WidgetUtilities.autoSizeText(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                          children:[
+                            SizedBox(height:height*0.04),
+                            WidgetUtilities.autoSizeText(
                               "Device Maintenance",
                               textStyle: TextStyle(
                                   color: ColorUtilities.textColor,
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold
-                              )))),
+                              ))])),
                 ),
                 Container(
                   color: ColorUtilities.secondary,
                   child: Container(
                       width: width,
-                      height: height * 0.75,
+                      height: height * 0.9,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.backgroundContainer,
                       ),
@@ -538,7 +543,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       children: [
                                         Container(
                                           width: width*0.8,
-                                          height: height*0.4,
+                                          height: height*0.2,
                                           child:
                                           BlockPicker(
                                             useInShowDialog: false,
@@ -779,53 +784,319 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 height: 30,
                               ),
                               Container(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  color: ColorUtilities.white,
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: DropdownButtonFormField(
-                                  isExpanded: true,
-                                  value: selectedProblem,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    label: Row(
-                                      children: [
-                                        Text("The problem".tr()),
-                                        Text(" * ",style: TextStyle(color: Colors.red),)
-                                      ],
-                                    ),
-                                    border: InputBorder.none,
-                                    labelStyle: TextStyle(
-                                        color: Colors.grey, fontSize: 16),
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                  items: problem.map((String problem_value) {
-                                    return DropdownMenuItem(
-                                      value: problem_value,
-                                      child: WidgetUtilities.autoSizeText(
-                                          problem_value,
-                                          textStyle:
-                                          TextStyle(color: Colors.black)),
-                                    );
-                                  }).toList(),
-                                  onChanged: !problem_priv
-                                      ? (String? newValue) {
-                                    setState(() {
-                                      selectedProblem = newValue!;
-                                    });
-                                  }
-                                      : null,
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "Please Enter".tr() +
-                                          " " +
-                                          "The problem".tr();
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                  child:  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 10,),
+                                      Row(
+                                        children: [
+                                        Text("The problem".tr(),style: TextStyle(color: Colors.grey)),
+                                          SizedBox(width: 5,),
+                                          Text("*".tr(),style: TextStyle(color: Colors.red)),
+                                        ],
+                                      ),
+                                      Table(
+                                        children: [
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[0],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value: problems[0],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[0]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[1],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  )
+                                                      ,maxLine: 2
+                                                  ),
+                                                  value: problems[1],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[1]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[2],textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),minFontSize: 8,maxLine: 2),
+                                                  value: problems[2],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[2]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[3],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[3],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[3]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[4],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[4],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[4]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[5],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[5],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[5]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[6],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[6],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[6]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[7],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[7],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[7]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[8],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[8],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[8]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[9],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[9],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[9]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[10],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[10],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[10]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[11],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[11],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[11]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[12],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[12],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[12]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[13],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[13],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[13]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[14],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[14],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[14]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[15],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[15],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[15]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[16],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[16],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[16]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[17],minFontSize: 8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[17],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[17]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                              ]
+                                          ),
+                                          TableRow(
+                                              children: [
+                                                CheckboxListTile(
+                                                  enabled: !problem_priv,
+                                                  title: WidgetUtilities.autoSizeText(problem[18],minFontSize:8,textStyle: TextStyle(
+                                                    color: Colors.black,
+                                                  ),maxLine: 2),
+                                                  value:  problems[18],
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      problems[18]=newValue!;
+                                                    });
+                                                  },
+                                                  controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                                ),
+                                                SizedBox(),
+                                              ]
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
                               ),
                               SizedBox(
                                 height: 15,
@@ -927,7 +1198,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               enabled: !accessoires_priv,
                                               title: WidgetUtilities.autoSizeText("pen",minFontSize: 8,textStyle: TextStyle(
                                                 color: Colors.black,
-                                              )),
+                                              ),maxLine: 2),
                                               value: accessories[0],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -940,7 +1211,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               enabled: !accessoires_priv,
                                               title: WidgetUtilities.autoSizeText("battery",minFontSize: 8,textStyle: TextStyle(
                                                 color: Colors.black,
-                                              )),
+                                              ),maxLine: 2),
                                               value: accessories[1],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -957,7 +1228,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               enabled: !accessoires_priv,
                                               title: WidgetUtilities.autoSizeText("cover",textStyle: TextStyle(
                                                 color: Colors.black,
-                                              ),minFontSize: 8),
+                                              ),minFontSize: 8,maxLine: 2),
                                               value: accessories[2],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -970,7 +1241,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                               enabled: !accessoires_priv,
                                               title: WidgetUtilities.autoSizeText("sd card",minFontSize: 8,textStyle: TextStyle(
                                                 color: Colors.black,
-                                              )),
+                                              ),maxLine: 2),
                                               value:  accessories[3],
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -987,7 +1258,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 enabled: !accessoires_priv,
                                                 title: WidgetUtilities.autoSizeText("sim card",minFontSize: 8,textStyle: TextStyle(
                                                   color: Colors.black,
-                                                ),),
+                                                ),maxLine: 2,),
                                                 value:  accessories[4],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1000,7 +1271,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 enabled: !accessoires_priv,
                                                 title: WidgetUtilities.autoSizeText("device box",minFontSize: 8,textStyle: TextStyle(
                                                   color: Colors.black,
-                                                )),
+                                                ),maxLine: 2),
                                                 value:  accessories[5],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1017,7 +1288,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 enabled: !accessoires_priv,
                                                 title: WidgetUtilities.autoSizeText("charger",minFontSize:8,textStyle: TextStyle(
                                                   color: Colors.black,
-                                                )),
+                                                ),maxLine: 2),
                                                 value:  accessories[6],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1030,7 +1301,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                 enabled: !accessoires_priv,
                                                 title: WidgetUtilities.autoSizeText("headphones",minFontSize: 8,textStyle: TextStyle(
                                                   color: Colors.black,
-                                                )),
+                                                ),maxLine: 2),
                                                 value:  accessories[7],
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -1069,7 +1340,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   enabled: !check_list_priv,
                                                   title: WidgetUtilities.autoSizeText("scratches",minFontSize: 8,textStyle: TextStyle(
                                                     color: Colors.black,
-                                                  ),
+                                                  ),maxLine: 2
                                                   ),
                                                   value: pre_check_list[0],
                                                   onChanged: (newValue) {
@@ -1097,7 +1368,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   enabled: !check_list_priv,
                                                   title: WidgetUtilities.autoSizeText("Cracks",minFontSize: 8,textStyle: TextStyle(
                                                     color: Colors.black,
-                                                  )),
+                                                  ),maxLine: 2),
                                                   value: pre_check_list[1],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1124,7 +1395,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   enabled: !check_list_priv,
                                                   title: WidgetUtilities.autoSizeText("Liquid",minFontSize: 8,textStyle: TextStyle(
                                                     color: Colors.black,
-                                                  )),
+                                                  ),maxLine: 2),
                                                   value: pre_check_list[2],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1151,7 +1422,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   enabled: !check_list_priv,
                                                   title: WidgetUtilities.autoSizeText("Missing Parts",minFontSize: 8,textStyle: TextStyle(
                                                     color: Colors.black,
-                                                  )),
+                                                  ),maxLine: 2),
                                                   value: pre_check_list[3],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1178,7 +1449,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   enabled: !check_list_priv,
                                                   title: WidgetUtilities.autoSizeText("others",minFontSize: 8,textStyle: TextStyle(
                                                     color: Colors.black,
-                                                  )),
+                                                  ),maxLine: 2),
                                                   value: pre_check_list[4],
                                                   onChanged: (newValue) {
                                                     setState(() {
@@ -1328,7 +1599,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("screen",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value: replacedParts[0],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1340,7 +1611,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("battery",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value: replacedParts[1],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1356,7 +1627,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("device back",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value: replacedParts[2],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1368,7 +1639,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("FRB",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[3],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1384,7 +1655,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("software",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[4],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1396,7 +1667,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                           CheckboxListTile(
                                             title: WidgetUtilities.autoSizeText("charging base",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[5],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1413,7 +1684,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("volume button",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[6],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1426,7 +1697,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("power button",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[7],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1441,7 +1712,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("microphone",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[8],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1454,7 +1725,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("body",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[9],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1471,7 +1742,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("IC",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[10],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1484,7 +1755,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("camera glass",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[11],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1501,7 +1772,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("main camera",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[12],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1514,7 +1785,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("selfie camera",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[13],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1531,7 +1802,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             enabled: !accessoires_priv,
                                             title: WidgetUtilities.autoSizeText("open icloud",minFontSize: 8,textStyle: TextStyle(
                                               color: Colors.black,
-                                            )),
+                                            ),maxLine: 2),
                                             value:  replacedParts[14],
                                             onChanged: (newValue) {
                                               setState(() {
@@ -1567,7 +1838,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       ? ElevatedButton(
                                           onPressed: () {
                                             if (_formKey.currentState!
-                                                .validate()) {
+                                                .validate()&&problems.contains(true)) {
                                               if (widget.editable) {
                                                 pre_check_list_notes.clear();
                                                 pre_check_list_notes.add(pre_check_list_scratches_controller.text);
@@ -1606,7 +1877,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                     IMEI_controller.text;
                                                 widget.maintenanceDevice
                                                         ?.problem =
-                                                    selectedProblem;
+                                                    problems;
                                                 widget.maintenanceDevice
                                                     ?.status = status_value;
                                                 widget.maintenanceDevice
@@ -1741,7 +2012,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                             IMEI_controller
                                                                 .text,
                                                         problem:
-                                                            selectedProblem,
+                                                            problems,
                                                         status: status_value,
                                                         problemNotes:
                                                             notes_controller
@@ -1762,6 +2033,12 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                   Navigator.pop(context, true);
                                                 });
                                               }
+                                            }
+                                            else if (!problems.contains(true)){
+                                                final snackBar = SnackBar(
+                                                content: Text("Please select device problems".tr()),
+                                                );
+                                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                             }
                                           },
                                           child: Container(

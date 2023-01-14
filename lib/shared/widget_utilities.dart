@@ -15,6 +15,7 @@ class WidgetUtilities {
   static Widget autoSizeText(String text,
   {
   double minFontSize=12,
+    int maxLine=1,
   TextStyle textStyle = const TextStyle(
           color: ColorUtilities.textColor,
       ),
@@ -26,7 +27,7 @@ class WidgetUtilities {
         textAlign: textAlign,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        maxLines: 1);
+        maxLines: maxLine);
   }
 
   static Widget noDataWidget() {

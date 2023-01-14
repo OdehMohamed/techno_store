@@ -17,6 +17,27 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
 
   @override
   Widget build(BuildContext context) {
+    var problem = [
+      "not working",
+      "screen",
+      "battery",
+      "charging base",
+      "service",
+      "check",
+      "selfie camera",
+      "main camera",
+      "internal headset",
+      "external headset",
+      "microphone",
+      "touch screen",
+      "fingerprint",
+      "device back",
+      "software",
+      "open gmail",
+      "open icloud",
+      "volume button",
+      "power button"
+    ];
     List<String> TheReplaced=[
       "screen",
       "battery",
@@ -36,18 +57,24 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
       "others",
     ];
     String Replaced="";
+    String Problems="";
     for (int i=0;i<widget.maintenanceDevice.replaceParts!.length;i++){
       if (widget.maintenanceDevice.replaceParts![i]){
         Replaced+=TheReplaced[i].tr()+"\n";
       }
     }
-
+    for (int i=0;i<widget.maintenanceDevice.problem!.length;i++){
+      if (widget.maintenanceDevice.problem![i]){
+        Problems+=problem[i].tr()+"\n";
+      }
+      print(Problems);
+    }
     Icon statusIcon;
     switch (widget.maintenanceDevice.status) {
       case "Fixed":
         {
           statusIcon = Icon(
-            FontAwesome5.check_circle,
+            Icons.done,
             color: Colors.green,
             size: 25,
           );
@@ -106,46 +133,21 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
               color: ColorUtilities.backgroundContainer,
               child: Container(
                   width: width,
-                  height: height * 0.3,
+                  height: height * 0.1,
+                  padding: EdgeInsets.only(top: height*0.03),
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: SizedBox()),
-                      Container(
-                        width: width*0.4,
-                        height: height*0.1,
-                        child:Image.network(widget.maintenanceDevice.brandModel!.logo!,fit: BoxFit.fill,),
-                      ),
-                      Container(
-                          child: WidgetUtilities.autoSizeText(widget.maintenanceDevice!.deviceModel!,textStyle: TextStyle(
-                              fontSize: 28,
-                              color: Colors.white
-                          ))
-                      ),
-                      Expanded(child: SizedBox()),
-                      Container(
-                        margin: EdgeInsets.only(left: 20,right: 20,bottom: 20),
-                        child: Row(children: [
-                          Text(widget.maintenanceDevice!.status!.tr(),style: TextStyle(color: Colors.white,fontSize: 16),),
-                          SizedBox(width: 5,),
-                          statusIcon,
-                          Expanded(child: SizedBox()),
-                          Text(widget.maintenanceDevice!.price!+"ILS".tr(),style: TextStyle(color: Colors.white,fontSize: 16),),
-                          SizedBox(width: 5,),
-                          Icon(Icons.monetization_on,color: Colors.green,),
-                        ],) ,
-                      )
-                    ],
-                  )),
+                  child:Center(
+                    child: WidgetUtilities.autoSizeText("Check Device",textStyle: TextStyle(color: Colors.white,fontSize: 22)),
+                  )
+                ),
             ),
             Container(
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.7,
+                  height: height * 0.9,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),
@@ -154,6 +156,35 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: width*0.4,
+                                height: height*0.1,
+                                child:Image.network(widget.maintenanceDevice.brandModel!.logo!,fit: BoxFit.fill,),
+                              ),
+                              Container(
+                                  child: WidgetUtilities.autoSizeText(widget.maintenanceDevice!.deviceModel!,textStyle: TextStyle(
+                                      fontSize: 28,
+                                      color: Colors.black
+                                  ))
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 20,right: 20,bottom: 20),
+                                child: Row(children: [
+                                  Text(widget.maintenanceDevice!.status!.tr(),style: TextStyle(color: Colors.black,fontSize: 16),),
+                                  SizedBox(width: 5,),
+                                  statusIcon,
+                                  Expanded(child: SizedBox()),
+                                  Text(widget.maintenanceDevice!.price!+"ILS".tr(),style: TextStyle(color: Colors.black,fontSize: 16),),
+                                  SizedBox(width: 5,),
+                                  Icon(Icons.monetization_on,color: Colors.green,),
+                                ],) ,
+                              )
+                            ],
+                          ),
+                          Divider(thickness: 2,),
                           SizedBox(
                             height: height * 0.05,
                           ),
@@ -191,20 +222,6 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(8.0),
-                                      child:  WidgetUtilities.autoSizeText("The problem",
-                                          textStyle: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child:  WidgetUtilities.autoSizeText(widget.maintenanceDevice.problem!,
-                                          textStyle: TextStyle(color: Colors.black)),
-                                    ),
-                                  ]
-                              ),
-                              TableRow(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
                                       child: WidgetUtilities.autoSizeText("Color",
                                           textStyle: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
                                     ),
@@ -231,6 +248,24 @@ class _TrackDeviceDetailsState extends State<TrackDeviceDetails> {
                                       padding: EdgeInsets.all(8.0),
                                       child:  WidgetUtilities.autoSizeText(widget.maintenanceDevice.estimatedTime!,
                                           textStyle: TextStyle(color: Colors.black,)),
+                                    ),
+                                  ]
+                              ),
+                              TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child:  WidgetUtilities.autoSizeText("The problem",
+                                          textStyle: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                    ),
+                                    SingleChildScrollView(
+                                        child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            child: Text(Problems.toString(),
+                                                style:
+                                                TextStyle(color: Colors.black)
+                                            )
+                                        )
                                     ),
                                   ]
                               ),

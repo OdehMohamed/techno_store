@@ -11,7 +11,7 @@ class MaintenanceDeviceModel {
   String? _deviceModel;
   String? _color;
   String? _imeiNumber;
-  String? _problem;
+  List<bool>? _problem;
   String? _status;
   String? _problemNotes;
   List<bool>? _replacedParts;
@@ -33,7 +33,7 @@ class MaintenanceDeviceModel {
         String? deviceModel,
         String? color,
         String? imeiNumber,
-        String? problem,
+        List<bool>? problem,
         String? status,
         String? problemNotes,
         List<bool>? replacedParts,
@@ -124,8 +124,8 @@ class MaintenanceDeviceModel {
   set color(String? color) => _color = color;
   String? get imeiNumber => _imeiNumber;
   set imeiNumber(String? imeiNumber) => _imeiNumber = imeiNumber;
-  String? get problem => _problem;
-  set problem(String? problem) => _problem = problem;
+  List<bool>? get problem => _problem;
+  set problem(List<bool>? problem) => _problem = problem;
   String? get status => _status;
   set status(String? status) => _status = status;
   String? get problemNotes => _problemNotes;
@@ -160,7 +160,7 @@ class MaintenanceDeviceModel {
     _deviceModel = json['deviceModel'];
     _color = json['color'];
     _imeiNumber = json['imeiNumber'];
-    _problem = json['problem'];
+    _problem = json['problem'].cast<bool>();
     _status = json['status'];
     _problemNotes = json['problemNotes'];
     _accessories = json['accessories'].cast<bool>();

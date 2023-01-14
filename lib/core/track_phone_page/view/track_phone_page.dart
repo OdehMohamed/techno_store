@@ -50,7 +50,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
       switch (device.status) {
         case "Fixed":
           {
-            statusIcon = Icon(FontAwesome5.check_circle, color: Colors.green);
+            statusIcon = Icon(Icons.done, color: Colors.green);
             break;
           }
         case "Delivered":
@@ -190,32 +190,13 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
               child: Container(
                   padding: EdgeInsets.only(top: height * 0.1),
                   width: width,
-                  height: height * 0.3,
+                  height: height * 0.1,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text("T.E.C.H.N.O",
-                        style: TextStyle(
-                          fontSize: width*0.075,
-                          color: ColorUtilities.backgroundContainer,
-                          letterSpacing: 1,
-
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: width*0.05),
-                        child: Text("Store",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: width*0.075,
-                            color: ColorUtilities.backgroundContainer,
-                            letterSpacing: 15,
-                          ),
-                        ),
-                      ),
                     ],
                   )),
             ),
@@ -223,13 +204,14 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
               color: ColorUtilities.secondary,
               child: Container(
                   width: width,
-                  height: height * 0.7,
+                  height: height * 0.9,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
                   ),
                   child: Container(
                     padding: EdgeInsets.only(left: 20, right: 20),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
                           height: height * 0.05,
@@ -241,7 +223,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         SizedBox(
                           height: height * 0.07,
                         ),
-                        Expanded(child: Container()),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),
@@ -266,7 +247,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           ),
                           inputBorder: OutlineInputBorder(),
                         ),
-                        Expanded(child: Container()),
+                        SizedBox(height: height*0.1),
                         ElevatedButton(
                           onPressed: () async {
                             if (phoneValid) {
@@ -325,7 +306,6 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                 TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
-                        Expanded(child: Container())
                       ],
                     ),
                   )),

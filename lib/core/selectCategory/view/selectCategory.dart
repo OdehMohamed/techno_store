@@ -84,7 +84,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                   color: ColorUtilities.backgroundContainer,
                   child: Container(
                       width: width,
-                      height: height * 0.15,
+                      height: height * 0.1,
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
                       ),
@@ -95,7 +95,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                               Container(
                                 child: Column(children: [
                                   Container(
-                                    height: height*0.1,
+                                    padding: EdgeInsets.only(bottom: height*0.01),
                                     width: width * 0.75,
                                     child: Center(
                                       child: WidgetUtilities.autoSizeText("Select Category",
@@ -112,7 +112,7 @@ class _SelectCategoryState extends State<SelectCategory> {
                   color: Color.fromRGBO(76, 127, 158, 1),
                   child: Container(
                       width: width,
-                      height: height * 0.85,
+                      height: height * 0.9,
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(239, 239, 239, 1),
                       ),
