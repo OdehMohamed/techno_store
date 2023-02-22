@@ -1975,7 +1975,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                           model_controller
                                                               .text +
                                                           " is Fixed\n\nThank you for choosing TECHNO Store"+"\n"+
-                                                          "السيد(ة) " +
+                                                          "السيد/ة " +
                                                           name_controller.text +
                                                           "\nتكنو ستور يرحب بكم ويود اخباركم بان جهازكم " +
                                                           model_controller
