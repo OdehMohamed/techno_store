@@ -245,7 +245,7 @@ class _MaintinanceListState extends State<MaintinanceList> {
     }
 
     return Scaffold(
-        floatingActionButton: sharedState.userType == 2
+        floatingActionButton: sharedState.userType != 3
             ? FloatingActionButton(
                 child: Icon(
                   Icons.add,

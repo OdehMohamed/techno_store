@@ -1980,7 +1980,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                           "\nتكنو ستور يرحب بكم ويود اخباركم بان جهازكم " +
                                                           model_controller
                                                               .text +
-                                                          " قم تم اصلاحه\n\nشكرا لأختياركم تكنو ستور";
+                                                          " قد تم اصلاحه\n\nشكرا لأختياركم تكنو ستور";
                                                       String phone = phoneCode +
                                                           phone_controller.text;
                                                       if (Platform.isAndroid) {
