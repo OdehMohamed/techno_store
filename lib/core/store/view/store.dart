@@ -83,10 +83,6 @@ class _StoreState extends State<Store> {
     double height = MediaQuery.of(context).size.height;
 
     Widget listCard(ProductModel device) {
-      String? name = device.enName;
-      context.locale == Locale("en")
-          ? name = device.enName
-          : name = device.arName;
       return InkWell(
         child: Container(
           margin: EdgeInsets.all(10),
@@ -124,21 +120,32 @@ class _StoreState extends State<Store> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WidgetUtilities.autoSizeText(name!,
-                          textStyle: TextStyle(color: Colors.black)),
-                      SizedBox(
-                        width: 30,
-                      ),
-                      WidgetUtilities.autoSizeText(
-                          device.price.toString() + "ILS".tr(),
-                          textStyle: TextStyle(color: Colors.black54)),
-                    ],
+                  Container(
+                    width: width*0.55,
+                    child:
+                    WidgetUtilities.autoSizeText(device.enName!,
+                        textStyle: TextStyle(color: Colors.black)),
                   ),
                   Container(
-                    width: width * 0.5,
+                    width: width*0.55,
+                    child:
+                    WidgetUtilities.autoSizeText(device.arName!,
+                        textStyle: TextStyle(color: Colors.black)),
+                  ),
+                  Container(
+                    width: width*0.5,
+                    child:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        WidgetUtilities.autoSizeText(
+                            device.price.toString() + "ILS".tr(),
+                            textStyle: TextStyle(color: Colors.black54)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.55,
                     child: WidgetUtilities.autoSizeText(device.description!,
                         textStyle: TextStyle(color: Colors.black54)),
                   ),
@@ -171,10 +178,6 @@ class _StoreState extends State<Store> {
     }
 
     Widget gridCard(ProductModel device) {
-      String? name = device.enName;
-      context.locale == Locale("en")
-          ? name = device.enName
-          : name = device.arName;
       return InkWell(
         child: Container(
           height: height * 0.3,
@@ -208,8 +211,11 @@ class _StoreState extends State<Store> {
                         "assets/images/defaultProductImage.png",
                       ),
               ),
-              WidgetUtilities.autoSizeText(name!,
+              WidgetUtilities.autoSizeText(device.enName!,
                   textStyle: TextStyle(color: Colors.black)),
+              WidgetUtilities.autoSizeText(device.arName!,
+                  textStyle: TextStyle(color: Colors.black)),
+
               SizedBox(
                 height: 5,
               ),

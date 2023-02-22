@@ -291,10 +291,12 @@ class _NewProductState extends State<NewProduct> {
                                           color: Colors.grey, fontSize: 16),
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
+                                      if ((value == null || value.isEmpty)&&ar_title_controller.text.isEmpty) {
                                         return "Please Enter".tr() +
                                             " " +
-                                            "English Title".tr();
+                                            "English Title".tr() +" "+
+                                            "or".tr()+" "+
+                                            "Arabic Title".tr();
                                       }
                                       return null;
                                     },
@@ -320,9 +322,11 @@ class _NewProductState extends State<NewProduct> {
                                           color: Colors.grey, fontSize: 16),
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
+                                      if ((value == null || value.isEmpty)&&en_title_controller.text.isEmpty) {
                                         return "Please Enter".tr() +
-                                            " " +
+                                            " "+
+                                            "English Title".tr()+" "+
+                                            "or".tr()+" "+
                                             "Arabic Title".tr();
                                       }
                                       return null;

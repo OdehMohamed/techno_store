@@ -35,7 +35,19 @@ class NewDeviceMaintenanceState extends ChangeNotifier {
 
     return response;
   }
+  Future<bool> deleteDeviceInMaintenance(MaintenanceDeviceModel maintenanceDeviceModel) async {
+    changeLoadingState(isLoading: true);
 
+    bool response = false;
+
+    try {
+      response = await FirebaseDataSource().deleteDeviceInMaintenance(maintenanceDeviceModel);
+    } catch (e) {}
+
+    changeLoadingState(isLoading: false);
+
+    return response;
+  }
   void changeLoadingState({bool? isLoading}) {
     if (isLoading != null) {
       loading = isLoading;

@@ -249,7 +249,7 @@ class _favoraitItemsState extends State<favoraitItems> {
                           margin: EdgeInsets.only(top: height * 0.05),
                           child: WidgetUtilities.autoSizeText("Favorite",
                               textStyle: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: 22,
                                   color: ColorUtilities.textColor)),
                         ),
                       ],

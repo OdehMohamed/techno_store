@@ -164,5 +164,7 @@
   "Select Category": "يرجى اختيار التصنيف",
   "Login": "تسجيل الدخول",
   "Please select device problems": "يرجى اختيار مشكلة الجهاز",
-  "Check Device": "التحقق من الجهاز"
+  "Check Device": "التحقق من الجهاز",
+  "Are you sure you want to delete this device?": "هل انت متاكد من حذف هذا الجهاز ؟",
+  "Product Details": "تفاصيل المنتج"
 }

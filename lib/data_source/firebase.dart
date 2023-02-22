@@ -615,6 +615,20 @@ class FirebaseDataSource {
     return false;
   }
 
+  Future<bool> deleteDeviceInMaintenance(MaintenanceDeviceModel maintenanceDeviceModel) async {
+    try {
+      await firebaseFirestore
+          .collection('maintenanceDevices')
+          .doc(maintenanceDeviceModel.id)
+          .delete();
+      return true;
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
+  }
+
   Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
       String phoneNumber) async {
     List<MaintenanceDeviceModel> devices = [];

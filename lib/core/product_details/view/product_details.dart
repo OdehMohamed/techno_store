@@ -96,6 +96,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               child: Container(
                   width: width,
                   height: height * 0.1,
+                  padding: EdgeInsets.only(left: 0.12*width,right: 0.12*width),
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
@@ -104,11 +105,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                     children:[
                       SizedBox(height: height*0.03,),
                       WidgetUtilities.autoSizeText(
-                      context.locale == Locale("en")
-                          ? widget.product.enName!
-                          : widget.product.arName!,
+                      "Product Details",
                       textStyle: TextStyle(
-                          color: ColorUtilities.textColor, fontSize: 26,fontWeight: FontWeight.bold),
+                          color: ColorUtilities.textColor, fontSize: 20,fontWeight: FontWeight.bold),
                     ),]
                   )),
             ),
@@ -130,14 +129,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                              child:  Row(
                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                children: [
-                                 sharedState.userType == 0
+                                 sharedState.userType==0
                                      ? Row(
                                    mainAxisAlignment: MainAxisAlignment.end,
                                    children: [
                                      InkWell(
                                        child: Icon(Icons.edit,
                                            color: ColorUtilities.secondary,
-                                           size: 35),
+                                           size: 25),
                                        onTap: () {
                                          Utilities.navigatorWithBack(
                                              context,
@@ -152,7 +151,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                      ),
                                      InkWell(
                                        child: Icon(CupertinoIcons.delete,
-                                           color: Colors.red, size: 35),
+                                           color: Colors.red, size: 25),
                                        onTap: () {
                                          showDialog(
                                            context: context,
@@ -194,7 +193,23 @@ class _ProductDetailsState extends State<ProductDetails> {
                                      ),
                                    ],
                                  )
-                                     : SizedBox(),
+                                     : SizedBox(width: 20,),
+                                 Container(
+                                   width: width*0.5,
+                                   child: Column(
+                                     children: [
+                                       WidgetUtilities.autoSizeText(
+                                         widget.product.enName!+"\n"+widget.product.arName!,
+                                         maxLine: 4,
+                                         minFontSize: 14,
+                                         textAlign: TextAlign.center,
+                                         textStyle: TextStyle( color: Color.fromRGBO(76, 127, 158, 1),
+                                              fontSize: 20,fontWeight: FontWeight.bold,),
+                                       ),
+                                     ],
+                                   ),
+                                 )
+                                 ,
                                  InkWell(
                                    child: favourite
                                        ? Icon(
@@ -345,7 +360,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   Divider(thickness: 2,),
                                   Container(
                                     width: width * 0.8,
-                                    height: height * 0.2,
+                                    height: height * 0.3,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
                                     ),

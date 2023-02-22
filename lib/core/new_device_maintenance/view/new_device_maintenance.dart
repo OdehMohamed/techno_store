@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -270,6 +271,14 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    deleteMessage(bool value) {
+      if (value) {
+        Message.showLongToastMessage("Deleted".tr());
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -319,6 +328,55 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
+                              widget.editable
+                                  ? Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  InkWell(
+                                    child: Icon(CupertinoIcons.delete,
+                                        color: Colors.red, size: 30),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                "Delete warning".tr()),
+                                            content: Text(
+                                                "Are you sure you want to delete this device?"
+                                                    .tr()),
+                                            actions: [
+                                              TextButton(
+                                                child: Text(
+                                                  "Delete".tr(),
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                                onPressed: () {
+                                                  newDeviceMaintenanceState
+                                                      .deleteDeviceInMaintenance(
+                                                      widget.maintenanceDevice!)
+                                                      .then((value) =>
+                                                      deleteMessage(
+                                                          value));
+                                                },
+                                              ),
+                                              TextButton(
+                                                child:
+                                                Text("Cancel".tr()),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              )
+                                  : SizedBox(),
                               SizedBox(
                                 height: 30,
                               ),
@@ -1916,7 +1974,13 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                           "\nHello from TECHNO Store team\n\nwe would like to inform you that your device " +
                                                           model_controller
                                                               .text +
-                                                          " is Fixed\n\nThank you for choosing TECHNO Store";
+                                                          " is Fixed\n\nThank you for choosing TECHNO Store"+"\n"+
+                                                          "السيد(ة) " +
+                                                          name_controller.text +
+                                                          "\nتكنو ستور يرحب بكم ويود اخباركم بان جهازكم " +
+                                                          model_controller
+                                                              .text +
+                                                          " قم تم اصلاحه\n\nشكرا لأختياركم تكنو ستور";
                                                       String phone = phoneCode +
                                                           phone_controller.text;
                                                       if (Platform.isAndroid) {
