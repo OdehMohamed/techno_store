@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/create_user_account/view/create_user_account_view.dart';
@@ -63,6 +64,7 @@ class _SignInState extends State<SignIn> {
   void initState() {
     mainScreenState = context.read<MainScreenState>();
     sharedState = context.read<SharedState>();
+    checkForUpdate();
     super.initState();
   }
 
@@ -72,7 +74,33 @@ class _SignInState extends State<SignIn> {
     login_password.dispose();
     super.dispose();
   }
+  AppUpdateInfo? _updateInfo;
 
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        _updateInfo = info;
+      });
+      if (_updateInfo?.updateAvailability==UpdateAvailability.updateAvailable){
+        update();
+      }
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
+  }
+  void update(){
+      InAppUpdate.performImmediateUpdate()
+          .catchError((e) => showSnack(e.toString()));
+  }
   @override
   Widget build(BuildContext context) {
     mainScreenState = context.watch<MainScreenState>();
@@ -81,6 +109,7 @@ class _SignInState extends State<SignIn> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(

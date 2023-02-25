@@ -1892,7 +1892,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  sharedState.userType != 0
+                                  sharedState.userType != 1
                                       ? ElevatedButton(
                                           onPressed: () {
                                             if (_formKey.currentState!
