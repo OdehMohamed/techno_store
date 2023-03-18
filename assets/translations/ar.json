@@ -166,5 +166,10 @@
   "Please select device problems": "يرجى اختيار مشكلة الجهاز",
   "Check Device": "التحقق من الجهاز",
   "Are you sure you want to delete this device?": "هل انت متاكد من حذف هذا الجهاز ؟",
-  "Product Details": "تفاصيل المنتج"
+  "Product Details": "تفاصيل المنتج",
+  "Delete account": "حذف الحساب",
+  "Please Confirm": "الرجاء التأكيد",
+  "Are you sure you want to remove the account?": "هل انت متأكد من حذف الحساب وجميع البيانات المتعلقة به",
+  "Yes" : "نعم",
+  "No" : "لا"
 }

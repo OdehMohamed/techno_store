@@ -17,6 +17,19 @@ class WelcomePageState extends ChangeNotifier {
     return response;
   }
 
+  Future<bool> removeAccount() async {
+    changeLoadingState(isLoading: true);
+
+    bool response = false;
+
+    try {
+      response = await FirebaseDataSource().removeAccount();
+    } catch (e) {}
+    changeLoadingState(isLoading: false);
+
+    return response;
+  }
+
   void changeLoadingState({bool? isLoading}) {
     if (isLoading != null) {
       loading = isLoading;

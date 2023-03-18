@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +67,9 @@ class _SignInState extends State<SignIn> {
   void initState() {
     mainScreenState = context.read<MainScreenState>();
     sharedState = context.read<SharedState>();
-    checkForUpdate();
+    if(Platform.isAndroid){
+      checkForUpdate();
+    }
     super.initState();
   }
 

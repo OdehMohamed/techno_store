@@ -138,6 +138,20 @@ class FirebaseDataSource {
     return false;
   }
 
+  Future<bool> removeAccount() async {
+    try {
+      await firebaseAuth.currentUser?.delete();
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      Message.showErrorToastMessage(e.message.toString());
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return false;
+  }
+
   ////
   ////
   ////

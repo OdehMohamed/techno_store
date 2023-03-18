@@ -166,5 +166,10 @@
   "Please select device problems": "Please select device problems",
   "Check Device": "Check Device",
   "Are you sure you want to delete this device?": "Are you sure you want to delete this device?",
-  "Product Details": "Product Details"
+  "Product Details": "Product Details",
+  "Delete account" : "Delete account",
+  "Please Confirm": "Please Confirm",
+  "Are you sure you want to remove the account?": "Are you sure you want to remove the account and all the data associated with it?",
+  "Yes" : "Yes",
+  "No" : "No"
 }

@@ -22,6 +22,7 @@ import '../../../shared/widget_utilities.dart';
 import '../../selectCategory/view/selectCategory.dart';
 import '../../shared/view_model/shared_state.dart';
 
+
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
 
@@ -261,6 +262,59 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ],
                     ))),
+            InkWell(
+              onTap: () async {
+
+
+                showDialog(
+                    context: context,
+                    builder: (BuildContext ctx) {
+                      return AlertDialog(
+                        title:  Text("Please Confirm".tr()),
+                        content:  Text('Are you sure you want to remove the account?'.tr()),
+                        actions: [
+                          // The "Yes" button
+                          TextButton(
+                              onPressed: () async {
+                                try {
+                                  await welcomePageState.removeAccount();
+                                } catch (e) {
+                                  print(e.toString());
+                                }
+
+                                // Close the dialog
+                                Navigator.of(context).pop();
+                              },
+                              child:  Text('Yes'.tr())),
+                          TextButton(
+                              onPressed: () {
+                                // Close the dialog
+                                Navigator.of(context).pop();
+                              },
+                              child:  Text('No'.tr()))
+                        ],
+                      );
+                    });
+              },
+              child: Container(
+                  padding: EdgeInsets.all(10),
+                  width: width,
+                  color: Colors.white60,
+                  height: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                      WidgetUtilities.autoSizeText(
+                          "Delete account",
+                          textStyle: TextStyle(color: Colors.red)
+                      ),
+                    ],
+                  )),
+            ),
           ],
         ),
       ),
