@@ -164,7 +164,7 @@ class _WelcomePageState extends State<WelcomePage> {
             Flexible(
                 child: ListView(
               children: [
-                sharedState.userType!=3?
+                sharedState.userType!=3 && sharedState.userType!=9?
                 card("Favorite", Icon(Icons.star, color: Colors.yellow), () {
                   Utilities.navigatorWithBack(context, favoraitItems());
                 }):SizedBox(),

@@ -575,8 +575,11 @@ class FirebaseDataSource {
   Future<List<MaintenanceDeviceModel>> getDevicesInMaintenance(
       String status) async {
     List<MaintenanceDeviceModel> devices = [];
+    List<BrandModel> brands = [];
 
     try {
+      brands = await getBrands();
+
       await firebaseFirestore
           .collection("maintenanceDevices")
           .where("status", isEqualTo: status)
@@ -587,7 +590,7 @@ class FirebaseDataSource {
               MaintenanceDeviceModel.fromJson(element.data());
           if (maintenanceDeviceModel.brandID != null) {
             maintenanceDeviceModel.brandModel =
-                await getBrand(maintenanceDeviceModel.brandID!);
+                brands.firstWhere((element) => element.name == maintenanceDeviceModel.brandID!);
           }
           devices.add(maintenanceDeviceModel);
         }

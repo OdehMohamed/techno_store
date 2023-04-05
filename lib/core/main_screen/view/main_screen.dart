@@ -342,6 +342,46 @@ class _SignInState extends State<SignIn> {
                                         fontSize: 16, color: Colors.white),
                                   ),
                                 ),
+                                (Platform.isIOS) ?
+                                    Column(children: [
+                                      SizedBox(
+                                        height: 3,
+                                      ),
+                                      InkWell(
+                                        child: Text(
+                                          "Login as a Guest".tr() + "?".tr(),
+                                          style:
+                                          TextStyle(color: Colors.blue, fontSize: 12),
+                                        ),
+                                        onTap: () {
+                                          try {
+                                            mainScreenState
+                                                .signIn("guest@gmail.com",
+                                                "123456789")
+                                                .then((value) {
+                                              if (FirebaseDataSource()
+                                                  .firebaseAuth
+                                                  .currentUser !=
+                                                  null &&
+                                                  FirebaseDataSource()
+                                                      .firebaseAuth
+                                                      .currentUser
+                                                      ?.uid !=
+                                                      null) {
+                                                sharedState.updateUserInfo(
+                                                    FirebaseDataSource()
+                                                        .firebaseAuth
+                                                        .currentUser!
+                                                        .uid);
+                                              }
+                                            });
+                                          } catch (e) {
+                                            Message.showErrorToastMessage(
+                                                "Wrong inputs or you are not signed up");
+                                          }
+                                        },
+                                      )
+                                    ],) : SizedBox(),
                                 SizedBox(
                                   height: 15,
                                 ),

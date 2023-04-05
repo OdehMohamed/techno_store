@@ -210,7 +210,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                    ),
                                  )
                                  ,
-                                 InkWell(
+                                 sharedState.userType!=9 ? InkWell(
                                    child: favourite
                                        ? Icon(
                                      CupertinoIcons.heart_fill,
@@ -223,7 +223,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                    onTap: () {
                                      changeFavourite();
                                    },
-                                 ),
+                                 ) : SizedBox(),
                                ],
                              ),
                            ),
