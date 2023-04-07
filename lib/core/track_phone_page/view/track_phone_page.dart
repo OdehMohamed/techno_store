@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
@@ -25,11 +27,17 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   String phoneCode = "+970";
   PhoneNumber number = PhoneNumber(isoCode: 'PS');
   final phoneController = TextEditingController();
+  late SharedState sharedState;
   late TrackPhonePageState trackPhonePageState;
+  late bool? isTesting;
 
   @override
   void initState() {
+    sharedState = context.read<SharedState>();
     trackPhonePageState = context.read<TrackPhonePageState>();
+    if (Platform.isIOS) {
+      getTestingValue();
+    }
     super.initState();
   }
 
@@ -37,6 +45,12 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   void dispose() {
     phoneController.dispose();
     super.dispose();
+  }
+
+  void getTestingValue() async {
+    isTesting = await sharedState.isTesting();
+    print(isTesting);
+    setState(() {});
   }
 
   @override
@@ -92,7 +106,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                       child: CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
                             ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
+                                loadingProgress.expectedTotalBytes!
                             : null,
                       ),
                     );
@@ -160,11 +174,12 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
           ),
         ),
         onTap: () {
-          Navigator.push(context,  MaterialPageRoute(
-              builder: (context) => TrackDeviceDetails(
-                maintenanceDevice: device,
-              )
-          ),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TrackDeviceDetails(
+                      maintenanceDevice: device,
+                    )),
           );
         },
       );
@@ -196,8 +211,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                    ],
+                    children: [],
                   )),
             ),
             Container(
@@ -221,8 +235,30 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             textAlign: TextAlign.center,
                             textStyle: TextStyle(color: Colors.black)),
                         SizedBox(
-                          height: height * 0.07,
+                          height: height * 0.03,
                         ),
+                        Platform.isIOS ?
+                        FutureBuilder<bool>(
+                            future: sharedState.isTesting(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && (snapshot.data ?? false)) {
+                                return Column(
+                                  children: [
+                                    WidgetUtilities.autoSizeText(
+                                        "Apple warranty",
+                                        textAlign: TextAlign.center,
+                                        textStyle:
+                                            TextStyle(color: Colors.red),
+                                    maxLine: 2),
+                                    SizedBox(
+                                      height: height * 0.07,
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return SizedBox();
+                              }
+                            }) : SizedBox(),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),
@@ -247,7 +283,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           ),
                           inputBorder: OutlineInputBorder(),
                         ),
-                        SizedBox(height: height*0.1),
+                        SizedBox(height: height * 0.1),
                         ElevatedButton(
                           onPressed: () async {
                             if (phoneValid) {

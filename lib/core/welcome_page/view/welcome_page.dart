@@ -262,7 +262,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ],
                     ))),
-            InkWell(
+           sharedState.userType != 9 ? InkWell(
               onTap: () async {
 
 
@@ -314,7 +314,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                     ],
                   )),
-            ),
+            ) : SizedBox(),
           ],
         ),
       ),
@@ -448,7 +448,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           ),
                           InkWell(
                             onTap: () {
-                              sharedState.userType != 1
+                              sharedState.userType != 1 && sharedState.userType != 9
                                   ? Utilities.navigatorWithBack(
                                   context, MaintinanceList())
                                   : Utilities.navigatorWithBack(

@@ -61,12 +61,16 @@ class _SignInState extends State<SignIn> {
   final login_password = TextEditingController();
   late MainScreenState mainScreenState;
   late SharedState sharedState;
+   bool? isTesting;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     mainScreenState = context.read<MainScreenState>();
     sharedState = context.read<SharedState>();
+    if(Platform.isIOS){
+      getTestingValue();
+    }
     if(Platform.isAndroid){
       checkForUpdate();
     }
@@ -82,6 +86,10 @@ class _SignInState extends State<SignIn> {
   AppUpdateInfo? _updateInfo;
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  void getTestingValue() async{
+    isTesting = await sharedState.isTesting();
+  }
 
   Future<void> checkForUpdate() async {
     InAppUpdate.checkForUpdate().then((info) {
@@ -342,10 +350,10 @@ class _SignInState extends State<SignIn> {
                                         fontSize: 16, color: Colors.white),
                                   ),
                                 ),
-                                (Platform.isIOS) ?
+                                (isTesting ?? false) ?
                                     Column(children: [
                                       SizedBox(
-                                        height: 3,
+                                        height: 10,
                                       ),
                                       InkWell(
                                         child: Text(

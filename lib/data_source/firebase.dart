@@ -13,6 +13,8 @@ import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/message.dart';
 import 'package:uuid/uuid.dart';
 
+import '../core/shared/view_model/shared_state.dart';
+
 class FirebaseDataSource {
   static final FirebaseDataSource instance = FirebaseDataSource._internal();
   late final FirebaseAuth firebaseAuth;
@@ -589,14 +591,18 @@ class FirebaseDataSource {
           MaintenanceDeviceModel? maintenanceDeviceModel =
               MaintenanceDeviceModel.fromJson(element.data());
           if (maintenanceDeviceModel.brandID != null) {
-            maintenanceDeviceModel.brandModel =
-                brands.firstWhere((element) => element.name == maintenanceDeviceModel.brandID!);
+            maintenanceDeviceModel.brandModel = brands.firstWhere(
+                (element) => element.name == maintenanceDeviceModel.brandID!,
+                orElse: () => BrandModel());
           }
-          devices.add(maintenanceDeviceModel);
+          if (maintenanceDeviceModel.brandModel?.name != null) {
+            devices.add(maintenanceDeviceModel);
+          }
         }
       });
-    } catch (e) {
+    } catch (e, v) {
       Message.showErrorToastMessage("somethingWentWrong".tr());
+      print(v);
     }
 
     return devices;
@@ -632,7 +638,8 @@ class FirebaseDataSource {
     return false;
   }
 
-  Future<bool> deleteDeviceInMaintenance(MaintenanceDeviceModel maintenanceDeviceModel) async {
+  Future<bool> deleteDeviceInMaintenance(
+      MaintenanceDeviceModel maintenanceDeviceModel) async {
     try {
       await firebaseFirestore
           .collection('maintenanceDevices')
@@ -649,6 +656,7 @@ class FirebaseDataSource {
   Future<List<MaintenanceDeviceModel>> checkDeviceStatus(
       String phoneNumber) async {
     List<MaintenanceDeviceModel> devices = [];
+    bool testing = await isTesting();
 
     try {
       await firebaseFirestore
@@ -664,7 +672,9 @@ class FirebaseDataSource {
             maintenanceDeviceModel.brandModel =
                 await getBrand(maintenanceDeviceModel.brandID!);
           }
-          devices.add(maintenanceDeviceModel);
+          if (testing && maintenanceDeviceModel.brandModel?.name == "Apple") {
+            devices.add(maintenanceDeviceModel);
+          }
         }
       });
     } catch (e) {
@@ -740,17 +750,28 @@ class FirebaseDataSource {
 
   Future<List<BrandModel>> getBrands() async {
     List<BrandModel> brands = [];
-    try {
-      await firebaseFirestore.collection("brands").get().then((value) {
-        for (var element in value.docs) {
-          brands.add(BrandModel.fromJson(element.data()));
-          print(element.data().toString());
-        }
-      });
-    } catch (e) {
-      Message.showErrorToastMessage("somethingWentWrong".tr());
-    }
+    bool testing = false;
 
+    if (Platform.isIOS) {
+      testing = await isTesting();
+    }
+    if (testing) {
+      BrandModel? brand = await getTestingBrandOnly();
+      if (brand != null) {
+        brands.add(brand);
+      }
+    } else {
+      try {
+        await firebaseFirestore.collection("brands").get().then((value) {
+          for (var element in value.docs) {
+            brands.add(BrandModel.fromJson(element.data()));
+            print(element.data().toString());
+          }
+        });
+      } catch (e) {
+        Message.showErrorToastMessage("somethingWentWrong".tr());
+      }
+    }
     return brands;
   }
 
@@ -771,9 +792,61 @@ class FirebaseDataSource {
     return brand;
   }
 
+  Future<BrandModel?> getTestingBrandOnly() async {
+    BrandModel? brand;
+    try {
+      await firebaseFirestore
+          .collection("brands")
+          .where('name', isEqualTo: "Apple")
+          .get()
+          .then((value) {
+        brand = BrandModel.fromJson(value.docs.first.data());
+      });
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return brand;
+  }
+
 ////
 ////
 ////
 //////////////////////   <<<<<<<---------   Brands  /////////////////
+////
+////
+////
+
+////
+////
+//////////////////////   Testing   ------->>>>>>> /////////////////
+////
+////
+////
+
+  Future<bool> isTesting() async {
+    bool isTesting = false;
+    try {
+      await firebaseFirestore
+          .collection("testing")
+          .doc("D_testing")
+          .get()
+          .then((value) {
+        isTesting = value.data()?["isTesting"] ?? false;
+      });
+    } catch (e) {
+      Message.showErrorToastMessage("somethingWentWrong".tr());
+    }
+
+    return isTesting;
+  }
+
+////
+////
+////
+//////////////////////   <<<<<<<---------   Testing  /////////////////
+////
+////
+////
 
 }

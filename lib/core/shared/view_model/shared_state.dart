@@ -135,6 +135,20 @@ class SharedState extends ChangeNotifier {
     return brands;
   }
 
+  Future<bool> isTesting() async {
+    changeLoadingState(isLoading: true);
+
+    bool b = false;
+
+    try{
+      b =  await FirebaseDataSource().isTesting();
+    }catch(e){}
+
+    changeLoadingState(isLoading: false);
+
+    return b;
+  }
+
   void changeLoadingState({bool? isLoading}) {
     if (isLoading != null) {
       loading = isLoading;
