@@ -56,8 +56,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MaintenanceListState()),
         ChangeNotifierProvider(create: (_) => ProductDetailsState()),
         ChangeNotifierProvider(create: (_) => FavoriteItemsState()),
-
-
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,

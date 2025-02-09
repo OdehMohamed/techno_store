@@ -2115,7 +2115,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                             ),
                                           ),
                                           style: ElevatedButton.styleFrom(
-                                            primary: ColorUtilities.secondary,
+                                            backgroundColor: ColorUtilities.secondary,
                                             textStyle: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.white),
@@ -2135,7 +2135,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                       ),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      primary: Color.fromRGBO(128, 128, 128, 1),
+                                      backgroundColor: Color.fromRGBO(128, 128, 128, 1),
                                       textStyle: TextStyle(
                                           fontSize: 16, color: Colors.white),
                                     ),

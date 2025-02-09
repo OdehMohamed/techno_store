@@ -37,7 +37,7 @@ class _StoreState extends State<Store> {
   List<CategoriesAndSubCategoryModel> futureSubCategories=[];
   late StoreState storeState;
   Future<List<ProductModel>>? productList;
-  final CarouselController _carouselcontroller = CarouselController();
+  final CarouselSliderController _carouselcontroller = CarouselSliderController();
   int _current = 0;
   void changeSubCategory(int index, String subCategoryID) {
     productList = storeState.getProducts(subCategoryID);

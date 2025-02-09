@@ -31,7 +31,7 @@ class _ProductDetailsState extends State<ProductDetails> {
   late SharedState sharedState;
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-  final CarouselController _carouselcontroller = CarouselController();
+  final CarouselSliderController _carouselcontroller = CarouselSliderController();
   int _current = 0;
 
   bool favourite = false;

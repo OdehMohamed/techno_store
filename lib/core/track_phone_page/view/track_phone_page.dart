@@ -237,28 +237,30 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         SizedBox(
                           height: height * 0.03,
                         ),
-                        Platform.isIOS ?
-                        FutureBuilder<bool>(
-                            future: sharedState.isTesting(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData && (snapshot.data ?? false)) {
-                                return Column(
-                                  children: [
-                                    WidgetUtilities.autoSizeText(
-                                        "Apple warranty",
-                                        textAlign: TextAlign.center,
-                                        textStyle:
-                                            TextStyle(color: Colors.red),
-                                    maxLine: 2),
-                                    SizedBox(
-                                      height: height * 0.07,
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return SizedBox();
-                              }
-                            }) : SizedBox(),
+                        Platform.isIOS
+                            ? FutureBuilder<bool>(
+                                future: sharedState.isTesting(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData &&
+                                      (snapshot.data ?? false)) {
+                                    return Column(
+                                      children: [
+                                        WidgetUtilities.autoSizeText(
+                                            "Apple warranty",
+                                            textAlign: TextAlign.center,
+                                            textStyle:
+                                                TextStyle(color: Colors.red),
+                                            maxLine: 2),
+                                        SizedBox(
+                                          height: height * 0.07,
+                                        ),
+                                      ],
+                                    );
+                                  } else {
+                                    return SizedBox();
+                                  }
+                                })
+                            : SizedBox(),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),
@@ -337,7 +339,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                 ),
                               )),
                           style: ElevatedButton.styleFrom(
-                            primary: ColorUtilities.secondary,
+                            backgroundColor: ColorUtilities.secondary,
                             textStyle:
                                 TextStyle(fontSize: 16, color: Colors.white),
                           ),

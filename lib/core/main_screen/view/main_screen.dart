@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +9,6 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/create_user_account/view/create_user_account_view.dart';
 import 'package:techno_store/core/main_screen/view_model/main_screen_state.dart';
-import 'package:techno_store/core/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/core/reset_password/view/reset_password.dart';
 import 'package:techno_store/core/welcome_page/view/welcome_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
@@ -61,17 +59,17 @@ class _SignInState extends State<SignIn> {
   final login_password = TextEditingController();
   late MainScreenState mainScreenState;
   late SharedState sharedState;
-   bool? isTesting;
+  bool? isTesting;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     mainScreenState = context.read<MainScreenState>();
     sharedState = context.read<SharedState>();
-    if(Platform.isIOS){
+    if (Platform.isIOS) {
       getTestingValue();
     }
-    if(Platform.isAndroid){
+    if (Platform.isAndroid) {
       checkForUpdate();
     }
     super.initState();
@@ -83,11 +81,12 @@ class _SignInState extends State<SignIn> {
     login_password.dispose();
     super.dispose();
   }
+
   AppUpdateInfo? _updateInfo;
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
-  void getTestingValue() async{
+  void getTestingValue() async {
     isTesting = await sharedState.isTesting();
   }
 
@@ -96,7 +95,8 @@ class _SignInState extends State<SignIn> {
       setState(() {
         _updateInfo = info;
       });
-      if (_updateInfo?.updateAvailability==UpdateAvailability.updateAvailable){
+      if (_updateInfo?.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
         update();
       }
     }).catchError((e) {
@@ -110,10 +110,12 @@ class _SignInState extends State<SignIn> {
           .showSnackBar(SnackBar(content: Text(text)));
     }
   }
-  void update(){
-      InAppUpdate.performImmediateUpdate()
-          .catchError((e) => showSnack(e.toString()));
+
+  void update() {
+    InAppUpdate.performImmediateUpdate()
+        .catchError((e) => showSnack(e.toString()));
   }
+
   @override
   Widget build(BuildContext context) {
     mainScreenState = context.watch<MainScreenState>();
@@ -134,9 +136,7 @@ class _SignInState extends State<SignIn> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  context.locale = context.locale == Locale("en")
-                      ? Locale("ar")
-                      : Locale("en");
+                  context.locale == Locale("en") ? Locale("ar") : Locale("en");
                 },
                 child: WidgetUtilities.autoSizeText(
                   lang.tr(),
@@ -167,34 +167,33 @@ class _SignInState extends State<SignIn> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: EdgeInsets.only(top: height*0.05),
-                          child:Container(
-                            child:
-                            Column(
+                            padding: EdgeInsets.only(top: height * 0.05),
+                            child: Container(
+                                child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                              Text("T.E.C.H.N.O",
-                                style: TextStyle(
-                                    fontSize: width*0.08,
-                                    color: ColorUtilities.backgroundContainer,
-                                    letterSpacing: 3
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: width*0.05),
-                                child: Text("Store",
-                                  textAlign: TextAlign.center,
+                                Text(
+                                  "T.E.C.H.N.O",
                                   style: TextStyle(
-                                      fontSize: width*0.05,
+                                      fontSize: width * 0.08,
                                       color: ColorUtilities.backgroundContainer,
-                                      letterSpacing: 25
-                                  ),
+                                      letterSpacing: 3),
+                                  textAlign: TextAlign.center,
                                 ),
-                              )
-                            ],)
-                          )
-                        ),
+                                Container(
+                                  padding: EdgeInsets.only(left: width * 0.05),
+                                  child: Text(
+                                    "Store",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: width * 0.05,
+                                        color:
+                                            ColorUtilities.backgroundContainer,
+                                        letterSpacing: 25),
+                                  ),
+                                )
+                              ],
+                            ))),
                       ],
                     )),
               ),
@@ -205,7 +204,6 @@ class _SignInState extends State<SignIn> {
                   height: height * 0.85,
                   decoration: const BoxDecoration(
                     color: ColorUtilities.backgroundContainer,
-
                   ),
                   child: Container(
                       margin: EdgeInsets.only(top: 30, left: 40, right: 40),
@@ -214,95 +212,100 @@ class _SignInState extends State<SignIn> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text("Login".tr(),style: TextStyle(
-                              fontSize: 26,
-                              color: ColorUtilities.secondary,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: Utilities.isEnglish(context)?3:0
-                            ),),
-                           Column(
-                             children: [
-                               Container(
-                                 decoration: BoxDecoration(
-                                   color: ColorUtilities.white,
-                                   border: Border.all(color: Colors.grey),
-                                   borderRadius: BorderRadius.circular(5),
-                                 ),
-                                 child: TextFormField(
-                                   controller: login_email,
-                                   style: TextStyle(color: Colors.black),
-                                   decoration: InputDecoration(
-                                     border: InputBorder.none,
-                                     prefixIcon: Icon(
-                                       Icons.perm_identity_outlined,
-                                       color: ColorUtilities.secondary,
-                                       size: 28,
-                                     ),
-                                     hintText: 'Email'.tr(),
-                                     hintStyle: TextStyle(
-                                         color: Colors.grey, fontSize: 16),
-                                   ),
-                                   validator: (value) {
-                                     if (value == null || value.isEmpty) {
-                                       return "Please Enter".tr() +
-                                           " " +
-                                           "Email".tr();
-                                     }
-                                     if (!RegExp(
-                                         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                         .hasMatch(value)) {
-                                       return "Please Enter".tr() +
-                                           " " +
-                                           "valid Email".tr();
-                                     }
-                                     return null;
-                                   },
-                                 ),
-                               ),
-                               SizedBox(height: height*0.05,),
-                               Container(
-                                 decoration: BoxDecoration(
-                                   color: ColorUtilities.white,
-                                   border: Border.all(color: Colors.grey),
-                                   borderRadius: BorderRadius.circular(5),
-                                 ),
-                                 child: TextFormField(
-                                   controller: login_password,
-                                   obscureText: true,
-                                   style: TextStyle(color: Colors.black),
-                                   decoration: InputDecoration(
-                                     border: InputBorder.none,
-                                     prefixIcon: Icon(
-                                       Icons.lock_outlined,
-                                       color: ColorUtilities.secondary,
-                                       size: 28,
-                                     ),
-                                     hintText: 'Password'.tr(),
-                                     hintStyle: TextStyle(
-                                         color: Colors.grey, fontSize: 16),
-                                   ),
-                                   validator: (value) {
-                                     if (value == null || value.isEmpty) {
-                                       return "Please Enter".tr() +
-                                           " " +
-                                           "Password".tr();
-                                     }
-                                     if (value.length < 8) {
-                                       return "Password".tr() +
-                                           " " +
-                                           "too short".tr();
-                                     }
-                                     if (value.contains(" ")) {
-                                       return "Password".tr() +
-                                           " " +
-                                           "can't have spaces".tr();
-                                     }
-                                     return null;
-                                   },
-                                 ),
-                               ),
-                             ],
-                           ),
+                            Text(
+                              "Login".tr(),
+                              style: TextStyle(
+                                  fontSize: 26,
+                                  color: ColorUtilities.secondary,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing:
+                                      Utilities.isEnglish(context) ? 3 : 0),
+                            ),
+                            Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    controller: login_email,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      prefixIcon: Icon(
+                                        Icons.perm_identity_outlined,
+                                        color: ColorUtilities.secondary,
+                                        size: 28,
+                                      ),
+                                      hintText: 'Email'.tr(),
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr() +
+                                            " " +
+                                            "Email".tr();
+                                      }
+                                      if (!RegExp(
+                                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                          .hasMatch(value)) {
+                                        return "Please Enter".tr() +
+                                            " " +
+                                            "valid Email".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height * 0.05,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: ColorUtilities.white,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: TextFormField(
+                                    controller: login_password,
+                                    obscureText: true,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      prefixIcon: Icon(
+                                        Icons.lock_outlined,
+                                        color: ColorUtilities.secondary,
+                                        size: 28,
+                                      ),
+                                      hintText: 'Password'.tr(),
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey, fontSize: 16),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter".tr() +
+                                            " " +
+                                            "Password".tr();
+                                      }
+                                      if (value.length < 8) {
+                                        return "Password".tr() +
+                                            " " +
+                                            "too short".tr();
+                                      }
+                                      if (value.contains(" ")) {
+                                        return "Password".tr() +
+                                            " " +
+                                            "can't have spaces".tr();
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                             Column(
                               children: [
                                 ElevatedButton(
@@ -350,46 +353,51 @@ class _SignInState extends State<SignIn> {
                                         fontSize: 16, color: Colors.white),
                                   ),
                                 ),
-                                (isTesting ?? false) ?
-                                    Column(children: [
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      InkWell(
-                                        child: Text(
-                                          "Login as a Guest".tr() + "?".tr(),
-                                          style:
-                                          TextStyle(color: Colors.blue, fontSize: 12),
-                                        ),
-                                        onTap: () {
-                                          try {
-                                            mainScreenState
-                                                .signIn("guest@gmail.com",
-                                                "123456789")
-                                                .then((value) {
-                                              if (FirebaseDataSource()
-                                                  .firebaseAuth
-                                                  .currentUser !=
-                                                  null &&
-                                                  FirebaseDataSource()
-                                                      .firebaseAuth
-                                                      .currentUser
-                                                      ?.uid !=
-                                                      null) {
-                                                sharedState.updateUserInfo(
-                                                    FirebaseDataSource()
-                                                        .firebaseAuth
-                                                        .currentUser!
-                                                        .uid);
+                                (isTesting ?? false)
+                                    ? Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          InkWell(
+                                            child: Text(
+                                              "Login as a Guest".tr() +
+                                                  "?".tr(),
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 12),
+                                            ),
+                                            onTap: () {
+                                              try {
+                                                mainScreenState
+                                                    .signIn("guest@gmail.com",
+                                                        "123456789")
+                                                    .then((value) {
+                                                  if (FirebaseDataSource()
+                                                              .firebaseAuth
+                                                              .currentUser !=
+                                                          null &&
+                                                      FirebaseDataSource()
+                                                              .firebaseAuth
+                                                              .currentUser
+                                                              ?.uid !=
+                                                          null) {
+                                                    sharedState.updateUserInfo(
+                                                        FirebaseDataSource()
+                                                            .firebaseAuth
+                                                            .currentUser!
+                                                            .uid);
+                                                  }
+                                                });
+                                              } catch (e) {
+                                                Message.showErrorToastMessage(
+                                                    "Wrong inputs or you are not signed up");
                                               }
-                                            });
-                                          } catch (e) {
-                                            Message.showErrorToastMessage(
-                                                "Wrong inputs or you are not signed up");
-                                          }
-                                        },
+                                            },
+                                          )
+                                        ],
                                       )
-                                    ],) : SizedBox(),
+                                    : SizedBox(),
                                 SizedBox(
                                   height: 15,
                                 ),
@@ -419,7 +427,8 @@ class _SignInState extends State<SignIn> {
                                     )),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Color.fromRGBO(128, 128, 128, 1),
+                                    backgroundColor:
+                                        Color.fromRGBO(128, 128, 128, 1),
                                     textStyle: TextStyle(
                                         fontSize: 16, color: Colors.white),
                                   ),

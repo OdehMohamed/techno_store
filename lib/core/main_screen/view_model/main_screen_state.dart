@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:techno_store/core/shared/model/create_user_account_model.dart';
 import 'package:techno_store/data_source/firebase.dart';
 
 class MainScreenState extends ChangeNotifier {
