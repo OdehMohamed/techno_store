@@ -1,6 +1,6 @@
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -35,7 +35,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   void initState() {
     sharedState = context.read<SharedState>();
     trackPhonePageState = context.read<TrackPhonePageState>();
-    if (Platform.isIOS) {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
       getTestingValue();
     }
     super.initState();
@@ -237,7 +237,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         SizedBox(
                           height: height * 0.03,
                         ),
-                        Platform.isIOS
+                        defaultTargetPlatform == TargetPlatform.iOS
                             ? FutureBuilder<bool>(
                                 future: sharedState.isTesting(),
                                 builder: (context, snapshot) {

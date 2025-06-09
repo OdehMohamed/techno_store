@@ -1,17 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/favorite_items/view/favoriteItems.dart';
 import 'package:techno_store/core/maintenance_list/view/maintenance_list.dart';
 import 'package:techno_store/core/manage_categories/view/manage_category_view.dart';
-import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core/new_user_admin_side/view/new_user_admin_side.dart';
-import 'package:techno_store/core/store/view/store.dart';
 import 'package:techno_store/core/welcome_page/view_model/welcome_page_state.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import 'package:techno_store/data_source/firebase.dart';
@@ -21,7 +17,6 @@ import '../../../shared/utilities.dart';
 import '../../../shared/widget_utilities.dart';
 import '../../selectCategory/view/selectCategory.dart';
 import '../../shared/view_model/shared_state.dart';
-
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -44,12 +39,14 @@ class _WelcomePageState extends State<WelcomePage> {
   void _launchSocial(String url, String fallbackUrl) async {
     try {
       bool launched =
-          await launch(url, forceSafariVC: false, forceWebView: false);
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       if (!launched) {
-        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+        await launchUrl(Uri.parse(fallbackUrl),
+            mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      await launchUrl(Uri.parse(fallbackUrl),
+          mode: LaunchMode.externalApplication);
     }
   }
 
@@ -129,9 +126,11 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Center(
               child: InkWell(
                 onTap: () {
-                  context.locale = context.locale == Locale("en")
-                      ? Locale("ar")
-                      : Locale("en");
+                  context.setLocale(
+                    context.locale == const Locale("en")
+                        ? const Locale("ar")
+                        : const Locale("en"),
+                  );
                 },
                 child: WidgetUtilities.autoSizeText(
                   lang.tr(),
@@ -164,19 +163,22 @@ class _WelcomePageState extends State<WelcomePage> {
             Flexible(
                 child: ListView(
               children: [
-                sharedState.userType!=3 && sharedState.userType!=9?
-                card("Favorite", Icon(Icons.star, color: Colors.yellow), () {
-                  Utilities.navigatorWithBack(context, favoraitItems());
-                }):SizedBox(),
-                sharedState.userType!=3?
-                card(
-                    "Store",
-                    Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white60,
-                    ), () {
-                  Utilities.navigatorWithBack(context, SelectCategory());
-                }):SizedBox(),
+                sharedState.userType != 3 && sharedState.userType != 9
+                    ? card("Favorite", Icon(Icons.star, color: Colors.yellow),
+                        () {
+                        Utilities.navigatorWithBack(context, favoraitItems());
+                      })
+                    : SizedBox(),
+                sharedState.userType != 3
+                    ? card(
+                        "Store",
+                        Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white60,
+                        ), () {
+                        Utilities.navigatorWithBack(context, SelectCategory());
+                      })
+                    : SizedBox(),
                 card(
                     "Check My Device",
                     Icon(
@@ -262,65 +264,65 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ],
                     ))),
-           sharedState.userType != 9 ? InkWell(
-              onTap: () async {
+            sharedState.userType != 9
+                ? InkWell(
+                    onTap: () async {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) {
+                            return AlertDialog(
+                              title: Text("Please Confirm".tr()),
+                              content: Text(
+                                  'Are you sure you want to remove the account?'
+                                      .tr()),
+                              actions: [
+                                // The "Yes" button
+                                TextButton(
+                                    onPressed: () async {
+                                      try {
+                                        await welcomePageState.removeAccount();
+                                      } catch (e) {
+                                        print(e.toString());
+                                      }
 
-
-                showDialog(
-                    context: context,
-                    builder: (BuildContext ctx) {
-                      return AlertDialog(
-                        title:  Text("Please Confirm".tr()),
-                        content:  Text('Are you sure you want to remove the account?'.tr()),
-                        actions: [
-                          // The "Yes" button
-                          TextButton(
-                              onPressed: () async {
-                                try {
-                                  await welcomePageState.removeAccount();
-                                } catch (e) {
-                                  print(e.toString());
-                                }
-
-                                // Close the dialog
-                                Navigator.of(context).pop();
-                              },
-                              child:  Text('Yes'.tr())),
-                          TextButton(
-                              onPressed: () {
-                                // Close the dialog
-                                Navigator.of(context).pop();
-                              },
-                              child:  Text('No'.tr()))
-                        ],
-                      );
-                    });
-              },
-              child: Container(
-                  padding: EdgeInsets.all(10),
-                  width: width,
-                  color: Colors.white60,
-                  height: 40,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ),
-                      WidgetUtilities.autoSizeText(
-                          "Delete account",
-                          textStyle: TextStyle(color: Colors.red)
-                      ),
-                    ],
-                  )),
-            ) : SizedBox(),
+                                      // Close the dialog
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Yes'.tr())),
+                                TextButton(
+                                    onPressed: () {
+                                      // Close the dialog
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('No'.tr()))
+                              ],
+                            );
+                          });
+                    },
+                    child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: width,
+                        color: Colors.white60,
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            WidgetUtilities.autoSizeText("Delete account",
+                                textStyle: TextStyle(color: Colors.red)),
+                          ],
+                        )),
+                  )
+                : SizedBox(),
           ],
         ),
       ),
       body: ModalProgressHUD(
         opacity: 0.3,
-        inAsyncCall: welcomePageState.loading||sharedState.userType==null,
+        inAsyncCall: welcomePageState.loading || sharedState.userType == null,
         child: Column(
           children: [
             Container(
@@ -335,37 +337,34 @@ class _WelcomePageState extends State<WelcomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(top: height*0.05),
-                          child:Center(
-                              child:
-                             Column(
-                               children: [
-                                 Text("T.E.C.H.N.O",
-                                   style: TextStyle(
-                                     fontSize: width*0.075,
-                                     color: ColorUtilities.backgroundContainer,
-                                     letterSpacing: 3,
-
-                                   ),
-                                 ),
-                                 Container(
-                                   padding: EdgeInsets.only(left: width*0.05),
-                                   child: Text("Store",
-                                     textAlign: TextAlign.center,
-                                     style: TextStyle(
-                                       fontSize: width*0.075,
-                                       color: ColorUtilities.backgroundContainer,
-                                       letterSpacing: 20,
-                                     ),
-                                   ),
-                                 ),
-                               ],
-                             )
-                          )
-                      ),
+                          padding: EdgeInsets.only(top: height * 0.05),
+                          child: Center(
+                              child: Column(
+                            children: [
+                              Text(
+                                "T.E.C.H.N.O",
+                                style: TextStyle(
+                                  fontSize: width * 0.075,
+                                  color: ColorUtilities.backgroundContainer,
+                                  letterSpacing: 3,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                child: Text(
+                                  "Store",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: width * 0.075,
+                                    color: ColorUtilities.backgroundContainer,
+                                    letterSpacing: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ))),
                     ],
-                  )
-              ),
+                  )),
             ),
             Container(
               color: ColorUtilities.secondary,
@@ -380,92 +379,116 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          sharedState.userType!=3&&sharedState.userType!=null?
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SelectCategory()),
-                              );
-                            },
-                            child: Container(
-                              padding: Utilities.isEnglish(context)?EdgeInsets.only(right: 10):
-                              EdgeInsets.only(left: 10)
-                                ,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: ColorUtilities.secondary,
-                                ),
-                                width: width*0.5,
-                                height: height*0.12,
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.shopping_cart,color: ColorUtilities.white,size: 30,),
-                                      WidgetUtilities.autoSizeText(
-                                        "Store",
-                                        textStyle: TextStyle(
-                                            fontSize: 26,
-                                            color: ColorUtilities.textColor),
-                                      )
-                                    ],
-                                  ),
-                                )),
-                          ):
-                              sharedState.userType!=null?
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => TrackPhonePage()),
-                              );
-                            },
-                            child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: ColorUtilities.secondary,
-                                ),
-                                width: width*0.5,
-                                height: height*0.12,
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                    Icon(Icons.phone_android,color: ColorUtilities.white,size: 30,),
-                                    WidgetUtilities.autoSizeText(
-                                      "Check Status",
-                                      textStyle: TextStyle(
-                                          fontSize: 22,
-                                          color: ColorUtilities.textColor),
+                          sharedState.userType != 3 &&
+                                  sharedState.userType != null
+                              ? InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              SelectCategory()),
+                                    );
+                                  },
+                                  child: Container(
+                                      padding: Utilities.isEnglish(context)
+                                          ? EdgeInsets.only(right: 10)
+                                          : EdgeInsets.only(left: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: ColorUtilities.secondary,
+                                      ),
+                                      width: width * 0.5,
+                                      height: height * 0.12,
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.shopping_cart,
+                                              color: ColorUtilities.white,
+                                              size: 30,
+                                            ),
+                                            WidgetUtilities.autoSizeText(
+                                              "Store",
+                                              textStyle: TextStyle(
+                                                  fontSize: 26,
+                                                  color:
+                                                      ColorUtilities.textColor),
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                                )
+                              : sharedState.userType != null
+                                  ? InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TrackPhonePage()),
+                                        );
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: ColorUtilities.secondary,
+                                          ),
+                                          width: width * 0.5,
+                                          height: height * 0.12,
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.phone_android,
+                                                  color: ColorUtilities.white,
+                                                  size: 30,
+                                                ),
+                                                WidgetUtilities.autoSizeText(
+                                                  "Check Status",
+                                                  textStyle: TextStyle(
+                                                      fontSize: 22,
+                                                      color: ColorUtilities
+                                                          .textColor),
+                                                )
+                                              ],
+                                            ),
+                                          )),
                                     )
-                                  ],),
-                                )),
-                          ):
-                                  SizedBox(),
+                                  : SizedBox(),
                           SizedBox(
                             height: height * 0.05,
                           ),
                           InkWell(
                             onTap: () {
-                              sharedState.userType != 1 && sharedState.userType != 9
+                              sharedState.userType != 1 &&
+                                      sharedState.userType != 9
                                   ? Utilities.navigatorWithBack(
-                                  context, MaintinanceList())
+                                      context, MaintinanceList())
                                   : Utilities.navigatorWithBack(
-                                  context, TrackPhonePage());
+                                      context, TrackPhonePage());
                             },
                             child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: ColorUtilities.secondary,
                                 ),
-                                width: width*0.5,
-                                height: height*0.12,
+                                width: width * 0.5,
+                                height: height * 0.12,
                                 child: Center(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.add_to_home_screen,color: Colors.white,size: 30,),
+                                      Icon(
+                                        Icons.add_to_home_screen,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
                                       WidgetUtilities.autoSizeText(
                                         "Maintenance",
                                         textStyle: TextStyle(
@@ -482,118 +505,118 @@ class _WelcomePageState extends State<WelcomePage> {
                   )),
             ),
             Container(
-              color: ColorUtilities.secondary,
-              height: height*0.12,
-              child:Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                Text("Contact us:".tr(),style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                color: ColorUtilities.secondary,
+                height: height * 0.12,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child: InkWell(
-                        child: Icon(
-                          FontAwesome5.whatsapp,
-                          color: ColorUtilities.secondary,
-                          size: 30,
-                        ),
-                        onTap: () {
-                          _launchSocial(
-                              'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
-                              'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                        color: ColorUtilities.backgroundContainer,
-                        borderRadius: BorderRadius.circular(50)
-                      ),
+                    Text(
+                      "Contact us:".tr(),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(width: 15),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child: InkWell(
-                        child: Icon(
-                          FontAwesome5.facebook,
-                          color: ColorUtilities.secondary,
-                          size: 30,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            child: Icon(
+                              FontAwesome5.whatsapp,
+                              color: ColorUtilities.secondary,
+                              size: 30,
+                            ),
+                            onTap: () {
+                              _launchSocial(
+                                  'https://wa.me/message/WGQOCNRN47W7M1?src=qr',
+                                  'https://wa.me/message/WGQOCNRN47W7M1?src=qr');
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: ColorUtilities.backgroundContainer,
+                              borderRadius: BorderRadius.circular(50)),
                         ),
-                        onTap: () {
-                          _launchSocial('fb://profile/100088001516569',
-                              'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          color: ColorUtilities.backgroundContainer,
-                          borderRadius: BorderRadius.circular(50)
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child: InkWell(
-                        child: Icon(
-                          FontAwesome5.instagram,
-                          color: ColorUtilities.secondary,
-                          size: 30,
+                        SizedBox(width: 15),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            child: Icon(
+                              FontAwesome5.facebook,
+                              color: ColorUtilities.secondary,
+                              size: 30,
+                            ),
+                            onTap: () {
+                              _launchSocial('fb://profile/100088001516569',
+                                  'facebook.com/people/Techno-Store-تكنو-ستور/100088001516569/');
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: ColorUtilities.backgroundContainer,
+                              borderRadius: BorderRadius.circular(50)),
                         ),
-                        onTap: () {
-                          _launchSocial(
-                              'instagram://user?username=techno__store00',
-                              'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          color: ColorUtilities.backgroundContainer,
-                          borderRadius: BorderRadius.circular(50)
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child: InkWell(
-                        child: Icon(
-                          FontAwesome5.snapchat,
-                          color:ColorUtilities.secondary,
-                          size: 30,
+                        SizedBox(width: 15),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            child: Icon(
+                              FontAwesome5.instagram,
+                              color: ColorUtilities.secondary,
+                              size: 30,
+                            ),
+                            onTap: () {
+                              _launchSocial(
+                                  'instagram://user?username=techno__store00',
+                                  'https://www.instagram.com/techno__store00/?igshid=YmMyMTA2M2Y%3D');
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: ColorUtilities.backgroundContainer,
+                              borderRadius: BorderRadius.circular(50)),
                         ),
-                        onTap: () {
-                          _launchSocial(
-                              'https://www.snapchat.com/add/technostore0',
-                              'https://www.snapchat.com/add/technostore0');
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          color: ColorUtilities.backgroundContainer,
-                          borderRadius: BorderRadius.circular(50)
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      child:
-                      InkWell(
-                        child: Icon(
-                          Icons.tiktok,
-                          color: ColorUtilities.secondary,
-                          size: 30,
+                        SizedBox(width: 15),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            child: Icon(
+                              FontAwesome5.snapchat,
+                              color: ColorUtilities.secondary,
+                              size: 30,
+                            ),
+                            onTap: () {
+                              _launchSocial(
+                                  'https://www.snapchat.com/add/technostore0',
+                                  'https://www.snapchat.com/add/technostore0');
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: ColorUtilities.backgroundContainer,
+                              borderRadius: BorderRadius.circular(50)),
                         ),
-                        onTap: () {
-                          _launchSocial(
-                              'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1',
-                              'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1');
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          color: ColorUtilities.backgroundContainer,
-                          borderRadius: BorderRadius.circular(50)
-                      ),
+                        SizedBox(width: 15),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          child: InkWell(
+                            child: Icon(
+                              Icons.tiktok,
+                              color: ColorUtilities.secondary,
+                              size: 30,
+                            ),
+                            onTap: () {
+                              _launchSocial(
+                                  'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1',
+                                  'https://www.tiktok.com/@technostore11?_t=8YtE7LC84os&_r=1');
+                            },
+                          ),
+                          decoration: BoxDecoration(
+                              color: ColorUtilities.backgroundContainer,
+                              borderRadius: BorderRadius.circular(50)),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],)
-            ),
+                )),
           ],
         ),
       ),

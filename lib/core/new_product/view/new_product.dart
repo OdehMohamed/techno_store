@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/new_product/view_model/new_product_state.dart';
-import 'package:techno_store/core/product_details/view/product_details.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/shared/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
@@ -111,13 +109,12 @@ class _NewProductState extends State<NewProduct> {
                       decoration: const BoxDecoration(
                         color: ColorUtilities.secondary,
                       ),
-                      child: Column(
-                        children:[
-                          SizedBox(height:height*0.05),
-                          WidgetUtilities.autoSizeText("New Product".tr(),
+                      child: Column(children: [
+                        SizedBox(height: height * 0.05),
+                        WidgetUtilities.autoSizeText("New Product".tr(),
                             textStyle: TextStyle(
-                                color: ColorUtilities.textColor, fontSize: 20)),]
-                      )),
+                                color: ColorUtilities.textColor, fontSize: 20)),
+                      ])),
                 ),
                 Container(
                   color: ColorUtilities.secondary,
@@ -137,78 +134,78 @@ class _NewProductState extends State<NewProduct> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: photoPaths.isNotEmpty
-                                        ? Container(
-                                      height: height * 0.5,
-                                      width: width*0.8,
-                                      child: ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                          photoPaths.length,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: photoPaths.isNotEmpty
+                                      ? Container(
+                                          height: height * 0.5,
+                                          width: width * 0.8,
+                                          child: ListView(
+                                            scrollDirection: Axis.horizontal,
+                                            children: List.generate(
+                                              photoPaths.length,
                                               (i) => Container(
-                                              child: Container(
-                                                  margin:
-                                                  EdgeInsets.all(10),
-                                                  child: Stack(
-                                                    children: [
-                                                      photoPaths[i].contains(
-                                                          "https://firebasestorage.googleapis.com/v0/b/technostore")
-                                                          ? Image.network(
-                                                        photoPaths[i],
-                                                        fit: BoxFit
-                                                            .fill,
-                                                      )
-                                                          : Image.file(
-                                                        File(
-                                                            photoPaths[
-                                                            i]),
-                                                        fit: BoxFit
-                                                            .fill,
-                                                      ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .end,
+                                                  child: Container(
+                                                      margin:
+                                                          EdgeInsets.all(10),
+                                                      child: Stack(
                                                         children: [
-                                                          InkWell(
-                                                            child: Icon(
-                                                              Icons.cancel,
-                                                              color: Colors
-                                                                  .red,
-                                                              size: 30,
-                                                            ),
-                                                            onTap: () {
-                                                              if (photoPaths[
-                                                              i]
-                                                                  .contains(
-                                                                  "https://firebasestorage.googleapis.com/v0/b/technostore")) {
-                                                                deletedList.add(
-                                                                    photoPaths[
-                                                                    i]);
-                                                              }
-                                                              photoPaths.remove(
-                                                                  photoPaths[
-                                                                  i]);
-                                                              setState(
+                                                          photoPaths[i].contains(
+                                                                  "https://firebasestorage.googleapis.com/v0/b/technostore")
+                                                              ? Image.network(
+                                                                  photoPaths[i],
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                )
+                                                              : Image.file(
+                                                                  File(
+                                                                      photoPaths[
+                                                                          i]),
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              InkWell(
+                                                                child: Icon(
+                                                                  Icons.cancel,
+                                                                  color: Colors
+                                                                      .red,
+                                                                  size: 30,
+                                                                ),
+                                                                onTap: () {
+                                                                  if (photoPaths[
+                                                                          i]
+                                                                      .contains(
+                                                                          "https://firebasestorage.googleapis.com/v0/b/technostore")) {
+                                                                    deletedList.add(
+                                                                        photoPaths[
+                                                                            i]);
+                                                                  }
+                                                                  photoPaths.remove(
+                                                                      photoPaths[
+                                                                          i]);
+                                                                  setState(
                                                                       () {});
-                                                            },
-                                                          )
+                                                                },
+                                                              )
+                                                            ],
+                                                          ),
                                                         ],
-                                                      ),
-                                                    ],
-                                                  ))),
-                                        ),
-                                      ),
-                                    )
-                                        :Container(
-                                      width: 200,
-                                      height: 200,
-                                      child:  Image.asset(
-                                          "assets/images/defaultProductImage.png")),
-                                    ),
+                                                      ))),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 200,
+                                          height: 200,
+                                          child: Image.asset(
+                                              "assets/images/defaultProductImage.png")),
+                                ),
                                 SizedBox(
                                   height: 15,
                                 ),
@@ -291,11 +288,14 @@ class _NewProductState extends State<NewProduct> {
                                           color: Colors.grey, fontSize: 16),
                                     ),
                                     validator: (value) {
-                                      if ((value == null || value.isEmpty)&&ar_title_controller.text.isEmpty) {
+                                      if ((value == null || value.isEmpty) &&
+                                          ar_title_controller.text.isEmpty) {
                                         return "Please Enter".tr() +
                                             " " +
-                                            "English Title".tr() +" "+
-                                            "or".tr()+" "+
+                                            "English Title".tr() +
+                                            " " +
+                                            "or".tr() +
+                                            " " +
                                             "Arabic Title".tr();
                                       }
                                       return null;
@@ -322,11 +322,14 @@ class _NewProductState extends State<NewProduct> {
                                           color: Colors.grey, fontSize: 16),
                                     ),
                                     validator: (value) {
-                                      if ((value == null || value.isEmpty)&&en_title_controller.text.isEmpty) {
+                                      if ((value == null || value.isEmpty) &&
+                                          en_title_controller.text.isEmpty) {
                                         return "Please Enter".tr() +
-                                            " "+
-                                            "English Title".tr()+" "+
-                                            "or".tr()+" "+
+                                            " " +
+                                            "English Title".tr() +
+                                            " " +
+                                            "or".tr() +
+                                            " " +
                                             "Arabic Title".tr();
                                       }
                                       return null;
@@ -590,8 +593,8 @@ class _NewProductState extends State<NewProduct> {
                                                   if (futureBrands[i].name ==
                                                       widget.edit_product!
                                                           .brandID) {
-                                                      selectedBrand =
-                                                          futureBrands[i];
+                                                    selectedBrand =
+                                                        futureBrands[i];
                                                   }
                                                 }
                                               }
@@ -600,10 +603,10 @@ class _NewProductState extends State<NewProduct> {
                                                 name: "BrandName",
                                                 dropDownValue: selectedBrand,
                                                 onChanged: (newValue) {
-                                                  setState((){
+                                                  setState(() {
                                                     selectedBrand = newValue;
                                                   });
-                                                  },
+                                                },
                                                 items: List.generate(
                                                     futureBrands.length,
                                                     (index) => DropdownMenuItem<
@@ -695,7 +698,8 @@ class _NewProductState extends State<NewProduct> {
                                               ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: ColorUtilities.secondary,
+                                        backgroundColor:
+                                            ColorUtilities.secondary,
                                         textStyle: TextStyle(
                                             fontSize: 16, color: Colors.white),
                                       ),
@@ -712,7 +716,8 @@ class _NewProductState extends State<NewProduct> {
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color.fromRGBO(128, 128, 128, 1),
+                                        backgroundColor:
+                                            Color.fromRGBO(128, 128, 128, 1),
                                         textStyle: TextStyle(
                                             fontSize: 16, color: Colors.white),
                                       ),

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -82,14 +81,13 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                         decoration: const BoxDecoration(
                           color: ColorUtilities.secondary,
                         ),
-                        child: Column(
-                          children:[
-                            SizedBox(height:height*0.05),
-                            WidgetUtilities.autoSizeText("New Account",
+                        child: Column(children: [
+                          SizedBox(height: height * 0.05),
+                          WidgetUtilities.autoSizeText("New Account",
                               textStyle: TextStyle(
                                   color: ColorUtilities.textColor,
-                                  fontSize: 20)),]
-                        )),
+                                  fontSize: 20)),
+                        ])),
                   ),
                   Container(
                     color: ColorUtilities.secondary,
@@ -222,7 +220,8 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                             color: Colors.grey, fontSize: 16),
                                       ),
                                       validator: (value) {
-                                        if (value == null || value.trim().isEmpty) {
+                                        if (value == null ||
+                                            value.trim().isEmpty) {
                                           return "Please Enter".tr() +
                                               " " +
                                               "Email".tr();

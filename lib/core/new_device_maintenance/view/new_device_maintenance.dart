@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -1983,7 +1984,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                           " قد تم اصلاحه\n\nشكرا لأختياركم تكنو ستور";
                                                       String phone = phoneCode +
                                                           phone_controller.text;
-                                                      if (Platform.isAndroid) {
+                                                      if (defaultTargetPlatform == TargetPlatform.android) {
                                                         try {
                                                           bool launched =
                                                               await launch(
@@ -2008,8 +2009,7 @@ class _NewDeviceMaintanaceState extends State<NewDeviceMaintanace> {
                                                               forceWebView:
                                                                   false);
                                                         }
-                                                      } else if (Platform
-                                                          .isIOS) {
+                                                      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
                                                         try {
                                                           bool launched =
                                                               await launch(
