@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/track_phone_page/view_model/track_phone_page_state.dart';
-import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/core/utils/color_utilities.dart';
 
-import '../../../shared/widget_utilities.dart';
+import '../../utils/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
 import '../../shared/view_model/shared_state.dart';
 import '../../track_device_details/view/trackDeviceDetails.dart';

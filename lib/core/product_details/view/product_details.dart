@@ -10,11 +10,11 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
-import 'package:techno_store/shared/color_utilities.dart';
-import 'package:techno_store/shared/message.dart';
-import 'package:techno_store/shared/utilities.dart';
+import 'package:techno_store/core/utils/color_utilities.dart';
+import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core/utils/utilities.dart';
 
-import '../../../shared/widget_utilities.dart';
+import '../../utils/widget_utilities.dart';
 import '../../shared/view_model/shared_state.dart';
 
 class ProductDetails extends StatefulWidget {

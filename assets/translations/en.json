@@ -173,5 +173,26 @@
   "Are you sure you want to remove the account?": "Are you sure you want to remove the account and all the data associated with it?",
   "Yes" : "Yes",
   "No" : "No",
-  "Apple warranty": "We do not use original Apple parts, and the Apple warranty will be voided"
+  "Apple warranty": "We do not use original Apple parts, and the Apple warranty will be voided",
+  "Ok":"Ok",
+  "Your Account Not Activated":"Your Account Not Activated",
+  "Please contact the admin to activate your account":"Please contact the admin to activate your account",
+  "Your email or password is wrong": "Your email or password is wrong.",
+  "Login Success.": "Login Success.",
+  "Too many attempts. Please try again later.": "Too many attempts. Please try again later.",
+  "Network error. Please check your connection.": "Network error. Please check your connection.",
+  "An unexpected error occurred. Please try again.": "An unexpected error occurred. Please try again.",
+  "Email already in use. Please use a different email.": "Email already in use. Please use a different email.",
+  "Home": "Home",
+  "No user data available": "No user data available",
+  "Are you sure you want to logout?": "Are you sure you want to logout?",
+  "Settings":"Settings",
+  "Admin":"Admin",
+  "Add new Category":"Add new Category",
+  "Add new Subcategory":"Add new Subcategory",
+  "Edit Category":"Edit Category",
+  "Edit Subcategory":"Edit Subcategory",
+  "Delete Category":"Delete Category",
+  "Delete Subcategory":"Delete Subcategory"
+  
 }

@@ -7,7 +7,8 @@ class ManageCategories extends ChangeNotifier {
   bool loading = false;
 
   Future<bool> addCategory(
-      CategoriesAndSubCategoryModel categoriesAndSubCategoryModel) async {
+    CategoriesAndSubCategoryModel categoriesAndSubCategoryModel,
+  ) async {
     changeLoadingState(isLoading: true);
 
     bool response = false;

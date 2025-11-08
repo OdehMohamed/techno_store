@@ -1,79 +1,26 @@
 {
   "project_info": {
-    "project_number": "861642035851",
-    "project_id": "technostore-86118",
-    "storage_bucket": "technostore-86118.appspot.com"
+    "project_number": "813856656513",
+    "project_id": "technostore-v2",
+    "storage_bucket": "technostore-v2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:861642035851:android:af2e8ecf86a2b28a9bfa8e",
+        "mobilesdk_app_id": "1:813856656513:android:9c35d4a6377f9ef3d9d180",
         "android_client_info": {
           "package_name": "com.Techno.techno_store"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "861642035851-rkb1kgvl7iq4nhmeat2t0hjka78bnjno.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCIWE5aLXBDbLOJNpJUw5JXwEScAM0NOuc"
+          "current_key": "AIzaSyBtsjgIEYqSRM5gwFZCbKrV18jIBo4U5CI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "861642035851-rkb1kgvl7iq4nhmeat2t0hjka78bnjno.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "861642035851-injbcffbn86n9r1m6l9svsr7rk92gpj0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.technoStore"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861642035851:android:38ce04354c85af8e9bfa8e",
-        "android_client_info": {
-          "package_name": "com.example.techno_store"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861642035851-rkb1kgvl7iq4nhmeat2t0hjka78bnjno.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCIWE5aLXBDbLOJNpJUw5JXwEScAM0NOuc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "861642035851-rkb1kgvl7iq4nhmeat2t0hjka78bnjno.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "861642035851-injbcffbn86n9r1m6l9svsr7rk92gpj0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.technoStore"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

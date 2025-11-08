@@ -11,9 +11,8 @@ import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
-import 'package:techno_store/shared/message.dart';
+import 'package:techno_store/core/utils/message.dart';
 import 'package:uuid/uuid.dart';
-
 
 class FirebaseDataSource {
   static final FirebaseDataSource instance = FirebaseDataSource._internal();
@@ -51,7 +50,6 @@ class FirebaseDataSource {
     } catch (e) {
       Message.showErrorToastMessage("somethingWentWrong".tr());
     }
-
     return false;
   }
 
@@ -290,7 +288,6 @@ class FirebaseDataSource {
           .collection("categories")
           .add(categoriesAndSubCategoryModel.toJson())
           .then((value) => print(value.id));
-
       return true;
     } catch (e) {
       Message.showErrorToastMessage("somethingWentWrong".tr());
@@ -394,7 +391,7 @@ class FirebaseDataSource {
         subCategoriesLength = value.docs.length;
       });
 
-      if (subCategoriesLength == null || subCategoriesLength == 0) {
+      if (subCategoriesLength == 0) {
         firebaseFirestore
             .collection("categories")
             .doc(categoryId)
@@ -848,5 +845,4 @@ class FirebaseDataSource {
 ////
 ////
 ////
-
 }

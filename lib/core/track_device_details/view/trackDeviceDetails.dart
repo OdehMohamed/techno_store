@@ -2,8 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 
-import '../../../shared/color_utilities.dart';
-import '../../../shared/widget_utilities.dart';
+import '../../utils/color_utilities.dart';
+import '../../utils/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
 class TrackDeviceDetails extends StatefulWidget {
   final MaintenanceDeviceModel maintenanceDevice;
