@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "813856656513",
+    "project_id": "technostore-v2",
+    "storage_bucket": "technostore-v2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813856656513:android:9c35d4a6377f9ef3d9d180",
+        "android_client_info": {
+          "package_name": "com.Techno.techno_store"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtsjgIEYqSRM5gwFZCbKrV18jIBo4U5CI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
