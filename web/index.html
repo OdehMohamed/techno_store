@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,17 +28,40 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>techno_store</title>
   <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
+  <!-- ✅ reCAPTCHA container للـ Phone Authentication -->
+  <div id="recaptcha-container"></div>
+  
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB84u6dYWQ3LpvQYmhxMczMWyHY3t7h4RM",
+      authDomain: "technostore-v2.firebaseapp.com",
+      projectId: "technostore-v2",
+      storageBucket: "technostore-v2.firebasestorage.app",
+      messagingSenderId: "813856656513",
+      appId: "1:813856656513:web:f7d3ed8fe285b3c8d9d180",
+      measurementId: "G-M39C3GQSJ0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+  </script>
   <script>
-    var serviceWorkerVersion = null;
+    var serviceWorkerVersion = "{{flutter_service_worker_version}}";
     var scriptLoaded = false;
     function loadMainDartJs() {
       if (scriptLoaded) {
@@ -101,4 +125,5 @@
     }
   </script>
 </body>
+
 </html>

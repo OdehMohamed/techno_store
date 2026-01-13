@@ -1,6 +1,6 @@
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/track_phone_page/view_model/track_phone_page_state.dart';
-import 'package:techno_store/shared/color_utilities.dart';
+import 'package:techno_store/core/utils/color_utilities.dart';
 
-import '../../../shared/widget_utilities.dart';
+import '../../utils/widget_utilities.dart';
 import '../../shared/model/maintenance_device_model.dart';
 import '../../shared/view_model/shared_state.dart';
 import '../../track_device_details/view/trackDeviceDetails.dart';
@@ -35,7 +35,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
   void initState() {
     sharedState = context.read<SharedState>();
     trackPhonePageState = context.read<TrackPhonePageState>();
-    if (Platform.isIOS) {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
       getTestingValue();
     }
     super.initState();
@@ -237,28 +237,30 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         SizedBox(
                           height: height * 0.03,
                         ),
-                        Platform.isIOS ?
-                        FutureBuilder<bool>(
-                            future: sharedState.isTesting(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData && (snapshot.data ?? false)) {
-                                return Column(
-                                  children: [
-                                    WidgetUtilities.autoSizeText(
-                                        "Apple warranty",
-                                        textAlign: TextAlign.center,
-                                        textStyle:
-                                            TextStyle(color: Colors.red),
-                                    maxLine: 2),
-                                    SizedBox(
-                                      height: height * 0.07,
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return SizedBox();
-                              }
-                            }) : SizedBox(),
+                        defaultTargetPlatform == TargetPlatform.iOS
+                            ? FutureBuilder<bool>(
+                                future: sharedState.isTesting(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData &&
+                                      (snapshot.data ?? false)) {
+                                    return Column(
+                                      children: [
+                                        WidgetUtilities.autoSizeText(
+                                            "Apple warranty",
+                                            textAlign: TextAlign.center,
+                                            textStyle:
+                                                TextStyle(color: Colors.red),
+                                            maxLine: 2),
+                                        SizedBox(
+                                          height: height * 0.07,
+                                        ),
+                                      ],
+                                    );
+                                  } else {
+                                    return SizedBox();
+                                  }
+                                })
+                            : SizedBox(),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),
@@ -337,7 +339,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                 ),
                               )),
                           style: ElevatedButton.styleFrom(
-                            primary: ColorUtilities.secondary,
+                            backgroundColor: ColorUtilities.secondary,
                             textStyle:
                                 TextStyle(fontSize: 16, color: Colors.white),
                           ),

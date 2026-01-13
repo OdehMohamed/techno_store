@@ -6,12 +6,12 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:techno_store/core/product_details/view/product_details.dart';
 import 'package:techno_store/core/store/view_model/store_state.dart';
-import 'package:techno_store/shared/color_utilities.dart';
-import 'package:techno_store/shared/utilities.dart';
+import 'package:techno_store/core/utils/color_utilities.dart';
+import 'package:techno_store/core/utils/utilities.dart';
 
-import '../../../shared/custom_widgets.dart';
-import '../../../shared/string_utilities.dart';
-import '../../../shared/widget_utilities.dart';
+import '../../utils/custom_widgets.dart';
+import '../../utils/string_utilities.dart';
+import '../../utils/widget_utilities.dart';
 import '../../shared/model/category_and_sub_category_model.dart';
 import '../../shared/model/productModel.dart';
 import '../../shared/view_model/shared_state.dart';
@@ -37,7 +37,7 @@ class _StoreState extends State<Store> {
   List<CategoriesAndSubCategoryModel> futureSubCategories=[];
   late StoreState storeState;
   Future<List<ProductModel>>? productList;
-  final CarouselController _carouselcontroller = CarouselController();
+  final CarouselSliderController _carouselcontroller = CarouselSliderController();
   int _current = 0;
   void changeSubCategory(int index, String subCategoryID) {
     productList = storeState.getProducts(subCategoryID);
