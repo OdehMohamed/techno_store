@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:techno_store/core2/widgets/main_app_bar.dart';
-import 'package:techno_store/features/main_screen/views/widgets/sign_in_form.dart';
+import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_email_method.dart';
+import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_phone_method.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -65,6 +66,7 @@ class _SignInState extends State<SignIn> {
     double height = MediaQuery.of(context).size.height;
     final _advancedDrawerController = AdvancedDrawerController();
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       key: _scaffoldKey,
       appBar: PreferredSize(
         preferredSize:
@@ -82,7 +84,8 @@ class _SignInState extends State<SignIn> {
         child: SizedBox(
           width: width,
           // height: height * 0.92,
-          child: const SignInForm(),
+          // ignore: prefer_const_constructors
+          child: SignInFormPhoneMethod(),
         ),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:techno_store/features/maintenance_list/view/inner_maintenance_li
 import 'package:techno_store/core/manage_categories/view/manage_category_view.dart';
 import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/features/new_user_admin_side/view/new_user_admin_side.dart';
-import 'package:techno_store/features/store_page/view/inner_store_page.dart';
+import 'package:techno_store/features/store_page/widgets/inner_store_page.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import 'package:techno_store/core/utils/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';

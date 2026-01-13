@@ -7,6 +7,4 @@ class ManageCategoriesServices {
   final FirestoreServices _firestoreServices = FirestoreServices.instance;
   final FirebaseStorageServices _firebaseStorageServices =
       FirebaseStorageServices.instance;
-  
-  
 }

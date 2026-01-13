@@ -23,34 +23,34 @@ class AppTheme {
           displayLarge: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: AppColors.white,
+            color: AppColors.primary,
             fontStyle: FontStyle.italic,
           ),
           titleLarge: TextStyle(
             // title in body
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: AppColors.white,
+            color: AppColors.primary,
           ),
           titleMedium: TextStyle(
             // body large text
             fontSize: 20,
             fontWeight: FontWeight.w500,
-            color: AppColors.white,
+            color: AppColors.primary,
           ),
           bodyLarge: TextStyle(
             // body medium text
             fontSize: 18,
-            color: Colors.white,
+            color: AppColors.primary,
           ),
           labelLarge: TextStyle(
             // body small text
             fontSize: 16,
-            color: AppColors.white,
+            color: AppColors.primary,
           ),
           labelMedium: TextStyle(
             fontSize: 14,
-            color: AppColors.white,
+            color: AppColors.primary,
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -63,7 +63,6 @@ class AppTheme {
             color: Colors.grey,
             fontSize: 16,
           ),
-          
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 18.0,
             vertical: 14.0,

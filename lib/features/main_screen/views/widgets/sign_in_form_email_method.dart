@@ -8,14 +8,14 @@ import 'package:techno_store/features/reset_password/view/reset_password.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_buttons.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_text_fields.dart';
 
-class SignInForm extends StatefulWidget {
-  const SignInForm({Key? key}) : super(key: key);
+class SignInFormEmailMethod extends StatefulWidget {
+  const SignInFormEmailMethod({Key? key}) : super(key: key);
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  State<SignInFormEmailMethod> createState() => _SignInFormEmailMethodState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignInFormEmailMethodState extends State<SignInFormEmailMethod> {
   final loginEmail = TextEditingController();
   final loginPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();

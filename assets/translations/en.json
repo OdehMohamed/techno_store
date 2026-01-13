@@ -193,6 +193,22 @@
   "Edit Category":"Edit Category",
   "Edit Subcategory":"Edit Subcategory",
   "Delete Category":"Delete Category",
-  "Delete Subcategory":"Delete Subcategory"
-  
+  "Delete Subcategory":"Delete Subcategory",
+  "Login with Phone":"Login with Phone",
+  "Code Verification": "Code Verification",
+  "Login successful!": "Login successful!",
+  "Enter the verification code sent to your phone": "Enter the verification code sent to your phone",
+  "Verification ID: ": "Verification ID: ",
+  "Verify Code": "Verify Code",
+  "Complete Your Profile": "Complete Your Profile",
+  "Welcome! Please complete your profile to continue": "Welcome! Please complete your profile to continue",
+  "This information is required to access the application": "This information is required to access the application",
+  "Next": "Next",
+  "Complete Profile": "Complete Profile",
+  "Enter your phone number to continue": "Enter your phone number to continue",
+  "Please select or enter country": "Please select or enter country",
+  "Nickname": "Nickname",
+  "Country": "Country",
+  "State/Province": "State/Province",
+  "City": "City"
 }

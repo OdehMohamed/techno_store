@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techno_store/core2/model/user_data.dart';
 
@@ -77,7 +75,7 @@ class CacheServices {
 
     final userData = UserData(
       uid: uid!,
-      email: email!,
+      email: email,
       photoURL: photoURL,
       name: name,
       isActivated: isActivated!,
@@ -91,9 +89,11 @@ class CacheServices {
 
     final sharedPreferences = await _sharedPreferences;
     await sharedPreferences.setString('uid', userData.uid);
-    await sharedPreferences.setString('email', userData.email);
+    // await sharedPreferences.setString('email', userData.email);
     await sharedPreferences.setString('photoURL', userData.photoURL ?? '');
-    await sharedPreferences.setString('name', userData.name!);
+    await sharedPreferences.setString('name', userData.name ?? '');
+    await sharedPreferences.setString('location', userData.location ?? '');
+    await sharedPreferences.setString('nickname', userData.nickname ?? '');
     await sharedPreferences.setBool('isActivated', userData.isActivated);
     await sharedPreferences.setInt('type', userData.type);
   }
