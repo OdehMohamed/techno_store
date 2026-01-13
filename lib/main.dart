@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:techno_store/core/favorite_items/view_model/favorite_items_state.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/maintenance_list/view_model/maintenance_list_state.dart';
 import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core2/route/app_router.dart';
@@ -40,9 +41,14 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

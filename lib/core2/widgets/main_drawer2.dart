@@ -15,7 +15,7 @@ import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/maintenance_list/view/maintenance_page.dart';
 import 'package:techno_store/features/manage_category/view/manage_categories_page.dart';
-import 'package:techno_store/features/store/view/store_page.dart';
+import 'package:techno_store/features/store_page/view/store_page.dart';
 
 class MainDrawer2 extends StatefulWidget {
   const MainDrawer2({super.key});

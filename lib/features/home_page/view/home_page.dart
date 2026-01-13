@@ -14,7 +14,7 @@ import 'package:techno_store/core2/widgets/main_footer.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import '../../../core/utils/widget_utilities.dart';
-import '../../store_page/view/inner_store_page.dart';
+import '../../store_page/widgets/inner_store_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

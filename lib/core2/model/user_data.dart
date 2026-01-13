@@ -3,16 +3,20 @@ import 'dart:convert';
 
 class UserData {
   final String uid;
-  final String email;
+  final String? location;
   final String? photoURL;
   final String? name;
+  final String? nickname;
+  final String? email;
   final bool isActivated;
   final int type;
   UserData({
     required this.uid,
-    required this.email,
+    this.location,
     this.photoURL,
     this.name,
+    this.nickname,
+    this.email,
     this.isActivated = false,
     this.type = 1,
   });
@@ -20,6 +24,8 @@ class UserData {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uid': uid,
+      'location': location,
+      'nickname': nickname,
       'email': email,
       'photoURL': photoURL,
       'name': name,
@@ -36,9 +42,11 @@ class UserData {
   factory UserData.fromMap(Map<String, dynamic> map, [String? documentID]) {
     return UserData(
       uid: documentID ?? map['uid'] as String,
-      email: map['email'] as String,
+      location: map['location'] as String,
+      nickname: map['nickname'] != null ? map['nickname'] as String : null,
       photoURL: map['photoURL'] != null ? map['photoURL'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
+      email: map['email'] != null ? map['email'] as String : null,
       type: map['type'] != null ? map['type'] as int : 1,
     );
   }
@@ -50,17 +58,21 @@ class UserData {
 
   UserData copyWith({
     String? uid,
-    String? email,
+    String? location,
+    String? nickname,
     String? photoURL,
     String? name,
+    String? email,
     bool? isActivated,
     int? type,
   }) {
     return UserData(
       uid: uid ?? this.uid,
-      email: email ?? this.email,
+      location: location ?? this.location,
+      nickname: nickname ?? this.nickname,
       photoURL: photoURL ?? this.photoURL,
       name: name ?? this.name,
+      email: email ?? this.email,
       isActivated: isActivated ?? this.isActivated,
       type: type ?? this.type,
     );

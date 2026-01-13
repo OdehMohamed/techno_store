@@ -15,6 +15,7 @@ class HomeServices {
     debugPrint('User ID from cache: $userIdFromCache');
     debugPrint('Current user ID: $userId');
     if (userIdFromCache != null && userIdFromCache == userId) {
+      debugPrint('Fetching user data from cache for userId: $userId');
       return await _cacheServices.getUserData();
     }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:techno_store/features/store_page/view/widgets/filter_buttons.dart';
-import 'package:techno_store/features/store_page/view/widgets/product_item.dart';
+import 'package:techno_store/features/store_page/widgets/filter_buttons.dart';
+import 'package:techno_store/features/store_page/widgets/product_item.dart';
 
 class InnerStorePage extends StatefulWidget {
   const InnerStorePage({Key? key}) : super(key: key);

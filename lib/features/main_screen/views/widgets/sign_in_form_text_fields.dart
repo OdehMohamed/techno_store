@@ -8,16 +8,19 @@ class SignInFormTextFields extends StatelessWidget {
   final TextEditingController loginEmail;
   final TextEditingController loginPassword;
   final AuthCubit authCubit;
-  const SignInFormTextFields(
-      {super.key,
-      required this.loginEmail,
-      required this.loginPassword,
-      required this.authCubit});
+
+  const SignInFormTextFields({
+    super.key,
+    required this.loginEmail,
+    required this.loginPassword,
+    required this.authCubit,
+  });
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     bool isSecret = true;
+
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         return Column(

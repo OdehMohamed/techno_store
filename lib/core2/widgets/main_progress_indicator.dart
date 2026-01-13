@@ -13,7 +13,7 @@ class MainProgressIndicator extends StatefulWidget {
 class _MainProgressIndicatorState extends State<MainProgressIndicator> {
   @override
   Widget build(BuildContext context) {
-    Timer(const Duration(milliseconds: 4300), () {
+    Timer(const Duration(milliseconds: 7000), () {
       Navigator.pushReplacementNamed(
         context,
         AppRoutes.mainScreen,
@@ -21,13 +21,14 @@ class _MainProgressIndicatorState extends State<MainProgressIndicator> {
     });
 
     return Container(
-      color: AppColors.white,
+      color: AppColors.secondary,
       child: Center(
         child: SizedBox(
-          width: 200,
-          height: 200,
+          height: 400,
+          width: 400,
           child: Image.asset(
             "assets/images/logo.gif",
+            filterQuality: FilterQuality.high,
           ),
         ),
       ),

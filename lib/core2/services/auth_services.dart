@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techno_store/core2/model/user_data.dart';
 import 'package:techno_store/core2/services/cache_services.dart';
@@ -23,6 +25,63 @@ class AuthServices {
     } else {
       return false;
     }
+  }
+
+  Future<String> signInWithPhoneNumber(String phoneNumber) async {
+    // ✅ للويب: استخدام RecaptchaVerifier
+    if (kIsWeb) {
+      try {
+        final confirmationResult =
+            await firebaseAuth.signInWithPhoneNumber(phoneNumber);
+        debugPrint('✅ Web: Code sent successfully');
+        // حفظ confirmationResult للاستخدام لاحقاً
+        return confirmationResult.verificationId;
+      } catch (e) {
+        debugPrint('❌ Web Error: $e');
+        rethrow;
+      }
+    }
+
+    // ✅ للموبايل (Android/iOS): الطريقة العادية
+    final completer = Completer<String>();
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: const Duration(seconds: 120),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // ANDROID ONLY!
+        // Sign the user in (or link) with the auto-generated credential
+        await firebaseAuth.signInWithCredential(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        debugPrint('❌ Verification failed: ${e.code} - ${e.message}');
+        completer.completeError(e.message ?? 'Verification failed');
+      },
+      codeSent: (String verificationId, int? resendToken) async {
+        debugPrint('✅ Code sent: $verificationId');
+        completer.complete(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        debugPrint('⏱️ Auto retrieval timeout');
+        if (!completer.isCompleted) {
+          completer.complete(verificationId);
+        }
+      },
+    );
+    final verifyId = await completer.future;
+    debugPrint("✅ Verification ID: $verifyId");
+    return verifyId;
+  }
+
+  Future<UserCredential> verifySMSCode(String verifyId, String smsCode) async {
+    debugPrint('🔐 Verifying code: $smsCode');
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: verifyId,
+      smsCode: smsCode,
+    );
+    final userCredential = await firebaseAuth.signInWithCredential(credential);
+    debugPrint('✅ Sign in successful: ${userCredential.user?.uid}');
+
+    return userCredential;
   }
 
   Future<bool> signUpWithEmailAndPassword(
@@ -54,6 +113,37 @@ class AuthServices {
       );
       return true;
     } else {
+      return false;
+    }
+  }
+
+  Future<bool> completeUserProfile({
+    required String name,
+    required String nickname,
+    String? photoURL,
+    required String location,
+  }) async {
+    try {
+      if (photoURL != null && photoURL.isNotEmpty) {
+        photoURL = await firebaseStorageServices.uploadFile(
+          file: File(photoURL),
+          folderPath: StorageApiPath.profilesPhotos(),
+        );
+      }
+      final userData = UserData(
+        uid: firebaseAuth.currentUser!.uid,
+        location: location,
+        nickname: nickname,
+        name: name,
+        photoURL: photoURL,
+        type: 1,
+      );
+      await firestoreServices.saveUserData(
+        userData,
+      );
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error completing profile: $e');
       return false;
     }
   }
