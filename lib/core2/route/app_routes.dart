@@ -3,4 +3,5 @@ class AppRoutes {
   static const String mainScreen = '/home';
   static const String productDetailsPage = '/productDetails';
   static const String createAccountAdminSide = '/createAccountAdminSide';
+  static const String newDeviceMaintenance = '/newDeviceMaintenance';
 }

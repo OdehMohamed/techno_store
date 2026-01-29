@@ -1,4 +1,3 @@
-
 class CategoryAndSubcategoryModel {
   final String? id;
   final String? enName;

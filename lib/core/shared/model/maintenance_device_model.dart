@@ -27,25 +27,25 @@ class MaintenanceDeviceModel {
 
   MaintenanceDeviceModel(
       {String? customerName,
-        String? phoneNumber,
-        String? address,
-        String? brandID,
-        String? deviceModel,
-        String? color,
-        String? imeiNumber,
-        List<bool>? problem,
-        String? status,
-        String? problemNotes,
-        List<bool>? replacedParts,
-        List<bool>? accessories,
-        String? price,
-        String? estimatedTime,
-        String? notes,
-        String? devicePassword,
-        List<int>? pattern,
-        List<bool>? preCheckList,
-        List<String>? preCheckListNotes,
-        BrandModel? brandModel}) {
+      String? phoneNumber,
+      String? address,
+      String? brandID,
+      String? deviceModel,
+      String? color,
+      String? imeiNumber,
+      List<bool>? problem,
+      String? status,
+      String? problemNotes,
+      List<bool>? replacedParts,
+      List<bool>? accessories,
+      String? price,
+      String? estimatedTime,
+      String? notes,
+      String? devicePassword,
+      List<int>? pattern,
+      List<bool>? preCheckList,
+      List<String>? preCheckListNotes,
+      BrandModel? brandModel}) {
     if (customerName != null) {
       this._customerName = customerName;
     }
@@ -139,15 +139,18 @@ class MaintenanceDeviceModel {
   String? get notes => _notes;
   set notes(String? notes) => _notes = notes;
   String? get devicePassword => _devicePassword;
-  set replacedParts(List<bool>? replacedParts) => _replacedParts = replacedParts;
+  set replacedParts(List<bool>? replacedParts) =>
+      _replacedParts = replacedParts;
   List<bool>? get replaceParts => _replacedParts;
-  set devicePassword(String? devicePassword) => _devicePassword = devicePassword;
+  set devicePassword(String? devicePassword) =>
+      _devicePassword = devicePassword;
   List<int>? get pattern => _pattern;
   set pattern(List<int>? pattern) => _pattern = pattern;
   List<bool>? get preCheckList => _preCheckList;
   set preCheckList(List<bool>? preCheckList) => _preCheckList = preCheckList;
   List<String>? get preCheckListNotes => _preCheckListNotes;
-  set preCheckListNotes(List<String>? preCheckListNotes) => _preCheckListNotes = preCheckListNotes;
+  set preCheckListNotes(List<String>? preCheckListNotes) =>
+      _preCheckListNotes = preCheckListNotes;
   BrandModel? get brandModel => _brandModel;
   set brandModel(BrandModel? brandModel) => _brandModel = brandModel;
 
@@ -171,7 +174,7 @@ class MaintenanceDeviceModel {
     _notes = json['notes'];
     _devicePassword = json['devicePassword'];
     _pattern = json['pattern'].cast<int>();
-    _replacedParts=json['replacedParts'].cast<bool>();
+    _replacedParts = json['replacedParts'].cast<bool>();
   }
 
   Map<String, dynamic> toJson() {

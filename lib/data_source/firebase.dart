@@ -11,7 +11,7 @@ import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
 import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseDataSource {

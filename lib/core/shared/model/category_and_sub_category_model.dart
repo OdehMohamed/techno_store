@@ -5,7 +5,6 @@ class CategoriesAndSubCategoryModel {
   String? _enName;
 
   CategoriesAndSubCategoryModel({String? arName, String? enName}) {
-
     if (arName != null) {
       this._arName = arName;
     }

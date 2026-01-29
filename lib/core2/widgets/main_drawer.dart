@@ -8,7 +8,7 @@ import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/features/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/features/store_page/widgets/inner_store_page.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core/utils/widget_utilities.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';

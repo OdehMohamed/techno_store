@@ -20,7 +20,8 @@ class LocationData {
           : null,
       states: json['states'] != null
           ? (json['states'] as List)
-              .map((state) => LocationData.fromJson(state as Map<String, dynamic>))
+              .map((state) =>
+                  LocationData.fromJson(state as Map<String, dynamic>))
               .toList()
           : null,
     );

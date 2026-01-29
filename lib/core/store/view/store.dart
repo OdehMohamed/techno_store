@@ -19,7 +19,8 @@ import '../../shared/view_model/shared_state.dart';
 class Store extends StatefulWidget {
   final CategoriesAndSubCategoryModel category;
   final String categoryId;
-  const Store({Key? key, required this.category, required this.categoryId}) : super(key: key);
+  const Store({Key? key, required this.category, required this.categoryId})
+      : super(key: key);
 
   @override
   State<Store> createState() => _StoreState();
@@ -34,10 +35,11 @@ class _StoreState extends State<Store> {
   late SharedState sharedState;
   Future? getSubCategoriesFuture;
   CategoriesAndSubCategoryModel? selectedSubCategory;
-  List<CategoriesAndSubCategoryModel> futureSubCategories=[];
+  List<CategoriesAndSubCategoryModel> futureSubCategories = [];
   late StoreState storeState;
   Future<List<ProductModel>>? productList;
-  final CarouselSliderController _carouselcontroller = CarouselSliderController();
+  final CarouselSliderController _carouselcontroller =
+      CarouselSliderController();
   int _current = 0;
   void changeSubCategory(int index, String subCategoryID) {
     productList = storeState.getProducts(subCategoryID);
@@ -54,7 +56,7 @@ class _StoreState extends State<Store> {
     selectedSubCategory = null;
     storeState = context.read<StoreState>();
     sharedState = context.read<SharedState>();
-    getSubCategoriesFuture=sharedState.getSubCategories(widget.categoryId);
+    getSubCategoriesFuture = sharedState.getSubCategories(widget.categoryId);
     super.initState();
   }
 
@@ -100,18 +102,18 @@ class _StoreState extends State<Store> {
                     ? Image.network(
                         device.photo!.first,
                         fit: BoxFit.fill,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
                       )
                     : Image.asset(
                         "assets/images/defaultProductImage.png",
@@ -121,21 +123,18 @@ class _StoreState extends State<Store> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    width: width*0.55,
-                    child:
-                    WidgetUtilities.autoSizeText(device.enName!,
+                    width: width * 0.55,
+                    child: WidgetUtilities.autoSizeText(device.enName!,
                         textStyle: TextStyle(color: Colors.black)),
                   ),
                   Container(
-                    width: width*0.55,
-                    child:
-                    WidgetUtilities.autoSizeText(device.arName!,
+                    width: width * 0.55,
+                    child: WidgetUtilities.autoSizeText(device.arName!,
                         textStyle: TextStyle(color: Colors.black)),
                   ),
                   Container(
-                    width: width*0.5,
-                    child:
-                    Row(
+                    width: width * 0.5,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         WidgetUtilities.autoSizeText(
@@ -150,14 +149,16 @@ class _StoreState extends State<Store> {
                         textStyle: TextStyle(color: Colors.black54)),
                   ),
                   Container(
-                    width: width*0.3,
+                    width: width * 0.3,
                     decoration: BoxDecoration(
                         color: ColorUtilities.secondary,
-                        borderRadius: BorderRadius.circular(15)
-                    ),
+                        borderRadius: BorderRadius.circular(15)),
                     padding: EdgeInsets.all(5),
                     child: Center(
-                      child: Text("Show".tr(),style: TextStyle(color: Colors.white),),
+                      child: Text(
+                        "Show".tr(),
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   )
                 ],
@@ -194,18 +195,18 @@ class _StoreState extends State<Store> {
                     ? Image.network(
                         device.photo!.first,
                         fit: BoxFit.fill,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
                       )
                     : Image.asset(
                         "assets/images/defaultProductImage.png",
@@ -215,7 +216,6 @@ class _StoreState extends State<Store> {
                   textStyle: TextStyle(color: Colors.black)),
               WidgetUtilities.autoSizeText(device.arName!,
                   textStyle: TextStyle(color: Colors.black)),
-
               SizedBox(
                 height: 5,
               ),
@@ -225,15 +225,17 @@ class _StoreState extends State<Store> {
                 height: 5,
               ),
               Container(
-                width: width*0.3,
+                width: width * 0.3,
                 decoration: BoxDecoration(
-                  color: ColorUtilities.secondary,
-                  borderRadius: BorderRadius.circular(15)
-                ),
+                    color: ColorUtilities.secondary,
+                    borderRadius: BorderRadius.circular(15)),
                 margin: EdgeInsets.only(bottom: 10),
                 padding: EdgeInsets.all(5),
                 child: Center(
-                  child: Text("Show".tr(),style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    "Show".tr(),
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               )
             ],
@@ -264,13 +266,13 @@ class _StoreState extends State<Store> {
           inAsyncCall: sharedState.loading || storeState.loading,
           child: RefreshIndicator(
             onRefresh: () async {
-             setState(() {
-               getSubCategoriesFuture = sharedState.getSubCategories(widget.categoryId);
-             });
+              setState(() {
+                getSubCategoriesFuture =
+                    sharedState.getSubCategories(widget.categoryId);
+              });
             },
             child: Column(
               children: [
-
                 Container(
                   color: ColorUtilities.backgroundContainer,
                   child: Container(
@@ -287,10 +289,16 @@ class _StoreState extends State<Store> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.only(top: height*0.03),
-                                child: Utilities.isEnglish(context)?
-                                Text(widget.category.enName!,style: TextStyle(color: Colors.white,fontSize: 22),):
-                                Text(widget.category.arName!,style: TextStyle(color: Colors.white,fontSize: 22)),
+                                padding: EdgeInsets.only(top: height * 0.03),
+                                child: Utilities.isEnglish(context)
+                                    ? Text(
+                                        widget.category.enName!,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 22),
+                                      )
+                                    : Text(widget.category.arName!,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 22)),
                               ),
                             ],
                           ),
@@ -309,149 +317,172 @@ class _StoreState extends State<Store> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Container(
-                            height: height*0.1,
+                            height: height * 0.1,
                             width: width,
                             margin: EdgeInsets.only(top: 30),
-                            child:  getSubCategoriesFuture != null
+                            child: getSubCategoriesFuture != null
                                 ? FutureBuilder(
-                                future: getSubCategoriesFuture,
-                                builder:
-                                    (context, AsyncSnapshot snapshot) {
-                                  if (snapshot.hasData) {
-                                    futureSubCategories =
-                                        snapshot.data;
-                                    if (futureSubCategories.isEmpty){
-                                      productList = storeState
-                                          .getProducts("hi");
-                                      getSubCategoriesFuture=null;
-                                      return SizedBox();
-                                    }
-                                    else if (selectedSubCategory == null) {
-                                      productList = storeState
-                                          .getProducts(futureSubCategories
-                                          .first.id!);
-                                      selectedSubCategory =
-                                          futureSubCategories.first;
-                                      backgroundColor = [];
-                                      textColor = [];
-                                      for (int i = 0;
-                                      i < futureSubCategories.length;
-                                      i++) {
-                                        backgroundColor.add(
-                                          Colors.transparent,
-                                        );
-                                        textColor.add(Colors.black);
-                                      }
-                                      backgroundColor[0] = ColorUtilities
-                                          .secondary;
-                                      textColor[0] =
-                                          ColorUtilities.white;
-                                    }
-                                    if (backgroundColor.length !=
-                                        futureSubCategories.length ||
-                                        textColor.length !=
-                                            futureSubCategories.length) {
-                                      backgroundColor = [];
-                                      textColor = [];
-                                      for (int i = 0;
-                                      i < futureSubCategories.length;
-                                      i++) {
-                                        backgroundColor.add(
-                                          Colors.transparent,
-                                        );
-                                        textColor.add(Colors.black);
-                                      }
-                                      backgroundColor[0] = ColorUtilities
-                                          .secondary;
-                                      textColor[0] =
-                                          ColorUtilities.white;
-                                    }
-                                    return
-                                      CarouselSlider(
-                                          carouselController: _carouselcontroller,
+                                    future: getSubCategoriesFuture,
+                                    builder: (context, AsyncSnapshot snapshot) {
+                                      if (snapshot.hasData) {
+                                        futureSubCategories = snapshot.data;
+                                        if (futureSubCategories.isEmpty) {
+                                          productList =
+                                              storeState.getProducts("hi");
+                                          getSubCategoriesFuture = null;
+                                          return SizedBox();
+                                        } else if (selectedSubCategory ==
+                                            null) {
+                                          productList = storeState.getProducts(
+                                              futureSubCategories.first.id!);
+                                          selectedSubCategory =
+                                              futureSubCategories.first;
+                                          backgroundColor = [];
+                                          textColor = [];
+                                          for (int i = 0;
+                                              i < futureSubCategories.length;
+                                              i++) {
+                                            backgroundColor.add(
+                                              Colors.transparent,
+                                            );
+                                            textColor.add(Colors.black);
+                                          }
+                                          backgroundColor[0] =
+                                              ColorUtilities.secondary;
+                                          textColor[0] = ColorUtilities.white;
+                                        }
+                                        if (backgroundColor.length !=
+                                                futureSubCategories.length ||
+                                            textColor.length !=
+                                                futureSubCategories.length) {
+                                          backgroundColor = [];
+                                          textColor = [];
+                                          for (int i = 0;
+                                              i < futureSubCategories.length;
+                                              i++) {
+                                            backgroundColor.add(
+                                              Colors.transparent,
+                                            );
+                                            textColor.add(Colors.black);
+                                          }
+                                          backgroundColor[0] =
+                                              ColorUtilities.secondary;
+                                          textColor[0] = ColorUtilities.white;
+                                        }
+                                        return CarouselSlider(
+                                          carouselController:
+                                              _carouselcontroller,
                                           options: CarouselOptions(
-                                            initialPage: _current,
-                                            padEnds: false,
-                                            viewportFraction: 0.3,
+                                              initialPage: _current,
+                                              padEnds: false,
+                                              viewportFraction: 0.3,
                                               enableInfiniteScroll: false,
                                               disableCenter: true,
                                               onPageChanged: (index, reason) {
                                                 setState(() {
                                                   _current = index;
-                                                });}
-                                          ),
-                                        items: futureSubCategories.map((subCat){
-                                          int i=futureSubCategories.indexOf(subCat);
-                                          return Builder(
-                                            builder: (BuildContext context) {
-                                              return Column(
-                                                children: [
-                                                  InkWell(
-                                                    child: Container(
-                                                      width: width*0.8,
-                                                      height: height*0.07,
-                                                      margin: EdgeInsets.only(right: 5,left: 5),
-                                                      padding: EdgeInsets.only(
-                                                          top: 10, bottom: 10, left: width*0.04, right: width*0.04),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(width: 1,color: ColorUtilities.secondary),
-                                                          color: backgroundColor[
-                                                          i],
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(5)),
-                                                      child: Center(child: WidgetUtilities.autoSizeText(
-                                                        StringUtilities
-                                                            .getStringByLanguage(
-                                                            context,
+                                                });
+                                              }),
+                                          items:
+                                              futureSubCategories.map((subCat) {
+                                            int i = futureSubCategories
+                                                .indexOf(subCat);
+                                            return Builder(
+                                              builder: (BuildContext context) {
+                                                return Column(
+                                                  children: [
+                                                    InkWell(
+                                                      child: Container(
+                                                          width: width * 0.8,
+                                                          height: height * 0.07,
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  right: 5,
+                                                                  left: 5),
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  top: 10,
+                                                                  bottom: 10,
+                                                                  left:
+                                                                      width *
+                                                                          0.04,
+                                                                  right: width *
+                                                                      0.04),
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  width: 1,
+                                                                  color: ColorUtilities
+                                                                      .secondary),
+                                                              color:
+                                                                  backgroundColor[
+                                                                      i],
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5)),
+                                                          child: Center(
+                                                            child: WidgetUtilities.autoSizeText(
+                                                                StringUtilities.getStringByLanguage(
+                                                                    context,
+                                                                    futureSubCategories[
+                                                                            i]
+                                                                        .arName,
+                                                                    futureSubCategories[
+                                                                            i]
+                                                                        .enName),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                textStyle: TextStyle(
+                                                                    color:
+                                                                        textColor[
+                                                                            i]),
+                                                                minFontSize: 8,
+                                                                maxLine: 2),
+                                                          )),
+                                                      onTap: () {
+                                                        _current = i;
+                                                        changeSubCategory(
+                                                            i,
                                                             futureSubCategories[
-                                                            i]
-                                                                .arName,
-                                                            futureSubCategories[
-                                                            i]
-                                                                .enName),
-                                                        textAlign: TextAlign.center,
-                                                        textStyle: TextStyle(
-                                                            color:
-                                                            textColor[i]),
-                                                      minFontSize: 8, maxLine: 2
-                                                      ),)
+                                                                    i]
+                                                                .id!);
+                                                      },
                                                     ),
-                                                    onTap: () {
-                                                      _current=i;
-                                                      changeSubCategory(
-                                                          i,
-                                                          futureSubCategories[
-                                                          i]
-                                                              .id!);
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        }).toList(),
-                                      );
-                                  }
-                                  return SizedBox();
-                                })
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
+                                        );
+                                      }
+                                      return SizedBox();
+                                    })
                                 : SizedBox(),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: futureSubCategories.asMap().entries.map((entry) {
+                            children: futureSubCategories
+                                .asMap()
+                                .entries
+                                .map((entry) {
                               return GestureDetector(
-                                onTap: () => _carouselcontroller.animateToPage(entry.key),
+                                onTap: () => _carouselcontroller
+                                    .animateToPage(entry.key),
                                 child: Container(
                                   width: 14.0,
                                   height: 7.0,
-                                  margin: EdgeInsets.symmetric(vertical: 0, horizontal: 4.0),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 4.0),
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: (Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black)
-                                          .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                                      color: (Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black)
+                                          .withOpacity(_current == entry.key
+                                              ? 0.9
+                                              : 0.4)),
                                 ),
                               );
                             }).toList(),

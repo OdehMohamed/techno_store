@@ -84,38 +84,39 @@ class AuthServices {
     return userCredential;
   }
 
-  Future<bool> signUpWithEmailAndPassword(
-    String email,
-    String password,
-    String? photo,
-    String? displayName,
-    int? type,
-  ) async {
-    final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+  // Future<bool> signUpWithEmailAndPassword(
+  //   String email,
+  //   String password,
+  //   String? photo,
+  //   String? displayName,
+  //   int? type,
+  // ) async {
+  //   final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+  //       email: email, password: password);
 
-    if (userCredential.user != null) {
-      if (photo != null && photo.isNotEmpty) {
-        photo = await firebaseStorageServices.uploadFile(
-          file: File(photo),
-          folderPath: StorageApiPath.profilesPhotos(),
-        );
-      }
-      final userData = UserData(
-        uid: userCredential.user!.uid,
-        email: email,
-        photoURL: photo,
-        name: displayName,
-        type: type ?? 1,
-      );
-      await firestoreServices.saveUserData(
-        userData,
-      );
-      return true;
-    } else {
-      return false;
-    }
-  }
+  //   if (userCredential.user != null) {
+  //     if (photo != null && photo.isNotEmpty) {
+  //       photo = await firebaseStorageServices.uploadFile(
+  //         file: File(photo),
+  //         folderPath: StorageApiPath.profilesPhotos(),
+  //       );
+  //     }
+  //     final userData = UserData(
+  //       uid: userCredential.user!.uid,
+  //       phoneNumber: userCredential.user!.phoneNumber ?? '',
+  //       email: email,
+  //       photoURL: photo,
+  //       name: displayName,
+  //       type: type ?? 1,
+  //     );
+  //     await firestoreServices.saveUserData(
+  //       userData,
+  //     );
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   Future<bool> completeUserProfile({
     required String name,
@@ -127,11 +128,13 @@ class AuthServices {
       if (photoURL != null && photoURL.isNotEmpty) {
         photoURL = await firebaseStorageServices.uploadFile(
           file: File(photoURL),
-          folderPath: StorageApiPath.profilesPhotos(),
+          folderPath:
+              StorageApiPath.profilesPhotos(firebaseAuth.currentUser!.uid),
         );
       }
       final userData = UserData(
         uid: firebaseAuth.currentUser!.uid,
+        phoneNumber: firebaseAuth.currentUser!.phoneNumber ?? '',
         location: location,
         nickname: nickname,
         name: name,

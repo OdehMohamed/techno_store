@@ -5,6 +5,8 @@ import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/main_screen.dart';
 import 'package:techno_store/core2/route/app_routes.dart';
 import 'package:techno_store/core2/widgets/main_progress_indicator.dart';
+import 'package:techno_store/features/new_device_maintenance/cubit/new_device_cubit.dart';
+import 'package:techno_store/features/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/features/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/features/product_details.dart/view/product_details_page.dart';
 
@@ -43,7 +45,14 @@ class AppRouter {
             child: const NewUserAdminSide(),
           ),
         );
-
+      
+      case AppRoutes.newDeviceMaintenance:
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => NewDeviceCubit(),
+            child: const NewDeviceMaintenance(),
+          ),
+        );
       default:
         return CupertinoPageRoute(
           builder: (_) => const MainProgressIndicator(),

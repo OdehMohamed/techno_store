@@ -3,6 +3,20 @@ class FirestoreApiPath {
   static String user(String userId) => 'users/$userId';
   static String userMeta(String userId) => 'users/$userId/meta/isActivated';
 
+  // Maintenance Devices Paths
+  static String maintenanceDevices() => 'maintenanceDevices/';
+  static String maintenanceDevice(String deviceId) =>
+      'maintenanceDevices/$deviceId';
+
+  // User Devices (subcollection under user)
+  static String userDevices(String userId) => 'users/$userId/devices/';
+  static String userDevice(String userId, String deviceId) =>
+      'users/$userId/devices/$deviceId';
+
+  // Query helpers
+  static String userMaintenanceDevices(String userId) =>
+      maintenanceDevices(); // سنستخدم query للفلترة حسب userId
+
   // static String products() => 'products/';
   // static String product(String productId) => 'products/$productId';
 

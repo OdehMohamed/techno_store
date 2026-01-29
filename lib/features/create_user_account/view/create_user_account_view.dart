@@ -7,7 +7,8 @@ import 'package:techno_store/features/create_user_account/widgets/sign_up_form.d
 
 class CreateUserAccount extends StatefulWidget {
   final String phoneNumber;
-  const CreateUserAccount({Key? key, required this.phoneNumber}) : super(key: key);
+  const CreateUserAccount({Key? key, required this.phoneNumber})
+      : super(key: key);
 
   @override
   State<CreateUserAccount> createState() => _CreateUserAccountState();

@@ -67,6 +67,7 @@ class CacheServices {
   Future<UserData> getUserData() async {
     final sharedPreferences = await _sharedPreferences;
     final uid = sharedPreferences.getString('uid');
+    final phoneNumber = sharedPreferences.getString('phoneNumber');
     final email = sharedPreferences.getString('email');
     final photoURL = sharedPreferences.getString('photoURL');
     final name = sharedPreferences.getString('name');
@@ -75,6 +76,7 @@ class CacheServices {
 
     final userData = UserData(
       uid: uid!,
+      phoneNumber: phoneNumber ?? '',
       email: email,
       photoURL: photoURL,
       name: name,
@@ -89,6 +91,7 @@ class CacheServices {
 
     final sharedPreferences = await _sharedPreferences;
     await sharedPreferences.setString('uid', userData.uid);
+    await sharedPreferences.setString('phoneNumber', userData.phoneNumber);
     // await sharedPreferences.setString('email', userData.email);
     await sharedPreferences.setString('photoURL', userData.photoURL ?? '');
     await sharedPreferences.setString('name', userData.name ?? '');

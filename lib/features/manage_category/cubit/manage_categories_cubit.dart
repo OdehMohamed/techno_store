@@ -8,7 +8,6 @@ class ManageCategoriesCubit extends Cubit<ManageCategoriesState> {
   Future<void> loadCategories() async {
     emit(ManageCategoriesLoading());
     try {
-      
       emit(ManageCategoriesLoaded());
     } catch (e) {
       emit(ManageCategoriesError(e.toString()));

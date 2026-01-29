@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core2/widgets/main_drawer2.dart';
 import 'package:techno_store/features/maintenance_list/view/inner_maintenance_list.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
 import 'package:techno_store/core2/widgets/main_app_bar.dart';
 import 'package:techno_store/core2/widgets/main_footer.dart';

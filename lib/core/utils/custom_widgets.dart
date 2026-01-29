@@ -23,7 +23,7 @@ class CustomWidgets {
             underline: const SizedBox.shrink(),
             value: value,
             //Value
-            onChanged: (CategoriesAndSubCategoryModel? newValue)  {
+            onChanged: (CategoriesAndSubCategoryModel? newValue) {
               value = newValue!;
               notify(newValue);
             },
@@ -87,15 +87,15 @@ class CustomWidgets {
 class FormValidatorDropdown<T> extends StatelessWidget {
   const FormValidatorDropdown(
       {required this.label,
-        required this.name,
-        this.onChanged,
-        required this.items,
-        required this.dropDownValue,
-        this.showErrorText = true,
-        this.optional = false,
-        this.labelColor=Colors.black54,
-        this.iconColor=Colors.black54,
-        Key? key})
+      required this.name,
+      this.onChanged,
+      required this.items,
+      required this.dropDownValue,
+      this.showErrorText = true,
+      this.optional = false,
+      this.labelColor = Colors.black54,
+      this.iconColor = Colors.black54,
+      Key? key})
       : super(key: key);
 
   final String label;
@@ -116,40 +116,39 @@ class FormValidatorDropdown<T> extends StatelessWidget {
       builder: (FormFieldState<T> state) {
         return InputDecorator(
           decoration: InputDecoration(
-            label: Text(label,style: TextStyle(color: labelColor),),
-            errorText: state.errorText
-          ),
+              label: Text(
+                label,
+                style: TextStyle(color: labelColor),
+              ),
+              errorText: state.errorText),
           //SSCUI.getDefaultInputDecoration(context, label, errorText: state.errorText),
           child: Opacity(
             opacity: 1,
             child: DropdownButton<T>(
-              icon: Icon(Icons.arrow_drop_down,color: iconColor),
+              icon: Icon(Icons.arrow_drop_down, color: iconColor),
               isExpanded: true,
               underline: const SizedBox.shrink(),
               //iconSize: SSCUI.SMALL_ICON_SIZE,
               value: dropDownValue,
-              onChanged: onChanged!=null?(T? newValue) async {
-                onChanged!(newValue as T);
-                state.didChange(newValue);
-              }:null,
+              onChanged: onChanged != null
+                  ? (T? newValue) async {
+                      onChanged!(newValue as T);
+                      state.didChange(newValue);
+                    }
+                  : null,
               items: items,
             ),
           ),
         );
-
       },
       validator: FormBuilderValidators.compose([
         if (!optional)
-    FormBuilderValidators.required(
-        errorText: showErrorText
-            ? "this field is Required".tr()
-            : ' '),
-    ]),
+          FormBuilderValidators.required(
+              errorText: showErrorText ? "this field is Required".tr() : ' '),
+      ]),
     );
   }
 }
-
-
 
 //
 // class FormValidatorDropdown<T> extends StatelessWidget {

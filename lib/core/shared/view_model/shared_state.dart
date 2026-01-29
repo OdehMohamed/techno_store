@@ -140,9 +140,9 @@ class SharedState extends ChangeNotifier {
 
     bool b = false;
 
-    try{
-      b =  await FirebaseDataSource().isTesting();
-    }catch(e){}
+    try {
+      b = await FirebaseDataSource().isTesting();
+    } catch (e) {}
 
     changeLoadingState(isLoading: false);
 

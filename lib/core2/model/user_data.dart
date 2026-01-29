@@ -3,6 +3,7 @@ import 'dart:convert';
 
 class UserData {
   final String uid;
+  final String phoneNumber;
   final String? location;
   final String? photoURL;
   final String? name;
@@ -12,6 +13,7 @@ class UserData {
   final int type;
   UserData({
     required this.uid,
+    required this.phoneNumber,
     this.location,
     this.photoURL,
     this.name,
@@ -24,6 +26,7 @@ class UserData {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uid': uid,
+      'phoneNumber': phoneNumber,
       'location': location,
       'nickname': nickname,
       'email': email,
@@ -42,6 +45,7 @@ class UserData {
   factory UserData.fromMap(Map<String, dynamic> map, [String? documentID]) {
     return UserData(
       uid: documentID ?? map['uid'] as String,
+      phoneNumber: map['phoneNumber'] as String,
       location: map['location'] as String,
       nickname: map['nickname'] != null ? map['nickname'] as String : null,
       photoURL: map['photoURL'] != null ? map['photoURL'] as String : null,
@@ -58,6 +62,7 @@ class UserData {
 
   UserData copyWith({
     String? uid,
+    String? phoneNumber,
     String? location,
     String? nickname,
     String? photoURL,
@@ -68,6 +73,7 @@ class UserData {
   }) {
     return UserData(
       uid: uid ?? this.uid,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       location: location ?? this.location,
       nickname: nickname ?? this.nickname,
       photoURL: photoURL ?? this.photoURL,

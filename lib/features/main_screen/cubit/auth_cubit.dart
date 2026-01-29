@@ -245,32 +245,32 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> signUp(
-    String email,
-    String password,
-    String? photo,
-    String? displayName,
-    int? type,
-  ) async {
-    emit(AuthLoading());
-    try {
-      bool isRegistered = await _authServices.signUpWithEmailAndPassword(
-        email,
-        password,
-        photo,
-        displayName,
-        type,
-      );
-      if (!isRegistered) {
-        emit(AuthFailure('Failed to register user'));
-        return;
-      }
-      emit(AuthSuccess());
-    } catch (error) {
-      debugPrint(error.toString());
-      emit(AuthFailure(error.toString()));
-    }
-  }
+  // Future<void> signUp(
+  //   String email,
+  //   String password,
+  //   String? photo,
+  //   String? displayName,
+  //   int? type,
+  // ) async {
+  //   emit(AuthLoading());
+  //   try {
+  //     bool isRegistered = await _authServices.signUpWithEmailAndPassword(
+  //       email,
+  //       password,
+  //       photo,
+  //       displayName,
+  //       type,
+  //     );
+  //     if (!isRegistered) {
+  //       emit(AuthFailure('Failed to register user'));
+  //       return;
+  //     }
+  //     emit(AuthSuccess());
+  //   } catch (error) {
+  //     debugPrint(error.toString());
+  //     emit(AuthFailure(error.toString()));
+  //   }
+  // }
 
   Future<void> signOut() async {
     emit(LoggingOut());

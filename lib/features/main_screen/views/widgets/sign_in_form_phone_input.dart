@@ -2,12 +2,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:flutter/widgets.dart' as widgets;
 
+// ignore: must_be_immutable
 class SignInFormPhoneInput extends StatelessWidget {
   final TextEditingController phoneController;
   String phoneCode;
-  SignInFormPhoneInput(
-      {super.key, required this.phoneController, required this.phoneCode});
+  SignInFormPhoneInput({
+    super.key,
+    required this.phoneController,
+    required this.phoneCode,
+  });
   @override
   Widget build(BuildContext context) {
     PhoneNumber number = PhoneNumber(isoCode: 'PS');

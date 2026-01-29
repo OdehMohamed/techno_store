@@ -11,8 +11,7 @@ class ProductModel {
   List<String>? _favoriteList;
 
   ProductModel(
-      {
-      String? arName,
+      {String? arName,
       String? enName,
       String? brandID,
       double? price,
@@ -21,7 +20,6 @@ class ProductModel {
       String? CategoryID,
       String? subCategoryID,
       List<String>? favoriteList}) {
-
     if (arName != null) {
       this._arName = arName;
     }
@@ -97,5 +95,4 @@ class ProductModel {
     data['favoriteList'] = this._favoriteList;
     return data;
   }
-
 }

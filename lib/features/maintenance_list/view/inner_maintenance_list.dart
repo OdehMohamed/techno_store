@@ -1,13 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:techno_store/core2/route/app_routes.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
 import 'package:techno_store/features/maintenance_list/view_model/maintenance_list_state.dart';
-import 'package:techno_store/core/new_device_maintenance/view/new_device_maintenance.dart';
 import 'package:techno_store/core/shared/model/maintenance_device_model.dart';
 import 'package:techno_store/core/shared/view_model/shared_state.dart';
 import 'package:techno_store/core/utils/color_utilities.dart';
 import 'package:techno_store/core/utils/utilities.dart';
+import 'package:techno_store/features/new_device_maintenance/view/new_device_maintenance.dart';
 
 import '../../../core/utils/widget_utilities.dart';
 
@@ -228,11 +229,9 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList> {
         ),
         onTap: () {
           Utilities.navigatorWithBack(
-              context,
-              NewDeviceMaintenance(
-                maintenanceDevice: device,
-                editable: true,
-              ));
+            context,
+            const NewDeviceMaintenance(),
+          );
         },
       );
     }
@@ -246,11 +245,8 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList> {
                 ),
                 backgroundColor: AppColors.white,
                 onPressed: () {
-                  Utilities.navigatorWithBack(
-                      context,
-                      const NewDeviceMaintenance(
-                        editable: false,
-                      ));
+                  Navigator.of(context)
+                      .pushNamed(AppRoutes.newDeviceMaintenance);
                 },
               )
             : null,

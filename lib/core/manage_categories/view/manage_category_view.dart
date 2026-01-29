@@ -7,7 +7,7 @@ import 'package:techno_store/core/shared/model/category_and_sub_category_model.d
 import 'package:techno_store/core/shared/view_model/shared_state.dart';
 import 'package:techno_store/core/utils/color_utilities.dart';
 import 'package:techno_store/core/utils/custom_widgets.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
 import 'package:techno_store/core2/widgets/main_app_bar.dart';

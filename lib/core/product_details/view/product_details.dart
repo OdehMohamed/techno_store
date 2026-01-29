@@ -11,7 +11,7 @@ import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core/product_details/view_model/product_details_state.dart';
 import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/core/utils/color_utilities.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 
 import '../../utils/widget_utilities.dart';

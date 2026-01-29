@@ -24,7 +24,7 @@ class Utilities {
     return const EdgeInsets.fromLTRB(defaultPading, 0, defaultPading, 0);
   }
 
-  static bool isEnglish(BuildContext context){
+  static bool isEnglish(BuildContext context) {
     return context.locale == Locale("en");
   }
 

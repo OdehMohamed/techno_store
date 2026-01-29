@@ -10,7 +10,7 @@ import 'package:techno_store/core2/widgets/main_app_bar.dart';
 import 'package:techno_store/core2/widgets/main_button.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 
-import '../../../core/utils/message.dart';
+import '../../../core2/widgets/message.dart';
 import '../../../core/utils/widget_utilities.dart';
 
 class NewUserAdminSide extends StatefulWidget {
@@ -409,13 +409,13 @@ class _NewUserAdminSideState extends State<NewUserAdminSide> {
                                 label: "Create Account".tr(),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    await authCubit.signUp(
-                                      emailController.text.trim(),
-                                      passwordController.text,
-                                      photoPath,
-                                      fullnameController.text,
-                                      int.parse(userType),
-                                    );
+                                    // await authCubit.signUp(
+                                    //   emailController.text.trim(),
+                                    //   passwordController.text,
+                                    //   photoPath,
+                                    //   fullnameController.text,
+                                    //   int.parse(userType),
+                                    // );
                                   }
                                 },
                               );

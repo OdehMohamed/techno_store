@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
 import 'package:techno_store/core2/widgets/main_app_bar.dart';
 import 'package:techno_store/core2/widgets/main_button.dart';

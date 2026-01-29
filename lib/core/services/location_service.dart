@@ -21,7 +21,8 @@ class LocationService {
       final List<dynamic> countriesJson = jsonData['countries'] as List;
 
       _countries = countriesJson
-          .map((country) => LocationData.fromJson(country as Map<String, dynamic>))
+          .map((country) =>
+              LocationData.fromJson(country as Map<String, dynamic>))
           .toList();
     } catch (e) {
       throw Exception('Failed to load locations data: $e');

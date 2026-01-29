@@ -30,6 +30,7 @@ dependencies:
   fluttericon: ^2.0.0
   fluttertoast: ^8.1.1
   form_builder_validators: ^11.1.1
+  image_picker: ^1.0.7
   in_app_update: ^4.0.1
   intl_phone_number_input: ^0.7.5
   modal_progress_hud_nsn: ^0.5.1

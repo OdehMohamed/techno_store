@@ -56,12 +56,13 @@ class Message {
       Color backgroundColor = ColorUtilities.primary,
       Color textColor = ColorUtilities.textColor}) {
     Fluttertoast.showToast(
-        timeInSecForIosWeb: 4,
-        msg: message,
-        toastLength: length,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: backgroundColor,
-        textColor: textColor,
-        fontSize: StringUtilities.smallText);
+      timeInSecForIosWeb: 4,
+      msg: message,
+      toastLength: length,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      fontSize: StringUtilities.largeText,
+    );
   }
 }

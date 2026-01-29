@@ -9,7 +9,7 @@ import 'package:techno_store/core/new_product/view_model/new_product_state.dart'
 import 'package:techno_store/core/shared/model/productModel.dart';
 import 'package:techno_store/core/utils/color_utilities.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';
 import 'package:techno_store/core2/widgets/main_app_bar.dart';
 

@@ -6,7 +6,7 @@ import 'package:techno_store/core/manage_categories/view/manage_category_view.da
 import 'package:techno_store/core/new_product/view/new_product.dart';
 import 'package:techno_store/core2/route/app_routes.dart';
 import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
-import 'package:techno_store/core/utils/message.dart';
+import 'package:techno_store/core2/widgets/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core/utils/widget_utilities.dart';
 import 'package:techno_store/core2/utils/app_colors.dart';

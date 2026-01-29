@@ -1,11 +1,9 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
-import 'package:techno_store/core/new_device_maintenance/view_model/new_device_maintenance_state.dart';
 import 'package:techno_store/core/shared/model/brand_model.dart';
 import 'package:techno_store/core/track_phone_page/view_model/track_phone_page_state.dart';
 import 'package:techno_store/core/utils/color_utilities.dart';
@@ -64,17 +62,17 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
       switch (device.status) {
         case "Fixed":
           {
-            statusIcon = Icon(Icons.done, color: Colors.green);
+            statusIcon = const Icon(Icons.done, color: Colors.green);
             break;
           }
         case "Delivered":
           {
-            statusIcon = Icon(Icons.done_all, color: Colors.green);
+            statusIcon = const Icon(Icons.done_all, color: Colors.green);
             break;
           }
         default:
           {
-            statusIcon = Icon(
+            statusIcon = const Icon(
               Icons.precision_manufacturing,
               color: Colors.yellow,
             );
@@ -85,7 +83,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
         child: Container(
           width: width * 0.9,
           height: height * 0.2,
-          margin: EdgeInsets.only(top: 10),
+          margin: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: ColorUtilities.white,
@@ -116,32 +114,32 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Container(
+                  SizedBox(
                     width: width * 0.67,
                     child: Row(
                       children: [
                         WidgetUtilities.autoSizeText(device.customerName!,
-                            textStyle: TextStyle(color: Colors.black)),
+                            textStyle: const TextStyle(color: Colors.black)),
                         Flexible(child: Container()),
                         statusIcon,
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         WidgetUtilities.autoSizeText(device.status!,
-                            textStyle: TextStyle(color: Colors.black54))
+                            textStyle: const TextStyle(color: Colors.black54))
                       ],
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     width: width * 0.67,
                     child: Row(
                       children: [
                         WidgetUtilities.autoSizeText(device.deviceModel!,
-                            textStyle: TextStyle(color: Colors.black54))
+                            textStyle: const TextStyle(color: Colors.black54))
                       ],
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     width: width * 0.67,
                     child: Row(
                       children: [
@@ -150,7 +148,8 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                             children: [
                               WidgetUtilities.autoSizeText(
                                   device.estimatedTime!,
-                                  textStyle: TextStyle(color: Colors.black54)),
+                                  textStyle:
+                                      const TextStyle(color: Colors.black54)),
                             ],
                           ),
                         ),
@@ -159,9 +158,11 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           child: Row(
                             children: [
                               WidgetUtilities.autoSizeText(device.price!,
-                                  textStyle: TextStyle(color: Colors.black54)),
+                                  textStyle:
+                                      const TextStyle(color: Colors.black54)),
                               WidgetUtilities.autoSizeText("ILS",
-                                  textStyle: TextStyle(color: Colors.black54)),
+                                  textStyle:
+                                      const TextStyle(color: Colors.black54)),
                             ],
                           ),
                         ),
@@ -209,7 +210,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                   decoration: const BoxDecoration(
                     color: ColorUtilities.secondary,
                   ),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [],
                   )),
@@ -223,7 +224,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                     color: ColorUtilities.backgroundContainer,
                   ),
                   child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -233,7 +234,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                         WidgetUtilities.autoSizeText(
                             "From Here You can track your mobile",
                             textAlign: TextAlign.center,
-                            textStyle: TextStyle(color: Colors.black)),
+                            textStyle: const TextStyle(color: Colors.black)),
                         SizedBox(
                           height: height * 0.03,
                         ),
@@ -248,8 +249,8 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                         WidgetUtilities.autoSizeText(
                                             "Apple warranty",
                                             textAlign: TextAlign.center,
-                                            textStyle:
-                                                TextStyle(color: Colors.red),
+                                            textStyle: const TextStyle(
+                                                color: Colors.red),
                                             maxLine: 2),
                                         SizedBox(
                                           height: height * 0.07,
@@ -257,10 +258,10 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                       ],
                                     );
                                   } else {
-                                    return SizedBox();
+                                    return const SizedBox();
                                   }
                                 })
-                            : SizedBox(),
+                            : const SizedBox(),
                         InternationalPhoneNumberInput(
                           errorMessage: "Invalid phone number".tr(),
                           hintText: "Phone number".tr(),
@@ -270,20 +271,21 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                           onInputValidated: (bool value) {
                             phoneValid = value;
                           },
-                          selectorConfig: SelectorConfig(
+                          selectorConfig: const SelectorConfig(
                             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                           ),
                           ignoreBlank: false,
                           autoValidateMode: AutovalidateMode.always,
-                          selectorTextStyle: TextStyle(color: Colors.black),
+                          selectorTextStyle:
+                              const TextStyle(color: Colors.black),
                           initialValue: number,
                           textFieldController: phoneController,
                           formatInput: false,
-                          keyboardType: TextInputType.numberWithOptions(
+                          keyboardType: const TextInputType.numberWithOptions(
                             signed: true,
                             decimal: true,
                           ),
-                          inputBorder: OutlineInputBorder(),
+                          inputBorder: const OutlineInputBorder(),
                         ),
                         SizedBox(height: height * 0.1),
                         ElevatedButton(
@@ -302,7 +304,8 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
                                           return Container(
-                                            child: CircularProgressIndicator(),
+                                            child:
+                                                const CircularProgressIndicator(),
                                             height: height * 0.7,
                                             margin: EdgeInsets.all(width * 0.4),
                                           );
@@ -329,7 +332,7 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                               );
                             }
                           },
-                          child: Container(
+                          child: SizedBox(
                               width: width * 0.4,
                               height: height * 0.07,
                               child: Center(
@@ -340,8 +343,8 @@ class _TrackPhonePageState extends State<TrackPhonePage> {
                               )),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ColorUtilities.secondary,
-                            textStyle:
-                                TextStyle(fontSize: 16, color: Colors.white),
+                            textStyle: const TextStyle(
+                                fontSize: 16, color: Colors.white),
                           ),
                         ),
                       ],
