@@ -433,6 +433,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     }
 
                     await authCubit.completeUserProfile(
+                      phoneNumber: widget.phoneNumber,
                       name: fullnameController.text,
                       nickname: nicknameController.text,
                       photo: photoPath,

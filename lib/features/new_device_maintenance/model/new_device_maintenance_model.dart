@@ -32,11 +32,13 @@ class NewDeviceMaintenanceModel {
 
   // Assignment
   final String? assignedTechnicianId; // معرف الفني المكلف بالصيانة
-  
+
   // Employee Information
   final String receivedByEmployee; // الموظف الذي استلم الجهاز (required)
-  final String? deliveredByEmployee; // الموظف الذي سلّم الجهاز (required when status = delivered)
-  final String? maintenanceEmployee; // موظف الصيانة (required when status = fixed or delivered)
+  final String?
+      deliveredByEmployee; // الموظف الذي سلّم الجهاز (required when status = delivered)
+  final String?
+      maintenanceEmployee; // موظف الصيانة (required when status = fixed or delivered)
 
   // Metadata
   final DateTime receivedAt;
@@ -151,6 +153,54 @@ class NewDeviceMaintenanceModel {
           : null,
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
+          : null,
+    );
+  }
+
+  // Create from Map (for Firestore documents)
+  factory NewDeviceMaintenanceModel.fromMap(
+      Map<String, dynamic> map, String documentId) {
+    return NewDeviceMaintenanceModel(
+      id: documentId,
+      userId: map['userId'] as String?,
+      name: map['name'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+      brand: map['brand'] as String?,
+      model: map['model'] as String,
+      colorHex: map['colorHex'] as String,
+      imeiNumber: map['imeiNumber'] as String?,
+      pin: map['pin'] as String?,
+      patternLock:
+          (map['patternLock'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      problems:
+          (map['problems'] as List<dynamic>).map((e) => e as String).toList(),
+      status: map['status'] as String? ?? 'pending',
+      notesHidden: map['notesHidden'] as String?,
+      accessories: (map['accessories'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      deviceStatusReceived: (map['deviceStatusReceived'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      price: map['price'] != null ? (map['price'] as num).toDouble() : null,
+      estimatedTime: map['estimatedTime'] as String?,
+      additionalNotes: map['additionalNotes'] as String?,
+      imagesBeforeReceiving: (map['imagesBeforeReceiving'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      imagesAfterDelivery: (map['imagesAfterDelivery'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      assignedTechnicianId: map['assignedTechnicianId'] as String?,
+      receivedByEmployee: map['receivedByEmployee'] as String,
+      deliveredByEmployee: map['deliveredByEmployee'] as String?,
+      maintenanceEmployee: map['maintenanceEmployee'] as String?,
+      receivedAt: DateTime.parse(map['receivedAt'] as String),
+      deliveredAt: map['deliveredAt'] != null
+          ? DateTime.parse(map['deliveredAt'] as String)
+          : null,
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.parse(map['updatedAt'] as String)
           : null,
     );
   }
