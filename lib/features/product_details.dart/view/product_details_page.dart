@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/utils/utilities.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_button.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_button.dart';
 import 'package:techno_store/features/product_details.dart/widgets/body_details.dart';
 
 class ProductDetailsPage extends StatefulWidget {

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +7,7 @@ import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in.dart';
 import 'package:techno_store/features/home_page/view/home_page.dart';
 import 'package:techno_store/features/main_screen/views/widgets/pin_verification_page.dart';
-import 'package:techno_store/features/main_screen/views/widgets/profile_completion_page.dart';
+import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,6 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     final homeCubit = BlocProvider.of<HomeCubit>(context);
+    final maintenanceListCubit = BlocProvider.of<MaintenanceListCubit>(context);
     return BlocBuilder<AuthCubit, AuthState>(
       bloc: authCubit,
       buildWhen: (previous, current) =>
@@ -57,6 +56,9 @@ class _MainScreenState extends State<MainScreen> {
         }
         if (state is AuthSuccess) {
           homeCubit.loadUserData();
+          maintenanceListCubit.listenToMaintenanceDevices(
+            state.userData!.type == 1 ? state.userData!.uid : null,
+          );
           return const HomePage();
         }
         return const SignIn();

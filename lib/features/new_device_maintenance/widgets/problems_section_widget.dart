@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_constants.dart';
 
 class ProblemsSectionWidget extends StatelessWidget {
   final List<bool> problems;
@@ -14,28 +15,6 @@ class ProblemsSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final problemList = [
-      "Not Working",
-      "Screen",
-      "Battery",
-      "Charging Base",
-      "Service",
-      "Check",
-      "Selfie Camera",
-      "Main Camera",
-      "Internal Headset",
-      "External Headset",
-      "Microphone",
-      "Touch Screen",
-      "Fingerprint",
-      "Device Back",
-      "Software",
-      "Open Gmail",
-      "Open iCloud",
-      "Volume Button",
-      "Power Button",
-    ];
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -65,9 +44,10 @@ class ProblemsSectionWidget extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: List.generate(problemList.length, (index) {
+            children: List.generate(AppConstants.maintenanceProblemList.length,
+                (index) {
               return FilterChip(
-                label: Text(problemList[index].tr()),
+                label: Text(AppConstants.maintenanceProblemList[index].tr()),
                 selected: problems[index],
                 onSelected: (selected) => onProblemToggled(index),
                 selectedColor: AppColors.primary.withOpacity(0.2),

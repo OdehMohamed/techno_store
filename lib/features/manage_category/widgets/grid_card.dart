@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 
 class GridCard extends StatelessWidget {
   final String label;

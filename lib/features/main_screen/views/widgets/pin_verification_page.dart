@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core2/widgets/message.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
-import 'package:techno_store/core2/widgets/main_button.dart';
+import 'package:techno_store/core/widgets/message.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/main_button.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 
 class PinVerificationPage extends StatefulWidget {

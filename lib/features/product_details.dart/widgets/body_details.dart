@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_button.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_button.dart';
 
 class BodyDetails extends StatelessWidget {
   const BodyDetails({super.key});

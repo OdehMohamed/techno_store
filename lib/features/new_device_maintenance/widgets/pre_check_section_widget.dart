@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_constants.dart';
 
 class PreCheckSectionWidget extends StatelessWidget {
   final List<bool> preCheckList;
@@ -14,14 +15,6 @@ class PreCheckSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkList = [
-      "Scratches",
-      "Cracks",
-      "Liquid Damage",
-      "Missing Parts",
-      "Others",
-    ];
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -48,10 +41,11 @@ class PreCheckSectionWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...List.generate(checkList.length, (index) {
+          ...List.generate(AppConstants.maintenancePreCheckList.length,
+              (index) {
             return CheckboxListTile(
               title: Text(
-                checkList[index].tr(),
+                AppConstants.maintenancePreCheckList[index].tr(),
                 style: const TextStyle(fontSize: 14),
               ),
               value: preCheckList[index],

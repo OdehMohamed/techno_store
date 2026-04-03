@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_buttons_phone_method.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_phone_input.dart';
 
@@ -36,7 +36,7 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (width <= 1000)
+                  if (width <= 1200)
                     Image.asset(
                       kIsWeb
                           ? '../../../../../assets/images/Login.gif'
@@ -44,7 +44,7 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
                       width: width < 500 ? 300 : 400,
                       filterQuality: FilterQuality.high,
                     ),
-                  if (width <= 1000)
+                  if (width <= 1200)
                     Column(
                       children: [
                         Row(
@@ -91,7 +91,7 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
                         ),
                       ],
                     ),
-                  if (width > 1000)
+                  if (width > 1200)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

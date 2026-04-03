@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:techno_store/core/shared/model/category_and_sub_category_model.dart';
+import 'package:techno_store/core/model/category_and_sub_category_model.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core/utils/widget_utilities.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 
 class FilterButtons extends StatefulWidget {
   const FilterButtons({super.key});

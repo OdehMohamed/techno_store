@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core2/services/firebase_storage_services.dart';
-import 'package:techno_store/features/new_device_maintenance/model/new_device_maintenance_model.dart';
+import 'package:techno_store/core/services/firebase_storage_services.dart';
+import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/features/new_device_maintenance/services/new_device_services.dart';
 
 part 'new_device_state.dart';
@@ -17,7 +17,7 @@ class NewDeviceCubit extends Cubit<NewDeviceState> {
       FirebaseStorageServices.instance;
 
   /// إضافة جهاز جديد
-  Future<void> addNewDevice(NewDeviceMaintenanceModel device) async {
+  Future<void> addNewDevice(MaintenanceDeviceModel device) async {
     try {
       emit(NewDeviceLoading());
 
@@ -34,5 +34,21 @@ class NewDeviceCubit extends Cubit<NewDeviceState> {
     }
   }
 
-  
+  /// تحديث جهاز موجود
+  Future<void> updateDevice(String deviceId, MaintenanceDeviceModel device) async {
+    try {
+      emit(NewDeviceLoading());
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        emit(NewDeviceError(error: 'User not authenticated'));
+        return;
+      }
+      await newDeviceServices.updateDevice(deviceId, device);
+      emit(NewDeviceSuccess(deviceId: deviceId));
+    } catch (e) {
+      debugPrint('❌ Error in updateDevice: $e');
+      emit(NewDeviceError(error: e.toString()));
+    }
+  }
 }

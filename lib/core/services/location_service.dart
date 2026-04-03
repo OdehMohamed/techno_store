@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:techno_store/core/models/location_data.dart';
+import 'package:techno_store/core/model/location_data.dart';
 
 class LocationService {
   static LocationService? _instance;

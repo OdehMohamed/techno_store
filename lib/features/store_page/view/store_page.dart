@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
 import 'package:techno_store/features/store_page/widgets/inner_store_page.dart';
 
 class StorePage extends StatefulWidget {
