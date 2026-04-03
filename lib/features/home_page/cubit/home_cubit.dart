@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core2/model/user_data.dart';
+import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/features/home_page/services/home_services.dart';
 
 part 'home_state.dart';

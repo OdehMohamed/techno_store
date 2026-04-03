@@ -5,12 +5,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
-import 'package:techno_store/core2/widgets/main_button.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/main_button.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 
-import '../../../core2/widgets/message.dart';
+import '../../../core/widgets/message.dart';
 import '../../../core/utils/widget_utilities.dart';
 
 class NewUserAdminSide extends StatefulWidget {

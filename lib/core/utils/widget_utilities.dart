@@ -1,17 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core/utils/color_utilities.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'dart:ui' as ui;
 
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 
 class WidgetUtilities {
   static Widget divider() {
     return const Divider(
       thickness: 1.0,
-      color: ColorUtilities.dividerColor,
+      color: AppColors.dividerColor,
     );
   }
 
@@ -38,7 +37,7 @@ class WidgetUtilities {
   static Widget noDataWidget() {
     return Center(
       child: Container(
-        color: ColorUtilities.primary,
+        color: AppColors.primary,
         child: Padding(
           padding: Utilities.getDefaultPadding(),
           child: Column(
@@ -46,7 +45,7 @@ class WidgetUtilities {
             children: [
               const Icon(
                 Icons.do_not_disturb_alt_sharp,
-                color: ColorUtilities.backGround,
+                color: AppColors.backGround,
               ),
               Padding(padding: Utilities.getDefaultTBPadding()),
               WidgetUtilities.autoSizeText("No Data Available")
@@ -89,12 +88,12 @@ class WidgetUtilities {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
-      color: ColorUtilities.backgroundContainer,
+      color: AppColors.backgroundContainer,
       child: Container(
         width: width,
         height: height * 0.15,
         decoration: const BoxDecoration(
-          color: ColorUtilities.secondary,
+          color: AppColors.secondary,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -118,7 +117,7 @@ class WidgetUtilities {
                               : width < 1025
                                   ? width * 0.04
                                   : width * 0.03,
-                          color: ColorUtilities.backgroundContainer,
+                          color: AppColors.backgroundContainer,
                           letterSpacing: 3),
                       textAlign: TextAlign.center,
                     ),
@@ -135,7 +134,7 @@ class WidgetUtilities {
                                     : width < 1025
                                         ? width * 0.03
                                         : width * 0.02,
-                                color: ColorUtilities.backgroundContainer,
+                                color: AppColors.backgroundContainer,
                                 letterSpacing: 25,
                               ),
                             ),
@@ -147,7 +146,7 @@ class WidgetUtilities {
                                     : width < 1025
                                         ? width * 0.03
                                         : width * 0.02,
-                                color: ColorUtilities.backgroundContainer,
+                                color: AppColors.backgroundContainer,
                               ),
                             ),
                           ]),

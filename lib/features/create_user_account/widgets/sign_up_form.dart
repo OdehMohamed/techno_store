@@ -4,9 +4,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:techno_store/core/services/location_service.dart';
-import 'package:techno_store/core2/widgets/message.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_button.dart';
+import 'package:techno_store/core/widgets/message.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_button.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -126,7 +126,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           offset: Offset(0, 0),
                         ),
                       ],
-                    ),
+                    ),      
                     child: CircleAvatar(
                       backgroundColor: AppColors.white,
                       backgroundImage: photoPath.isNotEmpty

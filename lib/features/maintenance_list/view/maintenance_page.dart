@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
 import 'package:techno_store/features/maintenance_list/view/inner_maintenance_list.dart';
 
 class MaintenancePage extends StatefulWidget {
@@ -21,14 +21,16 @@ class _MaintenancePageState extends State<MaintenancePage> {
       appBar: PreferredSize(
         preferredSize:
             Size.fromHeight(width <= 500 ? height * 0.05 : height * 0.08),
-        child: MainAppBar(
+        child: MainAppBar( 
           haveLeading: false,
           advancedDrawerController: _advancedDrawerController,
           title: 'Maintenance'.tr(),
           onLanguageChanged: () => setState(() {}),
         ),
       ),
-      body: const InnerMaintenanceList(),
+      body: const InnerMaintenanceList(
+        heroTagPrefix: 'maintenance',
+      ),
     );
   }
 }

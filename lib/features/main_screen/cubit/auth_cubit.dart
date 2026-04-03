@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techno_store/core2/model/user_data.dart';
-import 'package:techno_store/core2/services/auth_services.dart';
-import 'package:techno_store/core2/services/cache_services.dart';
-import 'package:techno_store/core2/services/firestore_services.dart';
-import 'package:techno_store/core2/utils/firestore_api_path.dart';
+import 'package:techno_store/core/model/user_data.dart';
+import 'package:techno_store/core/services/auth_services.dart';
+import 'package:techno_store/core/services/cache_services.dart';
+import 'package:techno_store/core/services/firestore_services.dart';
+import 'package:techno_store/core/utils/firestore_api_path.dart';
 import 'package:techno_store/features/create_user_account/services/create_user_account_services.dart';
 part 'auth_state.dart';
 
@@ -287,10 +287,10 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void checkAuth() {
-    final user = _authServices.currentUser;
-    if (user != null) {
-      emit(AuthSuccess());
+  Future<void> checkAuth() async {
+    final userData = await _authServices.fetchCurrentUserData();
+    if (userData != null) {
+      emit(AuthSuccess(userData));
     } else {
       emit(AuthInitial());
     }

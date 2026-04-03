@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:techno_store/core/utils/utilities.dart';
-import 'package:techno_store/core2/widgets/main_drawer2.dart';
+import 'package:techno_store/core/widgets/main_drawer2.dart';
 import 'package:techno_store/features/maintenance_list/view/inner_maintenance_list.dart';
-import 'package:techno_store/core2/widgets/message.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
-import 'package:techno_store/core2/widgets/main_footer.dart';
+import 'package:techno_store/core/widgets/message.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/main_footer.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
-import 'package:techno_store/core/track_phone_page/view/track_phone_page.dart';
 import '../../../core/utils/widget_utilities.dart';
 import '../../store_page/widgets/inner_store_page.dart';
 
@@ -174,7 +173,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Expanded(
                       child: DefaultTabController(
-                        length: state.userData.type == 3 ? 1 : 2,
+                        // length: state.userData.type == 3 ? 1 : 2,
+                        length: 1,
                         child: Row(
                           children: [
                             // if (width > 1024)
@@ -190,25 +190,6 @@ class _HomePageState extends State<HomePage> {
                                     dividerColor: AppColors.white,
                                     indicatorColor: AppColors.primary,
                                     tabs: [
-                                      if (state.userData.type != 3)
-                                        Tab(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              const Icon(
-                                                Icons.shopping_cart,
-                                                color: AppColors.primary,
-                                              ),
-                                              WidgetUtilities.autoSizeText(
-                                                "Store",
-                                                textStyle: const TextStyle(
-                                                  color: AppColors.primary,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
                                       Tab(
                                         child: Row(
                                           mainAxisAlignment:
@@ -221,23 +202,41 @@ class _HomePageState extends State<HomePage> {
                                             WidgetUtilities.autoSizeText(
                                               "Maintenance",
                                               textStyle: const TextStyle(
-                                                  color: AppColors.primary),
+                                                color: AppColors.primary,
+                                              ),
                                             )
                                           ],
                                         ),
                                       ),
+                                      // if (state.userData.type != 3)
+                                      //   Tab(
+                                      //     child: Row(
+                                      //       mainAxisAlignment:
+                                      //           MainAxisAlignment.center,
+                                      //       children: [
+                                      //         const Icon(
+                                      //           Icons.shopping_cart,
+                                      //           color: AppColors.primary,
+                                      //         ),
+                                      //         WidgetUtilities.autoSizeText(
+                                      //           "Store",
+                                      //           textStyle: const TextStyle(
+                                      //             color: AppColors.primary,
+                                      //           ),
+                                      //         )
+                                      //       ],
+                                      //     ),
+                                      //   ),
                                     ],
                                   ),
-                                  Expanded(
+                                  const Expanded(
                                     child: TabBarView(
                                       children: [
-                                        if (state.userData.type != 3)
-                                          const InnerStorePage(),
-                                        state.userData.type != 1 &&
-                                                state.userData.type != 9
-                                            // ignore: prefer_const_constructors
-                                            ? InnerMaintenanceList()
-                                            : const TrackPhonePage()
+                                        InnerMaintenanceList(
+                                          heroTagPrefix: 'home',
+                                        ),
+                                        // if (state.userData.type != 3)
+                                        //   const InnerStorePage(),
                                       ],
                                     ),
                                   ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/utils/widget_utilities.dart';
-import 'package:techno_store/core2/route/app_routes.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/route/app_routes.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({super.key});

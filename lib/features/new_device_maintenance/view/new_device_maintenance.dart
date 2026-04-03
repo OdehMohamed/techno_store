@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
-import 'package:techno_store/core2/widgets/custom_dialogs.dart';
-import 'package:techno_store/core2/widgets/main_app_bar.dart';
-import 'package:techno_store/core2/widgets/message.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/widgets/custom_dialogs.dart';
+import 'package:techno_store/core/widgets/main_app_bar.dart';
+import 'package:techno_store/core/widgets/message.dart';
 import 'package:techno_store/features/new_device_maintenance/cubit/new_device_cubit.dart';
-import 'package:techno_store/features/new_device_maintenance/model/new_device_maintenance_model.dart';
+import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/accessories_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/action_buttons_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/build_dropdown.dart';
@@ -20,9 +21,12 @@ import 'package:techno_store/features/new_device_maintenance/widgets/pattern_but
 import 'package:techno_store/features/new_device_maintenance/widgets/pattern_dialog_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/pre_check_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/problems_section_widget.dart';
+import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_phone_input.dart';
 
 class NewDeviceMaintenance extends StatefulWidget {
-  const NewDeviceMaintenance({Key? key}) : super(key: key);
+  final MaintenanceDeviceModel? device;
+
+  const NewDeviceMaintenance({Key? key, this.device}) : super(key: key);
 
   @override
   State<NewDeviceMaintenance> createState() => _NewDeviceMaintenanceState();
@@ -41,6 +45,8 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   final priceController = TextEditingController();
   final notes2Controller = TextEditingController();
   final receivedByEmployeeController = TextEditingController();
+  final maintenanceEmployeeController = TextEditingController();
+  final partCodeController = TextEditingController();
   final _advancedDrawerController = AdvancedDrawerController();
 
   // State variables
@@ -48,74 +54,23 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   String? selectedBrand;
   String? selectedTime;
 
-  List<bool> problems = List.filled(19, false);
-  List<bool> accessories = List.filled(9, false);
-  List<bool> preCheckList = List.filled(5, false);
+  List<bool> problems =
+      List.filled(AppConstants.maintenanceProblemList.length, false);
+  List<bool> accessories =
+      List.filled(AppConstants.maintenanceAccessoryList.length, false);
+  List<bool> preCheckList =
+      List.filled(AppConstants.maintenancePreCheckList.length, false);
 
   // Pattern lock variables
   List<int> patternValue = [];
 
   // Images
   List<String> imagesBeforeReceiving = [];
+  List<String> installedPartCodes = [];
 
-  final List<Color> predefinedColors = [
-    const Color(0xff000000),
-    const Color(0xffffd700),
-    const Color(0xffc0c0c0),
-    const Color(0xff9c27b0),
-    const Color(0xffffffff),
-    const Color(0xff2196f3),
-    const Color(0xff000080),
-    const Color(0xfff44336),
-    const Color(0xff4caf50),
-  ];
-  final problemList = [
-    "Not Working",
-    "Screen",
-    "Battery",
-    "Charging Base",
-    "Service",
-    "Check",
-    "Selfie Camera",
-    "Main Camera",
-    "Internal Headset",
-    "External Headset",
-    "Microphone",
-    "Touch Screen",
-    "Fingerprint",
-    "Device Back",
-    "Software",
-    "Open Gmail",
-    "Open iCloud",
-    "Volume Button",
-    "Power Button",
-  ];
-  final accessoryList = [
-    "Charger",
-    "Headphones",
-    "Case",
-    "Screen Protector",
-    "SIM 1",
-    "SIM 2",
-    "Memory Card",
-    "Cable",
-    "Other",
-  ];
-  final checkList = [
-    "Scratches",
-    "Cracks",
-    "Liquid Damage",
-    "Missing Parts",
-    "Others",
-  ];
+  // Phone code for international format
+  String phoneCode = '+970';
 
-  final employeeList = [
-    "أحمد",
-    "خالد",
-    "عمر",
-    "سامي",
-    "فادي",
-  ];
   @override
   void dispose() {
     nameController.dispose();
@@ -127,7 +82,46 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     priceController.dispose();
     notes2Controller.dispose();
     receivedByEmployeeController.dispose();
+    maintenanceEmployeeController.dispose();
+    partCodeController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.device != null) {
+      final device = widget.device!;
+      nameController.text = device.name;
+      phoneController.text = device.phoneNumber;
+      receivedByEmployeeController.text = device.receivedByEmployee;
+      selectedBrand = device.brand;
+      modelController.text = device.model;
+      selectedColor = Color(int.parse(device.colorHex, radix: 16));
+      imeiController.text = device.imeiNumber ?? '';
+      pinController.text = device.pin ?? '';
+      patternValue = device.patternLock ?? [];
+      imagesBeforeReceiving = device.imagesBeforeReceiving ?? [];
+      for (int i = 0; i < AppConstants.maintenanceProblemList.length; i++) {
+        problems[i] =
+            device.problems.contains(AppConstants.maintenanceProblemList[i]);
+      }
+      for (int i = 0; i < AppConstants.maintenanceAccessoryList.length; i++) {
+        accessories[i] = device.accessories
+            .contains(AppConstants.maintenanceAccessoryList[i]);
+      }
+      for (int i = 0; i < AppConstants.maintenancePreCheckList.length; i++) {
+        preCheckList[i] = device.deviceStatusReceived
+            .contains(AppConstants.maintenancePreCheckList[i]);
+      }
+      notesController.text = device.notesHidden ?? '';
+      priceController.text =
+          device.price != null ? device.price.toString() : '';
+      maintenanceEmployeeController.text = device.maintenanceEmployee ?? '';
+      installedPartCodes = List<String>.from(device.installedPartCodes ?? []);
+      selectedTime = device.estimatedTime;
+      notes2Controller.text = device.additionalNotes ?? '';
+    }
   }
 
   @override
@@ -135,13 +129,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final newDeviceMaintenanceCubit = BlocProvider.of<NewDeviceCubit>(context);
+
     return BlocConsumer<NewDeviceCubit, NewDeviceState>(
       listenWhen: (previous, current) =>
           current is NewDeviceSuccess || current is NewDeviceError,
       listener: (context, state) {
         if (state is NewDeviceSuccess) {
           Message.showSuccessToastMessage("Device added successfully".tr());
-          Navigator.pop(context);
+          Navigator.pop(context, true); // Return true to indicate success
         } else if (state is NewDeviceError) {
           Message.showBottomMessage(context, state.error, isError: true);
         }
@@ -228,6 +223,12 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                             // Row 3: Pricing & Timeline
                             pricingAndTimeline(),
 
+                            if (widget.device != null &&
+                                widget.device!.status == 'Fixed') ...[
+                              const SizedBox(height: 24),
+                              fixedDetailsSection(),
+                            ],
+
                             const SizedBox(height: 32),
 
                             // Action Buttons
@@ -262,6 +263,13 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
 
                             // Price and Time Section
                             pricingAndTimeline(),
+
+                            if (widget.device != null &&
+                                widget.device!.status == 'Fixed') ...[
+                              const SizedBox(height: 24),
+                              fixedDetailsSection(),
+                            ],
+
                             const SizedBox(height: 32),
 
                             // Action Buttons
@@ -283,12 +291,9 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       title: "Customer Information".tr(),
       icon: Icons.person_outline_rounded,
       children: [
-        BuildTextField(
-          controller: phoneController,
-          label: "Phone Number".tr(),
-          icon: Icons.phone,
-          keyboardType: TextInputType.phone,
-          required: true,
+        SignInFormPhoneInput(
+          phoneController: phoneController,
+          phoneCode: phoneCode,
         ),
         const SizedBox(height: 16),
         BuildTextField(
@@ -304,7 +309,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
               : receivedByEmployeeController.text,
           label: "Received By Employee".tr(),
           icon: Icons.person_outline,
-          items: employeeList,
+          items: AppConstants.newDeviceEmployeeList,
           onChanged: (value) => setState(() {
             receivedByEmployeeController.text = value ?? '';
           }),
@@ -322,7 +327,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
           value: selectedBrand,
           label: "Device Brand".tr(),
           icon: Icons.business,
-          items: const ['Apple', 'Samsung', 'Huawei', 'Xiaomi', 'Others'],
+          items: AppConstants.deviceBrandList,
           onChanged: (value) => setState(() => selectedBrand = value),
         ),
         const SizedBox(height: 16),
@@ -336,7 +341,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
         ColorPickerWidget(
           selectedColor: selectedColor,
           onColorChanged: (color) => setState(() => selectedColor = color),
-          predefinedColors: predefinedColors,
+          predefinedColors: AppConstants.maintenancePredefinedColors,
         ),
         const SizedBox(height: 16),
         BuildTextField(
@@ -471,15 +476,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                     value: selectedTime,
                     label: "Estimated Time".tr(),
                     icon: Icons.access_time,
-                    items: const [
-                      '30 min',
-                      '1 Hour',
-                      '2 Hours',
-                      '3 Hours',
-                      '4 Hours',
-                      '5 Hours',
-                      'Not determined'
-                    ],
+                    items: AppConstants.estimatedTimeList,
                     onChanged: (value) => setState(() => selectedTime = value),
                   ),
                 ],
@@ -500,15 +497,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                       value: selectedTime,
                       label: "Estimated Time".tr(),
                       icon: Icons.access_time,
-                      items: const [
-                        '30 min',
-                        '1 Hour',
-                        '2 Hours',
-                        '3 Hours',
-                        '4 Hours',
-                        '5 Hours',
-                        'Not determined'
-                      ],
+                      items: AppConstants.estimatedTimeList,
                       onChanged: (value) =>
                           setState(() => selectedTime = value),
                     ),
@@ -526,9 +515,83 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     );
   }
 
+  Widget fixedDetailsSection() {
+    return BuildSelectionCard(
+      title: 'Fixed Details'.tr(),
+      icon: Icons.build_circle,
+      children: [
+        BuildDropdown(
+          value: maintenanceEmployeeController.text.isEmpty
+              ? null
+              : maintenanceEmployeeController.text,
+          label: 'Maintenance Employee'.tr(),
+          icon: Icons.engineering,
+          items: AppConstants.maintenanceDialogEmployeeList,
+          onChanged: (value) {
+            setState(() {
+              maintenanceEmployeeController.text = value ?? '';
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: BuildTextField(
+                controller: partCodeController,
+                label: 'Part Code'.tr(),
+                icon: Icons.qr_code,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _addPartCode,
+                child: Text('Add'.tr()),
+              ),
+            ),
+          ],
+        ),
+        if (installedPartCodes.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: installedPartCodes
+                .map(
+                  (code) => Chip(
+                    label: Text(code),
+                    onDeleted: () {
+                      setState(() {
+                        installedPartCodes.remove(code);
+                      });
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
+  void _addPartCode() {
+    final code = partCodeController.text.trim();
+    if (code.isEmpty) return;
+    if (installedPartCodes.contains(code)) {
+      partCodeController.clear();
+      return;
+    }
+    setState(() {
+      installedPartCodes.add(code);
+      partCodeController.clear();
+    });
+  }
+
   Widget actionButtons(NewDeviceCubit newDeviceMaintenanceCubit) {
     return ActionButtonsWidget(
-      onSave: () async {
+      onConfirm: () async {
         if (_formKey.currentState!.validate()) {
           CustomDialogs.showDialogConfirm(
             context: context,
@@ -537,8 +600,11 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
             onPressed: () async {
               Navigator.pop(context);
               final device = await onSaveLogic();
-              if (device != null) {
+              if (device != null && widget.device == null) {
                 await newDeviceMaintenanceCubit.addNewDevice(device);
+              } else if (device != null && widget.device != null) {
+                await newDeviceMaintenanceCubit.updateDevice(
+                    widget.device!.id!, device);
               }
             },
           );
@@ -548,7 +614,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     );
   }
 
-  Future<NewDeviceMaintenanceModel?> onSaveLogic() async {
+  Future<MaintenanceDeviceModel?> onSaveLogic() async {
     // Validate received by employee (always required)
     if (receivedByEmployeeController.text.trim().isEmpty) {
       Message.showErrorToastMessage("Please select received by employee".tr());
@@ -556,25 +622,27 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       return null;
     }
 
-    NewDeviceMaintenanceModel device = NewDeviceMaintenanceModel(
+    MaintenanceDeviceModel device = MaintenanceDeviceModel(
       name: nameController.text.trim(),
-      phoneNumber: phoneController.text.trim(),
+      phoneNumber: phoneCode + phoneController.text.trim(),
       model: modelController.text.trim(),
       brand: selectedBrand,
       colorHex: selectedColor.value.toRadixString(16),
       problems: [
         for (int i = 0; i < problems.length; i++)
-          if (problems[i]) problemList[i]
+          if (problems[i]) AppConstants.maintenanceProblemList[i]
       ],
       accessories: [
         for (int i = 0; i < accessories.length; i++)
-          if (accessories[i]) accessoryList[i]
+          if (accessories[i]) AppConstants.maintenanceAccessoryList[i]
       ],
       deviceStatusReceived: [
         for (int i = 0; i < preCheckList.length; i++)
-          if (preCheckList[i]) checkList[i]
+          if (preCheckList[i]) AppConstants.maintenancePreCheckList[i]
       ],
-      receivedAt: DateTime.now(),
+      receivedAt:
+          widget.device == null ? DateTime.now() : widget.device!.receivedAt,
+      updatedAt: DateTime.now(),
       pin: pinController.text.trim(),
       imeiNumber: imeiController.text.trim(),
       notesHidden: notesController.text.trim(),
@@ -586,7 +654,15 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       patternLock: patternValue,
       imagesBeforeReceiving: imagesBeforeReceiving,
       receivedByEmployee: receivedByEmployeeController.text.trim(),
-      status: 'In Maintenance',
+      maintenanceEmployee: maintenanceEmployeeController.text.trim().isEmpty
+          ? widget.device?.maintenanceEmployee
+          : maintenanceEmployeeController.text.trim(),
+      installedPartCodes: List<String>.from(installedPartCodes),
+      deliveredByEmployee: widget.device?.deliveredByEmployee,
+      deliveredAt: widget.device?.deliveredAt,
+      fixedAt: widget.device?.fixedAt,
+      timeToFix: widget.device?.timeToFix,
+      status: widget.device?.status ?? 'In Maintenance',
     );
     return device;
   }
@@ -718,7 +794,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Failed to add image: ${e.toString()}".tr(),
+                    "${"Failed to add image".tr()}: ${e.toString()}",
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),

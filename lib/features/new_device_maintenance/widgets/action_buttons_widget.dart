@@ -1,14 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
 
 class ActionButtonsWidget extends StatefulWidget {
-  final VoidCallback onSave;
+  final VoidCallback onConfirm;
   final VoidCallback onCancel;
 
   const ActionButtonsWidget({
     Key? key,
-    required this.onSave,
+    required this.onConfirm,
     required this.onCancel,
   }) : super(key: key);
 
@@ -43,7 +43,7 @@ class _ActionButtonsWidgetState extends State<ActionButtonsWidget> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: widget.onSave,
+                onTap: widget.onConfirm,
                 borderRadius: BorderRadius.circular(16),
                 child: Center(
                   child: Row(
@@ -52,7 +52,7 @@ class _ActionButtonsWidgetState extends State<ActionButtonsWidget> {
                       const Icon(Icons.save_rounded, color: Colors.white),
                       const SizedBox(width: 8),
                       Text(
-                        "Save".tr(),
+                        "Confirm".tr(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,

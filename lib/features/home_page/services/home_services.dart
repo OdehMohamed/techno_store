@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/model/user_data.dart';
-import 'package:techno_store/core2/services/auth_services.dart';
-import 'package:techno_store/core2/services/cache_services.dart';
-import 'package:techno_store/core2/services/firestore_services.dart';
+import 'package:techno_store/core/model/user_data.dart';
+import 'package:techno_store/core/services/auth_services.dart';
+import 'package:techno_store/core/services/cache_services.dart';
+import 'package:techno_store/core/services/firestore_services.dart';
 
 class HomeServices {
   final CacheServices _cacheServices = CacheServices();

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core2/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/utils/app_constants.dart';
 
 class AccessoriesSectionWidget extends StatelessWidget {
   final List<bool> accessories;
@@ -14,18 +15,6 @@ class AccessoriesSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accessoryList = [
-      "Charger",
-      "Headphones",
-      "Case",
-      "Screen Protector",
-      "SIM 1",
-      "SIM 2",
-      "Memory Card",
-      "Cable",
-      "Other",
-    ];
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -55,9 +44,10 @@ class AccessoriesSectionWidget extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: List.generate(accessoryList.length, (index) {
+            children: List.generate(
+                AppConstants.maintenanceAccessoryList.length, (index) {
               return FilterChip(
-                label: Text(accessoryList[index].tr()),
+                label: Text(AppConstants.maintenanceAccessoryList[index].tr()),
                 selected: accessories[index],
                 onSelected: (selected) => onAccessoryToggled(index),
                 selectedColor: AppColors.primary.withOpacity(0.2),

@@ -27,6 +27,7 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   flutter_form_builder: ^10.2.0
   flutter_launcher_icons: ^0.14.4
+  flutter_slidable: ^4.0.3
   fluttericon: ^2.0.0
   fluttertoast: ^8.1.1
   form_builder_validators: ^11.1.1
