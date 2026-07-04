@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/features/create_user_account/view/create_user_account_view.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
@@ -56,9 +57,19 @@ class _MainScreenState extends State<MainScreen> {
         }
         if (state is AuthSuccess) {
           homeCubit.loadUserData();
-          maintenanceListCubit.listenToMaintenanceDevices(
-            state.userData!.type == 1 ? state.userData!.uid : null,
-          );
+
+          final userType = state.userData!.type;
+          if (UserRole.isCustomer(userType)) {
+            maintenanceListCubit
+                .listenToMaintenanceDevices(state.userData!.uid);
+          } else if (UserRole.isStaff(userType)) {
+            maintenanceListCubit.listenToMaintenanceDevices(null);
+          }
+          // Any other role (e.g. GuestAccount) intentionally starts no
+          // listener at all — MaintenanceListCubit stays in its initial
+          // state, which the UI renders as an empty state, not an error.
+          // See docs/ai-workflow/ADR-003-guest-account-behavior.md.
+
           return const HomePage();
         }
         return const SignIn();

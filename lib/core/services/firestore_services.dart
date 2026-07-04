@@ -71,6 +71,18 @@ class FirestoreServices {
     return builder(snapshot.data() as Map<String, dynamic>, snapshot.id);
   }
 
+  /// Like [getDocument], but returns null instead of throwing when the
+  /// document doesn't exist. Use this when the caller needs to distinguish
+  /// "document is missing" from "document has this data" (e.g. deciding
+  /// whether a profile already exists before writing to it).
+  Future<Map<String, dynamic>?> getDocumentOrNull({
+    required String path,
+  }) async {
+    final reference = _fireStore.doc(path);
+    final snapshot = await reference.get();
+    return snapshot.data();
+  }
+
   Future<List<T>> getCollection<T>({
     required String path,
     required T Function(Map<String, dynamic> data, String documentId) builder,

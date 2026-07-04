@@ -6,6 +6,7 @@ import 'package:techno_store/core/widgets/message.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core/utils/widget_utilities.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
@@ -40,6 +41,7 @@ class _MainDrawer2State extends State<MainDrawer2> {
         }
         if (state is HomeLoaded) {
           final profileImage = state.userData.photoURL;
+          final type = state.userData.type;
           return SafeArea(
             child: ListTileTheme(
               textColor: Colors.white,
@@ -71,15 +73,27 @@ class _MainDrawer2State extends State<MainDrawer2> {
                       const SizedBox(height: 32.0),
                     ],
                   ),
-                  state.userData.type != 3 &&
-                          state.userData.type != 9 // 9 for guest
+                  // Favorite: Admin, Customer, Reception. Allow-list — was
+                  // previously a deny-list (`!= 3 && != 9`) that happened to
+                  // already exclude Maintenance and Guest; now explicit.
+                  (UserRole.isAdmin(type) ||
+                          UserRole.isCustomer(type) ||
+                          UserRole.isReception(type))
                       ? ListTile(
                           onTap: () {},
                           leading: const Icon(Icons.favorite),
                           title: WidgetUtilities.autoSizeText('Favorite'),
                         )
                       : const SizedBox(),
-                  state.userData.type != 3
+                  // Store: Admin, Customer, Reception. Was previously a
+                  // deny-list (`!= 3`) that also (unintentionally) let Guest
+                  // see this item — converting to an explicit allow-list
+                  // means Guest no longer does, consistent with treating
+                  // Guest as having no granted capabilities by default
+                  // (see docs/ai-workflow/ADR-003-guest-account-behavior.md).
+                  (UserRole.isAdmin(type) ||
+                          UserRole.isCustomer(type) ||
+                          UserRole.isReception(type))
                       ? ListTile(
                           onTap: () {
                             Utilities.navigatorWithBack(
@@ -91,7 +105,7 @@ class _MainDrawer2State extends State<MainDrawer2> {
                           title: WidgetUtilities.autoSizeText('Store'),
                         )
                       : const SizedBox(),
-                  state.userData.type == 1
+                  UserRole.isCustomer(type)
                       ? ListTile(
                           onTap: () {},
                           leading: const Icon(
@@ -103,7 +117,12 @@ class _MainDrawer2State extends State<MainDrawer2> {
                           ),
                         )
                       : const SizedBox(),
-                  state.userData.type != 1
+                  // Staff-wide maintenance list navigation. This was
+                  // previously a deny-list (`!= 1`, "not customer"), which is
+                  // exactly how Guest ended up able to navigate to the
+                  // unrestricted, system-wide device list. Now an explicit
+                  // staff allow-list.
+                  UserRole.isStaff(type)
                       ? ListTile(
                           onTap: () {
                             final maintenanceListCubit =
@@ -124,7 +143,7 @@ class _MainDrawer2State extends State<MainDrawer2> {
                           title: WidgetUtilities.autoSizeText('Maintenance'),
                         )
                       : const SizedBox(),
-                  state.userData.type == 0
+                  UserRole.isAdmin(type)
                       ? ListTile(
                           onTap: () {
                             Navigator.of(context)
@@ -137,7 +156,7 @@ class _MainDrawer2State extends State<MainDrawer2> {
                               WidgetUtilities.autoSizeText('Add new Employee'),
                         )
                       : const SizedBox(),
-                  state.userData.type == 0 || state.userData.type == 2
+                  (UserRole.isAdmin(type) || UserRole.isReception(type))
                       ? ListTile(
                           onTap: () {},
                           leading: const Icon(
@@ -147,7 +166,7 @@ class _MainDrawer2State extends State<MainDrawer2> {
                               WidgetUtilities.autoSizeText('Add new Product'),
                         )
                       : const SizedBox(),
-                  state.userData.type == 0 || state.userData.type == 2
+                  (UserRole.isAdmin(type) || UserRole.isReception(type))
                       ? ListTile(
                           onTap: () {
                             Navigator.push(

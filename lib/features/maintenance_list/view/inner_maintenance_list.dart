@@ -7,6 +7,7 @@ import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/route/app_routes.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
@@ -50,7 +51,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
         if (homeState is HomeLoading) {
           return const Center(child: CircularProgressIndicator.adaptive());
         } else if (homeState is HomeLoaded) {
-          final isEmployee = homeState.userData.type != 1;
+          final isEmployee = UserRole.isStaff(homeState.userData.type);
 
           return Scaffold(
             backgroundColor: Colors.grey[50],

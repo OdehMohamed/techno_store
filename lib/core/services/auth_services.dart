@@ -8,7 +8,9 @@ import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/core/services/cache_services.dart';
 import 'package:techno_store/core/services/firebase_storage_services.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
+import 'package:techno_store/core/utils/firestore_api_path.dart';
 import 'package:techno_store/core/utils/storage_api_path.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 
 class AuthServices {
   final firebaseAuth = FirebaseAuth.instance;
@@ -132,14 +134,26 @@ class AuthServices {
               StorageApiPath.profilesPhotos(firebaseAuth.currentUser!.uid),
         );
       }
+
+      final uid = firebaseAuth.currentUser!.uid;
+
+      // Preserve an existing role if this profile already exists; only
+      // default to Customer when creating a brand-new profile. This method
+      // must never silently downgrade an existing Admin/Reception/Maintenance
+      // account back to Customer if it's ever re-invoked for that account.
+      final existingData = await firestoreServices.getDocumentOrNull(
+        path: FirestoreApiPath.user(uid),
+      );
+      final existingType = existingData?['type'] as int?;
+
       final userData = UserData(
-        uid: firebaseAuth.currentUser!.uid,
+        uid: uid,
         phoneNumber: firebaseAuth.currentUser!.phoneNumber ?? '',
         location: location,
         nickname: nickname,
         name: name,
         photoURL: photoURL,
-        type: 1,
+        type: existingType ?? UserRole.customer,
       );
       await firestoreServices.saveUserData(
         userData,
