@@ -1,4 +1,4 @@
-package com.Techno.techno_store
+package com.mohamedodeh.technostore
 
 import io.flutter.embedding.android.FlutterActivity
 

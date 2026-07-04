@@ -1,3 +1,7 @@
+import java.util.Properties
+
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,8 +9,18 @@ plugins {
     id("com.google.gms.google-services") 
 }
 
+val keystoreProperties = Properties()
+
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+}
+
 android {
-    namespace = "com.Techno.techno_store"
+    namespace = "com.mohamedodeh.technostore"
     compileSdk = 36
 
     compileOptions {
@@ -18,18 +32,38 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    defaultConfig {
-        applicationId = "com.Techno.techno_store"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.0"
+    signingConfigs {
+
+        create("release") {
+
+            keyAlias = keystoreProperties["keyAlias"] as String
+
+            keyPassword = keystoreProperties["keyPassword"] as String
+
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+
+            storePassword = keystoreProperties["storePassword"] as String
+
+        }
+
     }
 
-    buildTypes {
+    defaultConfig {
+        applicationId = "com.mohamedodeh.technostore"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+   buildTypes {
+
         release {
-            signingConfig = signingConfigs.getByName("debug")
+
+            signingConfig = signingConfigs.getByName("release")
+
         }
+
     }
 }
 

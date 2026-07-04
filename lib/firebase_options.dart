@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBtsjgIEYqSRM5gwFZCbKrV18jIBo4U5CI',
-    appId: '1:813856656513:android:9c35d4a6377f9ef3d9d180',
+    appId: '1:813856656513:android:b309815dc4a9653cd9d180',
     messagingSenderId: '813856656513',
     projectId: 'technostore-v2',
     storageBucket: 'technostore-v2.firebasestorage.app',
@@ -60,11 +60,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBsdhIGkHZvABXcWswH9eWNrQhprzoVobA',
-    appId: '1:813856656513:ios:c462fe83e62d9404d9d180',
+    appId: '1:813856656513:ios:e6e57b336d4152b2d9d180',
     messagingSenderId: '813856656513',
     projectId: 'technostore-v2',
     storageBucket: 'technostore-v2.firebasestorage.app',
-    iosBundleId: 'com.Techno.technoStore',
+    iosBundleId: 'com.mohamedodeh.technostore',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
