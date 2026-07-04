@@ -44,3 +44,22 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Migration script output — contains real production customer PII and
+# plaintext sensitive fields (pin/patternLock/notesHidden) when run against
+# production. Must never be committed. See scripts/migration/README.md.
+scripts/migration/backups/
+scripts/migration/node_modules/
+
+# Android app signing key. Must never be committed — anyone with this file
+# could sign a malicious update Android would trust as coming from this
+# developer. android/key.properties (which references this file) is already
+# gitignored via android/.gitignore; this was not, until now.
+*.jks
+*.keystore
+
+# Build cache leakage found in android/build/ (Xcode XCBuildData ended up
+# nested there — looks like a build-tooling anomaly, not intentional).
+# Regenerable in all cases; never source. The top-level /build/ rule above
+# only matches the repo-root build/ directory, not this nested one.
+android/build/
