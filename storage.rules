@@ -1,0 +1,54 @@
+// DRAFT — Storage rules, mirroring the Firestore role logic. NOT deployed.
+// REQUIRED, per product-owner decision (2026-07-03): deployed together with
+// firestore.rules.draft in the same pass, not as a separate/later step.
+//
+// The maintenance_devices write rule below already uses isStaff() uniformly,
+// which in Firebase Storage's rule model covers create/update/delete as one
+// "write" action — already consistent with the all-staff (Admin, Reception,
+// Maintenance) create/update/delete decision applied to the Firestore rules;
+// no change was needed here as a result of that decision.
+//
+// Limitation: Storage rules cannot cheaply cross-reference Firestore document
+// ownership (a `firestore.get()` call is available in Storage rules but adds
+// latency/cost per request) — the customer-owns-this-device check below is
+// written using it, but should be load-tested before relying on it heavily.
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function callerType() {
+      return isSignedIn()
+        ? firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.type
+        : null;
+    }
+
+    function isStaff() {
+      return callerType() == 0 || callerType() == 2 || callerType() == 3;
+    }
+
+    // profiles_photos/{uid}/{fileName}
+    match /profiles_photos/{uid}/{fileName} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isStaff());
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // maintenance_devices/{deviceId}/{before_receiving|after_delivery}/{fileName}
+    match /maintenance_devices/{deviceId}/{folder}/{fileName} {
+      allow read: if isSignedIn() && (
+        isStaff() ||
+        firestore.get(/databases/(default)/documents/maintenanceDevices/$(deviceId)).data.userId == request.auth.uid
+      );
+      allow write: if isSignedIn() && isStaff();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
