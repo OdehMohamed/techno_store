@@ -11,13 +11,14 @@ class MaintenanceDeviceModel {
   final String model;
   final String colorHex;
   final String? imeiNumber;
-  final String? pin;
-  final List<int>? patternLock;
+  // pin, patternLock, notesHidden intentionally NOT on this model — they
+  // live in maintenanceDevices/{id}/private/sensitive per
+  // docs/ai-workflow/ADR-001-sensitive-data-separation.md. Use
+  // MaintenanceDeviceSensitiveDataService to read/write them.
 
   // Maintenance Information
   final List<String> problems;
   final String status; // pending, in_progress, completed, delivered
-  final String? notesHidden; // ملاحظات خاصة للموظفين فقط
   final List<String> accessories;
   final List<String> deviceStatusReceived;
 
@@ -59,11 +60,8 @@ class MaintenanceDeviceModel {
     required this.model,
     required this.colorHex,
     this.imeiNumber,
-    this.pin,
-    this.patternLock,
     required this.problems,
     this.status = 'pending', // القيمة الافتراضية
-    this.notesHidden,
     required this.accessories,
     required this.deviceStatusReceived,
     this.price,
@@ -94,11 +92,8 @@ class MaintenanceDeviceModel {
       'model': model,
       'colorHex': colorHex,
       'imeiNumber': imeiNumber,
-      'pin': pin,
-      'patternLock': patternLock,
       'problems': problems,
       'status': status,
-      'notesHidden': notesHidden,
       'accessories': accessories,
       'deviceStatusReceived': deviceStatusReceived,
       'price': price,
@@ -131,14 +126,9 @@ class MaintenanceDeviceModel {
       model: json['model'] as String,
       colorHex: json['colorHex'] as String,
       imeiNumber: json['imeiNumber'] as String?,
-      pin: json['pin'] as String?,
-      patternLock: (json['patternLock'] as List<dynamic>?)
-          ?.map((e) => e as int)
-          .toList(),
       problems:
           (json['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: json['status'] as String? ?? 'pending',
-      notesHidden: json['notesHidden'] as String?,
       accessories: (json['accessories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -189,13 +179,9 @@ class MaintenanceDeviceModel {
       model: map['model'] as String,
       colorHex: map['colorHex'] as String,
       imeiNumber: map['imeiNumber'] as String?,
-      pin: map['pin'] as String?,
-      patternLock:
-          (map['patternLock'] as List<dynamic>?)?.map((e) => e as int).toList(),
       problems:
           (map['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: map['status'] as String? ?? 'pending',
-      notesHidden: map['notesHidden'] as String?,
       accessories: (map['accessories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -243,11 +229,8 @@ class MaintenanceDeviceModel {
     String? model,
     String? colorHex,
     String? imeiNumber,
-    String? pin,
-    List<int>? patternLock,
     List<String>? problems,
     String? status,
-    String? notesHidden,
     List<String>? accessories,
     List<String>? deviceStatusReceived,
     double? price,
@@ -275,11 +258,8 @@ class MaintenanceDeviceModel {
       model: model ?? this.model,
       colorHex: colorHex ?? this.colorHex,
       imeiNumber: imeiNumber ?? this.imeiNumber,
-      pin: pin ?? this.pin,
-      patternLock: patternLock ?? this.patternLock,
       problems: problems ?? this.problems,
       status: status ?? this.status,
-      notesHidden: notesHidden ?? this.notesHidden,
       accessories: accessories ?? this.accessories,
       deviceStatusReceived: deviceStatusReceived ?? this.deviceStatusReceived,
       price: price ?? this.price,

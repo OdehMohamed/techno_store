@@ -425,11 +425,17 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     BuildContext context,
     MaintenanceDeviceModel device,
   ) {
+    // Shows customer name/phone alongside the model so staff can visually
+    // confirm they're deleting the intended record before this cascading,
+    // irreversible action runs — see docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md
+    // "Cascade deletion behavior" (delete is now staff-wide, not Admin-only).
     CustomDialogs.showDialogConfirm(
       context: context,
       title: 'Delete Device',
-      content:
-          'Are you sure you want to delete ${device.model}? This action cannot be undone.',
+      content: 'Are you sure you want to delete this device? This will also '
+          'delete its photos and cannot be undone.\n\n'
+          'Customer: ${device.name} (${device.phoneNumber})\n'
+          'Device: ${device.model}',
       icon: Icons.warning_amber_rounded,
       iconColor: Colors.red,
       confirmText: 'Delete',

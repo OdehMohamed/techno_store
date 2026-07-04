@@ -8,6 +8,12 @@ class FirestoreApiPath {
   static String maintenanceDevice(String deviceId) =>
       'maintenanceDevices/$deviceId';
 
+  // Sensitive fields (pin, patternLock, notesHidden), split out per
+  // docs/ai-workflow/ADR-001-sensitive-data-separation.md. Never readable
+  // by the owning customer, even for their own device.
+  static String maintenanceDeviceSensitiveData(String deviceId) =>
+      'maintenanceDevices/$deviceId/private/sensitive';
+
   // User Devices (subcollection under user)
   static String userDevices(String userId) => 'users/$userId/devices/';
   static String userDevice(String userId, String deviceId) =>

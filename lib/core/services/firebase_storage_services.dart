@@ -65,4 +65,37 @@ class FirebaseStorageServices {
       debugPrint('Delete by URL error: $e');
     }
   }
+
+  /// Deletes every file under [folderPath], recursing into subfolders.
+  /// Used for cascade-deleting a device's images — see
+  /// docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md "Cascade deletion
+  /// behavior".
+  ///
+  /// Unlike [deleteFileByPath]/[deleteImageByUrl], this does NOT silently
+  /// swallow errors — per the approved plan's "no silent failures"
+  /// requirement, the caller must know if a deletion was incomplete. The
+  /// one exception is a file that's already gone (idempotency, so a
+  /// retried delete doesn't fail on the part that already succeeded).
+  Future<void> deleteFolder(String folderPath) async {
+    final ref = _storage.ref().child(folderPath);
+    final result = await ref.listAll();
+
+    for (final item in result.items) {
+      await _deleteRefIdempotent(item);
+    }
+    for (final prefix in result.prefixes) {
+      await deleteFolder(prefix.fullPath);
+    }
+  }
+
+  Future<void> _deleteRefIdempotent(Reference ref) async {
+    try {
+      await ref.delete();
+    } on FirebaseException catch (e) {
+      if (e.code == 'object-not-found') {
+        return; // Already deleted — not a failure, see deleteFolder above.
+      }
+      rethrow;
+    }
+  }
 }

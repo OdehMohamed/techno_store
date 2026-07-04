@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/model/grouped_maintenance_devices.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
+import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
 import 'package:techno_store/core/services/firebase_storage_services.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
+import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
 import 'package:techno_store/core/utils/firestore_api_path.dart';
 import 'package:techno_store/core/utils/storage_api_path.dart';
 
@@ -439,17 +441,45 @@ class MaintenanceListServices {
     });
   }
 
+  /// Fetches a device's sensitive fields (pin, patternLock, notesHidden),
+  /// checking the new private subdocument first and falling back to legacy
+  /// inline fields for devices not yet migrated. See
+  /// MaintenanceDeviceSensitiveDataService and
+  /// docs/ai-workflow/ADR-001-sensitive-data-separation.md. Call only from
+  /// staff-facing UI — never for a customer viewing their own device.
+  Future<MaintenanceDeviceSensitiveData?> fetchSensitiveData(
+    String deviceId,
+  ) {
+    return MaintenanceDeviceSensitiveDataService.instance.fetch(deviceId);
+  }
+
+  /// Deletes a device and everything associated with it: Storage images,
+  /// the private/sensitive subdocument, and the parent document — in that
+  /// order. See docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md "Cascade
+  /// deletion behavior" for the rationale behind this ordering (a partial
+  /// failure should leave only non-sensitive orphaned images, never an
+  /// orphaned document containing customer data) and for why each step
+  /// must be idempotent (safe to retry) rather than silently succeeding
+  /// when something has already been removed.
+  ///
+  /// Deliberately does NOT catch-and-swallow errors: per the approved plan,
+  /// a caller must know a deletion was incomplete so it can retry, rather
+  /// than the UI reporting success when cleanup was only partial.
   Future<void> deleteDevice(String deviceId) async {
-    try {
-      await _firestoreInstance
-          .collection(FirestoreApiPath.maintenanceDevices())
-          .doc(deviceId)
-          .delete();
-      debugPrint('✅ Device deleted successfully: $deviceId');
-    } catch (e) {
-      debugPrint('❌ Error deleting device: $e');
-      rethrow;
-    }
+    await _storageServices.deleteFolder(
+      StorageApiPath.maintenanceDevicesFolder(deviceId),
+    );
+
+    await _firestoreInstance
+        .doc(FirestoreApiPath.maintenanceDeviceSensitiveData(deviceId))
+        .delete();
+
+    await _firestoreInstance
+        .collection(FirestoreApiPath.maintenanceDevices())
+        .doc(deviceId)
+        .delete();
+
+    debugPrint('✅ Device deleted successfully (cascade): $deviceId');
   }
 
   Future<void> updateDeviceStatus(String deviceId, String status) async {

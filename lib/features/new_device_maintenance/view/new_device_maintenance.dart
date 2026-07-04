@@ -10,6 +10,8 @@ import 'package:techno_store/core/widgets/main_app_bar.dart';
 import 'package:techno_store/core/widgets/message.dart';
 import 'package:techno_store/features/new_device_maintenance/cubit/new_device_cubit.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
+import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
+import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/accessories_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/action_buttons_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/build_dropdown.dart';
@@ -21,7 +23,6 @@ import 'package:techno_store/features/new_device_maintenance/widgets/pattern_but
 import 'package:techno_store/features/new_device_maintenance/widgets/pattern_dialog_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/pre_check_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/problems_section_widget.dart';
-import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_phone_input.dart';
 
 class NewDeviceMaintenance extends StatefulWidget {
   final MaintenanceDeviceModel? device;
@@ -68,8 +69,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   List<String> imagesBeforeReceiving = [];
   List<String> installedPartCodes = [];
 
-  // Phone code for international format
-  String phoneCode = '+970';
+  // pin/patternLock/notesHidden are no longer part of MaintenanceDeviceModel
+  // (see docs/ai-workflow/ADR-001-sensitive-data-separation.md) — for an
+  // existing device they're fetched asynchronously in initState. Saving is
+  // blocked until this completes, so we never submit a still-empty
+  // pin/pattern that would silently overwrite a device's real values with
+  // nothing (production data safety — see
+  // docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md).
+  bool _sensitiveDataLoaded = true;
 
   @override
   void dispose() {
@@ -93,14 +100,12 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     if (widget.device != null) {
       final device = widget.device!;
       nameController.text = device.name;
-      phoneController.text = device.phoneNumber;
+      phoneController.text = _toEditablePhone(device.phoneNumber);
       receivedByEmployeeController.text = device.receivedByEmployee;
       selectedBrand = device.brand;
       modelController.text = device.model;
       selectedColor = Color(int.parse(device.colorHex, radix: 16));
       imeiController.text = device.imeiNumber ?? '';
-      pinController.text = device.pin ?? '';
-      patternValue = device.patternLock ?? [];
       imagesBeforeReceiving = device.imagesBeforeReceiving ?? [];
       for (int i = 0; i < AppConstants.maintenanceProblemList.length; i++) {
         problems[i] =
@@ -114,13 +119,39 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
         preCheckList[i] = device.deviceStatusReceived
             .contains(AppConstants.maintenancePreCheckList[i]);
       }
-      notesController.text = device.notesHidden ?? '';
       priceController.text =
           device.price != null ? device.price.toString() : '';
       maintenanceEmployeeController.text = device.maintenanceEmployee ?? '';
       installedPartCodes = List<String>.from(device.installedPartCodes ?? []);
       selectedTime = device.estimatedTime;
       notes2Controller.text = device.additionalNotes ?? '';
+
+      _sensitiveDataLoaded = false;
+      _loadSensitiveData(device.id!);
+    }
+  }
+
+  Future<void> _loadSensitiveData(String deviceId) async {
+    try {
+      final sensitiveData = await MaintenanceDeviceSensitiveDataService
+          .instance
+          .fetch(deviceId);
+      if (!mounted) return;
+      setState(() {
+        pinController.text = sensitiveData?.pin ?? '';
+        patternValue = sensitiveData?.patternLock ?? [];
+        notesController.text = sensitiveData?.notesHidden ?? '';
+        _sensitiveDataLoaded = true;
+      });
+    } catch (e) {
+      debugPrint('❌ Error loading sensitive data: $e');
+      if (!mounted) return;
+      // _sensitiveDataLoaded stays false — Save remains blocked (correct,
+      // we still don't know the device's real PIN/pattern), but the user
+      // now sees why instead of an unexplained permanent "please wait".
+      Message.showErrorToastMessage(
+          "Failed to load device security data. Reopen this screen to retry."
+              .tr());
     }
   }
 
@@ -291,9 +322,16 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       title: "Customer Information".tr(),
       icon: Icons.person_outline_rounded,
       children: [
-        SignInFormPhoneInput(
-          phoneController: phoneController,
-          phoneCode: phoneCode,
+        // SignInFormPhoneInput(
+        //   phoneController: phoneController,
+        //   phoneCode: phoneCode,
+        // ),
+        BuildTextField(
+          controller: phoneController,
+          label: "Phone Number".tr(),
+          icon: Icons.phone,
+          keyboardType: TextInputType.phone,
+          required: true,
         ),
         const SizedBox(height: 16),
         BuildTextField(
@@ -592,6 +630,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   Widget actionButtons(NewDeviceCubit newDeviceMaintenanceCubit) {
     return ActionButtonsWidget(
       onConfirm: () async {
+        if (!_sensitiveDataLoaded) {
+          // Guard against submitting a still-empty pin/pattern before the
+          // fetch in _loadSensitiveData completes, which would otherwise
+          // silently wipe the device's existing PIN/pattern lock.
+          Message.showErrorToastMessage(
+              "Please wait, loading device data...".tr());
+          return;
+        }
         if (_formKey.currentState!.validate()) {
           CustomDialogs.showDialogConfirm(
             context: context,
@@ -599,12 +645,20 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
             content: "Are you sure you want to save this device?".tr(),
             onPressed: () async {
               Navigator.pop(context);
-              final device = await onSaveLogic();
-              if (device != null && widget.device == null) {
-                await newDeviceMaintenanceCubit.addNewDevice(device);
-              } else if (device != null && widget.device != null) {
+              final result = await onSaveLogic();
+              if (result == null) return;
+              final (device, sensitiveData) = result;
+              if (widget.device == null) {
+                await newDeviceMaintenanceCubit.addNewDevice(
+                  device,
+                  sensitiveData: sensitiveData,
+                );
+              } else {
                 await newDeviceMaintenanceCubit.updateDevice(
-                    widget.device!.id!, device);
+                  widget.device!.id!,
+                  device,
+                  sensitiveData: sensitiveData,
+                );
               }
             },
           );
@@ -614,7 +668,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     );
   }
 
-  Future<MaintenanceDeviceModel?> onSaveLogic() async {
+  Future<(MaintenanceDeviceModel, MaintenanceDeviceSensitiveData)?>
+      onSaveLogic() async {
+    final normalizedPhoneNumber = _normalizePhoneNumber(phoneController.text);
+    if (normalizedPhoneNumber == null) {
+      Message.showErrorToastMessage("Please enter valid phone number".tr());
+      return null;
+    }
+
     // Validate received by employee (always required)
     if (receivedByEmployeeController.text.trim().isEmpty) {
       Message.showErrorToastMessage("Please select received by employee".tr());
@@ -624,7 +685,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
 
     MaintenanceDeviceModel device = MaintenanceDeviceModel(
       name: nameController.text.trim(),
-      phoneNumber: phoneCode + phoneController.text.trim(),
+      phoneNumber: normalizedPhoneNumber,
       model: modelController.text.trim(),
       brand: selectedBrand,
       colorHex: selectedColor.value.toRadixString(16),
@@ -643,15 +704,12 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       receivedAt:
           widget.device == null ? DateTime.now() : widget.device!.receivedAt,
       updatedAt: DateTime.now(),
-      pin: pinController.text.trim(),
       imeiNumber: imeiController.text.trim(),
-      notesHidden: notesController.text.trim(),
       price: priceController.text.isNotEmpty
           ? double.tryParse(priceController.text.trim())
           : null,
       estimatedTime: selectedTime,
       additionalNotes: notes2Controller.text.trim(),
-      patternLock: patternValue,
       imagesBeforeReceiving: imagesBeforeReceiving,
       receivedByEmployee: receivedByEmployeeController.text.trim(),
       maintenanceEmployee: maintenanceEmployeeController.text.trim().isEmpty
@@ -664,7 +722,61 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       timeToFix: widget.device?.timeToFix,
       status: widget.device?.status ?? 'In Maintenance',
     );
-    return device;
+
+    final sensitiveData = MaintenanceDeviceSensitiveData(
+      pin: pinController.text.trim(),
+      patternLock: patternValue,
+      notesHidden: notesController.text.trim(),
+    );
+
+    return (device, sensitiveData);
+  }
+
+  String? _normalizePhoneNumber(String phone) {
+    final input = phone.trim();
+    if (input.isEmpty) return null;
+
+    final compact = input.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+
+    if (compact.startsWith('+')) {
+      final remaining = compact.substring(1);
+      if (remaining.isEmpty || !RegExp(r'^\d+$').hasMatch(remaining)) {
+        return null;
+      }
+      return '+$remaining';
+    }
+
+    if (!RegExp(r'^\d+$').hasMatch(compact)) {
+      return null;
+    }
+
+    if (compact.startsWith('970')) {
+      return '+$compact';
+    }
+
+    if (compact.startsWith('0')) {
+      return '+970${compact.substring(1)}';
+    }
+
+    return '+970$compact';
+  }
+
+  String _toEditablePhone(String phoneNumber) {
+    final compact = phoneNumber.trim().replaceAll(RegExp(r'[\s\-\(\)]'), '');
+
+    if (compact.startsWith('+970')) {
+      final localPart = compact.substring(4);
+      if (localPart.isEmpty) return '';
+      return localPart.startsWith('0') ? localPart : '0$localPart';
+    }
+
+    if (compact.startsWith('970')) {
+      final localPart = compact.substring(3);
+      if (localPart.isEmpty) return '';
+      return localPart.startsWith('0') ? localPart : '0$localPart';
+    }
+
+    return compact;
   }
 
   void _showPatternDialog() {

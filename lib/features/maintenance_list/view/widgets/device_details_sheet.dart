@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
+import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
+import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/features/maintenance_list/view/widgets/full_screen_image_viewer.dart';
 
@@ -16,6 +18,14 @@ class DeviceDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // pin/patternLock/notesHidden are no longer on MaintenanceDeviceModel
+    // (see docs/ai-workflow/ADR-001-sensitive-data-separation.md) — fetch
+    // them separately, and only for staff. A customer viewing their own
+    // device should never even attempt this read.
+    final sensitiveDataFuture = (isEmployee && device.id != null)
+        ? MaintenanceDeviceSensitiveDataService.instance.fetch(device.id!)
+        : Future<MaintenanceDeviceSensitiveData?>.value(null);
+
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
       minChildSize: 0.5,
@@ -40,242 +50,252 @@ class DeviceDetailsSheet extends StatelessWidget {
               ),
               // Content
               Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    // Header
-                    Row(
+                child: FutureBuilder<MaintenanceDeviceSensitiveData?>(
+                  future: sensitiveDataFuture,
+                  builder: (context, snapshot) {
+                    final sensitiveData = snapshot.data;
+                    return ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(24),
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.primary,
-                                AppColors.primary.withValues(alpha: 0.7),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Icons.smartphone,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                device.model,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                        // Header
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.primary,
+                                    AppColors.primary.withValues(alpha: 0.7),
+                                  ],
                                 ),
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              if (device.brand != null)
-                                Text(
-                                  device.brand!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
+                              child: const Icon(
+                                Icons.smartphone,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    device.model,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
+                                  if (device.brand != null)
+                                    Text(
+                                      device.brand!,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Details Sections
+                        _buildDetailSection(
+                          'Customer Information'.tr(),
+                          Icons.person,
+                          [
+                            _buildDetailRow('Name'.tr(), device.name),
+                            _buildDetailRow('Phone'.tr(), device.phoneNumber),
+                          ],
+                        ),
+
+                        // Device Specifications
+                        _buildDetailSection(
+                          'Device Specifications'.tr(),
+                          Icons.smartphone_outlined,
+                          [
+                            if (device.brand != null)
+                              _buildDetailRow('Brand'.tr(), device.brand!),
+                            _buildDetailRow('Model'.tr(), device.model),
+                            _buildColorRow('Color'.tr(), device.colorHex),
+                          ],
+                        ),
+
+                        if (device.imeiNumber != null ||
+                            sensitiveData?.pin != null ||
+                            sensitiveData?.patternLock != null)
+                          _buildDetailSection(
+                            'Device Security'.tr(),
+                            Icons.security,
+                            [
+                              if (device.imeiNumber != null)
+                                _buildDetailRow(
+                                    'IMEI'.tr(), device.imeiNumber!),
+                              if (isEmployee && sensitiveData?.pin != null)
+                                _buildDetailRow(
+                                    'PIN'.tr(), sensitiveData!.pin!),
+                              if (isEmployee &&
+                                  sensitiveData?.patternLock != null)
+                                _buildPatternLock(sensitiveData!.patternLock!),
+                            ],
+                          ),
+
+                        if (device.deviceStatusReceived.isNotEmpty)
+                          _buildDetailSection(
+                            'Device Status When Received'.tr(),
+                            Icons.fact_check_outlined,
+                            [
+                              _buildChipsList(
+                                device.deviceStatusReceived,
+                                Colors.purple,
+                              ),
+                            ],
+                          ),
+
+                        if (device.problems.isNotEmpty)
+                          _buildDetailSection(
+                            'Problems'.tr(),
+                            Icons.error_outline,
+                            [
+                              _buildChipsList(device.problems, Colors.red),
+                            ],
+                          ),
+
+                        if (device.accessories.isNotEmpty)
+                          _buildDetailSection(
+                            'Accessories'.tr(),
+                            Icons.inventory_2_outlined,
+                            [
+                              _buildChipsList(device.accessories, Colors.blue),
+                            ],
+                          ),
+
+                        if ((device.installedPartCodes?.isNotEmpty ?? false) &&
+                            isEmployee)
+                          _buildDetailSection(
+                            'Installed Part Codes'.tr(),
+                            Icons.qr_code,
+                            [
+                              _buildChipsList(
+                                device.installedPartCodes!,
+                                Colors.deepPurple,
+                              ),
+                            ],
+                          ),
+
+                        // Employee Information (Only for employees)
+                        if (isEmployee)
+                          _buildDetailSection(
+                            'Staff Assignment'.tr(),
+                            Icons.badge_outlined,
+                            [
+                              _buildDetailRow(
+                                'Received By'.tr(),
+                                device.receivedByEmployee,
+                                valueColor: Colors.indigo,
+                              ),
+                              if (device.maintenanceEmployee != null)
+                                _buildDetailRow(
+                                  'Maintenance By'.tr(),
+                                  device.maintenanceEmployee!,
+                                  valueColor: Colors.teal,
+                                ),
+                              if (device.deliveredByEmployee != null)
+                                _buildDetailRow(
+                                  'Delivered By'.tr(),
+                                  device.deliveredByEmployee!,
+                                  valueColor: Colors.green,
                                 ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
 
-                    // Details Sections
-                    _buildDetailSection(
-                      'Customer Information'.tr(),
-                      Icons.person,
-                      [
-                        _buildDetailRow('Name'.tr(), device.name),
-                        _buildDetailRow('Phone'.tr(), device.phoneNumber),
-                      ],
-                    ),
-
-                    // Device Specifications
-                    _buildDetailSection(
-                      'Device Specifications'.tr(),
-                      Icons.smartphone_outlined,
-                      [
-                        if (device.brand != null)
-                          _buildDetailRow('Brand'.tr(), device.brand!),
-                        _buildDetailRow('Model'.tr(), device.model),
-                        _buildColorRow('Color'.tr(), device.colorHex),
-                      ],
-                    ),
-
-                    if (device.imeiNumber != null ||
-                        device.pin != null ||
-                        device.patternLock != null)
-                      _buildDetailSection(
-                        'Device Security'.tr(),
-                        Icons.security,
-                        [
-                          if (device.imeiNumber != null)
-                            _buildDetailRow('IMEI'.tr(), device.imeiNumber!),
-                          if (device.pin != null && isEmployee)
-                            _buildDetailRow('PIN'.tr(), device.pin!),
-                          if (device.patternLock != null && isEmployee)
-                            _buildPatternLock(device.patternLock!),
-                        ],
-                      ),
-
-                    if (device.deviceStatusReceived.isNotEmpty)
-                      _buildDetailSection(
-                        'Device Status When Received'.tr(),
-                        Icons.fact_check_outlined,
-                        [
-                          _buildChipsList(
-                            device.deviceStatusReceived,
-                            Colors.purple,
-                          ),
-                        ],
-                      ),
-
-                    if (device.problems.isNotEmpty)
-                      _buildDetailSection(
-                        'Problems'.tr(),
-                        Icons.error_outline,
-                        [
-                          _buildChipsList(device.problems, Colors.red),
-                        ],
-                      ),
-
-                    if (device.accessories.isNotEmpty)
-                      _buildDetailSection(
-                        'Accessories'.tr(),
-                        Icons.inventory_2_outlined,
-                        [
-                          _buildChipsList(device.accessories, Colors.blue),
-                        ],
-                      ),
-
-                    if ((device.installedPartCodes?.isNotEmpty ?? false) &&
-                        isEmployee)
-                      _buildDetailSection(
-                        'Installed Part Codes'.tr(),
-                        Icons.qr_code,
-                        [
-                          _buildChipsList(
-                            device.installedPartCodes!,
-                            Colors.deepPurple,
-                          ),
-                        ],
-                      ),
-
-                    // Employee Information (Only for employees)
-                    if (isEmployee)
-                      _buildDetailSection(
-                        'Staff Assignment'.tr(),
-                        Icons.badge_outlined,
-                        [
-                          _buildDetailRow(
-                            'Received By'.tr(),
-                            device.receivedByEmployee,
-                            valueColor: Colors.indigo,
-                          ),
-                          if (device.maintenanceEmployee != null)
+                        _buildDetailSection(
+                          'Timeline'.tr(),
+                          Icons.schedule,
+                          [
                             _buildDetailRow(
-                              'Maintenance By'.tr(),
-                              device.maintenanceEmployee!,
-                              valueColor: Colors.teal,
+                              'Received'.tr(),
+                              DateFormat('dd MMM yyyy, HH:mm')
+                                  .format(device.receivedAt),
                             ),
-                          if (device.deliveredByEmployee != null)
-                            _buildDetailRow(
-                              'Delivered By'.tr(),
-                              device.deliveredByEmployee!,
-                              valueColor: Colors.green,
-                            ),
-                        ],
-                      ),
-
-                    _buildDetailSection(
-                      'Timeline'.tr(),
-                      Icons.schedule,
-                      [
-                        _buildDetailRow(
-                          'Received'.tr(),
-                          DateFormat('dd MMM yyyy, HH:mm')
-                              .format(device.receivedAt),
+                            if (device.updatedAt != null)
+                              _buildDetailRow(
+                                'Last Updated'.tr(),
+                                DateFormat('dd MMM yyyy, HH:mm')
+                                    .format(device.updatedAt!),
+                              ),
+                            if (device.deliveredAt != null)
+                              _buildDetailRow(
+                                'Delivered'.tr(),
+                                DateFormat('dd MMM yyyy, HH:mm')
+                                    .format(device.deliveredAt!),
+                                valueColor: Colors.green,
+                              ),
+                            if (device.estimatedTime != null)
+                              _buildDetailRow(
+                                'Estimated Time'.tr(),
+                                device.estimatedTime!,
+                              ),
+                          ],
                         ),
-                        if (device.updatedAt != null)
-                          _buildDetailRow(
-                            'Last Updated'.tr(),
-                            DateFormat('dd MMM yyyy, HH:mm')
-                                .format(device.updatedAt!),
+
+                        if (device.price != null)
+                          _buildDetailSection(
+                            'Pricing'.tr(),
+                            Icons.payments,
+                            [
+                              _buildDetailRow(
+                                'Price'.tr(),
+                                '${device.price} \$',
+                                valueColor: Colors.green,
+                              ),
+                            ],
                           ),
-                        if (device.deliveredAt != null)
-                          _buildDetailRow(
-                            'Delivered'.tr(),
-                            DateFormat('dd MMM yyyy, HH:mm')
-                                .format(device.deliveredAt!),
-                            valueColor: Colors.green,
+
+                        // Images Before Receiving
+                        if (device.imagesBeforeReceiving?.isNotEmpty ?? false)
+                          _buildImageSection(
+                            'Images Before Receiving'.tr(),
+                            device.imagesBeforeReceiving!,
+                            context,
                           ),
-                        if (device.estimatedTime != null)
-                          _buildDetailRow(
-                            'Estimated Time'.tr(),
-                            device.estimatedTime!,
+
+                        // Images After Delivery
+                        if (device.imagesAfterDelivery?.isNotEmpty ?? false)
+                          _buildImageSection(
+                            'Images After Delivery'.tr(),
+                            device.imagesAfterDelivery!,
+                            context,
+                          ),
+
+                        if (sensitiveData?.notesHidden != null ||
+                            device.additionalNotes != null)
+                          _buildDetailSection(
+                            'Notes'.tr(),
+                            Icons.notes,
+                            [
+                              if (isEmployee &&
+                                  sensitiveData?.notesHidden != null)
+                                _buildNoteCard(
+                                  'Hidden Notes'.tr(),
+                                  sensitiveData!.notesHidden!,
+                                ),
+                              if (device.additionalNotes != null)
+                                _buildNoteCard(
+                                  'Additional Notes'.tr(),
+                                  device.additionalNotes!,
+                                ),
+                            ],
                           ),
                       ],
-                    ),
-
-                    if (device.price != null)
-                      _buildDetailSection(
-                        'Pricing'.tr(),
-                        Icons.payments,
-                        [
-                          _buildDetailRow(
-                            'Price'.tr(),
-                            '${device.price} \$',
-                            valueColor: Colors.green,
-                          ),
-                        ],
-                      ),
-
-                    // Images Before Receiving
-                    if (device.imagesBeforeReceiving?.isNotEmpty ?? false)
-                      _buildImageSection(
-                        'Images Before Receiving'.tr(),
-                        device.imagesBeforeReceiving!,
-                        context,
-                      ),
-
-                    // Images After Delivery
-                    if (device.imagesAfterDelivery?.isNotEmpty ?? false)
-                      _buildImageSection(
-                        'Images After Delivery'.tr(),
-                        device.imagesAfterDelivery!,
-                        context,
-                      ),
-
-                    if (device.notesHidden != null ||
-                        device.additionalNotes != null)
-                      _buildDetailSection(
-                        'Notes'.tr(),
-                        Icons.notes,
-                        [
-                          if (device.notesHidden != null && isEmployee)
-                            _buildNoteCard(
-                              'Hidden Notes'.tr(),
-                              device.notesHidden!,
-                            ),
-                          if (device.additionalNotes != null)
-                            _buildNoteCard(
-                              'Additional Notes'.tr(),
-                              device.additionalNotes!,
-                            ),
-                        ],
-                      ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ],
