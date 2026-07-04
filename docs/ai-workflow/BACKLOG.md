@@ -1,0 +1,74 @@
+# BACKLOG.md
+
+Candidate work items surfaced during the 2026-07-03 baseline review. **Nothing here is scheduled or approved** unless explicitly marked otherwise. Items move to `CURRENT_TASK.md` only when the product owner explicitly picks one. Each item states whether it's grounded in a confirmed fact or an assumption still needing confirmation, so priority calls aren't made on guesses.
+
+Items are grouped by theme, not by priority — prioritization is a product-owner decision.
+
+## Phase 1 follow-ups (tracked at Phase 1 closure, 2026-07-04 — see `PHASE1_CLOSURE_SUMMARY.md`)
+
+0a. **BLOCKING FOR PUBLIC RELEASE — Direct/bypass-the-UI authorization testing.** Phase 1's functional validation (Checkpoint 4) confirmed the *app* behaves correctly for all roles, but did not test whether the *deployed Firestore/Storage rules themselves* correctly deny a client that skips the UI and calls the API directly — the exact guarantee this whole security effort exists to provide. **Must be completed before any public production release.** Suggested approach (from the Phase 1C conversation): use existing, product-owner-designated real accounts (not newly created ones, per prior decision) — mint custom auth tokens via Admin SDK for each role (Customer, Admin, Reception, Maintenance, and confirm whether any Guest/`type:9` account exists at all), exchange for real ID tokens, and make authenticated REST calls directly against Firestore/Storage to confirm: customer denied read of `private/sensitive` (including their own device); customer denied writing `type` on their own profile; staff can read/write as expected; unauthenticated requests denied outright. Keep customer-account checks read-only; do write-denial tests against staff accounts instead, per the residual-risk discussion at the time.
+
+0b. **Non-blocking — orphaned `private/sensitive` subdocument.** Device `Sd7A3a1jMByVEy9vKcfP`'s parent document was deleted (likely via direct Firestore/Console access, not the app's cascade-delete flow, since Firestore never cascades subcollection deletes automatically) between Phase 1C Checkpoint 1 and Checkpoint 2, leaving its `private/sensitive` subdocument orphaned with no parent. Inert — blocks nothing — but should be cleaned up (a one-off `delete()` call once someone has a spare moment; not worth a dedicated script for a single document). Acknowledged by product owner as a data-hygiene issue, not a migration failure.
+
+## Security / data integrity (treat as highest scrutiny per RULES.md)
+
+**Superseded by the 2026-07-03 Security & Data Architecture Audit** (`SECURITY_AUDIT.md`, `PERMISSIONS_MATRIX.md`, `FIREBASE_COST_REVIEW.md`) — items below are retained for history; see those documents for the full current picture.
+
+1. **Confirm whether Firestore/Storage security rules exist.** *(confirmed still absent as of the audit; escalated — see items 1a-1d below)*
+   Fact: no rules files exist anywhere in this repository. Unknown: whether rules exist in the Firebase Console for project `technostore-v2` and what they enforce.
+   Why it matters: if role-based access (`UserData.type`) is enforced only in Dart UI code, any authenticated user could potentially read/write any document directly. This should be resolved before any further work that touches auth, roles, or maintenance data.
+
+1a. **CRITICAL — Make `UserData.type` immutable from client writes.** (`SECURITY_AUDIT.md` §5a) Any authenticated user can currently self-promote to Admin by writing directly to their own `users/{uid}` document, since nothing validates the `type` field server-side. This is the highest-severity item in the backlog.
+
+1b. **CRITICAL — Resolve the sensitive-field data architecture problem.** (`SECURITY_AUDIT.md` §6, `PERMISSIONS_MATRIX.md`) `pin`, `patternLock`, and `notesHidden` share a Firestore document with customer-visible fields (`status`, `price`). Firestore rules cannot grant differential field-level read access within one document — this requires a schema change (e.g., split into a staff-only subcollection) or a backend redaction layer, decided before rules are written for `maintenanceDevices`.
+
+1c. **HIGH — Add route-level authorization.** (`SECURITY_AUDIT.md` §4, §5b) `AppRouter.onGenerateRoute` performs no role checks at all; every route is reachable by anyone who can call `Navigator.pushNamed` with its name.
+
+1d. **HIGH — Fix Guest-role client logic.** (`SECURITY_AUDIT.md` §5c) Every `type != 1` check (main screen device stream, add-device FAB, PIN/pattern-lock/notes visibility) treats `GuestAccount` (`9`) as staff. This is a client-code defect independent of any future rules and needs product-owner input on what a Guest account is actually meant to see, first (see `NEXT_STEPS.md`).
+
+1e. **MEDIUM — Verify the composite index for the live customer device-list query.** (`FIREBASE_COST_REVIEW.md` §3) `streamMaintenanceDevices(uid)` — the path every Customer session uses today — requires a `userId` + `receivedAt` composite index. No `firestore.indexes.json` exists in-repo; this can only be confirmed against the live Firebase Console. If missing, this is a live functional bug, not just a future risk.
+
+1f. **DECIDED, scheduled into Phase 1 — Cascade delete on device deletion.** (`FIREBASE_COST_REVIEW.md` §2, product-owner decision 2026-07-03) `MaintenanceListServices.deleteDevice` must be rewritten to delete the device's Storage images, the new `private/sensitive` subdocument (introduced by ADR-001), and the parent Firestore document, with confirmation UX and idempotent retry handling. No longer just a candidate item — see `PHASE1_IMPLEMENTATION_PLAN.md` §3 "Cascade deletion behavior" for the implementation plan. **Permission scope decided:** all staff (Admin, Reception, Maintenance) can trigger this, not Admin-only.
+
+1h. **Future, deferred — Admin user-management feature.** (`ADR-004-admin-user-management-design.md`) Browse/filter users by role, activate/deactivate, potential role changes. Confirmed not required for Phase 1 security (current manual Console-based activation is unaffected by Phase 1's rules). Requires Cloud Functions infrastructure — natural to sequence alongside `ADR-002` Phase 2.
+
+1i. **Future, deferred — Audit logging and soft-delete for device deletion.** (`PHASE1_IMPLEMENTATION_PLAN.md`, product-owner decision 2026-07-03) Proposed alongside the cascade-delete decision as compensating controls for delete now being staff-wide rather than Admin-only, but explicitly not part of Phase 1. Would extend the `auditLogs` concept already proposed in `ADR-004` to cover device deletions, and/or replace hard-delete with a flagged soft-delete + scheduled cleanup job.
+
+1g. **LOW/MEDIUM — Add pagination/limits to `streamMaintenanceDevices` for non-Customer roles.** (`FIREBASE_COST_REVIEW.md` §1) Currently unbounded and unfiltered for 4 of 5 roles; cost scales with both collection size and concurrent staff sessions.
+
+2. **Implement `UserData.type` as an explicit, named role model in code.**
+   Fact: currently untyped `int`, compared via magic numbers (`0`, `1`, `2`, `3`, `9`) in `main_drawer2.dart` and `inner_maintenance_list.dart`.
+   Product-owner-confirmed mapping (2026-07-03, see `PROJECT_CONTEXT.md` and `DECISIONS_LOG.md`): `0` = Admin, `1` = CustomerAccount, `2` = ReceptionAccount, `3` = MaintenanceAccount, `9` = GuestAccount. The mapping itself is now settled; what remains is an engineering task, not a product question.
+   Needs: a scoped, approved task to introduce an enum/named constants and replace the magic-number comparisons — including the `isEmployee = type != 1` edge case in `inner_maintenance_list.dart`, which currently counts `GuestAccount` as an employee (see `PROJECT_CONTEXT.md` → Roles and permissions → Facts). Should also decide whether `type` should be renamed/represented as a `UserRole` enum end-to-end or kept as an `int` with a mapping layer, given backward compatibility with existing Firestore documents storing raw ints.
+
+3. **Define `MaintenanceDeviceModel.status` as a single, enforced vocabulary.**
+   Fact: three overlapping string vocabularies currently coexist (model default `'pending'`, `DeviceStatus` constants `'In Maintenance'/'Fixed'/'Delivered'`, and lowercase-matched values in `MaintenanceListServices` including a legacy typo `'derived'`). Unknown values silently fall back to "in maintenance" on read.
+   Needs: a decision on the canonical set of statuses and a migration plan for any existing Firestore documents using old values before changing read/write logic.
+
+## Correctness (dormant defects)
+
+4. **Resolve the `users/{uid}/devices` dormant defect.**
+   Fact: `MaintenanceListServices.fetchMaintenanceDevices` and `fetchMaintenanceDevicesPaginated` query a subcollection that nothing ever writes to. `fetchMaintenanceDevices` is reachable via `MaintenanceListCubit.fetchGroupedMaintenanceDevices`, which currently has no UI call sites; `fetchMaintenanceDevicesPaginated` has no call sites at all.
+   Risk if left alone: the moment someone wires either method to a UI action (e.g., pull-to-refresh), it will silently return an empty list for real users.
+   Options to weigh later: point them at the correct top-level `maintenanceDevices` collection filtered by `userId` (matching what `streamMaintenanceDevices` already does correctly), or remove them if the stream-based path is the only one actually needed.
+
+5. **Harden or remove `CacheServices.getUserData()`'s non-null assertions.**
+   Fact: `uid!`, `isActivated!`, `type!` will throw if any are missing from `SharedPreferences`. It's called from `HomeServices.getUserData()`, guarded by a cached-uid-matches-current-uid check, which narrows but doesn't eliminate the risk (e.g., a partially-failed prior `saveUserData` write, or data cached by an older app version before a field existed).
+
+## Consistency / maintainability
+
+6. **Reconcile direct `FirebaseFirestore.instance` usage vs. the `FirestoreServices` abstraction.**
+   Fact: `MaintenanceListServices` and `NewDeviceServices` mix both approaches within the same class. Not a bug, but reduces the value of having a central data-access layer and makes future rules/consistency changes harder to apply uniformly.
+
+7. **Dead code cleanup candidates** (verify fully before removing anything — see RULES.md):
+   - `lib/core/widgets/main_drawer.dart` — confirmed unused (only referenced in commented-out code).
+   - `view_model/` leftover `ChangeNotifier` files in `home_page`, `maintenance_list`, `new_device_maintenance` — fully commented out.
+   - `MaintenanceListServices.fetchMaintenanceDevicesPaginated` — confirmed zero call sites (distinct from item 4's `fetchMaintenanceDevices`, which has one unreachable call site through the cubit).
+
+## Process / tooling
+
+8. **No automated test coverage or CI.**
+   Fact: only the Flutter-generated default counter widget test exists. Any future change to critical flows (auth, device status transitions, pricing) currently relies entirely on manual verification.
+
+9. **`docs/features/*.md` does not exist.**
+   Was requested to be read during the baseline review; it isn't present. Open question (see `NEXT_STEPS.md`): should feature-level specs be authored now, and by whom (product owner input needed for intended behavior vs. engineering reverse-engineering current behavior)?
