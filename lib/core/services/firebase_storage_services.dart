@@ -17,20 +17,32 @@ class FirebaseStorageServices {
     required String folderPath, // Example: "Images/users"
     String? customFileName, // Optional: provide your own filename
   }) async {
+    final fileName = customFileName ?? const Uuid().v4();
+    // Strip any trailing slash so a caller passing "folder/" can't produce a
+    // "folder//file" path — the double slash is an empty path segment.
+    final sanitizedFolderPath = folderPath.endsWith('/')
+        ? folderPath.substring(0, folderPath.length - 1)
+        : folderPath;
+    final ref = _storage.ref().child('$sanitizedFolderPath/$fileName');
+
+    // putFile and getDownloadURL are kept in separate try/catch blocks so a
+    // failure log names exactly which operation (write vs. read) was denied.
+    final TaskSnapshot uploadTask;
     try {
-      final fileName = customFileName ?? const Uuid().v4();
-      final ref = _storage.ref().child('$folderPath/$fileName');
-      final TaskSnapshot uploadTask;
       if (kIsWeb) {
         uploadTask = await ref.putData(await file.readAsBytes());
       } else {
         uploadTask = await ref.putFile(file);
       }
-
-      final downloadUrl = await uploadTask.ref.getDownloadURL();
-      return downloadUrl;
     } catch (e) {
-      debugPrint('Upload error: $e');
+      debugPrint('putFile error: $e');
+      return null;
+    }
+
+    try {
+      return await uploadTask.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint('getDownloadURL error: $e');
       return null;
     }
   }
@@ -66,34 +78,28 @@ class FirebaseStorageServices {
     }
   }
 
-  /// Deletes every file under [folderPath], recursing into subfolders.
-  /// Used for cascade-deleting a device's images — see
-  /// docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md "Cascade deletion
-  /// behavior".
+  /// Deletes a single stored file identified by its download URL, used for
+  /// cascade-deleting a device's images (see
+  /// MaintenanceListServices.deleteDevice). Firebase Storage has no
+  /// folder-delete primitive and the equivalent "list then delete each"
+  /// approach requires a `list` permission that cannot be authorized for
+  /// staff — staff detection needs a cross-service Firestore role lookup,
+  /// which does not resolve during `list`-operation rule evaluation. So the
+  /// cascade deletes each image by its already-known URL (an object-level
+  /// `delete`, which cross-service rules do authorize) instead of listing.
   ///
-  /// Unlike [deleteFileByPath]/[deleteImageByUrl], this does NOT silently
-  /// swallow errors — per the approved plan's "no silent failures"
-  /// requirement, the caller must know if a deletion was incomplete. The
-  /// one exception is a file that's already gone (idempotency, so a
-  /// retried delete doesn't fail on the part that already succeeded).
-  Future<void> deleteFolder(String folderPath) async {
-    final ref = _storage.ref().child(folderPath);
-    final result = await ref.listAll();
-
-    for (final item in result.items) {
-      await _deleteRefIdempotent(item);
-    }
-    for (final prefix in result.prefixes) {
-      await deleteFolder(prefix.fullPath);
-    }
-  }
-
-  Future<void> _deleteRefIdempotent(Reference ref) async {
+  /// Unlike [deleteImageByUrl], this does NOT silently swallow errors — per
+  /// the cascade's "no silent failures" requirement the caller must know if a
+  /// deletion was incomplete so it can retry. The one exception is a file
+  /// that's already gone (idempotency, so a retried cascade doesn't fail on
+  /// the part that already succeeded).
+  Future<void> deleteFileByUrl(String imageUrl) async {
+    final ref = _storage.refFromURL(imageUrl);
     try {
       await ref.delete();
     } on FirebaseException catch (e) {
       if (e.code == 'object-not-found') {
-        return; // Already deleted — not a failure, see deleteFolder above.
+        return; // Already deleted — not a failure, safe to retry.
       }
       rethrow;
     }

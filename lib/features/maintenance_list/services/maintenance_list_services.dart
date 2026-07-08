@@ -462,13 +462,40 @@ class MaintenanceListServices {
   /// must be idempotent (safe to retry) rather than silently succeeding
   /// when something has already been removed.
   ///
+  /// Images are deleted by their stored download URLs (read from the parent
+  /// document, which is deleted last so these URLs remain retrievable on a
+  /// retry) rather than by listing the device's Storage folder: Firebase
+  /// Storage has no folder-delete primitive, and the "list then delete each"
+  /// alternative needs a `list` permission that cannot be authorized for
+  /// staff — staff detection requires a cross-service Firestore role lookup
+  /// that does not resolve during `list`-operation rule evaluation. See
+  /// FirebaseStorageServices.deleteFileByUrl. A consequence is that an
+  /// orphaned image not referenced by the document (e.g. from a failed
+  /// upload) is not discoverable here and would remain — tracked in
+  /// docs/ai-workflow/BACKLOG.md.
+  ///
   /// Deliberately does NOT catch-and-swallow errors: per the approved plan,
   /// a caller must know a deletion was incomplete so it can retry, rather
   /// than the UI reporting success when cleanup was only partial.
   Future<void> deleteDevice(String deviceId) async {
-    await _storageServices.deleteFolder(
-      StorageApiPath.maintenanceDevicesFolder(deviceId),
-    );
+    final deviceSnapshot = await _firestoreInstance
+        .collection(FirestoreApiPath.maintenanceDevices())
+        .doc(deviceId)
+        .get();
+    final deviceData = deviceSnapshot.data();
+
+    if (deviceData != null) {
+      final imageUrls = <String>[
+        ...?(deviceData['imagesBeforeReceiving'] as List<dynamic>?)
+            ?.map((e) => e.toString()),
+        ...?(deviceData['imagesAfterDelivery'] as List<dynamic>?)
+            ?.map((e) => e.toString()),
+      ].where((url) => url.trim().isNotEmpty);
+
+      for (final url in imageUrls) {
+        await _storageServices.deleteFileByUrl(url);
+      }
+    }
 
     await _firestoreInstance
         .doc(FirestoreApiPath.maintenanceDeviceSensitiveData(deviceId))

@@ -1,12 +1,6 @@
-// DRAFT — Storage rules, mirroring the Firestore role logic. NOT deployed.
-// REQUIRED, per product-owner decision (2026-07-03): deployed together with
-// firestore.rules.draft in the same pass, not as a separate/later step.
-//
-// The maintenance_devices write rule below already uses isStaff() uniformly,
-// which in Firebase Storage's rule model covers create/update/delete as one
-// "write" action — already consistent with the all-staff (Admin, Reception,
-// Maintenance) create/update/delete decision applied to the Firestore rules;
-// no change was needed here as a result of that decision.
+// Storage rules — mirrors the Firestore role logic (see firestore.rules).
+// Deployed as part of Phase 1 (see
+// docs/ai-workflow/PHASE1C_EXECUTION_RUNBOOK.md).
 //
 // Limitation: Storage rules cannot cheaply cross-reference Firestore document
 // ownership (a `firestore.get()` call is available in Storage rules but adds
