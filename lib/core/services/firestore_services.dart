@@ -110,23 +110,27 @@ class FirestoreServices {
       path: FirestoreApiPath.user(userId),
       builder: (data, documentID) => UserData.fromMap(data, documentID),
     );
-    final userMetaData = await getDocument<Map<String, dynamic>>(
+    // The activation meta document may not exist (it is created only when a
+    // privileged operator activates the account — see saveUserData). Treat an
+    // absent document as "not activated" rather than throwing.
+    final userMetaData = await getDocumentOrNull(
       path: FirestoreApiPath.userMeta(userId),
-      builder: (data, documentID) => data,
     );
     return userData.copyWith(
-      isActivated: userMetaData['isActivated'] ?? false,
+      isActivated: (userMetaData?['isActivated'] as bool?) ?? false,
     );
   }
 
   Future<void> saveUserData(UserData userData) async {
+    // Writes only the user profile document. Account activation state
+    // (users/{uid}/meta/isActivated) is deliberately NOT written from the
+    // client: per ADR-004 it is controlled exclusively by a privileged
+    // operator (Console/Admin SDK), and the deployed Firestore rules deny
+    // client writes to that path. A user with no meta document is treated as
+    // not activated (see getUserData and AuthCubit._listenToActivation).
     await setData(
       path: FirestoreApiPath.user(userData.uid),
       data: userData.toMap(),
-    );
-    await setData(
-      path: FirestoreApiPath.userMeta(userData.uid),
-      data: userData.metaToMap(),
     );
   }
 }

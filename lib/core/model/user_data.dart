@@ -36,12 +36,6 @@ class UserData {
     };
   }
 
-  Map<String, dynamic> metaToMap() {
-    return <String, dynamic>{
-      'isActivated': isActivated,
-    };
-  }
-
   factory UserData.fromMap(Map<String, dynamic> map, [String? documentID]) {
     return UserData(
       uid: documentID ?? map['uid'] as String,

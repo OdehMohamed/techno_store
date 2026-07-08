@@ -13,8 +13,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(HomeLoading());
     try {
       final UserData? userData = await _homeServices.getUserData();
-      debugPrint(
-          'User data loaded: ${userData!.toMap().toString()} ${userData.metaToMap().toString()}');
+      debugPrint('User data loaded: ${userData!.toMap()}');
       emit(HomeLoaded(userData));
     } catch (e) {
       debugPrint('Error loading user data: $e');

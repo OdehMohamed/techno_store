@@ -59,6 +59,10 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
 5. **Harden or remove `CacheServices.getUserData()`'s non-null assertions.**
    Fact: `uid!`, `isActivated!`, `type!` will throw if any are missing from `SharedPreferences`. It's called from `HomeServices.getUserData()`, guarded by a cached-uid-matches-current-uid check, which narrows but doesn't eliminate the risk (e.g., a partially-failed prior `saveUserData` write, or data cached by an older app version before a field existed).
 
+10. **Wire up account activation enforcement (`AuthCubit._listenToActivation`).**
+   Fact: this method is the only place in the app that gates access on `isActivated`, but it has no call site anywhere in the codebase — confirmed present-but-unwired at `HEAD` before the 2026-07-08 signup-regression fix, so this is pre-existing, not something Phase 1's security work broke. During that fix, its semantics were corrected (an absent `users/{uid}/meta/isActivated` document — the normal state for every account, since only a privileged operator via Console/Admin SDK creates it, per `ADR-004` — is now treated as `isActivated: false` rather than throwing) and the underlying stream was made null-safe, but wiring it into the sign-in flow was deliberately left out of that fix's scope: the product owner confirmed the activation feature itself was intentionally postponed before Phase 1 and should be designed/implemented later as its own feature, not folded into a regression fix.
+   Needs: decide where in the sign-in flow to invoke `_listenToActivation` (e.g., after `AuthCubit` emits `AuthSuccess`), and confirm the intended UX. Until this is wired up, a newly-registered account is never actually blocked from using the app regardless of its activation status.
+
 ## Consistency / maintainability
 
 6. **Reconcile direct `FirebaseFirestore.instance` usage vs. the `FirestoreServices` abstraction.**

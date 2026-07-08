@@ -18,7 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthServices _authServices = AuthServices();
   final FirestoreServices _firestoreServices = FirestoreServices.instance;
   final cacheServices = CacheServices();
-  StreamSubscription<Map<String, dynamic>>? _activationSubscription;
+  StreamSubscription<Map<String, dynamic>?>? _activationSubscription;
 
   // download the saved state on app start
   Future<void> _loadPendingVerification() async {
@@ -324,11 +324,14 @@ class AuthCubit extends Cubit<AuthState> {
     _activationSubscription = _firestoreServices
         .documentsStream(
       path: FirestoreApiPath.userMeta(uid),
-      builder: (data, documentID) => data!,
+      builder: (data, documentID) => data,
     )
         .listen((data) async {
       debugPrint('Activation data: $data');
-      if (data['isActivated'] != true) {
+      // An absent meta document means the account has not been activated by a
+      // privileged operator yet (see FirestoreServices.saveUserData) — treat
+      // it the same as isActivated != true.
+      if (data == null || data['isActivated'] != true) {
         emit(AuthNeedActivation());
         await signOut();
       } else {
