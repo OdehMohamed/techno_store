@@ -1,0 +1,16 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Techno Store — trusted server-side operations that must not run on the client (e.g. linking pre-existing maintenance devices to a newly created customer account).",
+  "engines": {
+    "node": "22"
+  },
+  "main": "index.js",
+  "scripts": {
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.2.5"
+  },
+  "private": true
+}

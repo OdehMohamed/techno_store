@@ -8,7 +8,6 @@ import 'package:techno_store/core/services/auth_services.dart';
 import 'package:techno_store/core/services/cache_services.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/utils/firestore_api_path.dart';
-import 'package:techno_store/features/create_user_account/services/create_user_account_services.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -20,7 +19,6 @@ class AuthCubit extends Cubit<AuthState> {
   final FirestoreServices _firestoreServices = FirestoreServices.instance;
   final cacheServices = CacheServices();
   StreamSubscription<Map<String, dynamic>>? _activationSubscription;
-  final createUserAccountServices = CreateUserAccountServices();
 
   // download the saved state on app start
   Future<void> _loadPendingVerification() async {
@@ -221,7 +219,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   // ✅ حفظ بيانات المستخدم بعد إكمال الملف الشخصي
   Future<void> completeUserProfile({
-    required String phoneNumber,
     required String name,
     required String nickname,
     String? photo,
@@ -240,7 +237,13 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      await createUserAccountServices.findUserDevices(phoneNumber);
+      // Linking any maintenance devices already received under this phone
+      // number to the new account is handled server-side (Cloud Function,
+      // triggered on users/{uid} creation) — see functions/index.js. The
+      // client can no longer perform this itself: it requires a Firestore
+      // query staff-only rules deny to a customer (matching by phoneNumber
+      // rather than the caller's own uid) and a write to maintenanceDevices,
+      // which is staff-only.
       // ✅ حذف حالة "إكمال الملف الشخصي" المعلقة
       await _deletePendingProfileCompletion();
       emit(AuthSuccess());
