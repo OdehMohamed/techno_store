@@ -246,7 +246,12 @@ class AuthCubit extends Cubit<AuthState> {
       // which is staff-only.
       // ✅ حذف حالة "إكمال الملف الشخصي" المعلقة
       await _deletePendingProfileCompletion();
-      emit(AuthSuccess());
+      // Load the freshly created profile before signalling success so that
+      // AuthSuccess always carries populated user data. MainScreen reads
+      // state.userData on AuthSuccess; emitting it empty here caused a null
+      // dereference (main_screen.dart) on the profile-completion path.
+      final userData = await _authServices.fetchCurrentUserData();
+      emit(userData != null ? AuthSuccess(userData) : AuthInitial());
     } catch (error) {
       debugPrint(error.toString());
       emit(AuthFailure(error.toString()));
