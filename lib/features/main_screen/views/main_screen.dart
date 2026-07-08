@@ -72,6 +72,15 @@ class _MainScreenState extends State<MainScreen> {
 
           return const HomePage();
         }
+        if (state is AuthInitial) {
+          // Reached on sign-out (and on the very first build, before any
+          // listener has started — cancelling a null subscription is a
+          // no-op). Stops the maintenance devices stream so it doesn't keep
+          // running with an auth context that no longer applies, and so a
+          // different user signing in next doesn't briefly see this user's
+          // device list. See MaintenanceListCubit.stopListening.
+          maintenanceListCubit.stopListening();
+        }
         return const SignIn();
       },
     );

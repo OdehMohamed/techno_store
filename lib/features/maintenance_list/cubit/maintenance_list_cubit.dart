@@ -44,6 +44,19 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
     );
   }
 
+  /// Stops the active device stream and returns to the initial (no data)
+  /// state. Call this when the signed-in user changes (e.g. on sign-out) —
+  /// otherwise the stream keeps running with an auth context that no longer
+  /// applies (surfacing as a permission-denied stream error once the
+  /// session ends) and the next user to sign in on this device could
+  /// briefly see the previous user's device list before their own stream
+  /// delivers data.
+  void stopListening() {
+    _devicesSubscription?.cancel();
+    _devicesSubscription = null;
+    emit(MaintenanceListInitial());
+  }
+
   /// Fetch devices once (للاستخدام مع RefreshIndicator)
   Future<void> fetchGroupedMaintenanceDevices(String? uid) async {
     emit(MaintenanceListLoading());
