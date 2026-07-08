@@ -1,6 +1,7 @@
-// DRAFT — Phase 1 Firestore rules. NOT deployed. NOT wired into firebase.json.
-// Companion to docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md — read that document
-// for rationale, open questions, and the verification checklist before deploying.
+// Firestore rules — deployed as part of Phase 1 (see
+// docs/ai-workflow/PHASE1C_EXECUTION_RUNBOOK.md). Companion to
+// docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md for the original rationale
+// and verification checklist.
 //
 // Scope: ADR-002 Phase 1 (role stored as a Firestore field, immutable from clients)
 // + ADR-001 Option A (sensitive fields split into a `private/sensitive` subdocument)
@@ -51,9 +52,22 @@ service cloud.firestore {
       // New profile creation: only the user themselves, and only as Customer.
       // Matches the only code path that creates this document today
       // (AuthServices.completeUserProfile, called once at signup).
+      //
+      // The stored phoneNumber must equal the phone number Firebase Auth
+      // verified via OTP for this token (request.auth.token.phone_number) —
+      // not merely whatever the client chooses to send. This is required for
+      // functions/index.js's linkDevicesToNewCustomer to be trustworthy: that
+      // function reads the verified phone directly from the Auth user
+      // record (not this field) precisely so its correctness never depends
+      // on this rule, but this rule still closes a real spoofing gap
+      // elsewhere — e.g. NewDeviceServices.getUserIdByPhoneNumber (staff
+      // linking a device by querying this users/{uid}.phoneNumber field) —
+      // without this check, a customer could register with someone else's
+      // phone number and have that person's devices misattributed.
       allow create: if isSignedIn()
         && request.auth.uid == userId
-        && request.resource.data.type == 1;
+        && request.resource.data.type == 1
+        && request.resource.data.phoneNumber == request.auth.token.phone_number;
 
       // Profile updates: only the user themselves, and `type` may never change.
       // This applies even to Admins editing their own document — Phase 1
