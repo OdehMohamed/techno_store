@@ -32,7 +32,10 @@ class AppUpdateService {
     }
   }
 
-  PlatformVersionInfo? _currentPlatformInfo(AppConfigModel config) {
+  /// Public so callers (e.g. AppUpdateCubit) that already have a fetched
+  /// config can get the platform-specific entry (for the store link) without
+  /// duplicating this platform-detection logic themselves.
+  PlatformVersionInfo? currentPlatformInfo(AppConfigModel config) {
     if (kIsWeb) return null;
     if (Platform.isAndroid) return config.android;
     if (Platform.isIOS) return config.ios;
@@ -46,7 +49,7 @@ class AppUpdateService {
   Future<bool> isForceUpdateRequired(AppConfigModel? config) async {
     if (config == null) return false;
 
-    final platformInfo = _currentPlatformInfo(config);
+    final platformInfo = currentPlatformInfo(config);
     final minRequired = platformInfo?.minRequiredVersion;
     if (platformInfo == null || minRequired == null) return false;
 
