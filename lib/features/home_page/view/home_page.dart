@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/utils/utilities.dart';
 import 'package:techno_store/core/widgets/main_drawer2.dart';
 import 'package:techno_store/features/maintenance_list/view/inner_maintenance_list.dart';
@@ -117,60 +118,68 @@ class _HomePageState extends State<HomePage> {
                 child: Text("Error when fetch data"),
               );
             } else if (state is HomeLoaded) {
+              final isStaff = UserRole.isStaff(state.userData.type);
               return Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: width <= 1025 ? width * 0.05 : width * 0.1,
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CarouselSlider(
-                      items: imageSliders,
-                      carouselController: _controller,
-                      options: CarouselOptions(
-                          scrollDirection:
-                              width < 1025 ? Axis.vertical : Axis.horizontal,
-                          height: width < 500
-                              ? height * 0.2
-                              : width < 1025
-                                  ? height * 0.20
-                                  : height * 0.20,
-                          autoPlay: true,
-                          pageSnapping: false,
-                          disableCenter: true,
-                          viewportFraction: width < 1025 ? 0.8 : 0.2,
-                          enlargeCenterPage: true,
-                          // aspectRatio: 2,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          }),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: imgList.asMap().entries.map((entry) {
-                        return GestureDetector(
-                          onTap: () => _controller.animateToPage(entry.key),
-                          child: Container(
-                            width: 8.0,
-                            height: 8.0,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 4.0),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black)
-                                    .withOpacity(
-                                        _current == entry.key ? 0.9 : 0.4)),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                    // Banner + Contact Us are customer-facing marketing
+                    // surfaces; staff only need the Maintenance tab below.
+                    // Guest keeps the customer experience too, since
+                    // UserRole.isStaff is an allow-list (see
+                    // ADR-003-guest-account-behavior.md).
+                    if (!isStaff) ...[
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      CarouselSlider(
+                        items: imageSliders,
+                        carouselController: _controller,
+                        options: CarouselOptions(
+                            scrollDirection:
+                                width < 1025 ? Axis.vertical : Axis.horizontal,
+                            height: width < 500
+                                ? height * 0.2
+                                : width < 1025
+                                    ? height * 0.20
+                                    : height * 0.20,
+                            autoPlay: true,
+                            pageSnapping: false,
+                            disableCenter: true,
+                            viewportFraction: width < 1025 ? 0.8 : 0.2,
+                            enlargeCenterPage: true,
+                            // aspectRatio: 2,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _current = index;
+                              });
+                            }),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: imgList.asMap().entries.map((entry) {
+                          return GestureDetector(
+                            onTap: () => _controller.animateToPage(entry.key),
+                            child: Container(
+                              width: 8.0,
+                              height: 8.0,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 4.0),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black)
+                                      .withOpacity(
+                                          _current == entry.key ? 0.9 : 0.4)),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                     Expanded(
                       child: DefaultTabController(
                         // length: state.userData.type == 3 ? 1 : 2,
@@ -240,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                                       ],
                                     ),
                                   ),
-                                  const MainFooter(),
+                                  if (!isStaff) const MainFooter(),
                                 ],
                               ),
                             ),

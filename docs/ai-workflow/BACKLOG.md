@@ -83,6 +83,9 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
    - `lib/core/widgets/main_drawer.dart` — confirmed unused (only referenced in commented-out code).
    - `view_model/` leftover `ChangeNotifier` files in `home_page`, `maintenance_list`, `new_device_maintenance` — fully commented out.
    - `MaintenanceListServices.fetchMaintenanceDevicesPaginated` — confirmed zero call sites (distinct from item 4's `fetchMaintenanceDevices`, which has one unreachable call site through the cubit). **Removed 2026-07-09** as part of the maintenance-list search/filter feature's final cleanup commit — see item 4's resolution note.
+   - `lib/features/home_page/view/home_page.dart`'s `TabBar`/`TabBarView`/`DefaultTabController(length: 1)` (2026-07-09, found during the Home page staff-UI audit) — wraps a single "Maintenance" tab with no alternative to switch to; the "Store" tab and its `InnerStorePage` import are fully commented out for every role (not staff-specific), and `flutter analyze` already flags that import as unused. Could be simplified to render `InnerMaintenanceList` directly if Store isn't coming back — but that's a product/roadmap call, not assumed here.
+
+15. **Home page carousel uses hardcoded third-party image URLs.** (2026-07-09, found during the Home page staff-UI audit) The 4 banner images in `home_page.dart`'s `imgList` are scraped from unrelated third-party sites (a repair-shop blog, a UK repair company, a Google image-cache thumbnail, a news site) — not the store's own branded content, no attribution/licensing, and could break or disappear at any time since there's no control over that hosting. Needs: real store assets (ideally served the same way other app images are, via Firebase Storage) to replace them whenever there's content to put there — a content/product gap, not something engineering can resolve alone.
 
 ## Process / tooling
 
