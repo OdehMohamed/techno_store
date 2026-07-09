@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:techno_store/core/model/device_tab_page.dart';
 import 'package:techno_store/core/model/grouped_maintenance_devices.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
@@ -270,81 +271,125 @@ class MaintenanceListServices {
     }
   }
 
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  /// METHOD 3: fetchDevicesByStatus (استعلام محدد بالحالة)
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /// Applies the shared filter set (status + at most one of
+  /// brand/maintenanceEmployee/date-range, plus optional customer [uid]
+  /// scoping) used by both [streamDevicesForTab] and
+  /// [fetchMoreDevicesForTab]. See
+  /// docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md.
   ///
-  /// 📌 متى تستخدمها:
-  /// - تريد فقط الأجهزة في حالة معينة (مثلاً: Fixed فقط)
-  /// - لا تحتاج لتصنيف الأجهزة
-  /// - صفحة مخصصة لحالة واحدة (مثلاً: صفحة "الأجهزة المسلمة")
-  /// - الأداء مهم وتريد استعلام سريع
+  /// [uid] scopes to one customer's own devices via the `userId` field on
+  /// the real `maintenanceDevices` collection — NOT the dormant
+  /// `users/{uid}/devices` subcollection (nothing in this app populates
+  /// that; see BACKLOG.md item 4). Getting this wrong silently returns an
+  /// empty result for every customer, which is exactly the bug this
+  /// replaces (the old `fetchDevicesByStatus` queried that subcollection).
   ///
-  /// ✅ مثال الاستخدام:
-  /// ```dart
-  /// // جلب الأجهزة المصلحة فقط
-  /// final fixedDevices = await service.fetchDevicesByStatus(
-  ///   status: DeviceStatus.fixed,
-  ///   uid: userId,
-  ///   limit: 50,
-  /// );
-  ///
-  /// // جلب الأجهزة المسلمة فقط
-  /// final deliveredDevices = await service.fetchDevicesByStatus(
-  ///   status: DeviceStatus.delivered,
-  ///   uid: userId,
-  /// );
-  /// ```
-  ///
-  /// 🚀 ميزة: أسرع من METHOD 1 لأنه يستعلم مباشرة بالـ WHERE
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Stream<List<MaintenanceDeviceModel>> fetchDevicesByStatus({
+  /// `receivedAt` is stored as an ISO 8601 string, not a Firestore
+  /// Timestamp, so the date-range filter compares strings — this only
+  /// sorts/matches correctly because every write in this codebase already
+  /// uses `DateTime.toIso8601String()` consistently (same local-time
+  /// format, no timezone offset mixed in). The range reuses the
+  /// status+receivedAt composite index; no separate index is needed for it.
+  Query<Map<String, dynamic>> _deviceTabQuery({
     required String status,
     String? uid,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
+  }) {
+    Query<Map<String, dynamic>> query = _firestoreInstance
+        .collection(FirestoreApiPath.maintenanceDevices())
+        .where('status', isEqualTo: status);
+
+    if (uid != null) {
+      query = query.where('userId', isEqualTo: uid);
+    }
+    if (brand != null) {
+      query = query.where('brand', isEqualTo: brand);
+    }
+    if (maintenanceEmployee != null) {
+      query =
+          query.where('maintenanceEmployee', isEqualTo: maintenanceEmployee);
+    }
+    if (receivedFrom != null) {
+      query = query.where(
+        'receivedAt',
+        isGreaterThanOrEqualTo: receivedFrom.toIso8601String(),
+      );
+    }
+    if (receivedTo != null) {
+      query = query.where(
+        'receivedAt',
+        isLessThanOrEqualTo: receivedTo.toIso8601String(),
+      );
+    }
+
+    return query;
+  }
+
+  DeviceTabPage _toDeviceTabPage(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    return DeviceTabPage(
+      devices: snapshot.docs
+          .map((doc) => MaintenanceDeviceModel.fromMap(doc.data(), doc.id))
+          .toList(),
+      lastDocument: snapshot.docs.isEmpty ? null : snapshot.docs.last,
+    );
+  }
+
+  /// Bounded, real-time listener for one status tab, optionally narrowed by
+  /// at most one structured filter (brand, maintenanceEmployee, or a
+  /// receivedAt date range) — replaces the old unbounded
+  /// `streamMaintenanceDevices` staff path: only the active tab/filter
+  /// combination is listened to, capped at [limit], instead of the entire
+  /// collection (see docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md,
+  /// BACKLOG.md item 1g).
+  Stream<DeviceTabPage> streamDevicesForTab({
+    required String status,
+    String? uid,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
     int limit = 50,
   }) {
-    try {
-      final Stream<List<MaintenanceDeviceModel>> devicesStream =
-          firestoreServices.collectionsStream<MaintenanceDeviceModel>(
-        path: (uid == null)
-            ? FirestoreApiPath.maintenanceDevices()
-            : FirestoreApiPath.userDevices(uid),
-        builder: (data, docId) => MaintenanceDeviceModel.fromMap(
-          data ?? {},
-          docId,
-        ),
-        queryBuilder: (query) => query
-            .where('status', isEqualTo: status)
-            .orderBy('receivedAt', descending: true)
-            .limit(limit),
-      );
-      debugPrint(
-          '✅ Fetching devices with status: $status for uid: $uid with length: ${devicesStream.length} ');
-      return devicesStream;
-      // Query query = (uid == null)
-      //     ? _firestoreInstance.collection('maintenanceDevices')
-      //     : _firestoreInstance
-      //         .collection('users')
-      //         .doc(uid)
-      //         .collection('devices');
+    final query = _deviceTabQuery(
+      status: status,
+      uid: uid,
+      brand: brand,
+      maintenanceEmployee: maintenanceEmployee,
+      receivedFrom: receivedFrom,
+      receivedTo: receivedTo,
+    ).orderBy('receivedAt', descending: true).limit(limit);
 
-      // final querySnapshot = await query
-      //     .where('status', isEqualTo: status)
-      //     .orderBy('receivedAt', descending: true)
-      //     .limit(limit)
-      //     .get();
+    return query.snapshots().map(_toDeviceTabPage);
+  }
 
-      // final devices = querySnapshot.docs
-      //     .map((doc) => MaintenanceDeviceModel.fromMap(
-      //         doc.data() as Map<String, dynamic>, doc.id))
-      //     .toList();
+  /// One-time paginated fetch for "Load more" beyond
+  /// [streamDevicesForTab]'s live window. Same filter shape; [startAfter]
+  /// is the last document already loaded for this tab/filter combination
+  /// (see [DeviceTabPage.lastDocument]).
+  Future<DeviceTabPage> fetchMoreDevicesForTab({
+    required String status,
+    required QueryDocumentSnapshot<Map<String, dynamic>> startAfter,
+    String? uid,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
+    int limit = 50,
+  }) async {
+    final query = _deviceTabQuery(
+      status: status,
+      uid: uid,
+      brand: brand,
+      maintenanceEmployee: maintenanceEmployee,
+      receivedFrom: receivedFrom,
+      receivedTo: receivedTo,
+    ).orderBy('receivedAt', descending: true).startAfterDocument(startAfter).limit(limit);
 
-      // debugPrint('✅ Fetched ${devices.length} devices with status: $status');
-      // return devices;
-    } catch (e) {
-      debugPrint('❌ Error fetching devices by status: $e');
-      return Stream.value([]);
-    }
+    final snapshot = await query.get();
+    return _toDeviceTabPage(snapshot);
   }
 
   /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
