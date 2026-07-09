@@ -303,11 +303,45 @@ With the discrepancy fully explained as benign (a legitimate deletion during liv
 
 ---
 
-## Decisions still pending product owner input
+### 2026-07-04 — v1.0.0 tag and GitHub Release created
 
-These are open questions raised during the baseline review that require a product-owner decision, not an engineering one. They are tracked here so it's clear no decision has been made yet, and in `NEXT_STEPS.md` as actionable follow-ups:
+**Decision:** Product owner approved the finalized `CONTRIBUTING.md` (see prior entry) and authorized Part 2: repository cleanup, sync verification, and creating the project's first official release, marking completion of the initial development phase and its security foundation.
 
-- Whether Firestore/Storage security rules exist in the Firebase Console (outside this repo) and, if not, whether/when to introduce them.
-- Whether the dormant `fetchMaintenanceDevices` / `fetchMaintenanceDevicesPaginated` subcollection-query methods should be fixed, rewired to the correct collection, or removed.
-- Whether `docs/features/*.md` should be authored now or deferred.
+**Decided by:** Product owner.
+
+**Outcome:** Verified no obsolete or forgotten branches existed locally or remotely (only `main`; the one prior PR was already merged with its branch already deleted). Created `CHANGELOG.md` documenting Phase 1's security work as the `[1.0.0]` entry. Created and pushed annotated tag `v1.0.0` ("Initial Stable Release") and a corresponding GitHub Release with technical release notes, per explicit instruction that no store release was in scope for this task. `main` and `origin/main` confirmed in sync.
+
+---
+
+### 2026-07-07/08 — Storage image upload/delete authorization failures investigated and fixed
+
+**Decision:** Investigate why maintenance-device photo deletion failed for all staff roles after Phase 1's Storage rules deployment, and (once found to be broader) why photo upload failed too — without relaxing the deployed Storage rules unless proven necessary.
+
+**Decided by:** Product owner (investigation approach: root-cause only, no rules relaxation, verify every claim empirically before acting on it — extensive back-and-forth using the Firebase Rules API dry-run endpoint, IAM policy inspection, and controlled temporary rule experiments, each reverted immediately after its single test).
+
+**Outcome — root causes found (two independent bugs, not one):**
+1. `MaintenanceListServices.deleteDevice`'s cascade delete listed the device's Storage folder (`listAll()`) before deleting each file. A staff-only `list` on `maintenance_devices/{deviceId}` can never be authorized: detecting staff requires a cross-service `firestore.get()` call inside `isStaff()`, which does not resolve during `list`-operation rule evaluation (proven via the Rules API dry-run: the same `isStaff()` check that succeeds for `write` returns unmatched/unauthorized for `list`, even under a direct-UID bypass on a confirmed-clean path).
+2. Separately, the image folder path builders (`StorageApiPath.maintenanceImages`/`profilesPhotos`) emitted a trailing slash that `uploadFile()` turned into a double slash — an extra empty path segment the deployed rules' exact-depth match rejected. This affected uploads independently of bug 1.
+3. A red herring pursued at length: a missing IAM grant (`roles/firebaserules.firestoreServiceAgent`, required for Storage rules' cross-service Firestore reads) was found genuinely absent from the correct service agent and granted — but the underlying `list` limitation (bug 1) is a platform constraint, not an IAM misconfiguration, so this grant did not fix the delete failure by itself. It was likely still a real, independently necessary fix (the project's first-ever cross-service rules deploy went through non-interactive CLI calls that never triggered Firebase's normal interactive permission-grant prompt) — later evidence (a previously-blocking Storage warning about cross-service configuration clearing on its own after this grant, without any further change) suggests it had simply needed time to propagate. Kept as applied.
+
+**Fix:** Cascade delete now deletes each image by its already-known stored download URL (`FirebaseStorageServices.deleteFileByUrl`) instead of listing the folder — sidesteps the `list` limitation entirely, no rules change needed. `uploadFile()` sanitizes trailing slashes defensively. Trade-off documented in `BACKLOG.md` (0c): an image never referenced in the device document (e.g. from a partially failed upload) is no longer discoverable for cleanup via this path.
+
+**Not done:** no Storage rules were relaxed. The two temporary experiment rules used during investigation (a direct-UID bypass, and an unconditional `allow write: if true`) were each deployed for exactly one test and reverted immediately after, never committed.
+
+---
+
+### 2026-07-08 — Signup regression (post-Phase-1) investigated and fixed; device-linking moved to a Cloud Function
+
+**Decision:** While retesting the Storage fix above, signup itself was found broken by Phase 1's rules in three separate, previously-undiscovered ways. Fix each at the root rather than work around it, and decide the correct trusted-actor design for one of them (device-to-customer linking) without weakening customer permissions.
+
+**Decided by:** Product owner, per-issue as each was found.
+
+**Outcome:**
+1. **`permission-denied` on profile completion:** `AuthServices.completeUserProfile` wrote both `users/{uid}` and `users/{uid}/meta/isActivated` — the latter is intentionally `allow write: if false` under Phase 1's rules (activation is Console/Admin-SDK-only, per `ADR-004`), but this client write was never removed when the rules deployed. Fixed: `saveUserData` now writes only the profile document; `getUserData` and the (still-unwired) `AuthCubit._listenToActivation` both treat an absent meta document as `isActivated: false` rather than throwing. Wiring `_listenToActivation` into the sign-in flow itself was explicitly deferred — product owner confirmed the activation-gate feature was intentionally postponed before Phase 1 and should be designed as its own feature later (`BACKLOG.md` item 10), not folded into this regression fix.
+2. **Null-check crash in `MainScreen` right after profile completion:** `completeUserProfile` emitted a bare `AuthSuccess()` with no `userData`; `MainScreen` assumes `state.userData` is always populated on that state. Fixed by fetching the profile and emitting `AuthSuccess(userData)`, matching what `checkAuth` already does.
+3. **Automatic linking of devices Reception received before the customer registered was silently broken:** the client-side `findUserDevices` (query `maintenanceDevices` by phone, write `userId`) is denied under Phase 1's rules for a customer on both counts (read scoped to own uid; write staff-only) — it had been failing silently (caught, logged, swallowed) since the rules deployed, with no one aware. **Decision on the fix:** evaluated existing trusted actors first, per explicit instruction, before reaching for new infrastructure. Found staff already resolve this at intake/update time (`NewDeviceServices.getUserIdByPhoneNumber`) whenever the customer already has an account — only the reverse ordering (device first, customer registers later) was uncovered. Concluded this reverse case needed a trusted, non-client mechanism specifically because no existing staff action reliably fires at the moment a customer registers. Chose a Cloud Function (`functions/index.js`, `linkDevicesToNewCustomer`, `users/{uid}` `onCreate`) over both an unauthorized client path and staff-side workarounds — first Cloud Functions infrastructure in this project (Blaze plan already planned). Reads the phone number Firebase Auth verified via OTP directly from the Auth record, not the client-written Firestore field, so its correctness doesn't depend on any Firestore rule staying in place. The broken client-side `findUserDevices` and its now-dead service class were removed.
+4. **Related tightening:** `users/{userId}` `allow create` now also requires `request.resource.data.phoneNumber == request.auth.token.phone_number` — closes a spoofing gap the Cloud Function's (and the pre-existing staff-side) phone-based matching would otherwise trust blindly. Deliberately scoped to `create` only; the same gap on `update` is tracked separately (`BACKLOG.md` item 0d), not folded into this change.
+5. **`permission-denied` stream error on sign-out:** `MaintenanceListCubit`'s device-stream subscription is only cancelled when a new one starts or the cubit itself closes — but the cubit persists across sign-in/sign-out within the same `MainScreen` route, so `close()` never fired on sign-out, leaving the stream running with an invalidated session. Fixed with `MaintenanceListCubit.stopListening()`, called on the `AuthInitial` state. Also closes a real (not just cosmetic) gap: without it, a different user signing in next could briefly see the previous user's device list.
+
+**Result:** six commits (`bb24873`, `b30aa34`, `3c67492`, `535a756`, `e54ca45`, `456f97c`), each scoped to one of the above, reviewed and approved commit-by-commit, retested end-to-end by the product owner (device creation/deletion with photos, full signup flow, device-linking, login/logout — no regressions found), then pushed to `origin/main`.
 - What each confirmed role (`Admin`, `CustomerAccount`, `ReceptionAccount`, `MaintenanceAccount`, `GuestAccount`) is actually authorized to do at the data layer (not just which drawer items it sees) — needed before any Firestore/Storage security rules can be written correctly.
