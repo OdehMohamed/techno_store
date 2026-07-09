@@ -4,7 +4,7 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 
 ## Immediate
 
-1. Plan the maintenance devices search/filtering feature (Firestore-based v1: structured filters + phone/name/model/IMEI/serial search, explicitly addressing `BACKLOG.md` item 1g's unbounded-stream cost problem), get it approved, then implement on its own branch per `CONTRIBUTING.md`.
+Nothing in flight. Maintenance devices search/filtering (v1) shipped 2026-07-09 (PR #3, squash-merged as `1a3d350` — see `DECISIONS_LOG.md`). Next task is a product-owner decision — see `BACKLOG.md` for candidates.
 
 ## Before any release that includes the forced-update feature (not urgent today, but must not be forgotten)
 
@@ -23,4 +23,5 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 5. `BACKLOG.md` item 0d — verify/tighten customer `phoneNumber` updates (currently only `create` requires the Auth-verified phone; `update` doesn't).
 6. `BACKLOG.md` item 10 — wire up account-activation enforcement (`AuthCubit._listenToActivation`) as its own feature, whenever the product owner wants to pick it up.
 7. `BACKLOG.md` items 11/12/13 — soft update, maintenance mode, feature flags: schema-ready in `appConfig/global` since the 2026-07-09 forced-update work, none implemented yet.
-8. Pre-existing items from the original audit not yet touched: the dormant `users/{uid}/devices` subcollection, `status` string vocabulary inconsistency, `docs/features/*.md` still doesn't exist.
+8. `BACKLOG.md` item 14 (new, 2026-07-09) — `MaintenanceListCubit`'s action methods swallow service-layer exceptions instead of rethrowing, so the dialogs' failure handling never triggers; found during the search/filter feature's cleanup audit, deliberately left unfixed to keep that PR scoped.
+9. Pre-existing items from the original audit not yet touched: `status` string vocabulary inconsistency (`BACKLOG.md` item 3), `docs/features/*.md` still doesn't exist. (The dormant `users/{uid}/devices` subcollection item is resolved — see `BACKLOG.md` item 4.)
