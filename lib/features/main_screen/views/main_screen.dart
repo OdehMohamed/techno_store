@@ -9,7 +9,6 @@ import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in.dart';
 import 'package:techno_store/features/home_page/view/home_page.dart';
 import 'package:techno_store/features/main_screen/views/widgets/pin_verification_page.dart';
-import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,7 +29,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     final homeCubit = BlocProvider.of<HomeCubit>(context);
-    final maintenanceListCubit = BlocProvider.of<MaintenanceListCubit>(context);
     final appUpdateCubit = BlocProvider.of<AppUpdateCubit>(context);
     return BlocBuilder<AuthCubit, AuthState>(
       bloc: authCubit,
@@ -96,16 +94,12 @@ class _MainScreenState extends State<MainScreen> {
 
               return const HomePage();
             }
-            if (state is AuthInitial) {
-              // Reached on sign-out (and on the very first build, before
-              // any listener has started — cancelling a null subscription
-              // is a no-op). Stops the maintenance devices stream so it
-              // doesn't keep running with an auth context that no longer
-              // applies, and so a different user signing in next doesn't
-              // briefly see this user's device list. See
-              // MaintenanceListCubit.stopListening.
-              maintenanceListCubit.stopListening();
-            }
+            // AuthInitial (sign-out, or the very first build) and any other
+            // state fall through to SignIn. Per-tab maintenance-list
+            // Firestore subscriptions are owned by _MaintenanceTabPage
+            // widgets inside HomePage, so they're cancelled automatically
+            // via normal widget dispose() when HomePage unmounts here — no
+            // explicit cubit-level stop is needed.
             return const SignIn();
           },
         );

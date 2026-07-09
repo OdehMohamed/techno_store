@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core/model/grouped_maintenance_devices.dart';
 import 'package:techno_store/features/maintenance_list/services/maintenance_list_services.dart';
 
 part 'maintenance_list_state.dart';
@@ -11,64 +8,6 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
   MaintenanceListCubit() : super(MaintenanceListInitial());
   final MaintenanceListServices maintenanceListServices =
       MaintenanceListServices();
-
-  StreamSubscription<GroupedMaintenanceDevices>? _devicesSubscription;
-
-  /// Listen to realtime updates (للتحديثات الفورية)
-  void listenToMaintenanceDevices(String? uid) {
-    // Cancel any existing subscription
-    _devicesSubscription?.cancel();
-
-    // Emit loading state
-    emit(MaintenanceListLoading());
-
-    debugPrint('🎧 Starting to listen for uid: $uid');
-
-    // Start listening to realtime updates
-    _devicesSubscription =
-        maintenanceListServices.streamMaintenanceDevices(uid).listen(
-      (groupedDevices) {
-        debugPrint('📦 Received stream data: '
-            '${groupedDevices.inMaintenance.length} in maintenance, '
-            '${groupedDevices.fixed.length} fixed, '
-            '${groupedDevices.delivered.length} delivered');
-        emit(MaintenanceListLoaded(groupedDevices: groupedDevices));
-      },
-      onError: (error) {
-        debugPrint('❌ Stream error: $error');
-        emit(MaintenanceListError(error: error.toString()));
-      },
-      onDone: () {
-        debugPrint('✅ Stream completed');
-      },
-    );
-  }
-
-  /// Stops the active device stream and returns to the initial (no data)
-  /// state. Call this when the signed-in user changes (e.g. on sign-out) —
-  /// otherwise the stream keeps running with an auth context that no longer
-  /// applies (surfacing as a permission-denied stream error once the
-  /// session ends) and the next user to sign in on this device could
-  /// briefly see the previous user's device list before their own stream
-  /// delivers data.
-  void stopListening() {
-    _devicesSubscription?.cancel();
-    _devicesSubscription = null;
-    emit(MaintenanceListInitial());
-  }
-
-  /// Fetch devices once (للاستخدام مع RefreshIndicator)
-  Future<void> fetchGroupedMaintenanceDevices(String? uid) async {
-    emit(MaintenanceListLoading());
-
-    try {
-      final groupedDevices =
-          await maintenanceListServices.fetchMaintenanceDevices(uid);
-      emit(MaintenanceListLoaded(groupedDevices: groupedDevices));
-    } catch (e) {
-      emit(MaintenanceListError(error: e.toString()));
-    }
-  }
 
   /// Delete a device
   Future<void> deleteDevice(String deviceId) async {
@@ -151,12 +90,5 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       debugPrint('❌ Error delivering device: $e');
       emit(MaintenanceListError(error: e.toString()));
     }
-  }
-
-  @override
-  Future<void> close() {
-    _devicesSubscription?.cancel();
-    debugPrint('🛑 Stopped listening to maintenance devices stream');
-    return super.close();
   }
 }

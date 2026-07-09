@@ -55,6 +55,7 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
    Fact: `MaintenanceListServices.fetchMaintenanceDevices` and `fetchMaintenanceDevicesPaginated` query a subcollection that nothing ever writes to. `fetchMaintenanceDevices` is reachable via `MaintenanceListCubit.fetchGroupedMaintenanceDevices`, which currently has no UI call sites; `fetchMaintenanceDevicesPaginated` has no call sites at all.
    Risk if left alone: the moment someone wires either method to a UI action (e.g., pull-to-refresh), it will silently return an empty list for real users.
    Options to weigh later: point them at the correct top-level `maintenanceDevices` collection filtered by `userId` (matching what `streamMaintenanceDevices` already does correctly), or remove them if the stream-based path is the only one actually needed.
+   **RESOLVED 2026-07-09** — `fetchMaintenanceDevices`, `fetchMaintenanceDevicesPaginated`, `streamMaintenanceDevices`, `MaintenanceListCubit.listenToMaintenanceDevices`/`fetchGroupedMaintenanceDevices`, and the `GroupedMaintenanceDevices` model were all removed in the maintenance-list search/filter feature's final cleanup commit. The correct-collection, `userId`-filtered query pattern this item worried about is now implemented properly in `MaintenanceListServices._deviceTabQuery`/`streamDevicesForTab`/`fetchMoreDevicesForTab` (see `SEARCH_FILTER_IMPLEMENTATION_PLAN.md`).
 
 5. **Harden or remove `CacheServices.getUserData()`'s non-null assertions.**
    Fact: `uid!`, `isActivated!`, `type!` will throw if any are missing from `SharedPreferences`. It's called from `HomeServices.getUserData()`, guarded by a cached-uid-matches-current-uid check, which narrows but doesn't eliminate the risk (e.g., a partially-failed prior `saveUserData` write, or data cached by an older app version before a field existed).
@@ -69,6 +70,9 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
 
 13. **Feature flags.** (2026-07-09, same document) Same rationale and same status as item 12 — reserved as a `featureFlags` key on the same document, not started.
 
+14. **`MaintenanceListCubit` action methods swallow service-layer exceptions instead of rethrowing.** (2026-07-09, found during the maintenance-list search/filter feature's final cleanup audit — see `SEARCH_FILTER_IMPLEMENTATION_PLAN.md`) `deleteDevice`, `updateDeviceStatus`, `updateDeviceAsFixed`, `updateFixedDeviceDetails`, and `deliverDevice` each wrap their `MaintenanceListServices` call in `try { ... } catch (e) { emit(MaintenanceListError(...)); }` with no `rethrow`. Nothing has ever listened to `MaintenanceListState` via `BlocListener`/`BlocConsumer` (confirmed via a full-codebase grep), so the `emit` itself is currently inert — but the effect on the caller is not: `inner_maintenance_list.dart`'s `_MarkAsFixedDialog`/`_DeliverDeviceDialog`/delete-confirmation dialogs each `await` these cubit calls inside their own `try { ...; showSuccessSnackbar(); } catch (_) { ... }`, expecting a thrown exception to signal failure. Because the cubit never rethrows, a failed save/delete/deliver still shows a "success" snackbar and closes the dialog — the user is told an operation succeeded when it didn't.
+    Needs: add `rethrow;` after each `emit(MaintenanceListError(...))` in the five action methods (or otherwise propagate failure to the caller), then confirm the dialogs' existing `catch (_)` blocks behave correctly (dialog stays open, `_isSaving` resets) instead of relying on this being a live, currently-undetected bug. Deliberately kept out of the search/filter feature's scope at the product owner's request, to avoid expanding that feature's diff — tracked here for separate pickup.
+
 ## Consistency / maintainability
 
 6. **Reconcile direct `FirebaseFirestore.instance` usage vs. the `FirestoreServices` abstraction.**
@@ -77,7 +81,7 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
 7. **Dead code cleanup candidates** (verify fully before removing anything — see RULES.md):
    - `lib/core/widgets/main_drawer.dart` — confirmed unused (only referenced in commented-out code).
    - `view_model/` leftover `ChangeNotifier` files in `home_page`, `maintenance_list`, `new_device_maintenance` — fully commented out.
-   - `MaintenanceListServices.fetchMaintenanceDevicesPaginated` — confirmed zero call sites (distinct from item 4's `fetchMaintenanceDevices`, which has one unreachable call site through the cubit).
+   - `MaintenanceListServices.fetchMaintenanceDevicesPaginated` — confirmed zero call sites (distinct from item 4's `fetchMaintenanceDevices`, which has one unreachable call site through the cubit). **Removed 2026-07-09** as part of the maintenance-list search/filter feature's final cleanup commit — see item 4's resolution note.
 
 ## Process / tooling
 
