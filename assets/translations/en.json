@@ -338,5 +338,10 @@
   "Update Required": "Update Required",
   "A new version of this app is required to continue. Please update to the latest version to keep using the app.": "A new version of this app is required to continue. Please update to the latest version to keep using the app.",
   "Update Now": "Update Now",
-  "Please check back later for the update.": "Please check back later for the update."
+  "Please check back later for the update.": "Please check back later for the update.",
+  "Search by name, phone, model, or IMEI": "Search by name, phone, model, or IMEI",
+  "Employee": "Employee",
+  "Date Range": "Date Range",
+  "Clear": "Clear",
+  "Load more": "Load more"
 }

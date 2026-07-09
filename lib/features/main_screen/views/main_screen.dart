@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/features/app_update/cubit/app_update_cubit.dart';
 import 'package:techno_store/features/app_update/view/forced_update_page.dart';
 import 'package:techno_store/features/create_user_account/view/create_user_account_view.dart';
@@ -85,17 +84,15 @@ class _MainScreenState extends State<MainScreen> {
             if (state is AuthSuccess) {
               homeCubit.loadUserData();
 
-              final userType = state.userData!.type;
-              if (UserRole.isCustomer(userType)) {
-                maintenanceListCubit
-                    .listenToMaintenanceDevices(state.userData!.uid);
-              } else if (UserRole.isStaff(userType)) {
-                maintenanceListCubit.listenToMaintenanceDevices(null);
-              }
-              // Any other role (e.g. GuestAccount) intentionally starts no
-              // listener at all — MaintenanceListCubit stays in its initial
-              // state, which the UI renders as an empty state, not an
-              // error. See docs/ai-workflow/ADR-003-guest-account-behavior.md.
+              // Maintenance device data is no longer eagerly fetched here.
+              // InnerMaintenanceList (embedded in HomePage) now triggers its
+              // own bounded, per-tab query once it knows the signed-in
+              // user's role/uid — see
+              // docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md §4.
+              // Fetching eagerly for every AuthSuccess regardless of whether
+              // the maintenance list is even visible was exactly the
+              // unbounded-read pattern this feature exists to remove
+              // (BACKLOG.md item 1g).
 
               return const HomePage();
             }
