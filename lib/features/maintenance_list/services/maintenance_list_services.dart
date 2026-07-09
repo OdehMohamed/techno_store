@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:techno_store/core/model/grouped_maintenance_devices.dart';
+import 'package:techno_store/core/model/device_tab_page.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
 import 'package:techno_store/core/services/firebase_storage_services.dart';
@@ -67,21 +67,6 @@ class MaintenanceListServices {
     return preparedImages;
   }
 
-  int _compareDateDesc(DateTime? a, DateTime? b) {
-    if (a == null && b == null) return 0;
-    if (a == null) return 1;
-    if (b == null) return -1;
-    return b.compareTo(a);
-  }
-
-  void _sortGroupedLists({
-    required List<MaintenanceDeviceModel> fixed,
-    required List<MaintenanceDeviceModel> delivered,
-  }) {
-    fixed.sort((a, b) => _compareDateDesc(a.fixedAt, b.fixedAt));
-    delivered.sort((a, b) => _compareDateDesc(a.deliveredAt, b.deliveredAt));
-  }
-
   DateTime? _parseDateField(dynamic raw) {
     if (raw == null) return null;
     if (raw is Timestamp) return raw.toDate();
@@ -89,356 +74,125 @@ class MaintenanceListServices {
     return null;
   }
 
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  /// METHOD 1: fetchMaintenanceDevices (الطريقة الأساسية)
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /// Applies the shared filter set (status + at most one of
+  /// brand/maintenanceEmployee/date-range, plus optional customer [uid]
+  /// scoping) used by both [streamDevicesForTab] and
+  /// [fetchMoreDevicesForTab]. See
+  /// docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md.
   ///
-  /// 📌 متى تستخدمها:
-  /// - عدد الأجهزة قليل (أقل من 100 جهاز)
-  /// - تريد جلب جميع الأجهزة مرة واحدة
-  /// - تريد تصنيفها حسب الحالة (In Maintenance, Fixed, Delivered)
-  /// - الاستخدام الأساسي في معظم الصفحات
+  /// [uid] scopes to one customer's own devices via the `userId` field on
+  /// the real `maintenanceDevices` collection — NOT the dormant
+  /// `users/{uid}/devices` subcollection (nothing in this app populates
+  /// that; see BACKLOG.md item 4). Getting this wrong silently returns an
+  /// empty result for every customer, which is exactly the bug this
+  /// replaces (the old `fetchDevicesByStatus` queried that subcollection).
   ///
-  /// ✅ مثال الاستخدام:
-  /// ```dart
-  /// final devices = await service.fetchMaintenanceDevices(userId);
-  /// print(devices.inMaintenance.length); // الأجهزة قيد الصيانة
-  /// print(devices.fixed.length);         // الأجهزة المصلحة
-  /// print(devices.delivered.length);     // الأجهزة المسلمة
-  /// ```
-  ///
-  /// ⚠️ لا تستخدمها إذا:
-  /// - عدد الأجهزة كبير جداً (أكثر من 500 جهاز)
-  /// - تريد فقط حالة واحدة محددة
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Future<GroupedMaintenanceDevices> fetchMaintenanceDevices(String? uid) async {
-    try {
-      final querySnapshot = uid == null
-          ? await _firestoreInstance
-              .collection('maintenanceDevices')
-              .orderBy('receivedAt', descending: true)
-              .get()
-          : await _firestoreInstance
-              .collection('users')
-              .doc(uid)
-              .collection('devices')
-              .orderBy('receivedAt', descending: true)
-              .get();
-
-      final List<MaintenanceDeviceModel> inMaintenance = [];
-      final List<MaintenanceDeviceModel> fixed = [];
-      final List<MaintenanceDeviceModel> delivered = [];
-
-      for (var doc in querySnapshot.docs) {
-        final device = MaintenanceDeviceModel.fromMap(doc.data(), doc.id);
-
-        switch (device.status.toLowerCase()) {
-          case 'in maintenance':
-          case 'pending':
-          case 'received':
-            inMaintenance.add(device);
-            break;
-          case 'fixed':
-            fixed.add(device);
-            break;
-          case 'delivered':
-          case 'derived': // Keep for backward compatibility
-            delivered.add(device);
-            break;
-          default:
-            debugPrint(
-                '⚠️ Unknown status: ${device.status} for device ${device.id}');
-            inMaintenance.add(device); // Default to inMaintenance
-            break;
-        }
-      }
-
-      _sortGroupedLists(fixed: fixed, delivered: delivered);
-
-      debugPrint('✅ Fetched ${querySnapshot.docs.length} devices: '
-          '${inMaintenance.length} in maintenance, '
-          '${fixed.length} fixed, '
-          '${delivered.length} delivered');
-
-      return GroupedMaintenanceDevices(
-        inMaintenance: inMaintenance,
-        fixed: fixed,
-        delivered: delivered,
-      );
-    } catch (e) {
-      debugPrint('❌ Error fetching maintenance devices: $e');
-      return GroupedMaintenanceDevices(
-        inMaintenance: [],
-        fixed: [],
-        delivered: [],
-      );
-    }
-  }
-
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  /// METHOD 2: fetchMaintenanceDevicesPaginated (للبيانات الكبيرة)
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ///
-  /// 📌 متى تستخدمها:
-  /// - عدد الأجهزة كبير جداً (أكثر من 500 جهاز)
-  /// - تريد تحميل البيانات تدريجياً (Lazy Loading)
-  /// - تريد Infinite Scroll في القائمة
-  /// - لتحسين الأداء وتقليل استهلاك البيانات
-  ///
-  /// ✅ مثال الاستخدام:
-  /// ```dart
-  /// // جلب أول 50 جهاز
-  /// final firstPage = await service.fetchMaintenanceDevicesPaginated(
-  ///   uid: userId,
-  ///   limit: 50,
-  /// );
-  ///
-  /// // جلب الصفحة التالية
-  /// final nextPage = await service.fetchMaintenanceDevicesPaginated(
-  ///   uid: userId,
-  ///   limit: 50,
-  ///   lastDocument: lastDocument, // آخر document من الصفحة السابقة
-  /// );
-  /// ```
-  ///
-  /// 💡 نصيحة: استخدمها في ListView مع scroll listener
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Future<GroupedMaintenanceDevices> fetchMaintenanceDevicesPaginated({
-    String? uid,
-    int limit = 50,
-    DocumentSnapshot? lastDocument,
-  }) async {
-    try {
-      Query query = uid == null
-          ? _firestoreInstance.collection('maintenanceDevices')
-          : _firestoreInstance
-              .collection('users')
-              .doc(uid)
-              .collection('devices');
-
-      query = query.orderBy('receivedAt', descending: true).limit(limit);
-
-      if (lastDocument != null) {
-        query = query.startAfterDocument(lastDocument);
-      }
-
-      final querySnapshot = await query.get();
-
-      final List<MaintenanceDeviceModel> inMaintenance = [];
-      final List<MaintenanceDeviceModel> fixed = [];
-      final List<MaintenanceDeviceModel> delivered = [];
-
-      for (var doc in querySnapshot.docs) {
-        final device = MaintenanceDeviceModel.fromMap(
-            doc.data() as Map<String, dynamic>, doc.id);
-
-        switch (device.status.toLowerCase()) {
-          case 'in maintenance':
-          case 'pending':
-          case 'received':
-            inMaintenance.add(device);
-            break;
-          case 'fixed':
-            fixed.add(device);
-            break;
-          case 'delivered':
-          case 'derived':
-            delivered.add(device);
-            break;
-          default:
-            inMaintenance.add(device);
-            break;
-        }
-      }
-
-      _sortGroupedLists(fixed: fixed, delivered: delivered);
-
-      debugPrint('✅ Fetched ${querySnapshot.docs.length} devices (paginated)');
-
-      return GroupedMaintenanceDevices(
-        inMaintenance: inMaintenance,
-        fixed: fixed,
-        delivered: delivered,
-      );
-    } catch (e) {
-      debugPrint('❌ Error fetching paginated devices: $e');
-      return GroupedMaintenanceDevices(
-        inMaintenance: [],
-        fixed: [],
-        delivered: [],
-      );
-    }
-  }
-
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  /// METHOD 3: fetchDevicesByStatus (استعلام محدد بالحالة)
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ///
-  /// 📌 متى تستخدمها:
-  /// - تريد فقط الأجهزة في حالة معينة (مثلاً: Fixed فقط)
-  /// - لا تحتاج لتصنيف الأجهزة
-  /// - صفحة مخصصة لحالة واحدة (مثلاً: صفحة "الأجهزة المسلمة")
-  /// - الأداء مهم وتريد استعلام سريع
-  ///
-  /// ✅ مثال الاستخدام:
-  /// ```dart
-  /// // جلب الأجهزة المصلحة فقط
-  /// final fixedDevices = await service.fetchDevicesByStatus(
-  ///   status: DeviceStatus.fixed,
-  ///   uid: userId,
-  ///   limit: 50,
-  /// );
-  ///
-  /// // جلب الأجهزة المسلمة فقط
-  /// final deliveredDevices = await service.fetchDevicesByStatus(
-  ///   status: DeviceStatus.delivered,
-  ///   uid: userId,
-  /// );
-  /// ```
-  ///
-  /// 🚀 ميزة: أسرع من METHOD 1 لأنه يستعلم مباشرة بالـ WHERE
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Stream<List<MaintenanceDeviceModel>> fetchDevicesByStatus({
+  /// `receivedAt` is stored as an ISO 8601 string, not a Firestore
+  /// Timestamp, so the date-range filter compares strings — this only
+  /// sorts/matches correctly because every write in this codebase already
+  /// uses `DateTime.toIso8601String()` consistently (same local-time
+  /// format, no timezone offset mixed in). The range reuses the
+  /// status+receivedAt composite index; no separate index is needed for it.
+  Query<Map<String, dynamic>> _deviceTabQuery({
     required String status,
     String? uid,
-    int limit = 50,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
   }) {
-    try {
-      final Stream<List<MaintenanceDeviceModel>> devicesStream =
-          firestoreServices.collectionsStream<MaintenanceDeviceModel>(
-        path: (uid == null)
-            ? FirestoreApiPath.maintenanceDevices()
-            : FirestoreApiPath.userDevices(uid),
-        builder: (data, docId) => MaintenanceDeviceModel.fromMap(
-          data ?? {},
-          docId,
-        ),
-        queryBuilder: (query) => query
-            .where('status', isEqualTo: status)
-            .orderBy('receivedAt', descending: true)
-            .limit(limit),
-      );
-      debugPrint(
-          '✅ Fetching devices with status: $status for uid: $uid with length: ${devicesStream.length} ');
-      return devicesStream;
-      // Query query = (uid == null)
-      //     ? _firestoreInstance.collection('maintenanceDevices')
-      //     : _firestoreInstance
-      //         .collection('users')
-      //         .doc(uid)
-      //         .collection('devices');
+    Query<Map<String, dynamic>> query = _firestoreInstance
+        .collection(FirestoreApiPath.maintenanceDevices())
+        .where('status', isEqualTo: status);
 
-      // final querySnapshot = await query
-      //     .where('status', isEqualTo: status)
-      //     .orderBy('receivedAt', descending: true)
-      //     .limit(limit)
-      //     .get();
-
-      // final devices = querySnapshot.docs
-      //     .map((doc) => MaintenanceDeviceModel.fromMap(
-      //         doc.data() as Map<String, dynamic>, doc.id))
-      //     .toList();
-
-      // debugPrint('✅ Fetched ${devices.length} devices with status: $status');
-      // return devices;
-    } catch (e) {
-      debugPrint('❌ Error fetching devices by status: $e');
-      return Stream.value([]);
+    if (uid != null) {
+      query = query.where('userId', isEqualTo: uid);
     }
+    if (brand != null) {
+      query = query.where('brand', isEqualTo: brand);
+    }
+    if (maintenanceEmployee != null) {
+      query =
+          query.where('maintenanceEmployee', isEqualTo: maintenanceEmployee);
+    }
+    if (receivedFrom != null) {
+      query = query.where(
+        'receivedAt',
+        isGreaterThanOrEqualTo: receivedFrom.toIso8601String(),
+      );
+    }
+    if (receivedTo != null) {
+      query = query.where(
+        'receivedAt',
+        isLessThanOrEqualTo: receivedTo.toIso8601String(),
+      );
+    }
+
+    return query;
   }
 
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  /// METHOD 4: streamMaintenanceDevices (للتحديثات الفورية) 🔥
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ///
-  /// 📌 متى تستخدمها:
-  /// - تريد تحديثات فورية (Realtime) لجميع المستخدمين
-  /// - عند إضافة/تعديل/حذف جهاز، التحديث يظهر تلقائياً للجميع
-  /// - الاستخدام المثالي للصفحات التي تتطلب مزامنة فورية
-  ///
-  /// ✅ مثال الاستخدام:
-  /// ```dart
-  /// // الاستماع للتحديثات
-  /// final subscription = service.streamMaintenanceDevices(userId).listen(
-  ///   (devices) {
-  ///     print('تحديث جديد: ${devices.inMaintenance.length} أجهزة');
-  ///   },
-  ///   onError: (error) => print('خطأ: $error'),
-  /// );
-  ///
-  /// // إيقاف الاستماع عند الخروج
-  /// subscription.cancel();
-  /// ```
-  ///
-  /// 🎯 الفوائد:
-  /// - تحديثات فورية بدون refresh يدوي
-  /// - جميع المستخدمين يرون التغييرات في نفس اللحظة
-  /// - كفاءة عالية (Firebase يرسل فقط التغييرات)
-  ///
-  /// ⚠️ تذكر: cancel الـ subscription عند dispose
-  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Stream<GroupedMaintenanceDevices> streamMaintenanceDevices(String? uid) {
-    debugPrint('🔥 streamMaintenanceDevices called with uid: $uid');
+  DeviceTabPage _toDeviceTabPage(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    return DeviceTabPage(
+      devices: snapshot.docs
+          .map((doc) => MaintenanceDeviceModel.fromMap(doc.data(), doc.id))
+          .toList(),
+      lastDocument: snapshot.docs.isEmpty ? null : snapshot.docs.last,
+    );
+  }
 
-    final stream = uid == null
-        ? _firestoreInstance
-            .collection(FirestoreApiPath.maintenanceDevices())
-            .orderBy('receivedAt', descending: true)
-            .snapshots()
-        : _firestoreInstance
-            .collection(FirestoreApiPath.maintenanceDevices())
-            .orderBy('receivedAt', descending: true)
-            .where('userId', isEqualTo: uid)
-            .snapshots();
+  /// Bounded, real-time listener for one status tab, optionally narrowed by
+  /// at most one structured filter (brand, maintenanceEmployee, or a
+  /// receivedAt date range) — replaces the old unbounded
+  /// `streamMaintenanceDevices` staff path: only the active tab/filter
+  /// combination is listened to, capped at [limit], instead of the entire
+  /// collection (see docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md,
+  /// BACKLOG.md item 1g).
+  Stream<DeviceTabPage> streamDevicesForTab({
+    required String status,
+    String? uid,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
+    int limit = 50,
+  }) {
+    final query = _deviceTabQuery(
+      status: status,
+      uid: uid,
+      brand: brand,
+      maintenanceEmployee: maintenanceEmployee,
+      receivedFrom: receivedFrom,
+      receivedTo: receivedTo,
+    ).orderBy('receivedAt', descending: true).limit(limit);
 
-    debugPrint(
-        '📡 Listening to: ${uid == null ? "maintenanceDevices" : "maintenanceDevices (userId: $uid)"}');
+    return query.snapshots().map(_toDeviceTabPage);
+  }
 
-    return stream.map((snapshot) {
-      debugPrint(
-          '🔄 Stream snapshot received: ${snapshot.docs.length} documents');
+  /// One-time paginated fetch for "Load more" beyond
+  /// [streamDevicesForTab]'s live window. Same filter shape; [startAfter]
+  /// is the last document already loaded for this tab/filter combination
+  /// (see [DeviceTabPage.lastDocument]).
+  Future<DeviceTabPage> fetchMoreDevicesForTab({
+    required String status,
+    required QueryDocumentSnapshot<Map<String, dynamic>> startAfter,
+    String? uid,
+    String? brand,
+    String? maintenanceEmployee,
+    DateTime? receivedFrom,
+    DateTime? receivedTo,
+    int limit = 50,
+  }) async {
+    final query = _deviceTabQuery(
+      status: status,
+      uid: uid,
+      brand: brand,
+      maintenanceEmployee: maintenanceEmployee,
+      receivedFrom: receivedFrom,
+      receivedTo: receivedTo,
+    ).orderBy('receivedAt', descending: true).startAfterDocument(startAfter).limit(limit);
 
-      final List<MaintenanceDeviceModel> inMaintenance = [];
-      final List<MaintenanceDeviceModel> fixed = [];
-      final List<MaintenanceDeviceModel> delivered = [];
-
-      for (var doc in snapshot.docs) {
-        final device = MaintenanceDeviceModel.fromMap(doc.data(), doc.id);
-
-        switch (device.status.toLowerCase()) {
-          case 'in maintenance':
-          case 'pending':
-          case 'received':
-            inMaintenance.add(device);
-            break;
-          case 'fixed':
-            fixed.add(device);
-            break;
-          case 'delivered':
-          case 'derived':
-            delivered.add(device);
-            break;
-          default:
-            debugPrint(
-                '⚠️ Unknown status: ${device.status} for device ${device.id}');
-            inMaintenance.add(device);
-            break;
-        }
-      }
-
-      _sortGroupedLists(fixed: fixed, delivered: delivered);
-
-      debugPrint('✅ Stream mapped: '
-          '${inMaintenance.length} in maintenance, '
-          '${fixed.length} fixed, '
-          '${delivered.length} delivered');
-
-      return GroupedMaintenanceDevices(
-        inMaintenance: inMaintenance,
-        fixed: fixed,
-        delivered: delivered,
-      );
-    });
+    final snapshot = await query.get();
+    return _toDeviceTabPage(snapshot);
   }
 
   /// Fetches a device's sensitive fields (pin, patternLock, notesHidden),

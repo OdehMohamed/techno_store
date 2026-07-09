@@ -338,5 +338,10 @@
   "Update Required": "التحديث مطلوب",
   "A new version of this app is required to continue. Please update to the latest version to keep using the app.": "يتطلب الاستمرار تحديث التطبيق إلى الإصدار الأحدث. يرجى التحديث لمتابعة استخدام التطبيق.",
   "Update Now": "التحديث الآن",
-  "Please check back later for the update.": "يرجى المحاولة لاحقًا للحصول على التحديث."
+  "Please check back later for the update.": "يرجى المحاولة لاحقًا للحصول على التحديث.",
+  "Search by name, phone, model, or IMEI": "بحث بالاسم أو الهاتف أو الموديل أو IMEI",
+  "Employee": "الموظف",
+  "Date Range": "الفترة الزمنية",
+  "Clear": "مسح",
+  "Load more": "تحميل المزيد"
 }

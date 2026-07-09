@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:techno_store/core/model/device_tab_page.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/route/app_routes.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
@@ -11,6 +15,7 @@ import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
+import 'package:techno_store/features/maintenance_list/services/maintenance_list_services.dart';
 import 'package:techno_store/features/maintenance_list/view/widgets/device_card.dart';
 import 'package:techno_store/features/maintenance_list/view/widgets/device_details_sheet.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/image_section_widget.dart';
@@ -28,23 +33,86 @@ class InnerMaintenanceList extends StatefulWidget {
 class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+
+  // Search/filter state — see
+  // docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md. At most one of
+  // _selectedBrand/_selectedEmployee/_selectedDateRange is set at a time;
+  // selecting one clears the others (status + at most one more filter).
+  String? _selectedBrand;
+  String? _selectedEmployee;
+  DateTimeRange? _selectedDateRange;
+
+  // Populated from HomeState once available (see build()).
+  String? _uid;
+
+  static const List<String> _tabStatuses = [
+    DeviceStatus.inMaintenance,
+    DeviceStatus.fixed,
+    DeviceStatus.delivered,
+  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Rebuilds just to keep the search field's clear button in sync and to
+    // propagate the search text down to each _MaintenanceTabPage — no
+    // Firestore read is triggered by this, filtering happens client-side on
+    // whatever page is already loaded (see _MaintenanceTabPage).
+    _searchController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onBrandSelected(String? brand) {
+    setState(() {
+      _selectedBrand = brand;
+      _selectedEmployee = null;
+      _selectedDateRange = null;
+    });
+  }
+
+  void _onEmployeeSelected(String? employee) {
+    setState(() {
+      _selectedEmployee = employee;
+      _selectedBrand = null;
+      _selectedDateRange = null;
+    });
+  }
+
+  Future<void> _onPickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 5),
+      lastDate: now,
+      initialDateRange: _selectedDateRange,
+    );
+    if (picked == null) return;
+    setState(() {
+      _selectedDateRange = picked;
+      _selectedBrand = null;
+      _selectedEmployee = null;
+    });
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _selectedBrand = null;
+      _selectedEmployee = null;
+      _selectedDateRange = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, homeState) {
@@ -52,6 +120,9 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           return const Center(child: CircularProgressIndicator.adaptive());
         } else if (homeState is HomeLoaded) {
           final isEmployee = UserRole.isStaff(homeState.userData.type);
+          _uid = homeState.userData.uid;
+          final services =
+              context.read<MaintenanceListCubit>().maintenanceListServices;
 
           return Scaffold(
             backgroundColor: Colors.grey[50],
@@ -68,42 +139,34 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
               children: [
                 // Modern Tab Bar
                 _buildTabBar(context),
-                // Content
+                if (isEmployee) _buildSearchAndFilterBar(context),
+                // Content — TabBarView keeps swipe navigation; each tab owns
+                // its own bounded Firestore query and defers starting it
+                // until it first becomes the active tab (see
+                // _MaintenanceTabPage), so switching status never preloads
+                // the other two tabs eagerly.
                 Expanded(
-                  child:
-                      BlocBuilder<MaintenanceListCubit, MaintenanceListState>(
-                    builder: (context, state) {
-                      if (state is MaintenanceListLoading) {
-                        return const LoadingStateWidget();
-                      } else if (state is MaintenanceListLoaded) {
-                        return TabBarView(
-                          controller: _tabController,
-                          children: [
-                            _buildDevicesList(
-                              state.groupedDevices.inMaintenance,
-                              'In Maintenance',
-                              isEmployee,
-                              width,
-                            ),
-                            _buildDevicesList(
-                              state.groupedDevices.fixed,
-                              'Fixed',
-                              isEmployee,
-                              width,
-                            ),
-                            _buildDevicesList(
-                              state.groupedDevices.delivered,
-                              'Delivered',
-                              isEmployee,
-                              width,
-                            ),
-                          ],
-                        );
-                      } else if (state is MaintenanceListError) {
-                        return ErrorStateWidget(message: state.error);
-                      }
-                      return EmptyStateWidget(getEmptyIcon: _getEmptyIcon);
-                    },
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      for (var i = 0; i < _tabStatuses.length; i++)
+                        _MaintenanceTabPage(
+                          key: ValueKey(_tabStatuses[i]),
+                          status: _tabStatuses[i],
+                          tabIndex: i,
+                          tabController: _tabController,
+                          uid: isEmployee ? null : _uid,
+                          isEmployee: isEmployee,
+                          brand: _selectedBrand,
+                          maintenanceEmployee: _selectedEmployee,
+                          receivedFrom: _selectedDateRange?.start,
+                          receivedTo: _selectedDateRange?.end,
+                          searchText: _searchController.text,
+                          width: width,
+                          services: services,
+                          buildDeviceGrid: _buildDevicesList,
+                        ),
+                    ],
                   ),
                 ),
               ],
@@ -113,6 +176,133 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           return Center(child: Text('error_occurred'.tr()));
         }
       },
+    );
+  }
+
+  /// Search box (client-side substring match on the currently loaded tab)
+  /// plus mutually-exclusive structured filter controls (brand, employee,
+  /// date range — status/tab is already the base filter). Staff only; see
+  /// docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md.
+  Widget _buildSearchAndFilterBar(BuildContext context) {
+    final hasActiveFilter = _selectedBrand != null ||
+        _selectedEmployee != null ||
+        _selectedDateRange != null;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search by name, phone, model, or IMEI'.tr(),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: _searchController.clear,
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip(
+                  label: _selectedBrand ?? 'Brand'.tr(),
+                  selected: _selectedBrand != null,
+                  onTap: _showBrandPicker,
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  label: _selectedEmployee ?? 'Employee'.tr(),
+                  selected: _selectedEmployee != null,
+                  onTap: _showEmployeePicker,
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  label: _selectedDateRange == null
+                      ? 'Date Range'.tr()
+                      : '${_formatDate(_selectedDateRange!.start)} - ${_formatDate(_selectedDateRange!.end)}',
+                  selected: _selectedDateRange != null,
+                  onTap: _onPickDateRange,
+                ),
+                if (hasActiveFilter) ...[
+                  const SizedBox(width: 8),
+                  ActionChip(
+                    label: Text('Clear'.tr()),
+                    avatar: const Icon(Icons.close, size: 16),
+                    onPressed: _clearFilters,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      selectedColor: AppColors.primary.withAlpha(40),
+    );
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  void _showBrandPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => ListView(
+        shrinkWrap: true,
+        children: AppConstants.deviceBrandList
+            .map((brand) => ListTile(
+                  title: Text(brand),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _onBrandSelected(brand);
+                  },
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  void _showEmployeePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => ListView(
+        shrinkWrap: true,
+        children: AppConstants.maintenanceDialogEmployeeList
+            .map((employee) => ListTile(
+                  title: Text(employee),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _onEmployeeSelected(employee);
+                  },
+                ))
+            .toList(),
+      ),
     );
   }
 
@@ -531,6 +721,227 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
       default:
         return Icons.devices_other;
     }
+  }
+}
+
+/// One status tab's content. Owns its own bounded, live Firestore query
+/// (status + at most one structured filter, top-N + Load More — see
+/// docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md) instead of relying
+/// on a cubit-held per-tab cache. `AutomaticKeepAliveClientMixin` keeps this
+/// widget (and its already-loaded devices) alive across swipes so revisiting
+/// a tab is instant, while `_startListening` defers the first Firestore read
+/// until this tab's index actually becomes the active one — so building all
+/// three tabs up front (required by TabBarView) never means eagerly
+/// subscribing to all three queries.
+class _MaintenanceTabPage extends StatefulWidget {
+  final String status;
+  final int tabIndex;
+  final TabController tabController;
+  final String? uid;
+  final bool isEmployee;
+  final String? brand;
+  final String? maintenanceEmployee;
+  final DateTime? receivedFrom;
+  final DateTime? receivedTo;
+  final String searchText;
+  final double width;
+  final MaintenanceListServices services;
+  final Widget Function(
+    List<MaintenanceDeviceModel> devices,
+    String status,
+    bool isEmployee,
+    double width,
+  ) buildDeviceGrid;
+
+  const _MaintenanceTabPage({
+    required super.key,
+    required this.status,
+    required this.tabIndex,
+    required this.tabController,
+    required this.uid,
+    required this.isEmployee,
+    required this.brand,
+    required this.maintenanceEmployee,
+    required this.receivedFrom,
+    required this.receivedTo,
+    required this.searchText,
+    required this.width,
+    required this.services,
+    required this.buildDeviceGrid,
+  });
+
+  @override
+  State<_MaintenanceTabPage> createState() => _MaintenanceTabPageState();
+}
+
+class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
+    with AutomaticKeepAliveClientMixin {
+  static const int _pageSize = 50;
+
+  StreamSubscription<DeviceTabPage>? _subscription;
+  List<MaintenanceDeviceModel> _devices = [];
+  QueryDocumentSnapshot<Map<String, dynamic>>? _lastDocument;
+  bool _hasMore = false;
+  bool _isLoadingMore = false;
+  bool _hasStarted = false;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.tabController.index == widget.tabIndex) {
+      _startListening();
+    } else {
+      widget.tabController.addListener(_onTabControllerChanged);
+    }
+  }
+
+  void _onTabControllerChanged() {
+    if (!_hasStarted && widget.tabController.index == widget.tabIndex) {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    if (_hasStarted) return;
+    _hasStarted = true;
+    widget.tabController.removeListener(_onTabControllerChanged);
+    _subscribe();
+  }
+
+  void _subscribe() {
+    _subscription?.cancel();
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    _subscription = widget.services
+        .streamDevicesForTab(
+          status: widget.status,
+          uid: widget.uid,
+          brand: widget.brand,
+          maintenanceEmployee: widget.maintenanceEmployee,
+          receivedFrom: widget.receivedFrom,
+          receivedTo: widget.receivedTo,
+          limit: _pageSize,
+        )
+        .listen(
+      (page) {
+        if (!mounted) return;
+        setState(() {
+          _devices = page.devices;
+          _lastDocument = page.lastDocument;
+          _hasMore = page.devices.length >= _pageSize;
+          _isLoading = false;
+        });
+      },
+      onError: (error) {
+        if (!mounted) return;
+        setState(() {
+          _error = error.toString();
+          _isLoading = false;
+        });
+      },
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _MaintenanceTabPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_hasStarted) return;
+    final filtersChanged = widget.uid != oldWidget.uid ||
+        widget.brand != oldWidget.brand ||
+        widget.maintenanceEmployee != oldWidget.maintenanceEmployee ||
+        widget.receivedFrom != oldWidget.receivedFrom ||
+        widget.receivedTo != oldWidget.receivedTo;
+    if (filtersChanged) {
+      _subscribe();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore || _lastDocument == null) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final page = await widget.services.fetchMoreDevicesForTab(
+        status: widget.status,
+        startAfter: _lastDocument!,
+        uid: widget.uid,
+        brand: widget.brand,
+        maintenanceEmployee: widget.maintenanceEmployee,
+        receivedFrom: widget.receivedFrom,
+        receivedTo: widget.receivedTo,
+        limit: _pageSize,
+      );
+      if (!mounted) return;
+      setState(() {
+        _devices = [..._devices, ...page.devices];
+        _lastDocument = page.lastDocument ?? _lastDocument;
+        _hasMore = page.devices.length >= _pageSize;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoadingMore = false);
+    }
+  }
+
+  List<MaintenanceDeviceModel> get _visibleDevices {
+    final query = widget.searchText.trim().toLowerCase();
+    if (query.isEmpty) return _devices;
+    return _devices.where((device) {
+      return device.name.toLowerCase().contains(query) ||
+          device.phoneNumber.toLowerCase().contains(query) ||
+          device.model.toLowerCase().contains(query) ||
+          (device.imeiNumber?.toLowerCase().contains(query) ?? false);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    widget.tabController.removeListener(_onTabControllerChanged);
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // required by AutomaticKeepAliveClientMixin
+    if (_isLoading && _devices.isEmpty) {
+      return const LoadingStateWidget();
+    }
+    if (_error != null) {
+      return ErrorStateWidget(message: _error!);
+    }
+    final visibleDevices = _visibleDevices;
+    return Column(
+      children: [
+        Expanded(
+          child: widget.buildDeviceGrid(
+            visibleDevices,
+            widget.status,
+            widget.isEmployee,
+            widget.width,
+          ),
+        ),
+        if (_hasMore)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: _isLoadingMore
+                  ? const CircularProgressIndicator()
+                  : OutlinedButton(
+                      onPressed: _loadMore,
+                      child: Text('Load more'.tr()),
+                    ),
+            ),
+          ),
+      ],
+    );
   }
 }
 
