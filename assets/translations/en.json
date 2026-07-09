@@ -334,5 +334,9 @@
   "Xiaomi": "Xiaomi",
   "Not determined": "Not determined",
   "Device Status When Received": "Device Status When Received",
-  "Hidden Notes": "Hidden Notes"
+  "Hidden Notes": "Hidden Notes",
+  "Update Required": "Update Required",
+  "A new version of this app is required to continue. Please update to the latest version to keep using the app.": "A new version of this app is required to continue. Please update to the latest version to keep using the app.",
+  "Update Now": "Update Now",
+  "Please check back later for the update.": "Please check back later for the update."
 }

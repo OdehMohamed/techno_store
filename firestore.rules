@@ -132,6 +132,19 @@ service cloud.firestore {
       }
     }
 
+    // ---- appConfig/global ----
+    // Global app configuration (today: forced-update version gate; reserved
+    // for maintenance mode / feature flags later — see
+    // docs/ai-workflow/FORCED_UPDATE_IMPLEMENTATION_PLAN.md). Non-sensitive
+    // operational metadata only — readable by anyone, including signed-out
+    // users, since the sign-in screen itself must be forceable. No in-app
+    // admin UI writes it in v1; edited manually via Console/Admin SDK, same
+    // operating model as users/{uid}/meta/isActivated.
+    match /appConfig/global {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Explicit default-deny for everything else (Firestore denies by default
     // anyway; written out for clarity/auditability of this rules file).
     match /{document=**} {

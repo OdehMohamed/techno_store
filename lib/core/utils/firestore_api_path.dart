@@ -23,6 +23,11 @@ class FirestoreApiPath {
   static String userMaintenanceDevices(String userId) =>
       maintenanceDevices(); // سنستخدم query للفلترة حسب userId
 
+  // Global app configuration — a single document, readable by anyone
+  // (including signed-out users), write-denied to clients (Console/Admin
+  // SDK only). See docs/ai-workflow/FORCED_UPDATE_IMPLEMENTATION_PLAN.md.
+  static String appConfig() => 'appConfig/global';
+
   // static String products() => 'products/';
   // static String product(String productId) => 'products/$productId';
 

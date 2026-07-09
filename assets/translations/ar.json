@@ -334,5 +334,9 @@
   "Xiaomi": "شاومي",
   "Not determined": "غير محدد",
   "Device Status When Received": "حالة الجهاز عند الاستلام",
-  "Hidden Notes": "ملاحظات مخفية"
+  "Hidden Notes": "ملاحظات مخفية",
+  "Update Required": "التحديث مطلوب",
+  "A new version of this app is required to continue. Please update to the latest version to keep using the app.": "يتطلب الاستمرار تحديث التطبيق إلى الإصدار الأحدث. يرجى التحديث لمتابعة استخدام التطبيق.",
+  "Update Now": "التحديث الآن",
+  "Please check back later for the update.": "يرجى المحاولة لاحقًا للحصول على التحديث."
 }
