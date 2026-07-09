@@ -63,6 +63,12 @@ Items are grouped by theme, not by priority — prioritization is a product-owne
    Fact: this method is the only place in the app that gates access on `isActivated`, but it has no call site anywhere in the codebase — confirmed present-but-unwired at `HEAD` before the 2026-07-08 signup-regression fix, so this is pre-existing, not something Phase 1's security work broke. During that fix, its semantics were corrected (an absent `users/{uid}/meta/isActivated` document — the normal state for every account, since only a privileged operator via Console/Admin SDK creates it, per `ADR-004` — is now treated as `isActivated: false` rather than throwing) and the underlying stream was made null-safe, but wiring it into the sign-in flow was deliberately left out of that fix's scope: the product owner confirmed the activation feature itself was intentionally postponed before Phase 1 and should be designed/implemented later as its own feature, not folded into a regression fix.
    Needs: decide where in the sign-in flow to invoke `_listenToActivation` (e.g., after `AuthCubit` emits `AuthSuccess`), and confirm the intended UX. Until this is wired up, a newly-registered account is never actually blocked from using the app regardless of its activation status.
 
+11. **Soft-update nudge.** (2026-07-09, `FORCED_UPDATE_IMPLEMENTATION_PLAN.md`) `appConfig/global`'s `version.{android,ios}.latestVersion` fields exist in the schema but nothing reads them — only `minRequiredVersion` (hard block) is implemented. Needs: UI/cubit-state logic for "a newer version exists but isn't required yet" (dismissable, non-blocking), reusing `AppUpdateService`/`AppUpdateCubit`'s existing fetch and comparison plumbing.
+
+12. **Maintenance mode.** (2026-07-09, same document) `appConfig/global` was deliberately designed as a single, growable document specifically so a `maintenance` key could be added later without a schema change or new Firestore rule. Not started — no `maintenance` key is written or read anywhere yet.
+
+13. **Feature flags.** (2026-07-09, same document) Same rationale and same status as item 12 — reserved as a `featureFlags` key on the same document, not started.
+
 ## Consistency / maintainability
 
 6. **Reconcile direct `FirebaseFirestore.instance` usage vs. the `FirestoreServices` abstraction.**

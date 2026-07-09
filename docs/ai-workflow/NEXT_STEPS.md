@@ -4,8 +4,12 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 
 ## Immediate
 
-1. Implement the forced app update mechanism on `feature/forced-app-update`, per the approved implementation plan — commit-by-commit approval, PR, merge to `main`.
-2. Then start the maintenance devices search/filtering feature on its own branch: plan first (Firestore-based v1, structured filters + phone/name/model/IMEI/serial search, explicitly addressing the unbounded-stream cost problem — `BACKLOG.md` item 1g), then implement.
+1. Plan the maintenance devices search/filtering feature (Firestore-based v1: structured filters + phone/name/model/IMEI/serial search, explicitly addressing `BACKLOG.md` item 1g's unbounded-stream cost problem), get it approved, then implement on its own branch per `CONTRIBUTING.md`.
+
+## Before any release that includes the forced-update feature (not urgent today, but must not be forgotten)
+
+1. Create the real `appConfig/global` document in the Firebase Console — nothing in the app does this automatically. Needs, at minimum: `version.android.minRequiredVersion`/`latestVersion`/`packageId`, `version.ios.minRequiredVersion`/`latestVersion`/`appStoreId` (leave `appStoreId` null until the App Store listing exists — the app already degrades gracefully for that case). Set `minRequiredVersion` at or below whatever version is being shipped, or every user is immediately blocked on launch.
+2. Confirm the deployed Firestore rules in production already include `appConfig/global` (they do, as of 2026-07-09 — this note is a reminder to re-check if rules are ever redeployed from an older branch/tag).
 
 ## Before any public production release (not urgent today, but don't lose track)
 
@@ -18,4 +22,5 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 4. `BACKLOG.md` item 0c — no periodic cleanup exists yet for a Storage image that's uploaded but never referenced in its device document (only a theoretical risk so far; not observed in practice).
 5. `BACKLOG.md` item 0d — verify/tighten customer `phoneNumber` updates (currently only `create` requires the Auth-verified phone; `update` doesn't).
 6. `BACKLOG.md` item 10 — wire up account-activation enforcement (`AuthCubit._listenToActivation`) as its own feature, whenever the product owner wants to pick it up.
-7. Pre-existing items from the original audit not yet touched: the dormant `users/{uid}/devices` subcollection, `status` string vocabulary inconsistency, `docs/features/*.md` still doesn't exist.
+7. `BACKLOG.md` items 11/12/13 — soft update, maintenance mode, feature flags: schema-ready in `appConfig/global` since the 2026-07-09 forced-update work, none implemented yet.
+8. Pre-existing items from the original audit not yet touched: the dormant `users/{uid}/devices` subcollection, `status` string vocabulary inconsistency, `docs/features/*.md` still doesn't exist.
