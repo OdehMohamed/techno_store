@@ -4,17 +4,16 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 
 ## Immediate
 
-Nothing in flight. Maintenance devices search/filtering (v1) shipped 2026-07-09 (PR #3, squash-merged as `1a3d350` — see `DECISIONS_LOG.md`). Next task is a product-owner decision — see `BACKLOG.md` for candidates.
+**Home page UI/UX for staff users — planning/audit stage.** Hide the top banner and the Contact Us section for staff only; customers keep the current experience. Per the documented workflow: audit first, propose a plan (plus any additional polish worth doing, not implemented without approval), then branch once approved.
 
-## Before any release that includes the forced-update feature (not urgent today, but must not be forgotten)
+## Production `appConfig/global` — done, 2026-07-09
 
-1. Create the real `appConfig/global` document in the Firebase Console — nothing in the app does this automatically. Needs, at minimum: `version.android.minRequiredVersion`/`latestVersion`/`packageId`, `version.ios.minRequiredVersion`/`latestVersion`/`appStoreId` (leave `appStoreId` null until the App Store listing exists — the app already degrades gracefully for that case). Set `minRequiredVersion` at or below whatever version is being shipped, or every user is immediately blocked on launch.
-2. Confirm the deployed Firestore rules in production already include `appConfig/global` (they do, as of 2026-07-09 — this note is a reminder to re-check if rules are ever redeployed from an older branch/tag).
+Recreated (had been fully removed after the forced-update feature's pre-PR test cleanup — see `DECISIONS_LOG.md`) with safe, non-blocking values: `minRequiredVersion` "1.0.0" on both platforms (matches the currently shipped version, so no user is blocked), correct Android `packageId`, `appStoreId` null (no iOS listing yet). Verified live via an unauthenticated REST read. Firestore rules already permit public read/no client write for this document, confirmed unchanged since Phase 1.
 
 ## Before any public production release (not urgent today, but don't lose track)
 
-1. `BACKLOG.md` item 0a — direct/bypass-the-UI authorization testing against the deployed Firestore/Storage rules. Blocking for public release specifically, not for continued internal/closed-testing use.
-2. Store metadata finalization (Privacy Policy, Data Safety, Store Listing, screenshots) — deferred during release-infrastructure setup, unrelated to Phase 1 but on the same radar.
+1. Store metadata finalization (Privacy Policy, Data Safety, Store Listing, screenshots) — deferred during release-infrastructure setup, unrelated to Phase 1 but on the same radar.
+2. `BACKLOG.md` item 0a — direct/bypass-the-UI authorization testing. No longer blocking as of 2026-07-09 (product owner accepted the residual risk — see `BACKLOG.md`), but still open and worth doing eventually if there's ever a moment to spare.
 
 ## Low-priority cleanup, whenever convenient
 

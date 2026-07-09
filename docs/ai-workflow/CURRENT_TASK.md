@@ -4,7 +4,7 @@ Status: reflects the state as of 2026-07-09. Overwrite this file's content at th
 
 ## Active task
 
-**None — awaiting product owner direction on what to pick up next.** See `BACKLOG.md` for tracked candidate work (item 0a is blocking for public release; others are non-blocking or deferred).
+**Home page UI/UX for staff users — planning/audit stage, no code yet.** For staff users only, hide the top banner and the Contact Us section on the Home page; customers keep the current experience unchanged. Also auditing the current Home page for any other UI/UX polish genuinely worth doing, to propose (not implement) alongside the required change. Per the documented workflow: audit → plan → approval → feature branch → commit-by-commit implementation.
 
 ## Status
 
@@ -13,13 +13,11 @@ Status: reflects the state as of 2026-07-09. Overwrite this file's content at th
 - [x] `docs/ai-workflow/` staleness review completed and applied.
 - [x] **Forced app update mechanism shipped.** PR #2 squash-merged (`d843ddc`) to `main`. See `DECISIONS_LOG.md` (2026-07-09 entry) for the full design/build/test record. `feature/forced-app-update` deleted locally and remotely.
 - [x] **Maintenance devices search/filtering (v1) shipped.** PR #3 squash-merged (`1a3d350`) to `main`. Firestore-native per-tab bounded queries, structured filters (brand/employee/date-range), and client-side search (name/phone/model/IMEI), with swipe navigation preserved. See `DECISIONS_LOG.md` (2026-07-09 entry) for the full design/build/test record. `firestore.indexes.json`'s 4 composite indexes deployed to `technostore-v2` and confirmed `READY`. `feature/maintenance-devices-search-filter` deleted locally and remotely.
+- [x] **`appConfig/global` recreated in production (2026-07-09)**, with safe non-blocking values, verified live via unauthenticated REST read. See `DECISIONS_LOG.md`.
+- [x] **`BACKLOG.md` item 0a (direct/bypass-the-UI authorization testing) no longer blocks release** — product owner accepted it as a residual risk on 2026-07-09, given the deployed rules are unchanged since Phase 1 and app-level validation has been extensive since. See `BACKLOG.md`/`DECISIONS_LOG.md`.
 
 ## What is NOT yet decided
 
-- Nothing currently in flight. Next task selection is a product-owner decision — see `BACKLOG.md`/`NEXT_STEPS.md`.
+- The Home page audit/plan itself — which specific additional polish items (beyond the required staff-banner/Contact-Us hide) are worth proposing, still to be written and approved.
 
-## Important reminder — not yet done, must happen before any release containing the forced-update feature
-
-`appConfig/global` does not exist in production. Nothing in the app creates it automatically, by design. Before shipping any build that includes the forced-update code to real users, a real `appConfig/global` document must be deliberately created in the Firebase Console with production-appropriate values (`minRequiredVersion` at or below the version being shipped, correct `packageId`, and the real iOS `appStoreId` once that listing exists) — see `NEXT_STEPS.md`.
-
-Ongoing, tracked-but-not-active follow-ups remain in `BACKLOG.md` (0a blocking public release, 0b/0c/0d/10 non-blocking).
+Ongoing, tracked-but-not-active follow-ups remain in `BACKLOG.md` (0a now deferred/accepted risk rather than blocking; 0b/0c/0d/10/14 non-blocking).

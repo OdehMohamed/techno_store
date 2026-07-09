@@ -376,3 +376,17 @@ Two findings surfaced during the final cleanup's dead-code audit, both handled a
 **Testing (product owner, manual, Android emulator, staff account):** tab loading (lazy, one query per tab on first visit), swipe navigation, revisit caching, brand/employee/date-range filters (mutually exclusive, correct results), search by name/phone/model/IMEI (continues working after filters applied/cleared), Load More pagination, device actions (Edit/Fixed/Deliver/Delete across all three tabs), and sign-out/sign-in after the cleanup commit (no stale subscriptions, no permission errors). One `[cloud_firestore/failed-precondition]` index error was hit before the indexes were deployed (expected) and confirmed resolved after deployment. No regressions found.
 
 **Merged:** PR #3, squash-merged as `1a3d350`. Feature branch deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+---
+
+### 2026-07-09 — `BACKLOG.md` item 0a deferred; `appConfig/global` recreated in production
+
+**Decision:** Before starting the next feature, product owner reviewed `BACKLOG.md` item 0a (direct/bypass-the-UI authorization testing against the deployed Firestore/Storage rules — the one item still marked blocking for public release) and decided not to perform it now.
+
+**Decided by:** Product owner. Rationale given: comfortable with the deployed roles/rules and the app-level validation already performed to date, and does not want it to gate the upcoming release.
+
+**Verification performed before treating this as safe to defer:** re-read the currently deployed `firestore.rules` directly (not from memory/prior notes) to confirm the specific guarantees item 0a is about are unchanged since Phase 1 — `type` immutability on `users/{userId}` `update`, and `private/sensitive` subdocument staff-only read/write. Confirmed unchanged; the only rule changes since Phase 1 (the `users/{uid}` `create`-time phone-verification tightening, and the `appConfig/global` public-read/no-write rule) are narrow and additive, neither touching these guarantees.
+
+**Outcome:** `BACKLOG.md` item 0a re-labeled from "BLOCKING FOR PUBLIC RELEASE" to "ACCEPTED RISK / DEFERRED" — kept open (not closed as resolved, since the testing itself never happened) so it can still be picked up later if there's ever a moment to spare. `NEXT_STEPS.md`/`CURRENT_TASK.md` updated to stop listing it as a release blocker.
+
+**Separately, same session:** product owner noted `appConfig/global` appeared to be missing from production. Verified via Admin SDK read: the document did not exist — consistent with the forced-update feature's PR-prep cleanup, which deliberately removed the test document entirely rather than leaving it in a "previous test values" state (see the 2026-07-09 forced-update entry above). Recreated it with safe, non-blocking production values: `version.android`/`version.ios` `minRequiredVersion` "1.0.0" (matches the currently shipped app version, so no real user is blocked), Android `packageId` "com.mohamedodeh.technostore", iOS `appStoreId` null (no App Store listing exists yet — the app already degrades gracefully for that case, per the original design). Independently verified via an unauthenticated REST read against the live document (not just the write call's own success response), confirming it matches exactly what was written and is publicly readable as the rules intend.
