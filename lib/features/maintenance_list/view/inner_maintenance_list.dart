@@ -127,11 +127,16 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           return Scaffold(
             backgroundColor: Colors.grey[50],
             floatingActionButton: isEmployee
-                ? Transform.translate(
-                    offset: Offset(
-                      0,
-                      width < 450 ? 25 : 5,
-                    ), // Shift up on small screens
+                ? Padding(
+                    // Respects the platform safe area (gesture bar / home
+                    // indicator inset) instead of a fixed offset, so the FAB
+                    // never sits flush against the bottom edge on devices
+                    // with a larger inset — plus a comfortable margin on
+                    // top, scaled for smaller screens.
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).padding.bottom +
+                          (width < 450 ? 16 : 24),
+                    ),
                     child: _buildFAB(context),
                   )
                 : null,
@@ -356,8 +361,12 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     List<MaintenanceDeviceModel> devices,
     String status,
     bool isEmployee,
-    double width,
-  ) {
+    double width, {
+    required bool hasMore,
+    required bool isLoadingMore,
+    required VoidCallback onLoadMore,
+    required int generation,
+  }) {
     if (devices.isEmpty) {
       return EmptyStateWidget(getEmptyIcon: (_) => _getEmptyIcon(status));
     }
@@ -365,43 +374,74 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     final isWideScreen = width >= 900;
     final crossAxisCount = isWideScreen ? 2 : 1;
 
+    // A single CustomScrollView (grid + a trailing Load More sliver) rather
+    // than a GridView with the button pinned outside it — so Load More
+    // scrolls as the natural last item of the list instead of staying fixed
+    // at the bottom of the viewport. Keyed on `generation` (bumped only on
+    // a genuine new query — tab/filter change — not on Load More's append)
+    // rather than devices.length, so appending more devices updates this
+    // same scrollable in place instead of remounting it and resetting
+    // scroll position back to the top.
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
-      child: GridView.builder(
-        key: ValueKey('${status}_${devices.length}_$crossAxisCount'),
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          mainAxisExtent: isWideScreen ? 215 : 200,
-        ),
-        itemCount: devices.length,
-        itemBuilder: (context, index) {
-          return TweenAnimationBuilder<double>(
-            duration: Duration(milliseconds: 250 + (index * 40)),
-            tween: Tween(begin: 0, end: 1),
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: value,
-                child: Opacity(
-                  opacity: value,
-                  child: child,
-                ),
-              );
-            },
-            child: DeviceCard(
-              device: devices[index],
-              status: status,
-              isEmployee: isEmployee,
-              onTap: () => _showDeviceDetails(devices[index], isEmployee),
-              getStatusColor: _getStatusColor,
-              getStatusIcon: _getStatusIcon,
-              buildSlidableActions: _buildSlidableActions,
-              heroTagPrefix: widget.heroTagPrefix,
+      child: CustomScrollView(
+        key: ValueKey('${status}_${generation}_$crossAxisCount'),
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                mainAxisExtent: isWideScreen ? 200 : 192,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration(milliseconds: 250 + (index * 40)),
+                    tween: Tween(begin: 0, end: 1),
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Opacity(
+                          opacity: value,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: DeviceCard(
+                      device: devices[index],
+                      status: status,
+                      isEmployee: isEmployee,
+                      onTap: () => _showDeviceDetails(devices[index], isEmployee),
+                      getStatusColor: _getStatusColor,
+                      getStatusIcon: _getStatusIcon,
+                      buildSlidableActions: _buildSlidableActions,
+                      heroTagPrefix: widget.heroTagPrefix,
+                    ),
+                  );
+                },
+                childCount: devices.length,
+              ),
             ),
-          );
-        },
+          ),
+          SliverToBoxAdapter(
+            child: hasMore
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                    child: Center(
+                      child: isLoadingMore
+                          ? const CircularProgressIndicator()
+                          : OutlinedButton(
+                              onPressed: onLoadMore,
+                              child: Text('Load more'.tr()),
+                            ),
+                    ),
+                  )
+                : const SizedBox(height: 24),
+          ),
+        ],
       ),
     );
   }
@@ -750,8 +790,12 @@ class _MaintenanceTabPage extends StatefulWidget {
     List<MaintenanceDeviceModel> devices,
     String status,
     bool isEmployee,
-    double width,
-  ) buildDeviceGrid;
+    double width, {
+    required bool hasMore,
+    required bool isLoadingMore,
+    required VoidCallback onLoadMore,
+    required int generation,
+  }) buildDeviceGrid;
 
   const _MaintenanceTabPage({
     required super.key,
@@ -787,6 +831,13 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
   bool _isLoading = true;
   String? _error;
 
+  // Bumped only when a genuinely new query starts (_subscribe) — never on
+  // _loadMore's append — so buildDeviceGrid's list key changes (and resets
+  // scroll position) on a real filter/tab change, but Load More just
+  // appends to the existing scrollable in place instead of remounting it
+  // and jumping the user back to the top of the list.
+  int _generation = 0;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -818,6 +869,7 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
     setState(() {
       _isLoading = true;
       _error = null;
+      _generation++;
     });
     _subscription = widget.services
         .streamDevicesForTab(
@@ -918,29 +970,17 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
       return ErrorStateWidget(message: _error!);
     }
     final visibleDevices = _visibleDevices;
-    return Column(
-      children: [
-        Expanded(
-          child: widget.buildDeviceGrid(
-            visibleDevices,
-            widget.status,
-            widget.isEmployee,
-            widget.width,
-          ),
-        ),
-        if (_hasMore)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Center(
-              child: _isLoadingMore
-                  ? const CircularProgressIndicator()
-                  : OutlinedButton(
-                      onPressed: _loadMore,
-                      child: Text('Load more'.tr()),
-                    ),
-            ),
-          ),
-      ],
+    // Load More is rendered inside buildDeviceGrid itself now, as the last
+    // scrollable item — no separate fixed-position button sibling needed.
+    return widget.buildDeviceGrid(
+      visibleDevices,
+      widget.status,
+      widget.isEmployee,
+      widget.width,
+      hasMore: _hasMore,
+      isLoadingMore: _isLoadingMore,
+      onLoadMore: _loadMore,
+      generation: _generation,
     );
   }
 }
