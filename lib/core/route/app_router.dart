@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
+import 'package:techno_store/features/app_update/cubit/app_update_cubit.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/main_screen.dart';
@@ -33,6 +34,9 @@ class AppRouter {
               ),
               BlocProvider(
                 create: (context) => MaintenanceListCubit(),
+              ),
+              BlocProvider(
+                create: (context) => AppUpdateCubit(),
               ),
             ],
             child: const MainScreen(),
