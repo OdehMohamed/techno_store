@@ -63,3 +63,8 @@ scripts/migration/node_modules/
 # Regenerable in all cases; never source. The top-level /build/ rule above
 # only matches the repo-root build/ directory, not this nested one.
 android/build/
+
+# Kotlin compiler daemon session-tracking directory. Regenerable tooling
+# output, same class of gap as android/build/ above — found untracked and
+# unignored during the 2026-07-09 analyzer-noise investigation.
+android/.kotlin/

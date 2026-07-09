@@ -9,6 +9,17 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  # Without this, a native build tool (Xcode/SPM, observed 2026-07-09)
+  # checking out a full companion Dart monorepo into
+  # build/ios/SourcePackages/checkouts/ gets treated as extra analyzable
+  # packages — comparing its copy of a type against the real pub-cache
+  # copy of the same package then reports them as incompatible, flooding
+  # `flutter analyze` with thousands of false positives. build/ is
+  # regenerated output, never source, and should never be analyzed.
+  exclude:
+    - build/**
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
