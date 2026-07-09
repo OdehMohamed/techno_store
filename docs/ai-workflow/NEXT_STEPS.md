@@ -4,7 +4,7 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 
 ## Immediate
 
-**Home page UI/UX for staff users — planning/audit stage.** Hide the top banner and the Contact Us section for staff only; customers keep the current experience. Per the documented workflow: audit first, propose a plan (plus any additional polish worth doing, not implemented without approval), then branch once approved.
+Nothing in flight. Staff Home page UI/UX polish shipped 2026-07-09 (PR #4, squash-merged as `a951dfb` — see `DECISIONS_LOG.md`). Next task is a product-owner decision — see `BACKLOG.md` for candidates.
 
 ## Production `appConfig/global` — done, 2026-07-09
 
@@ -23,4 +23,6 @@ Recreated (had been fully removed after the forced-update feature's pre-PR test 
 6. `BACKLOG.md` item 10 — wire up account-activation enforcement (`AuthCubit._listenToActivation`) as its own feature, whenever the product owner wants to pick it up.
 7. `BACKLOG.md` items 11/12/13 — soft update, maintenance mode, feature flags: schema-ready in `appConfig/global` since the 2026-07-09 forced-update work, none implemented yet.
 8. `BACKLOG.md` item 14 (new, 2026-07-09) — `MaintenanceListCubit`'s action methods swallow service-layer exceptions instead of rethrowing, so the dialogs' failure handling never triggers; found during the search/filter feature's cleanup audit, deliberately left unfixed to keep that PR scoped.
-9. Pre-existing items from the original audit not yet touched: `status` string vocabulary inconsistency (`BACKLOG.md` item 3), `docs/features/*.md` still doesn't exist. (The dormant `users/{uid}/devices` subcollection item is resolved — see `BACKLOG.md` item 4.)
+9. `BACKLOG.md` item 15 (new, 2026-07-09) — Home page carousel uses hardcoded third-party image URLs; needs real store assets whenever there's content to put there.
+10. `BACKLOG.md` item 7's Home-page bullet (new, 2026-07-09) — the single-tab `TabBar`/`TabBarView` around the fully commented-out Store tab is dead chrome; a product/roadmap call on whether Store is coming back, not assumed here.
+11. Pre-existing items from the original audit not yet touched: `status` string vocabulary inconsistency (`BACKLOG.md` item 3), `docs/features/*.md` still doesn't exist. (The dormant `users/{uid}/devices` subcollection item is resolved — see `BACKLOG.md` item 4.)
