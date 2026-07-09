@@ -68,3 +68,11 @@ android/build/
 # output, same class of gap as android/build/ above — found untracked and
 # unignored during the 2026-07-09 analyzer-noise investigation.
 android/.kotlin/
+
+# Root-level node_modules/ (plus its package.json/package-lock.json) was
+# tracked in git since 2025-06-10, before this project's sensitive-files
+# discipline existed — 7,689 files, orphaned (not referenced by any
+# current script, doc, or the actual Node tooling in scripts/migration/
+# or functions/, each of which has its own independent package.json).
+# Removed from tracking 2026-07-09; this rule prevents it recurring.
+/node_modules/
