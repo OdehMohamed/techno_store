@@ -406,3 +406,21 @@ Two findings surfaced during the final cleanup's dead-code audit, both handled a
 **Testing (product owner + on-device verification during implementation, Android emulator, staff account):** staff view confirmed with no banner/footer via screenshot; customer/guest path provably unchanged (the diff only wraps existing content in a conditional); FAB clearance, card density, and Load More's inline behavior and scroll-position preservation all visually confirmed; `flutter analyze` identical to `main` baseline (zero new issues). No regressions found.
 
 **Merged:** PR #4, squash-merged as `a951dfb`. Feature branch deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+---
+
+### 2026-07-09 — v1.1.0 tagged and released (internal/closed testing)
+
+**Decision:** Prepare and publish the next release per `CONTRIBUTING.md` §11, covering the three features shipped since v1.0.0 (forced app update, maintenance devices search/filtering v1, staff Home page UI/UX polish) plus the six auth/storage fixes from the post-v1.0.0 investigation.
+
+**Decided by:** Product owner, confirmed this release targets internal/closed testing (Play Closed Testing / TestFlight), not the public store listing — consistent with the same-day `BACKLOG.md` item 0a deferral and the still-deferred store-metadata-finalization gap.
+
+**Pre-release verification (per §11.1–11.3):** confirmed `main` stable (clean tree, only `main` branch existed, `flutter analyze` stable at the confirmed 48-issue pre-existing baseline, with zero new issues introduced). The sensitive-files check against release scope surfaced two pre-existing, unrelated hygiene issues — each fixed as its own small PR before the release commit, per product owner's direction that repository housekeeping doesn't warrant its own decision entry (referenced here only as release-prep context):
+- A native build tool (Xcode/SPM) had checked out a full companion Dart monorepo into `build/ios/SourcePackages/checkouts/`, which `flutter analyze` was silently scanning — inflating the reported issue count from a true baseline of 48 to 5375 for the entire session. Fixed by excluding `build/` in `analysis_options.yaml` (PR #5).
+- A root-level `node_modules/` directory (7,689 files, 116 MB) had been tracked in git since 2025-06-10, predating this project's sensitive-files discipline — orphaned, unreferenced by any current tooling. Removed from tracking along with its unused `package.json`/`package-lock.json` (PR #6).
+
+**Version bump:** `1.0.0` → `1.1.0` (minor — three new features, no breaking changes). Explicitly **not Shorebird-patchable**: `package_info_plus` (added for the forced-update feature) changes native plugin registration, so this ships as a full new store build rather than a patch.
+
+**Outcome:** `CHANGELOG.md` updated with a `[1.1.0]` entry (Added/Changed/Fixed/Internal/Known follow-ups, matching the `[1.0.0]` entry's structure). `pubspec.yaml` bumped to `1.1.0+2`. Committed directly to `main` as `163e746` (`build(release): bump version to 1.1.0+2, update CHANGELOG`), matching the same direct-to-main precedent set by the `v1.0.0` CHANGELOG commit. Annotated tag `v1.1.0` created and pushed; GitHub Release published at that tag with technical release notes (by category) plus separate store-ready "what's new" notes (plain language, for the Play Console/TestFlight upload) — the store notes are not part of the GitHub Release body, matching how `v1.0.0` was handled.
+
+**Explicitly out of scope, per `CONTRIBUTING.md` §11's own boundary:** Shorebird release commands and the actual store upload are the product owner's to run manually.

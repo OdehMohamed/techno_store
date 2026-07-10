@@ -4,7 +4,7 @@ Short-lived by design — reflects proposed next actions as of 2026-07-09. Overw
 
 ## Immediate
 
-Nothing in flight. Staff Home page UI/UX polish shipped 2026-07-09 (PR #4, squash-merged as `a951dfb` — see `DECISIONS_LOG.md`). Next task is a product-owner decision — see `BACKLOG.md` for candidates.
+Nothing in flight. `v1.1.0` tagged and released 2026-07-09 (internal/closed testing — see `DECISIONS_LOG.md`). Remaining manual step, not part of this documented workflow: run the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary. Next task after that is a product-owner decision — see `BACKLOG.md` for candidates.
 
 ## Production `appConfig/global` — done, 2026-07-09
 
