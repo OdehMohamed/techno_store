@@ -1,8 +1,8 @@
 # ADR-001: Sensitive Maintenance Data Separation
 
-**Status:** Proposed — awaiting product-owner decision. Not implemented.
+**Status:** Approved and implemented (Option A — subcollection under the device). Shipped as part of Phase 1B, 2026-07-03. See `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` and the 2026-07-03 entries in `docs/ai-workflow/DECISIONS_LOG.md` for the confirmed outcome.
 **Date:** 2026-07-03
-**Related:** `SECURITY_AUDIT.md` §6, `PERMISSIONS_MATRIX.md` (maintenanceDevices — sensitive fields)
+**Related:** `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §6, `docs/ai-workflow/PERMISSIONS_MATRIX.md` (maintenanceDevices — sensitive fields)
 
 ## Context
 

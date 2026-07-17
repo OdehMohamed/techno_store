@@ -1,8 +1,8 @@
 # ADR-002: User Role Immutability and Management
 
-**Status:** Proposed — awaiting product-owner decision. Not implemented.
+**Status:** Phase 1 (Option 1 — rules-enforced immutability) approved and implemented as part of Phase 1, 2026-07-03; see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` and `docs/ai-workflow/DECISIONS_LOG.md` for the confirmed outcome. **Phase 2 (Option 2 — Custom Claims) remains proposed, not implemented**, with no current schedule — see `docs/ai-workflow/BACKLOG.md` item 1h for the related, also-deferred admin user-management feature it would naturally sequence alongside.
 **Date:** 2026-07-03
-**Related:** `SECURITY_AUDIT.md` §5a, §5e; `PERMISSIONS_MATRIX.md`; confirmed role mapping (Admin=0, Customer=1, Reception=2, Maintenance=3, Guest=9)
+**Related:** `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §5a, §5e; `docs/ai-workflow/PERMISSIONS_MATRIX.md`; confirmed role mapping (Admin=0, Customer=1, Reception=2, Maintenance=3, Guest=9)
 
 ## Context
 
