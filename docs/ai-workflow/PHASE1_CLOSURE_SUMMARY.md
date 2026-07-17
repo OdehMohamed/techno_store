@@ -4,7 +4,7 @@
 
 ## What Phase 1 was
 
-A security and data-architecture remediation, triggered by a baseline audit (`SECURITY_AUDIT.md`) that found: no Firestore/Storage security rules existed at all, device PINs/pattern locks/staff notes were stored inline alongside customer-visible fields with no way to restrict them via rules, role permissions were enforced only by which UI buttons happened to render, and a `GuestAccount` role was inadvertently receiving staff-level data access.
+A security and data-architecture remediation, triggered by a baseline audit (`docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md`) that found: no Firestore/Storage security rules existed at all, device PINs/pattern locks/staff notes were stored inline alongside customer-visible fields with no way to restrict them via rules, role permissions were enforced only by which UI buttons happened to render, and a `GuestAccount` role was inadvertently receiving staff-level data access.
 
 ## What shipped
 

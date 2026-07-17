@@ -55,7 +55,7 @@ Concretely, this means: when the role checks in `main_screen.dart`, `inner_maint
 ## Consequences
 
 - No standalone Guest-specific code change is needed if `ADR-002`'s allow-list refactor is implemented — this ADR's recommendation is satisfied as a side effect, not a separate workstream. If `ADR-002` is deferred, the three call sites listed under "Current behavior" should still be patched directly and promptly as a narrower, standalone fix, since this is a confirmed data-exposure bug independent of the broader role-model timeline.
-- If Firestore rules are later written for `maintenanceDevices` (per `ADR-001`/`SECURITY_AUDIT.md`), Guest should not appear in any `allow read`/`allow write` clause — it inherits Firestore's default-deny behavior automatically, requiring no explicit "deny guest" rule to be written.
+- If Firestore rules are later written for `maintenanceDevices` (per `ADR-001`/`docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md`), Guest should not appear in any `allow read`/`allow write` clause — it inherits Firestore's default-deny behavior automatically, requiring no explicit "deny guest" rule to be written.
 
 ## Whether GuestAccount should be removed, disabled, or retained
 
