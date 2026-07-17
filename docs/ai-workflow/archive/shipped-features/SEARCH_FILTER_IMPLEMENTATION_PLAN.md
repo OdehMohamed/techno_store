@@ -1,5 +1,10 @@
 # SEARCH_FILTER_IMPLEMENTATION_PLAN.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before this feature shipped. This plan's own "Status" line below (written 2026-07-09) predates implementation — the maintenance-devices search/filtering (v1) feature it describes shipped in v1.1.0 (2026-07-09); see `CHANGELOG.md`.
+> - **Must not be treated as the current source of truth.** For current information, see `CHANGELOG.md` (the shipped feature) and `docs/ai-workflow/DECISIONS_LOG.md` (the build record). Retained as historical reference documentation — parts of it, particularly the "Explicitly out of scope for v1" section, may be useful when planning a future v2, but it should not be treated as a current or authoritative plan. Deferred items are tracked in `docs/ai-workflow/BACKLOG.md`.
+
 **Status:** Approved for implementation by the product owner on 2026-07-09. **No code has been modified. No Firestore rules or indexes have been deployed.**
 **Branch:** `feature/maintenance-devices-search-filter` (not yet created).
 **Scope:** v1 is a Firestore-native implementation — no Algolia/Typesense/external search service. Structured filters (status/brand/employee/date range) plus client-side substring search (phone/name/model/IMEI) on an already-bounded, already-filtered result set. Explicitly designed to fix, not worsen, the existing unbounded staff device stream (`BACKLOG.md` item 1g).
