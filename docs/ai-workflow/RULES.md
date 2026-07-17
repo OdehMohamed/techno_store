@@ -42,14 +42,14 @@ Whoever is doing the engineering work (human or AI) acts as Tech Lead / Senior E
 - No temporary hacks presented as real fixes.
 - No unnecessary complexity or premature abstraction.
 - Prefer explicitness over cleverness; prefer maintainability over shortcuts.
-- Never assume Firestore/Storage security rules or indexes exist unless they've been observed directly (a rules file in-repo, or an explicit statement from the product owner). As of this writing, no rules files exist in this repository — see `PROJECT_CONTEXT.md`.
+- Never assume Firestore/Storage security rules or indexes exist unless they've been observed directly (a rules file in-repo, or an explicit statement from the product owner). As of this writing, no rules files exist in this repository — see `docs/ai-workflow/archive/phase1-audit/PROJECT_CONTEXT.md`.
 - When uncertain: say so explicitly, don't guess, and either ask the product owner or inspect more files. Assumptions must be labeled as assumptions, never presented as fact.
 
 ## Repo-specific rules derived from the current state of the codebase
 
-These exist because of things actually observed in this codebase during the baseline review (`PROJECT_CONTEXT.md`) — they are not generic best practices, they are guardrails against patterns already present here:
+These exist because of things actually observed in this codebase during the baseline review (`docs/ai-workflow/archive/phase1-audit/PROJECT_CONTEXT.md`) — they are not generic best practices, they are guardrails against patterns already present here:
 
-- **Don't introduce new magic numbers for roles or status.** `UserData.type` and `MaintenanceDeviceModel.status` are already untyped/inconsistent (see `PROJECT_CONTEXT.md` → Risks). Any new code touching these should not add a fourth vocabulary; if they're touched, the fix should consolidate, not add to the mess — but only after the product owner confirms the intended meaning of existing values, and only as an explicitly-scoped, approved task.
+- **Don't introduce new magic numbers for roles or status.** `UserData.type` and `MaintenanceDeviceModel.status` are already untyped/inconsistent (see `docs/ai-workflow/archive/phase1-audit/PROJECT_CONTEXT.md` → Risks). Any new code touching these should not add a fourth vocabulary; if they're touched, the fix should consolidate, not add to the mess — but only after the product owner confirms the intended meaning of existing values, and only as an explicitly-scoped, approved task.
 - **Don't assume `FirestoreServices` is the only way data is written/read.** Some feature services bypass it and call `FirebaseFirestore.instance` directly. Check the actual service file before assuming a change to `FirestoreServices` covers every code path.
 - **Don't assume a helper method is live just because it's defined and looks correct.** This repo has at least one confirmed dormant defect (`fetchMaintenanceDevices`/`fetchMaintenanceDevicesPaginated` querying an unpopulated subcollection) that is unreachable today only because nothing calls it — grep for call sites before trusting a method's behavior or reusing it.
 - **There is no automated test suite or CI** beyond the Flutter-generated counter test. Regression-checking on this repo currently means manual code tracing plus asking the product owner to verify in a running app — say so explicitly rather than claiming "tests pass" or implying safety net coverage that doesn't exist.
@@ -63,6 +63,6 @@ These exist because of things actually observed in this codebase during the base
 
 - `docs/ai-workflow/` is the source of truth for project state going forward. It should be kept current:
   - `CURRENT_TASK.md` reflects whatever is actively being worked on right now — update at the start and end of each task.
-  - `DECISIONS_LOG.md` gets a new entry whenever the product owner or the engineering process makes an actual decision (not for logging inferred code facts — those belong in `PROJECT_CONTEXT.md`).
+  - `DECISIONS_LOG.md` gets a new entry whenever the product owner or the engineering process makes an actual decision (not for logging inferred code facts). `PROJECT_CONTEXT.md`, which used to be that home, is now archived (`docs/ai-workflow/archive/phase1-audit/PROJECT_CONTEXT.md`) and no longer maintained. Permissions and role-related facts belong in `docs/ai-workflow/PERMISSIONS_MATRIX.md`, which is actively maintained. General product and feature documentation will live under `docs/product/` as part of the ongoing documentation restructuring effort.
   - `BACKLOG.md` accumulates candidate work discovered during any review; items move out of it only when explicitly scheduled into `CURRENT_TASK.md`.
   - `NEXT_STEPS.md` is short-lived — it's overwritten each time a work session concludes with a fresh set of proposed next actions.

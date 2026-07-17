@@ -1,5 +1,10 @@
 # FORCED_UPDATE_IMPLEMENTATION_PLAN.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before this feature shipped. This plan's own "Status" line below (written 2026-07-09) predates implementation — the forced-update mechanism it describes shipped in v1.1.0 (2026-07-09); see `CHANGELOG.md`.
+> - **Must not be treated as the current source of truth.** For current information, see `CHANGELOG.md` (the shipped feature) and `docs/ai-workflow/DECISIONS_LOG.md` (the build record). Retained as historical reference documentation — parts of it, particularly the "Deliberately deferred" section (soft update, maintenance mode, feature flags), may be useful when planning future work, but it should not be treated as a current or authoritative plan. Deferred items are tracked in `docs/ai-workflow/BACKLOG.md`.
+
 **Status:** Approved for implementation by the product owner on 2026-07-09. **No code has been modified. No Firestore rules have been deployed.**
 **Branch:** `feature/forced-app-update`.
 **Scope:** v1 implements forced update only. Soft update, maintenance mode, and feature flags are designed to be schema-ready but are explicitly **not implemented** in this pass — see "Deliberately deferred" below.

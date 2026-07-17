@@ -2,7 +2,7 @@
 
 **Status:** Proposed — **future work, explicitly not part of Phase 1 implementation.** Design only, per product-owner request ("propose the safest design... but do not implement it in Phase 1 unless it is required for security").
 **Date:** 2026-07-03
-**Related:** `ADR-002-role-management.md` (Phase 2, Custom Claims), `PHASE1_IMPLEMENTATION_PLAN.md` §2
+**Related:** `ADR-002-role-management.md` (Phase 2, Custom Claims), `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §2
 
 ## Is any part of this required for Phase 1 security?
 
@@ -13,7 +13,7 @@
 Future goal: an Admin-only page to manage users, with users grouped/filtered by role (Admin, Reception, Maintenance, Customer — notably **not** Guest, which lines up with `ADR-003`'s conclusion that Guest has no defined business role and shouldn't be designed around). Admin should be able to activate/deactivate accounts, and potentially manage role changes.
 
 This lands on top of two things Phase 1 already establishes:
-1. `type` and `isActivated` are immutable from **any** client write, including an Admin's own, by design (`ADR-002` Phase 1, `PHASE1_IMPLEMENTATION_PLAN.md` §2).
+1. `type` and `isActivated` are immutable from **any** client write, including an Admin's own, by design (`ADR-002` Phase 1, `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §2).
 2. `users/{uid}` is already readable by any staff role, including via `list` queries filtered by `type` (the `isStaff()` rule doesn't depend on which document is being read, so Firestore can validate a collection-wide filtered query against it without per-document evaluation).
 
 Consequence: this feature splits cleanly into a **read half** (already fully enabled today, needs nothing new) and a **write half** (structurally blocked by Phase 1's own rules, by design — and correctly so, since allowing it would reopen exactly the hole Phase 1 closes).
@@ -42,7 +42,7 @@ Building this feature does **not** strictly require Custom Claims to exist first
 
 ### Route-level authorization
 
-This is a new Admin-only screen — it should **not** repeat the existing pattern found in `SECURITY_AUDIT.md` §4/§5b, where `AppRouter` performs no role checks at all and screens are "protected" only by not showing a button. Whenever this feature is built, its route should be guarded by an explicit role check before building the screen, not left to UI-only gating — this is a good opportunity to close that longstanding gap rather than extend the old pattern to a new, more sensitive screen.
+This is a new Admin-only screen — it should **not** repeat the existing pattern found in `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §4/§5b, where `AppRouter` performs no role checks at all and screens are "protected" only by not showing a button. Whenever this feature is built, its route should be guarded by an explicit role check before building the screen, not left to UI-only gating — this is a good opportunity to close that longstanding gap rather than extend the old pattern to a new, more sensitive screen.
 
 ## Consequences
 

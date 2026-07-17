@@ -1,5 +1,10 @@
 # PHASE1C_EXECUTION_RUNBOOK.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before the Phase 1 remediation work was completed. This runbook's own "Status" line below predates execution — all five checkpoints were run against production and confirmed GO; see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` and the 2026-07-04 entries in `docs/ai-workflow/DECISIONS_LOG.md`.
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` (what shipped) and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record, including the execution log for each checkpoint). Retained as historical reference documentation — parts of it may be useful when planning a future migration or rules deployment, but it should not be treated as a current or authoritative procedure.
+
 **Status: runbook only. Nothing in this document has been executed.**
 **Scope:** Phase 1C — running the migration against production and deploying Firestore/Storage rules — per `PHASE1_IMPLEMENTATION_PLAN.md` §7, validated by the Migration Rehearsal (`DECISIONS_LOG.md`, 2026-07-03) and `MIGRATION_SUCCESS_CRITERIA.md`.
 

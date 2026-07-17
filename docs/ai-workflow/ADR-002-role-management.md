@@ -1,14 +1,14 @@
 # ADR-002: User Role Immutability and Management
 
-**Status:** Proposed — awaiting product-owner decision. Not implemented.
+**Status:** Phase 1 (Option 1 — rules-enforced immutability) approved and implemented as part of Phase 1, 2026-07-03; see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` and `docs/ai-workflow/DECISIONS_LOG.md` for the confirmed outcome. **Phase 2 (Option 2 — Custom Claims) remains proposed, not implemented**, with no current schedule — see `docs/ai-workflow/BACKLOG.md` item 1h for the related, also-deferred admin user-management feature it would naturally sequence alongside.
 **Date:** 2026-07-03
-**Related:** `SECURITY_AUDIT.md` §5a, §5e; `PERMISSIONS_MATRIX.md`; confirmed role mapping (Admin=0, Customer=1, Reception=2, Maintenance=3, Guest=9)
+**Related:** `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §5a, §5e; `docs/ai-workflow/PERMISSIONS_MATRIX.md`; confirmed role mapping (Admin=0, Customer=1, Reception=2, Maintenance=3, Guest=9)
 
 ## Context
 
 `UserData.type` (`int`) is the sole role field. It is written by an ordinary client-side `Firestore.set()` call (`FirestoreServices.saveUserData`) with no server-side validation anywhere. Two concrete facts drive this ADR:
 
-1. **CRITICAL finding (SECURITY_AUDIT.md §5a):** because nothing validates writes to `users/{uid}`, any authenticated user can set their own `type` to `0` (Admin) via a direct Firestore SDK/REST call, bypassing the app UI entirely. The app trusts whatever value is stored, with no re-verification.
+1. **CRITICAL finding (`docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §5a):** because nothing validates writes to `users/{uid}`, any authenticated user can set their own `type` to `0` (Admin) via a direct Firestore SDK/REST call, bypassing the app UI entirely. The app trusts whatever value is stored, with no re-verification.
 2. **The intended role-assignment flow doesn't work.** `NewUserAdminSide` (an Admin picks Reception/Maintenance/Admin via radio buttons and creates an account) has its actual account-creation call commented out — the feature is a non-functional stub. If it were "fixed" by simply uncommenting the existing code, the restored code path (`AuthServices.signUpWithEmailAndPassword` → `UserData(..., type: type)` → `saveUserData`) would still be a **client-side write of an arbitrary role value** — i.e., naively restoring it would reintroduce the same vulnerability as finding #1, just from a different screen. Any fix to this flow must go through whatever mechanism this ADR settles on, not the original commented-out code as-is.
 
 ## How roles should be assigned (options)
@@ -18,7 +18,7 @@
 Keep `type` as a Firestore field on `users/{uid}`. Add a security rule that permits a client to `update` their own profile document only if the new `type` equals the existing `type` (i.e., every field except `type` is client-editable; `type` can never change via a client write, full stop — not even to the same role by a different actor, and never to a different one). The **only** way to change a role becomes a trusted, out-of-band process: a script run with the Firebase Admin SDK (which bypasses security rules by design) or a direct edit in the Firebase Console, performed by a trusted operator.
 
 - **Pros:** Smallest possible change — no new infrastructure. Directly and immediately closes the CRITICAL self-promotion hole. Keeps the data model exactly as it is today, so all existing UI code that reads `state.userData.type` keeps working unmodified.
-- **Cons:** Every other Firestore rule that needs to know "is this caller an Admin/Reception/etc." (e.g., rules on `maintenanceDevices`) must perform a `get()` lookup of `users/{uid}` from *within* the rule to read the current role — and that lookup is itself billed as a document read on every single request those rules evaluate (flagged already in `SECURITY_AUDIT.md` §9 and `FIREBASE_COST_REVIEW.md`). Role changes require manual operator action every time — no self-service admin tooling, which may or may not be acceptable depending on how often roles change in practice (**Unknown — needs product-owner input on expected frequency**).
+- **Cons:** Every other Firestore rule that needs to know "is this caller an Admin/Reception/etc." (e.g., rules on `maintenanceDevices`) must perform a `get()` lookup of `users/{uid}` from *within* the rule to read the current role — and that lookup is itself billed as a document read on every single request those rules evaluate (flagged already in `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §9 and `docs/ai-workflow/archive/phase1-audit/FIREBASE_COST_REVIEW.md`). Role changes require manual operator action every time — no self-service admin tooling, which may or may not be acceptable depending on how often roles change in practice (**Unknown — needs product-owner input on expected frequency**).
 
 ### Option 2 — Firebase Auth Custom Claims as the authoritative role store
 
@@ -45,7 +45,7 @@ Store the role in the user's Firebase Auth **custom claims** (baked into their v
 
 - Firestore rule on `users/{uid}`: allow `update` only if `request.resource.data.type == resource.data.type` (role cannot change via any client write, ever) — applies regardless of the caller's own role, including Admins acting on their own document.
 - No rule should ever allow a client to set `type` to a specific value directly, even conditionally by role — role changes for *other* users should go through Phase 2's function (which uses the Admin SDK internally, bypassing rules entirely by design) rather than through a client-writable Firestore path with a permissive rule, since the latter reintroduces the same class of risk this ADR exists to close.
-- Once Phase 2 lands, all role-based rules across the project (`maintenanceDevices`, Storage paths, etc. — see `PERMISSIONS_MATRIX.md`) should be migrated from `get(/databases/.../users/$(uid)).data.type` lookups to `request.auth.token.role` checks, both for cost (per `FIREBASE_COST_REVIEW.md`) and for the stronger tamper-resistance guarantee.
+- Once Phase 2 lands, all role-based rules across the project (`maintenanceDevices`, Storage paths, etc. — see `PERMISSIONS_MATRIX.md`) should be migrated from `get(/databases/.../users/$(uid)).data.type` lookups to `request.auth.token.role` checks, both for cost (per `docs/ai-workflow/archive/phase1-audit/FIREBASE_COST_REVIEW.md`) and for the stronger tamper-resistance guarantee.
 - **Implementation note carried over from the audit:** when the role model is actually implemented in code (as an enum or named constants replacing the current raw `int`), permission checks should be written as **allow-lists** ("this capability is granted to `[admin, reception, maintenance]`") rather than the current **deny-list** pattern (`type != 1`, meaning "not customer"). The deny-list pattern is what caused the separate Guest-role exposure documented in `ADR-003-guest-account-behavior.md` — an allow-list approach fails closed for any role not explicitly listed, including undefined or future ones, instead of failing open.
 
 ## Open questions for product owner

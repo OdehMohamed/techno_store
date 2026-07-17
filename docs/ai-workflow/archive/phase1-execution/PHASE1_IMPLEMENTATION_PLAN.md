@@ -1,5 +1,10 @@
 # PHASE1_IMPLEMENTATION_PLAN.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before the Phase 1 remediation work was completed. This plan's own "Status" line below (written 2026-07-03) predates execution — the work it describes was fully implemented, migrated, and deployed to production; see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md`.
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` (what shipped) and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record). Retained as historical reference documentation — parts of it may be useful when planning a future migration or deployment, but it should not be treated as a current or authoritative migration procedure.
+
 **Status:** Planning only — approved for planning by the product owner on 2026-07-03. **No code has been modified. No rules have been deployed.**
 **Implements:** `ADR-001-sensitive-data-separation.md` (Option A), `ADR-002-role-management.md` (Phase 1), `ADR-003-guest-account-behavior.md` (as a side effect of ADR-002's allow-list refactor).
 **Rules drafts:** `docs/ai-workflow/drafts/firestore.rules.draft` and `docs/ai-workflow/drafts/storage.rules.draft` — **both required, deployed together in the same pass** (product-owner decision, 2026-07-03).

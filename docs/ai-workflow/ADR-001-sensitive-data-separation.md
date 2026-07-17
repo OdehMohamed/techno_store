@@ -1,8 +1,8 @@
 # ADR-001: Sensitive Maintenance Data Separation
 
-**Status:** Proposed — awaiting product-owner decision. Not implemented.
+**Status:** Approved and implemented (Option A — subcollection under the device). Shipped as part of Phase 1B, 2026-07-03. See `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` and the 2026-07-03 entries in `docs/ai-workflow/DECISIONS_LOG.md` for the confirmed outcome.
 **Date:** 2026-07-03
-**Related:** `SECURITY_AUDIT.md` §6, `PERMISSIONS_MATRIX.md` (maintenanceDevices — sensitive fields)
+**Related:** `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §6, `docs/ai-workflow/PERMISSIONS_MATRIX.md` (maintenanceDevices — sensitive fields)
 
 ## Context
 
@@ -39,7 +39,7 @@ Written by `NewDeviceServices.addNewDevice`/`updateDevice` (full document via `M
 `maintenanceDevices/{deviceId}/private/security` holding `pin`, `patternLock`, `notesHidden`. The parent document keeps everything else.
 
 - **Pros:** Firestore rules trivially express "deny all client reads of this subcollection except staff roles" independent of the parent document's rules (subcollection rules are written and evaluated separately — this is exactly what Firestore's document model is designed for). Keeps sensitive data physically scoped under its owning device in the data model, which is intuitive to navigate. No new infrastructure (no Cloud Functions) required. Customer-facing real-time listeners on the parent document are untouched.
-- **Cons:** Requires a one-time data migration (see below). Every write path that currently sets these three fields must be updated to write to the subcollection instead. Staff-facing reads that need both the device and its sensitive data require two reads (or a client-side join) instead of one. **Firestore does not cascade-delete subcollections when the parent document is deleted** — `deleteDevice` would need to be updated to explicitly delete the subcollection document too, or the sensitive data becomes orphaned (a new instance of the exact class of bug already found in Storage cleanup, per `FIREBASE_COST_REVIEW.md` §2 — worth fixing both at once).
+- **Cons:** Requires a one-time data migration (see below). Every write path that currently sets these three fields must be updated to write to the subcollection instead. Staff-facing reads that need both the device and its sensitive data require two reads (or a client-side join) instead of one. **Firestore does not cascade-delete subcollections when the parent document is deleted** — `deleteDevice` would need to be updated to explicitly delete the subcollection document too, or the sensitive data becomes orphaned (a new instance of the exact class of bug already found in Storage cleanup, per `docs/ai-workflow/archive/phase1-audit/FIREBASE_COST_REVIEW.md` §2 — worth fixing both at once).
 
 ### Option B — Move sensitive fields to a separate top-level collection
 
@@ -80,7 +80,7 @@ Rationale: A and B are very close in cost and both correctly solve the stated re
 - **Data migration required.** A one-time script (Admin SDK, run by a trusted operator — not a client-facing feature) must copy `pin`, `patternLock`, `notesHidden` from every existing `maintenanceDevices` document into the new location, verify the copy, and only then strip those fields from the parent document. Copy-then-verify-then-strip (not delete-and-recreate) to avoid data loss if the script has a bug.
 - **Write-path inventory.** All call sites that currently set these three fields must be identified and updated together — doing this piecemeal risks a window where some devices have sensitive data in the old location and others in the new one, with reads inconsistently finding it.
 - **Deployment sequencing.** Rules and code must be coordinated: if new rules (denying `pin`/`patternLock`/`notesHidden` on the parent document) go live before the code stops writing them there, writes will start failing; if code stops writing them to the old location before rules are updated, nothing breaks security-wise but the old fields simply go stale — the safer sequence is code-writes-both-locations briefly, or a single coordinated deploy window, given this is an internal-tooling-style app without strict staged mobile rollout constraints.
-- **This must happen before `maintenanceDevices` rules are written**, not after — per `SECURITY_AUDIT.md` §9's recommended rollout sequence, rules should target the final schema, not the interim one.
+- **This must happen before `maintenanceDevices` rules are written**, not after — per `docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md` §9's recommended rollout sequence, rules should target the final schema, not the interim one.
 
 ## Open questions for product owner
 

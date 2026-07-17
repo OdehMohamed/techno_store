@@ -1,5 +1,10 @@
 # PRE_DEPLOYMENT_BACKUP_PLAN.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before the Phase 1 remediation work was completed. This plan's own "Status" line below (written 2026-07-03) predates execution — the backup was taken and the migration it protected has since completed and been verified; see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md`.
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` (what shipped) and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record). Retained as historical reference documentation — parts of it may be useful when planning a future migration or deployment, but it should not be treated as a current or authoritative migration procedure.
+
 **Status:** Planning artifact, required before Phase 1 implementation begins per product-owner approval (2026-07-03). **Not yet executed.**
 **Scope:** data backups only. Firestore/Storage **security rules** have their own, already-adequate rollback mechanism — Firebase retains rules version history natively, and reverting to the prior (no-rules) version is a single deploy action, already documented in `PHASE1_IMPLEMENTATION_PLAN.md` §8. This document does not duplicate that; it covers **data**, which has no equivalent built-in undo.
 

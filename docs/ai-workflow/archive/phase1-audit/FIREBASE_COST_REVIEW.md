@@ -1,5 +1,10 @@
 # FIREBASE_COST_REVIEW.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before the Phase 1 remediation work was completed (structural risk analysis, 2026-07-03). Its headline risk — the unbounded `streamMaintenanceDevices` listener for staff/guest roles — was resolved by the v1.1.0 search/filter feature (`BACKLOG.md` item 1g, closed 2026-07-09).
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/BACKLOG.md` (still-open items: Storage cleanup on delete, no client-side image compression) and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record).
+
 Companion to `SECURITY_AUDIT.md`. Covers Firestore read/write/listener cost patterns, Storage cost patterns, and index requirements, based strictly on the query and listener code actually present in this codebase. No load-testing or production usage data was available for this review — all figures below are **structural risk analysis** (what the code *would* cost as usage grows), not measured cost. Where a number would require production metrics (document counts, concurrent session counts, actual read volume), it's marked **Unknown**.
 
 ---
