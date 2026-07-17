@@ -1,13 +1,14 @@
 # CURRENT_TASK.md
 
-Status: reflects the state as of 2026-07-09. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
+Status: reflects the state as of 2026-07-17. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
 
 ## Active task
 
-**None — awaiting product owner direction on what to pick up next.** See `BACKLOG.md` for tracked candidate work.
+**None — the next phase (product documentation / PRD) is intentionally not started.** The product owner has explicitly said not to assume PRD work starts next; there are still product-level decisions to align on first (e.g., the retail catalog's long-term fate). The next phase will be defined jointly. See `BACKLOG.md` for tracked engineering-level candidate work in the meantime.
 
 ## Status
 
+- [x] **Documentation audit and engineering-documentation restructuring shipped (2026-07-17).** PR #7 squash-merged (`ae306d3`) to `main`. `docs/ai-workflow/` classified into active/permanent/historical/candidate-for-consolidation; 9 point-in-time Phase 1 documents archived into `docs/ai-workflow/archive/` (`phase1-audit/`, `phase1-execution/`, `shipped-features/`) with status banners; stale ADR-001/002/003 headers corrected; `PERMISSIONS_MATRIX.md` refreshed in full against the deployed rules and current client code and established as the single actively-maintained roles/permissions reference. See `DECISIONS_LOG.md` (2026-07-17 entry) for the full record. `docs/restructure-engineering-docs` deleted locally and remotely.
 - [x] Phase 1 (security & data architecture) closed, `v1.0.0` tagged and released.
 - [x] Post-v1.0.0 Storage authorization investigation and signup regression resolved (six commits, `origin/main`).
 - [x] `docs/ai-workflow/` staleness review completed and applied.
@@ -20,6 +21,7 @@ Status: reflects the state as of 2026-07-09. Overwrite this file's content at th
 
 ## What is NOT yet decided
 
-- Nothing currently in flight. Next task selection is a product-owner decision — see `BACKLOG.md`/`NEXT_STEPS.md`.
+- What the next phase actually is. Explicitly not assumed to be product documentation/PRD work — the product owner wants to align on a few product-level decisions first (e.g., retail catalog's fate) before that starts. See `NEXT_STEPS.md`.
+- `BACKLOG.md` item 16 (new): ~17 Dart source-code doc-comments under `lib/` still cite the old pre-restructuring flat paths to archived docs. Comment-only, no functional impact, deliberately deferred rather than fixed opportunistically on the docs-only restructuring branch, per `RULES.md`.
 
 Ongoing, tracked-but-not-active follow-ups remain in `BACKLOG.md` (0a deferred/accepted risk; 0b/0c/0d/10/14/15 non-blocking, including two new findings from the Home page audit — dead single-tab `TabBar` chrome under item 7, and hardcoded carousel image URLs as item 15).

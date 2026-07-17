@@ -1,10 +1,12 @@
 # NEXT_STEPS.md
 
-Short-lived by design — reflects proposed next actions as of 2026-07-09. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
+Short-lived by design — reflects proposed next actions as of 2026-07-17. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
 
 ## Immediate
 
-Nothing in flight. `v1.1.0` tagged and released 2026-07-09 (internal/closed testing — see `DECISIONS_LOG.md`). Remaining manual step, not part of this documented workflow: run the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary. Next task after that is a product-owner decision — see `BACKLOG.md` for candidates.
+Nothing in flight. The documentation audit and engineering-documentation restructuring (`docs/ai-workflow/` archive + refresh) shipped 2026-07-17, PR #7 — see `DECISIONS_LOG.md`. **Next phase is deliberately undecided**, not assumed to be product documentation/PRD work: the product owner wants to align on outstanding product-level decisions first (e.g., the retail catalog's long-term fate — discussed during the pre-restructuring product-discovery pass but not resolved) before `docs/product/` structure or PRD work begins. Pick this up as a joint conversation, not a unilateral next step.
+
+Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
 ## Production `appConfig/global` — done, 2026-07-09
 
