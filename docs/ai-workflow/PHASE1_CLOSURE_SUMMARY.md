@@ -28,4 +28,6 @@ A security and data-architecture remediation, triggered by a baseline audit (`SE
 
 - Rules: live in production, committed to the repo (`firestore.rules`, `storage.rules`, `firebase.json`).
 - Migration scripts: `scripts/migration/` (kept for reference / any future similar migration; not needed for ongoing operation).
-- All planning/audit/decision history: `docs/ai-workflow/` — `PROJECT_CONTEXT.md`, `RULES.md`, `SECURITY_AUDIT.md`, `PERMISSIONS_MATRIX.md`, `FIREBASE_COST_REVIEW.md`, `ADR-001` through `ADR-004`, `PHASE1_IMPLEMENTATION_PLAN.md`, `PRE_DEPLOYMENT_BACKUP_PLAN.md`, `MIGRATION_SUCCESS_CRITERIA.md`, `PHASE1C_EXECUTION_RUNBOOK.md`, `DECISIONS_LOG.md` (full chronological record).
+- All planning/audit/decision history: `docs/ai-workflow/` —
+  - **Active:** `RULES.md`, `PERMISSIONS_MATRIX.md` (kept current, refreshed against deployed rules), `ADR-001` through `ADR-004`, `DECISIONS_LOG.md` (full chronological record).
+  - **Archived** (2026-07-17, historical reference only — each carries a status banner): `archive/phase1-audit/PROJECT_CONTEXT.md`, `archive/phase1-audit/SECURITY_AUDIT.md`, `archive/phase1-audit/FIREBASE_COST_REVIEW.md`, `archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md`, `archive/phase1-execution/PRE_DEPLOYMENT_BACKUP_PLAN.md`, `archive/phase1-execution/MIGRATION_SUCCESS_CRITERIA.md`, `archive/phase1-execution/PHASE1C_EXECUTION_RUNBOOK.md`.
