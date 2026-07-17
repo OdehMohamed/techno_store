@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's state before the Phase 1 remediation work was completed (reconstructed from the codebase on 2026-07-03: no rules, no role enum, the Guest-role exposure still live).
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` (what shipped), `docs/ai-workflow/PERMISSIONS_MATRIX.md` (current roles/permissions reference), and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record). Several of the "Facts" and "Risks" below have since been resolved by Phase 1 and later feature work.
+
 Status: reconstructed from direct source-code inspection on 2026-07-03. This file did not previously exist in the repository (no trace in git history). Everything below is either a **Fact** (directly observed in code), an **Assumption** (a plausible inference not confirmed anywhere in code or docs), an **Unknown** (a genuine open question), or a **Risk** (a concrete way things can currently go wrong). Do not treat Assumptions as Facts when making decisions — confirm with the product owner first.
 
 ## What the app is

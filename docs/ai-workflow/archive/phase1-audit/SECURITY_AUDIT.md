@@ -1,5 +1,10 @@
 # SECURITY_AUDIT.md
 
+> - **Archived:** 2026-07-17
+> - **Historical reference only.**
+> - Reflects the project's security posture before the Phase 1 remediation work was completed (baseline review, 2026-07-03). Every CRITICAL/HIGH finding below has since been fixed.
+> - **Must not be treated as the current source of truth.** For current information, see `docs/ai-workflow/PHASE1_CLOSURE_SUMMARY.md` (what shipped), `docs/ai-workflow/PERMISSIONS_MATRIX.md` (current permissions reference), and `docs/ai-workflow/DECISIONS_LOG.md` (the full decision record). Retained here only for historical context on why Phase 1 happened.
+
 **Scope:** Security & Data Architecture Audit — Firestore, Firebase Storage, and client-side authorization as implemented in this codebase.
 **Date:** 2026-07-03. **Method:** direct source inspection (every service, cubit, model, and route that touches Firebase) plus project-wide `grep` verification of call sites. No code was modified. No rules were written.
 **Working assumption per instruction:** no Firestore/Storage security rules or indexes exist for this project. Nothing below assumes server-side protection unless explicitly noted as unverifiable-from-repo.
