@@ -35,9 +35,6 @@ An item leaves either list when it's been earned, not when someone decides a dea
 **Phone-number-change mechanism.** A customer's identity must survive a verified number changing entirely — the requirement is settled; the migration and verification mechanism that actually accomplishes it is not designed.
 *Referenced in: Shared Foundation → Auth & Account Lifecycle; Relationship Lens → Account & Identity.*
 
-**Staff account creation flow.** Staff accounts are individual and use an authentication path separate from customer phone-OTP — settled. Whether a new account is created directly by the owner or through an invitation the employee completes themselves — not decided.
-*Referenced in: Shared Foundation → Auth & Account Lifecycle; Operational Lens → Staff Account Management.*
-
 ### Starting Something New
 
 **Customer-initiated requests, remote from a walk-in visit.** Walk-in intake, staff-initiated, is real and working today. A customer starting something themselves — describing a problem, asking about availability — before ever physically visiting is intended to exist alongside walk-in, not replace it, but the mechanism is entirely undesigned.
@@ -62,7 +59,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 ### Business Authority
 
-**The concrete authority mechanism.** Business authority is confirmed as a real, distinct dimension from expertise. Staff Account Management is the one place it's already settled — Admin-only (its creation mechanism, listed above, is still open, but the authority itself isn't). Permanent deletion and future refunds are recognized as belonging to the same category but remain open until the authority model behind all of it is actually designed.
+**The concrete authority mechanism.** Business authority is confirmed as a real, distinct dimension from expertise. Staff Account Management is the one place it's already fully settled — Admin-only, including account creation. Permanent deletion and future refunds are recognized as belonging to the same category but remain open until the authority model behind all of it is actually designed.
 *Referenced in: Shared Foundation → Roles as Expertise; Operational Lens → Where Speed Intentionally Breaks.*
 
 ### Communication
@@ -90,8 +87,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 A different kind of open question: execution-level decisions discovery touched during Phase 6 but deliberately didn't settle, because a color or a layout is better tested against real interface than argued into existence (Operational Test 3). Not reconciled against `PRD.md` the way the items above are, since `PRD.md` doesn't cover this altitude at all.
 
-- **The literal visual palette**, including whether the dominant tone leans warm or cool, dark or light — the discipline of restraint is settled; the specific hues are not.
-- **Dark and light mode** as a supported choice.
+- **The literal visual palette**, including whether the dominant tone leans warm or cool, dark or light — the discipline of restraint is settled; the specific hues are not. (Whether Light and Dark Mode exist as supported product capabilities is no longer open — both are settled. What remains open here is the dark theme's own palette and design language, not whether it exists.)
 - **Customer-facing motion and animation.** Staff's motion principle is settled — functional only, never decorative — but the customer-facing equivalent was never worked out.
 
 ---
