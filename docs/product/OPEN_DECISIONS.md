@@ -35,6 +35,9 @@ An item leaves either list when it's been earned, not when someone decides a dea
 **Phone-number-change mechanism.** A customer's identity must survive a verified number changing entirely — the requirement is settled; the migration and verification mechanism that actually accomplishes it is not designed.
 *Referenced in: Shared Foundation → Auth & Account Lifecycle; Relationship Lens → Account & Identity.*
 
+**Shared-device staff identity switching or locking.** Staff sessions aren't restricted to a single device, and shop devices are sometimes shared between employees rather than belonging to one person. A faster, safer way to switch or lock staff identity than re-entering full email/password credentials each time is a confirmed need — settled. Its secure mechanism (a local PIN, another re-authentication method, inactivity-based locking that preserves the underlying session rather than a full sign-out, or something else) is not designed, and deserves its own security and architecture discussion.
+*Referenced in: Shared Foundation → Auth & Account Lifecycle.*
+
 ### Starting Something New
 
 **Customer-initiated requests, remote from a walk-in visit.** Walk-in intake, staff-initiated, is real and working today. A customer starting something themselves — describing a problem, asking about availability — before ever physically visiting is intended to exist alongside walk-in, not replace it, but the mechanism is entirely undesigned.
