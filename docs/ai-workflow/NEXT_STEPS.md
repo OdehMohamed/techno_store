@@ -1,10 +1,18 @@
 # NEXT_STEPS.md
 
-Short-lived by design — reflects proposed next actions as of 2026-07-22. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
+Short-lived by design — reflects proposed next actions as of 2026-07-23. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
 
 ## Immediate
 
-Nothing in flight. Product discovery and the `docs/product/` documentation set (`METHODOLOGY.md`, `PRD.md`, `OPEN_DECISIONS.md`, `ROADMAP.md`) shipped 2026-07-22, PR #8 — see `DECISIONS_LOG.md`. **What comes next is deliberately undecided.** `ROADMAP.md` sequences the remaining open product decisions strictly by dependency, not by priority or timeline, so it doesn't by itself answer what to pick up next — that's "Future Implementation Decisions" in the product owner's own meta-flow, a separate step to be picked up as a joint conversation, not assumed here.
+Resume the Auth & Entry review (part of "Current Application Review & Evolution," the phase following Product Documentation) directly from the findings surfaced by the first full pass, now that the two decisions they depended on are reconciled into `docs/product/` (PR #9, `d3ada95` — see `DECISIONS_LOG.md`, 2026-07-23 entry). Outstanding:
+
+1. Likely navigation bug: `PinVerificationPage` never reacts to `AuthNeedsProfileCompletion`, so a brand-new phone sign-up may appear stuck on the OTP screen after entering a correct code, with `CreateUserAccount` rendering unseen underneath.
+2. Phone country-code propagation bug: `SignInFormPhoneInput`'s selected country code never reaches the parent, so anyone who picks a country other than the `+970` default gets the wrong dial code submitted.
+3. Silent password-reset failure: `AuthCubit.resetPassword`'s error handling is unreachable because `AuthServices.resetPassword` swallows its own exceptions and returns an unchecked boolean — every failure currently shows a false "success" message.
+4. Dead email/password-auth-adjacent code (`SignInFormEmailMethod`, `SignInButtons`, `ResetPassword`, `AuthCubit.signUp`) — now partially relevant again given the staff-account decision (staff authenticate via email/password), so this needs re-examining as "needs reviving/fixing" rather than "dead code to delete."
+5. Two seemingly unreconciled app-update mechanisms: the documented `AppUpdateCubit`/`ForcedUpdatePage` system vs. an undocumented Android-only `in_app_update` flow in `SignIn.initState`.
+
+Not yet decided: whether these become their own small PR(s) now, or get folded into finishing the Auth & Entry review first. Pick this up as the next step in the review, not a new unrelated task.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
