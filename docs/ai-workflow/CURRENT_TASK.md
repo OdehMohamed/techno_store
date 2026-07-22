@@ -4,12 +4,15 @@ Status: reflects the state as of 2026-07-23. Overwrite this file's content at th
 
 ## Active task
 
-**"Current Application Review & Evolution" — Auth & Entry review complete, `main` now reflects the fully settled state.** PR #13 (`0fc44b8`) closed the review's last two items (route-level authorization, inactive Cairo font declaration). PR #12 (`ee1b2d3`) — the Staff Status architecture settlement, previously dropped mid-session and caught late — is now also merged. The full Staff Auth line of work (product decisions PR #9, behavior PR #11, architecture PR #12) is entirely present in `main`, not just agreed in conversation. See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record, including the standing process correction: once a line of work clears product decisions, behavior, and architecture with no blockers, implementation is the default next step, not an automatic extra planning phase — and this phase stays iterative (review → decide → implement → test → move on) rather than batching settled-but-unbuilt decisions.
+**Implementing Staff Auth — backend piece shipped, client vertical slice next.** Auth & Entry review is complete (PR #9–#13, all in `main`). Sequencing agreed: finish Staff Auth implementation before opening Reception & Maintenance's review, to keep one active line of work at a time. Split into two PRs:
+1. **`setStaffStatus` Cloud Function — shipped (PR #14, `8fc01a5`).**
+2. **Client-side Staff Auth vertical slice — not yet started.** Scope and acceptance criteria locked in before implementation, per explicit product-owner condition (this combines several security-sensitive behaviors, not just a new screen). The nine acceptance criteria: active staff sign-in succeeds; inactive staff denied and immediately signed out; status rechecked on app restart; deactivation during an active session forces sign-out with a clear message; a role change during an active session forces sign-out with a distinct message; a temporary listener/network interruption does not force sign-out; password-reset failures are handled correctly without false success; the customer phone-OTP path remains unchanged; staff and customer authentication paths remain clearly separated.
 
-**Next:** decide what's genuinely implementation-ready, based on the completed Auth & Entry review and what's actually in `main`. Product owner has explicitly asked for an active recommendation here, not deference — this is the live discussion as of this entry.
+See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record, including the standing process correction: once a line of work clears product decisions, behavior, and architecture with no blockers, implementation is the default next step, not an automatic extra planning phase.
 
 ## Status
 
+- [x] **`setStaffStatus` Cloud Function shipped (2026-07-23).** PR #14 squash-merged (`8fc01a5`) to `main`. Also corrects a stale `ADR-004` claim (Cloud Functions infrastructure already existed via `linkDevicesToNewCustomer`, not needed "for the first time"). See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record, including recommended-but-not-yet-run emulator verification. `feat/set-staff-status-function` deleted locally and remotely.
 - [x] **PR #12 (Staff Status architecture) merged (2026-07-23).** Squash-merged as `ee1b2d3`. Previously dropped mid-session (opened but never reviewed/merged) — caught and closed before any implementation-readiness assessment, per explicit product-owner instruction that `main` should reflect the settled state first. `docs/staff-status-architecture` deleted locally and remotely.
 - [x] **Two contained Auth & Entry closeout fixes shipped, Auth & Entry review complete (2026-07-23).** PR #13 squash-merged (`0fc44b8`) to `main`. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record. `fix/auth-router-role-guards` deleted locally and remotely.
 - [x] **Staff Auth workflow behavior settled, shared-device switching registered as open (2026-07-23).** PR #11 squash-merged (`584bd27`) to `main`. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record. `docs/staff-auth-session-decisions` deleted locally and remotely.
@@ -29,7 +32,8 @@ Status: reflects the state as of 2026-07-23. Overwrite this file's content at th
 
 ## What is NOT yet decided
 
-- What's genuinely implementation-ready next — a deliberate sequencing call, not a default to whatever was discussed most recently. See `NEXT_STEPS.md`.
+- The client-side Staff Auth vertical slice's implementation itself — scope/acceptance criteria are locked, but no code written yet. See `NEXT_STEPS.md`.
+- Whether `setStaffStatus` gets emulator-verified before the client PR relies on it, or verified together with the client integration.
 - Shared-device staff identity switching/locking mechanism (`OPEN_DECISIONS.md`) — deliberately not designed yet; its own security and architecture thread.
 - Once Staff Auth implementation (if selected) is underway: whether the remaining email/password dead-code cleanup (what's reused vs. rebuilt) ships as one PR or several.
 - `BACKLOG.md` item 16 (new): ~17 Dart source-code doc-comments under `lib/` still cite the old pre-restructuring flat paths to archived docs. Comment-only, no functional impact, deliberately deferred rather than fixed opportunistically on the docs-only restructuring branch, per `RULES.md`.

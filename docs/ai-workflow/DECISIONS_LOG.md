@@ -581,3 +581,21 @@ Implemented on `fix/auth-router-role-guards` as two separate, individually-appro
 **Merged:** PR #12, squash-merged as `ee1b2d3`.
 
 **Explicitly not decided in this session:** what's genuinely implementation-ready next — the product owner explicitly asked for an active recommendation here, not deference, consistent with the standing instruction to keep challenging sequencing rather than treating it as their call alone.
+
+---
+
+### 2026-07-23 — Staff Auth implementation begins: setStaffStatus Cloud Function shipped (PR #14)
+
+**Decision:** Begin Staff Auth implementation, split into two PRs — backend first, client-side vertical slice second — with the client PR's scope and acceptance criteria locked in explicitly before it starts, since it combines several security-sensitive behaviors rather than being just a new screen.
+
+**Decided by:** Product owner, confirming the sequencing recommendation (Staff Auth now, before opening Reception & Maintenance's review, to keep one active line of work at a time) and setting nine explicit acceptance criteria for the still-pending client PR: active staff sign-in succeeds; inactive staff denied and immediately signed out; status rechecked on app restart; deactivation during an active session forces sign-out with a clear message; a role change during an active session forces sign-out with a distinct message; a temporary listener/network interruption does not force sign-out; password-reset failures are handled correctly without false success; the customer phone-OTP path remains unchanged; staff and customer authentication paths remain clearly separated.
+
+**Outcome:** `setStaffStatus({ uid, status })` HTTPS Callable Cloud Function added to the existing `functions/` project (no new infrastructure — corrects a stale `ADR-004` claim that this would require standing up Cloud Functions "for the first time"; `functions/index.js` already existed via `linkDevicesToNewCustomer`). Requires the caller to be Admin *and* have their own `staffStatus` active (closes the deactivated-Admin-with-a-lingering-session gap), restricts targets to staff accounts, writes an audit log entry for every change. No Firestore rules changes needed — the existing `users/{uid}/meta/{metaDoc}` wildcard already denies all client writes and covers the new `staffStatus` document automatically. No client-side changes in this PR; the function is unreachable from the app until the client PR ships.
+
+Implemented on `feat/set-staff-status-function` as two commits (the function; the `ADR-004` correction).
+
+**Testing:** `node --check` and module-load verification only — not yet deployed or exercised against a live/emulated Firestore instance. Flagged as recommended (Admin can activate/deactivate; non-Admin caller rejected; deactivated-Admin caller rejected; Customer target rejected; audit log entry written) before the client PR relies on it.
+
+**Merged:** PR #14, squash-merged as `8fc01a5`. Feature branch `feat/set-staff-status-function` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** the client-side vertical slice itself. Scoped and bounded by the nine acceptance criteria above, to be implemented next.

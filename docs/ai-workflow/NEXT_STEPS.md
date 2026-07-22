@@ -4,9 +4,21 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-**Decide what's genuinely implementation-ready**, based on the now-complete Auth & Entry review (PR #9–#13, all merged into `main`) — a deliberate sequencing call per the agreed process, not a default to Staff Auth just because it's the most recent line of work. Product owner has explicitly asked for an active recommendation, not just their own call. Per the standing process correction (`DECISIONS_LOG.md`, 2026-07-23): once something clears product decisions, behavior, and architecture with no blockers, implementation is the natural next step, not a further planning phase.
+Implement the **client-side Staff Auth vertical slice** (PR 2 of 2 for Staff Auth; PR 1, `setStaffStatus`, shipped as PR #14). Scope is locked to nine explicit acceptance criteria, agreed before implementation starts:
 
-If Staff Auth is selected: implementation includes the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`, `SignInFormEmailMethod`/`SignInButtons` as reference only, per prior direction not to revive them wholesale).
+1. An active staff account signs in successfully.
+2. An inactive staff account is denied access and immediately signed out.
+3. Status is rechecked on app restart (`checkAuth()`).
+4. Deactivation during an active session forces sign-out with a clear message.
+5. A role change during an active session forces sign-out with a distinct message.
+6. A temporary listener/network interruption does not force sign-out.
+7. Password-reset failures are handled correctly without false success.
+8. The customer phone-OTP path remains unchanged.
+9. Staff and customer authentication paths remain clearly separated.
+
+Implementation includes: the Staff Sign In entry point and dedicated screen (built fresh — `SignInFormEmailMethod`/`SignInButtons`/`AuthCubit.signUp` are reference only, per prior direction not to revive them wholesale); curated `AuthCubit`/`AuthServices` error handling; the two live listeners (`ADR-004` proposes `_listenToStaffStatus()`/`_listenToStaffRole()`, new names, not `_listenToActivation`); calling the now-shipped `setStaffStatus` function from wherever staff status gets toggled.
+
+Recommend emulator-verifying `setStaffStatus` (Admin can activate/deactivate; non-Admin rejected; deactivated-Admin rejected; Customer-target rejected; audit log written) either before or alongside this client integration — not yet done.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
