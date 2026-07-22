@@ -7,7 +7,6 @@ class AppTheme {
         drawerTheme: const DrawerThemeData(
           backgroundColor: AppColors.primary,
         ),
-        fontFamily: 'Cairo',
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           backgroundColor: AppColors.secondary,
@@ -95,7 +94,6 @@ class AppTheme {
 
   static ThemeData get darkTheme => ThemeData.dark(useMaterial3: true).copyWith(
         brightness: Brightness.dark,
-        // fontFamily: 'Cairo',
         scaffoldBackgroundColor: AppColors.primary,
         drawerTheme: const DrawerThemeData(
           backgroundColor: AppColors.primary,
