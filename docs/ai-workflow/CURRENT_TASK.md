@@ -1,13 +1,14 @@
 # CURRENT_TASK.md
 
-Status: reflects the state as of 2026-07-17. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
+Status: reflects the state as of 2026-07-22. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
 
 ## Active task
 
-**None — the next phase (product documentation / PRD) is intentionally not started.** The product owner has explicitly said not to assume PRD work starts next; there are still product-level decisions to align on first (e.g., the retail catalog's long-term fate). The next phase will be defined jointly. See `BACKLOG.md` for tracked engineering-level candidate work in the meantime.
+**None — the Product Documentation phase is complete, and what comes next is deliberately undecided.** Product discovery and the resulting `docs/product/` documentation set (`METHODOLOGY.md`, `PRD.md`, `OPEN_DECISIONS.md`, `ROADMAP.md`) shipped 2026-07-22, PR #8. `ROADMAP.md` sequences the remaining open product decisions by dependency, but selecting which of them — or what engineering work — to take up next ("Future Implementation Decisions" in the product owner's own meta-flow) is a separate decision, to be made jointly, not assumed here. See `docs/product/ROADMAP.md` for the dependency-ordered open items and `BACKLOG.md` for tracked engineering-level candidate work in the meantime.
 
 ## Status
 
+- [x] **Product discovery completed and `docs/product/` documentation set shipped (2026-07-22).** PR #8 squash-merged (`110f8b2`) to `main`. Nine discovery phases plus synthesis produced a reusable decision-making methodology (4 Product Principles, 2 Structural Patterns, 3 Operational Tests, 6 Design Principles) and four documents: `METHODOLOGY.md`, `PRD.md` (Shared Foundation + Relationship/Operational/Business lenses), `OPEN_DECISIONS.md` (4-category open-items registry), `ROADMAP.md` (open decisions sequenced strictly by dependency). Closed with a holistic Product Review across all four documents that found and fixed three genuine cross-document defects. See `DECISIONS_LOG.md` (2026-07-22 entry) for the full record. `docs/product-discovery-and-prd` deleted locally and remotely.
 - [x] **Documentation audit and engineering-documentation restructuring shipped (2026-07-17).** PR #7 squash-merged (`ae306d3`) to `main`. `docs/ai-workflow/` classified into active/permanent/historical/candidate-for-consolidation; 9 point-in-time Phase 1 documents archived into `docs/ai-workflow/archive/` (`phase1-audit/`, `phase1-execution/`, `shipped-features/`) with status banners; stale ADR-001/002/003 headers corrected; `PERMISSIONS_MATRIX.md` refreshed in full against the deployed rules and current client code and established as the single actively-maintained roles/permissions reference. See `DECISIONS_LOG.md` (2026-07-17 entry) for the full record. `docs/restructure-engineering-docs` deleted locally and remotely.
 - [x] Phase 1 (security & data architecture) closed, `v1.0.0` tagged and released.
 - [x] Post-v1.0.0 Storage authorization investigation and signup regression resolved (six commits, `origin/main`).
@@ -21,7 +22,7 @@ Status: reflects the state as of 2026-07-17. Overwrite this file's content at th
 
 ## What is NOT yet decided
 
-- What the next phase actually is. Explicitly not assumed to be product documentation/PRD work — the product owner wants to align on a few product-level decisions first (e.g., retail catalog's fate) before that starts. See `NEXT_STEPS.md`.
+- What the next phase actually is, now that product discovery and documentation are complete. Not assumed to be implementation work — `ROADMAP.md`'s dependency ordering is not a priority queue, and which open decision (or engineering item) to take up next is a separate, joint decision. See `NEXT_STEPS.md`.
 - `BACKLOG.md` item 16 (new): ~17 Dart source-code doc-comments under `lib/` still cite the old pre-restructuring flat paths to archived docs. Comment-only, no functional impact, deliberately deferred rather than fixed opportunistically on the docs-only restructuring branch, per `RULES.md`.
 
 Ongoing, tracked-but-not-active follow-ups remain in `BACKLOG.md` (0a deferred/accepted risk; 0b/0c/0d/10/14/15 non-blocking, including two new findings from the Home page audit — dead single-tab `TabBar` chrome under item 7, and hardcoded carousel image URLs as item 15).

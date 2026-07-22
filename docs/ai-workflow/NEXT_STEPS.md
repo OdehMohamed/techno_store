@@ -1,10 +1,10 @@
 # NEXT_STEPS.md
 
-Short-lived by design — reflects proposed next actions as of 2026-07-17. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
+Short-lived by design — reflects proposed next actions as of 2026-07-22. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
 
 ## Immediate
 
-Nothing in flight. The documentation audit and engineering-documentation restructuring (`docs/ai-workflow/` archive + refresh) shipped 2026-07-17, PR #7 — see `DECISIONS_LOG.md`. **Next phase is deliberately undecided**, not assumed to be product documentation/PRD work: the product owner wants to align on outstanding product-level decisions first (e.g., the retail catalog's long-term fate — discussed during the pre-restructuring product-discovery pass but not resolved) before `docs/product/` structure or PRD work begins. Pick this up as a joint conversation, not a unilateral next step.
+Nothing in flight. Product discovery and the `docs/product/` documentation set (`METHODOLOGY.md`, `PRD.md`, `OPEN_DECISIONS.md`, `ROADMAP.md`) shipped 2026-07-22, PR #8 — see `DECISIONS_LOG.md`. **What comes next is deliberately undecided.** `ROADMAP.md` sequences the remaining open product decisions strictly by dependency, not by priority or timeline, so it doesn't by itself answer what to pick up next — that's "Future Implementation Decisions" in the product owner's own meta-flow, a separate step to be picked up as a joint conversation, not assumed here.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
