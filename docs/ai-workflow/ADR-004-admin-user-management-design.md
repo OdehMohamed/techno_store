@@ -71,7 +71,7 @@ This is a new Admin-only screen — it should **not** repeat the existing patter
 ## Consequences
 
 - No Phase 1 work is required or recommended to be pulled forward for this feature.
-- When this is eventually built, it requires standing up Cloud Functions in this project for the first time (also required for `ADR-002` Phase 2) — worth planning as shared infrastructure investment across both efforts rather than duplicating setup.
+- ~~When this is eventually built, it requires standing up Cloud Functions in this project for the first time~~ **Stale as of 2026-07-23:** `functions/` already exists (`linkDevicesToNewCustomer`, shipped alongside the customer sign-up flow), already using the Admin-SDK/`firebase-functions` v2 pattern this feature needs. `setStaffStatus` (see the Staff Status Architecture Pass section above) is an incremental addition to live infrastructure, not first-time setup — this materially lowers the cost of building this feature versus what was assumed here.
 - The audit-log recommendation introduces a new Firestore collection (`auditLogs` or similar) — a small, low-risk addition, but worth deciding its own read-access rules at that time (likely Admin-only read, no client write at all — only the Cloud Functions write to it via Admin SDK).
 
 ## Open questions for product owner (for whenever this is prioritized, not now)
