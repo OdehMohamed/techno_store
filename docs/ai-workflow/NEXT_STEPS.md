@@ -4,9 +4,9 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-1. **Close PR #12** (Staff Status architecture settlement on `ADR-004`) — substantively agreed in conversation, but never actually reviewed/merged. This was caught late and must not be dropped again.
-2. **Decide what's genuinely implementation-ready**, based on the now-complete Auth & Entry review (PR #9–#13) — a deliberate sequencing call per the agreed process, not a default to Staff Auth just because it's the most recent line of work. Per the standing process correction (`DECISIONS_LOG.md`, 2026-07-23): once something clears product decisions, behavior, and architecture with no blockers, implementation is the natural next step, not a further planning phase.
-3. If Staff Auth is selected: implementation includes the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`, `SignInFormEmailMethod`/`SignInButtons` as reference only, per prior direction not to revive them wholesale).
+**Decide what's genuinely implementation-ready**, based on the now-complete Auth & Entry review (PR #9–#13, all merged into `main`) — a deliberate sequencing call per the agreed process, not a default to Staff Auth just because it's the most recent line of work. Product owner has explicitly asked for an active recommendation, not just their own call. Per the standing process correction (`DECISIONS_LOG.md`, 2026-07-23): once something clears product decisions, behavior, and architecture with no blockers, implementation is the natural next step, not a further planning phase.
+
+If Staff Auth is selected: implementation includes the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`, `SignInFormEmailMethod`/`SignInButtons` as reference only, per prior direction not to revive them wholesale).
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 

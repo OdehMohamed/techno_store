@@ -565,3 +565,19 @@ Implemented on `fix/auth-router-role-guards` as two separate, individually-appro
 **With this merged, the Auth & Entry area of "Current Application Review & Evolution" is complete.**
 
 **Explicitly not decided in this session:** what's genuinely implementation-ready next. Also flagged here: PR #12 (the Staff Status architecture settlement on `ADR-004`) was found still open and unmerged at this point in the session — approved in conversation but the merge/cleanup sequence was never actually run. Needs the product owner's review before it can be folded into any "what's implementation-ready" assessment, since that assessment depends on the architecture actually being in `main`, not just agreed in conversation.
+
+---
+
+### 2026-07-23 — PR #12 closed out; Staff Auth's full design line now in `main`
+
+**Decision:** Merge the previously-dropped PR #12 before making any implementation-readiness assessment, so that assessment is grounded in what's actually in `main`, not just what's been agreed in conversation.
+
+**Decided by:** Product owner, explicit: "I'd rather have `main` reflect the settled state before we make any implementation-readiness decisions."
+
+**Outcome:** PR #12 squash-merged as `ee1b2d3`. With this, every piece of the Staff Auth line of work — product decisions (PR #9), workflow behavior (PR #11), and technical architecture (PR #12) — is now actually present in `main`, not just settled in conversation. Feature branch `docs/staff-status-architecture` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Testing:** documentation-only; no application code, Firestore rules, or Cloud Functions touched.
+
+**Merged:** PR #12, squash-merged as `ee1b2d3`.
+
+**Explicitly not decided in this session:** what's genuinely implementation-ready next — the product owner explicitly asked for an active recommendation here, not deference, consistent with the standing instruction to keep challenging sequencing rather than treating it as their call alone.
