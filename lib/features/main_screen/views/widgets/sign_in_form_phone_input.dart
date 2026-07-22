@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 
-// ignore: must_be_immutable
 class SignInFormPhoneInput extends StatelessWidget {
   final TextEditingController phoneController;
-  String phoneCode;
-  SignInFormPhoneInput({
+  final ValueChanged<String> onCodeChanged;
+  const SignInFormPhoneInput({
     super.key,
     required this.phoneController,
-    required this.phoneCode,
+    required this.onCodeChanged,
   });
   @override
   Widget build(BuildContext context) {
@@ -22,7 +21,9 @@ class SignInFormPhoneInput extends StatelessWidget {
       errorMessage: "Invalid phone number".tr(),
       hintText: "Phone number".tr(),
       onInputChanged: (PhoneNumber number) {
-        phoneCode = number.dialCode!;
+        if (number.dialCode != null) {
+          onCodeChanged(number.dialCode!);
+        }
       },
       onInputValidated: (bool value) {
         // phoneValid = value;

@@ -55,7 +55,8 @@ class _PinVerificationPageState extends State<PinVerificationPage> {
           listenWhen: (previous, current) =>
               current is VerifyAuthSuccess ||
               current is VerifyAuthFailure ||
-              current is AuthSuccess,
+              current is AuthSuccess ||
+              current is AuthNeedsProfileCompletion,
           listener: (context, state) {
             if (state is VerifyAuthFailure) {
               Message.showBottomMessage(context, state.error, isError: true);
@@ -65,7 +66,12 @@ class _PinVerificationPageState extends State<PinVerificationPage> {
               Message.showBottomMessage(context, 'Login successful!'.tr());
             }
 
-            if (state is AuthSuccess && (kIsWeb || Platform.isAndroid)) {
+            // A brand-new phone number routes here instead of AuthSuccess —
+            // without this, MainScreen swaps to CreateUserAccount underneath
+            // while this pushed page stays on top, stranding new sign-ups on
+            // the OTP screen after they've already entered a correct code.
+            if ((state is AuthSuccess || state is AuthNeedsProfileCompletion) &&
+                (kIsWeb || Platform.isAndroid)) {
               Navigator.of(context).popUntil((route) => route.isFirst);
             }
           },
