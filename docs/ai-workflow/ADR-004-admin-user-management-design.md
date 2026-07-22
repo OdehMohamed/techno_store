@@ -4,6 +4,8 @@
 **Date:** 2026-07-03
 **Related:** `ADR-002-role-management.md` (Phase 2, Custom Claims), `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §2
 
+**2026-07-22 product-decision update:** `docs/product/PRD.md` (Auth & Account Lifecycle) has since settled the product-level question this ADR anticipated — Admin can create, suspend, and restore staff access, with accounts created directly by Admin (no invitation flow). However, the generic `isActivated` field this ADR designs around has separately been retired for customer accounts (also `PRD.md`); staff access will be modeled as its own distinct lifecycle status, not a revival of that field. The activate/deactivate mechanics below (Cloud Function shape, audit log, route-level authorization) are still a reasonable starting point, but the exact field/data shape should be revisited against the new staff-status concept — not `isActivated` — whenever this is actually built.
+
 ## Is any part of this required for Phase 1 security?
 
 **No.** The product owner confirmed the current activation workflow is a manual Firebase Console edit by a privileged operator. Console edits with sufficient IAM permissions bypass Firestore security rules entirely — they don't go through the client SDK/rules evaluation path at all. This means Phase 1's `allow write: if false` rule on `users/{uid}/meta/isActivated` has **no effect on the current manual process** — it continues to work exactly as it does today. Nothing about this ADR needs to be pulled into Phase 1 to keep the product owner's existing workflow functioning. This ADR is purely forward-looking.

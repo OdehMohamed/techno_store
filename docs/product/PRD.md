@@ -18,6 +18,12 @@ The product is built for this specific business, not as a generalized platform. 
 
 Palestine receives a first-class experience — not a translated afterthought — while the product remains internationally friendly wherever that doesn't compromise the first-class experience Palestinian customers get. Concretely: both `+970` and `+972` are recognized as valid Palestinian numbers, and the product avoids Israel-referencing UI (flags, country labels) wherever a reasonable alternative exists.
 
+### Appearance & Accessibility
+
+Both Light and Dark Mode are settled as supported product capabilities, neither one a token or partially-reachable mode — each must be a complete, real experience. The literal palettes, design tokens, and component treatments for either theme remain design work still to be earned against real interfaces, not decided here (Operational Test 3; see `OPEN_DECISIONS.md`).
+
+Arabic-first support is foundational, consistent with Palestine receiving a first-class experience above. WCAG 2.2 AA is the accessibility baseline the product is held to. Material 3 remains the implementation foundation.
+
 ### Core Entities & Identity Model
 
 Four things persist through change, and none of them are defined by any single attribute attached to them (Structural Pattern 1, *Identity Persists, Attributes Change*):
@@ -34,11 +40,13 @@ Four things persist through change, and none of them are defined by any single a
 
 *A disagreement remains on record here*: mandatory location fields at signup were recommended as optional, on the grounds that a required field guarantees completeness but not accuracy. The business chose to keep them mandatory for the future value of complete data, as a deliberate, weighed trade-off — not an oversight. See `OPEN_DECISIONS.md`.
 
-**Staff** hold individual accounts, never shared between people, using an authentication path separate from the customer phone-OTP flow. This delivers real accountability without entangling a staff member's personal identity with their work identity — someone who leaves the business and later becomes a customer carries no residue of their former role. Staff-management authority belongs to the business owner (Admin) by default. No manager role has been built, because no real person currently occupies one; inventing it now would violate *Built for This Business, Not a Platform*.
+**Staff** hold individual accounts, never shared between people, authenticating with email and password — a path deliberately separate from the customer phone-OTP flow. This delivers real accountability without entangling a staff member's personal identity with their work identity — someone who leaves the business and later becomes a customer carries no residue of their former role. Accounts are created directly by the Admin; there is no invitation flow an employee completes themselves. Staff-management authority belongs to the business owner (Admin) by default. No manager role has been built, because no real person currently occupies one; inventing it now would violate *Built for This Business, Not a Platform*.
 
-**Retired:** `isActivated`, a dormant field originally built to support a multi-tenant subscription-licensing model. That model was explicitly rejected as this product's shape, so the field was retired outright rather than repurposed for a different problem it was never designed for.
+Staff accounts also carry their own lifecycle status — active or inactive — entirely separate from role. This lets Admin suspend and later restore an employee's access without touching who they are or anything they've done: another instance of *Identity Persists, Attributes Change* (`METHODOLOGY.md`), alongside role itself.
 
-**Open:** the phone-number-change migration and verification mechanism; whether a new staff account is created directly by the owner or through an invitation the employee completes themselves.
+**Retired:** the legacy generic `isActivated` field, as it applied to customer accounts. It was originally built to support a multi-tenant subscription-licensing model, explicitly rejected as this product's shape, so it was retired outright rather than repurposed. Staff status is a distinct, newly-designed concept, not a revival of that field.
+
+**Open:** the phone-number-change migration and verification mechanism.
 
 ### The Relationship Timeline
 
@@ -60,7 +68,7 @@ This timeline is one truth, described once, here. The Relationship Lens and Oper
 
 Reception and Maintenance are peer expertises, not a hierarchy — coordination expertise and technical expertise, intentionally and narrowly overlapping, neither a smaller version of the other. The one hard boundary between them is technical judgment: the sole competence that can't be borrowed situationally, regardless of how flexible the business otherwise is about people helping each other. The narrow zone where their capabilities genuinely overlap is receiving and delivering devices — the load-bearing, record-creating moments where the application must participate, and where either expertise can act in service of the customer.
 
-Admin — the business owner — holds full capability across both expertises, plus business authority that neither Reception nor Maintenance holds. Business authority is a distinct dimension from expertise. It is the concept underlying who may authorize a permanent deletion and how refunds will eventually be handled — both still open, with no concrete mechanism designed. Staff account management is the one place this authority is already settled, as Admin-only; only its creation mechanism, not the authority itself, remains open (see Auth & Account Lifecycle).
+Admin — the business owner — holds full capability across both expertises, plus business authority that neither Reception nor Maintenance holds. Business authority is a distinct dimension from expertise. It is the concept underlying who may authorize a permanent deletion and how refunds will eventually be handled — both still open, with no concrete mechanism designed. Staff account management is the one place this authority is already settled, as Admin-only, including how an account is created — directly by the owner, not through invitation (see Auth & Account Lifecycle).
 
 Wherever an action is recorded, the system distinguishes who performed it from whose expertise or authority it represents (Product Principle 4, *Action and Authority Are Separable*) — this holds regardless of how fluid day-to-day collaboration between staff actually is.
 
@@ -154,9 +162,7 @@ Everywhere else, this lens defaults to fast. It breaks from that default for thr
 
 ### Staff Account Management
 
-The confirmed real business-authority problem named in Shared Foundation: today, granting, changing, or revoking a staff member's access depends entirely on a manual process outside the application. This is Admin's alone, by default, because that authority belongs to the business owner and no other real role currently holds it.
-
-**Open:** whether an account is created directly by the owner or through an invitation the employee completes themselves — carried from Shared Foundation, not yet resolved here either.
+The confirmed real business-authority problem named in Shared Foundation, now settled: an account is created directly by the Admin, with no invitation flow, and carries its own active/inactive status — distinct from role — so Admin can grant, suspend, and later restore an employee's access without touching identity or history.
 
 ---
 
