@@ -87,7 +87,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 A different kind of open question: execution-level decisions discovery touched during Phase 6 but deliberately didn't settle, because a color or a layout is better tested against real interface than argued into existence (Operational Test 3). Not reconciled against `PRD.md` the way the items above are, since `PRD.md` doesn't cover this altitude at all.
 
-- **The literal visual palette**, including whether the dominant tone leans warm or cool, dark or light — the discipline of restraint is settled; the specific hues are not. (Whether Light and Dark Mode exist as supported product capabilities is no longer open — both are settled. What remains open here is the dark theme's own palette and design language, not whether it exists.)
+- **The literal visual palette**, including whether the dominant tone leans warm or cool, dark or light — the discipline of restraint is settled; the specific hues are not. (Whether Light and Dark Mode exist as supported product capabilities is no longer open — both are settled; see `PRD.md` → Shared Foundation → Appearance & Accessibility. What remains open here is the dark theme's own palette and design language, not whether it exists.)
 - **Customer-facing motion and animation.** Staff's motion principle is settled — functional only, never decorative — but the customer-facing equivalent was never worked out.
 
 ---

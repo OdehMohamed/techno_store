@@ -18,6 +18,12 @@ The product is built for this specific business, not as a generalized platform. 
 
 Palestine receives a first-class experience — not a translated afterthought — while the product remains internationally friendly wherever that doesn't compromise the first-class experience Palestinian customers get. Concretely: both `+970` and `+972` are recognized as valid Palestinian numbers, and the product avoids Israel-referencing UI (flags, country labels) wherever a reasonable alternative exists.
 
+### Appearance & Accessibility
+
+Both Light and Dark Mode are settled as supported product capabilities, neither one a token or partially-reachable mode — each must be a complete, real experience. The literal palettes, design tokens, and component treatments for either theme remain design work still to be earned against real interfaces, not decided here (Operational Test 3; see `OPEN_DECISIONS.md`).
+
+Arabic-first support is foundational, consistent with Palestine receiving a first-class experience above. WCAG 2.2 AA is the accessibility baseline the product is held to. Material 3 remains the implementation foundation.
+
 ### Core Entities & Identity Model
 
 Four things persist through change, and none of them are defined by any single attribute attached to them (Structural Pattern 1, *Identity Persists, Attributes Change*):
