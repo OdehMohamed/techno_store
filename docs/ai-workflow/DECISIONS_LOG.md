@@ -529,3 +529,39 @@ Implemented on `fix/auth-pin-verification-and-phone-code` as two separate, indiv
 **Merged:** PR #11, squash-merged as `584bd27`. Feature branch `docs/staff-auth-session-decisions` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the technical architecture behind any of this — the staff-status data model, write authority, Firestore rules, live-session enforcement mechanism, behavior on role/status change at the code level, migration from the legacy `isActivated` field, and failure handling if status can't be verified. Product owner explicitly named this as the next step: a dedicated **Staff Status Architecture Pass**, before anything is treated as implementation-ready.
+
+---
+
+### 2026-07-23 — Process-discipline correction: implementation is the default once a line of work clears, not a new phase
+
+**Decision:** No additional "implementation planning" phase gets introduced by default once a line of work has settled product decisions, behavior, and architecture with no remaining blockers — implementation itself is the natural next step at that point, unless there's a concrete reason not to. More generally, keep the "Current Application Review & Evolution" phase iterative — review → decide → implement → test → move on, per item — rather than accumulating a large batch of settled-but-unbuilt decisions across an entire product area before building anything.
+
+**Decided by:** Product owner, explicitly warning against the decision-making framework built across PR #6–#12 becoming "the thing we're optimizing for" instead of a tool for decision quality. Staff Auth (settled end-to-end across PR #9–#12: product decisions, workflow behavior, technical architecture) was named as the worked example — once genuinely implementation-ready, activating it should mean building it, not adding another phase first.
+
+**Outcome:** No code or document change — a standing process correction, recorded here and in memory for continuity across sessions (`[[future-implementation-decision-process]]`, `[[current-application-review-phase]]`). Applied immediately: when closing the Auth & Entry review's last two items (route-level authorization, the inactive Cairo font declaration), both were implemented directly as soon as they were confirmed contained and unblocked, rather than deferred into a separate planning step.
+
+**Testing:** N/A — process decision.
+
+**Explicitly not decided in this session:** which specific line of work moves into implementation next. Per the same discipline, that's a genuine sequencing decision to make deliberately once the Auth & Entry review is fully closed out, not something to default into.
+
+---
+
+### 2026-07-23 — Two contained closeout fixes shipped, Auth & Entry review complete
+
+**Decision:** Close the Auth & Entry review's two remaining independent items — route-level authorization and the inactive Cairo font declaration — as the final step before treating the area as complete, per the product owner's explicit request to close the authorization gap "properly rather than treating it as a residual concern by default."
+
+**Decided by:** Product owner, confirming both items were sufficiently contained and independent of the still-pending Staff Auth implementation to finish now.
+
+**Outcome:**
+- **Route-level authorization:** `AppRouter` performed no role checks at all — `createAccountAdminSide` (Admin-only) and `maintenancePage` (staff-only) were reachable by anyone who could trigger the navigation, protected only by the drawer not showing the button. This is the exact gap `ADR-004`'s "Route-level authorization" section already flagged, closed now specifically because `createAccountAdminSide` is about to become a real, functioning screen via Staff Auth rather than a non-functional one. Firestore rules and Cloud Functions remain the actual enforcement backstop for any write — this closes UI-reachability, not a substitute for that. Confirmed distinct from `BACKLOG.md` item 0a (direct/bypass-the-UI Firestore rules testing), a different, still-separately-tracked concern.
+- **Cairo font declaration:** `fontFamily: 'Cairo'` was removed from both light and dark theme. It was never bundled (no `fonts:` section in `pubspec.yaml`, no font files in the repo) and silently fell back to the platform default while the code claimed otherwise. A real tension was caught and resolved deliberately: actually bundling Cairo now would have settled the still-open typeface comparison (`OPEN_DECISIONS.md`'s Design & Experience section) through implementation rather than decision. Removing the dead declaration fixes the code's false claim without spending that openness — Arabic-first support remains a settled requirement; the specific typeface stays open.
+
+Implemented on `fix/auth-router-role-guards` as two separate, individually-approved commits.
+
+**Testing:** `flutter analyze` clean on all touched files (one pre-existing, unrelated `withOpacity` deprecation warning, not introduced by this change). Manual on-device verification of the route guards flagged as recommended but not yet independently confirmed by the product owner.
+
+**Merged:** PR #13, squash-merged as `0fc44b8`. Feature branch `fix/auth-router-role-guards` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**With this merged, the Auth & Entry area of "Current Application Review & Evolution" is complete.**
+
+**Explicitly not decided in this session:** what's genuinely implementation-ready next. Also flagged here: PR #12 (the Staff Status architecture settlement on `ADR-004`) was found still open and unmerged at this point in the session — approved in conversation but the merge/cleanup sequence was never actually run. Needs the product owner's review before it can be folded into any "what's implementation-ready" assessment, since that assessment depends on the architecture actually being in `main`, not just agreed in conversation.

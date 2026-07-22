@@ -4,17 +4,9 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-Run the **Staff Status Architecture Pass** (part of the Auth & Entry review, "Current Application Review & Evolution" phase) — the technical design step the now-settled Staff Auth workflow behavior depends on, before anything is treated as implementation-ready. Per product owner, scope is:
-
-1. The staff-status data model — where it lives (new field on `users/{uid}`, a subdocument akin to the old `users/{uid}/meta`, or something else).
-2. Write authority — per `ADR-004`'s already-established reasoning, `type`/status-like fields are client-write-immune by design, so this almost certainly needs a trusted server-side mechanism (Cloud Function via Admin SDK), not a direct client write.
-3. Firestore security rules for whatever the new field/path turns out to be.
-4. Live-session enforcement mechanism — how a signed-in client actually observes a status or role change in near-real-time (the `_listenToActivation` pattern exists but is dead; needs a working design, not a revival as-is).
-5. Behavior on role or status change at the code level — both funnel into the same forced-sign-out behavior (already settled), but the technical trigger/detection mechanism needs designing.
-6. Migration from the legacy `isActivated` field — what happens to any existing data/usage of it for customer accounts, now that it's retired.
-7. Failure handling if status can't be verified (e.g., a read failure) — fail open or fail closed, and why.
-
-Once this architecture is settled and reviewed, decide what's genuinely implementation-ready — likely including the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`), probably superseded by whatever the staff-creation mechanism (Staff Management area, Admin-side) ends up needing rather than a straight revival.
+1. **Close PR #12** (Staff Status architecture settlement on `ADR-004`) — substantively agreed in conversation, but never actually reviewed/merged. This was caught late and must not be dropped again.
+2. **Decide what's genuinely implementation-ready**, based on the now-complete Auth & Entry review (PR #9–#13) — a deliberate sequencing call per the agreed process, not a default to Staff Auth just because it's the most recent line of work. Per the standing process correction (`DECISIONS_LOG.md`, 2026-07-23): once something clears product decisions, behavior, and architecture with no blockers, implementation is the natural next step, not a further planning phase.
+3. If Staff Auth is selected: implementation includes the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`, `SignInFormEmailMethod`/`SignInButtons` as reference only, per prior direction not to revive them wholesale).
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
