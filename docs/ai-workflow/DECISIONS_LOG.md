@@ -513,3 +513,19 @@ Implemented on `fix/auth-pin-verification-and-phone-code` as two separate, indiv
 **Merged:** PR #10, squash-merged as `75b735c`. Feature branch `fix/auth-pin-verification-and-phone-code` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the staff-auth workflow itself. Product owner directed that this be treated as its own workflow-design discussion before any implementation — not an incremental revival of the old, pre-decision email/password code, which is to be treated as reference only, inspected for reusable pieces rather than restored wholesale. Scope for that discussion, per product owner: the entry point and dedicated screen already discussed, plus explicitly session management, in-session deactivation behavior, in-session role changes, sign-out and session restoration, and shared-device implications between staff and customer accounts. Not started as of this entry.
+
+---
+
+### 2026-07-23 — Staff Auth workflow behavior settled; shared-device switching registered as open (PR #11)
+
+**Decision:** Settle the Staff Auth workflow-design discussion's behavioral questions (entry point, dedicated screen, error handling, password reset, status enforcement at sign-in/restart/session, session/device model) and reconcile the parts that are genuine product truth into `docs/product/`, rather than leaving settled decisions living only in conversation.
+
+**Decided by:** Product owner. Key calls: a small, clearly visible "Staff sign in" entry beneath the customer phone form (not hidden behind a gesture); the old email/password code treated as reference only, not a revival base; staff sessions not restricted to a single device (no concrete reason identified to justify the session-tracking infrastructure that would require); no default automatic sign-out timeout, since shop devices commonly stay in active operational use throughout the day; deactivation and role changes take effect immediately, everywhere observed, via the same forced-sign-out mechanism (uniform behavior rather than trying to hot-swap role-dependent UI in place). One precision correction from the product owner during review: "no default sign-out timeout" must not be read as "no inactivity handling at all" — shared devices may eventually need inactivity-based *locking* that preserves the underlying session, which is materially different from a full sign-out, so that distinction was written into `PRD.md` explicitly rather than left implicit.
+
+**Outcome:** Reconciled into `docs/product/` as three commits: `PRD.md`'s Auth & Account Lifecycle section extended with the settled session-behavior truths and a precisely-scoped Open line; a new `OPEN_DECISIONS.md` item, **Shared-device staff identity switching or locking**, registered under Identity & Account Lifecycle — the need is confirmed and settled, but its secure mechanism (local PIN, another re-authentication method, inactivity-based locking, or something else) is explicitly not designed, and was deliberately not guessed at inline; `ROADMAP.md` sequences it under Self-Contained.
+
+**Testing:** documentation-only; no application code, Firestore rules, or Storage rules touched.
+
+**Merged:** PR #11, squash-merged as `584bd27`. Feature branch `docs/staff-auth-session-decisions` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** the technical architecture behind any of this — the staff-status data model, write authority, Firestore rules, live-session enforcement mechanism, behavior on role/status change at the code level, migration from the legacy `isActivated` field, and failure handling if status can't be verified. Product owner explicitly named this as the next step: a dedicated **Staff Status Architecture Pass**, before anything is treated as implementation-ready.

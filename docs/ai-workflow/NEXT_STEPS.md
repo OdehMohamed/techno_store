@@ -4,17 +4,17 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-Define the Staff Auth workflow as its own design discussion (part of the Auth & Entry review, "Current Application Review & Evolution" phase) — before any implementation, per explicit product-owner direction not to revive the old pre-decision email/password code incrementally. Scope to cover:
+Run the **Staff Status Architecture Pass** (part of the Auth & Entry review, "Current Application Review & Evolution" phase) — the technical design step the now-settled Staff Auth workflow behavior depends on, before anything is treated as implementation-ready. Per product owner, scope is:
 
-1. Entry point — agreed: a small, clearly visible "Staff sign in" link beneath the customer phone form, not hidden behind a gesture.
-2. The dedicated email/password screen itself — design fresh against the current staff-account decision; inspect `SignInFormEmailMethod`/`SignInButtons` for reusable pieces, reuse only what holds up, rebuild the rest.
-3. Correct error handling (the old `AuthCubit.signIn` path had none of the phone flow's curated `FirebaseAuthException` handling).
-4. Password-reset access from within the staff flow — and fixing the underlying silent-failure bug (`AuthServices.resetPassword` swallows its own exceptions; `AuthCubit.resetPassword`'s catch block is unreachable) as part of building this correctly, not before it's needed.
-5. Active/inactive staff-status enforcement (the new concept from PR #9 — not a revival of `_listenToActivation`/`isActivated`).
-6. Session management, in-session deactivation behavior, in-session role changes, sign-out and session restoration.
-7. Shared-device implications between staff and customer accounts.
+1. The staff-status data model — where it lives (new field on `users/{uid}`, a subdocument akin to the old `users/{uid}/meta`, or something else).
+2. Write authority — per `ADR-004`'s already-established reasoning, `type`/status-like fields are client-write-immune by design, so this almost certainly needs a trusted server-side mechanism (Cloud Function via Admin SDK), not a direct client write.
+3. Firestore security rules for whatever the new field/path turns out to be.
+4. Live-session enforcement mechanism — how a signed-in client actually observes a status or role change in near-real-time (the `_listenToActivation` pattern exists but is dead; needs a working design, not a revival as-is).
+5. Behavior on role or status change at the code level — both funnel into the same forced-sign-out behavior (already settled), but the technical trigger/detection mechanism needs designing.
+6. Migration from the legacy `isActivated` field — what happens to any existing data/usage of it for customer accounts, now that it's retired.
+7. Failure handling if status can't be verified (e.g., a read failure) — fail open or fail closed, and why.
 
-Once this is settled, implementation-ready scope also includes deciding the disposition of the remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`) — likely superseded by whatever the staff-creation mechanism (Staff Management area, Admin-side) ends up needing, not a straight revival.
+Once this architecture is settled and reviewed, decide what's genuinely implementation-ready — likely including the disposition of remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`), probably superseded by whatever the staff-creation mechanism (Staff Management area, Admin-side) ends up needing rather than a straight revival.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
