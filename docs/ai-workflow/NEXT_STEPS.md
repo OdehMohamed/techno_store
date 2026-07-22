@@ -4,15 +4,17 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-Resume the Auth & Entry review (part of "Current Application Review & Evolution," the phase following Product Documentation) directly from the findings surfaced by the first full pass, now that the two decisions they depended on are reconciled into `docs/product/` (PR #9, `d3ada95` — see `DECISIONS_LOG.md`, 2026-07-23 entry). Outstanding:
+Define the Staff Auth workflow as its own design discussion (part of the Auth & Entry review, "Current Application Review & Evolution" phase) — before any implementation, per explicit product-owner direction not to revive the old pre-decision email/password code incrementally. Scope to cover:
 
-1. Likely navigation bug: `PinVerificationPage` never reacts to `AuthNeedsProfileCompletion`, so a brand-new phone sign-up may appear stuck on the OTP screen after entering a correct code, with `CreateUserAccount` rendering unseen underneath.
-2. Phone country-code propagation bug: `SignInFormPhoneInput`'s selected country code never reaches the parent, so anyone who picks a country other than the `+970` default gets the wrong dial code submitted.
-3. Silent password-reset failure: `AuthCubit.resetPassword`'s error handling is unreachable because `AuthServices.resetPassword` swallows its own exceptions and returns an unchecked boolean — every failure currently shows a false "success" message.
-4. Dead email/password-auth-adjacent code (`SignInFormEmailMethod`, `SignInButtons`, `ResetPassword`, `AuthCubit.signUp`) — now partially relevant again given the staff-account decision (staff authenticate via email/password), so this needs re-examining as "needs reviving/fixing" rather than "dead code to delete."
-5. Two seemingly unreconciled app-update mechanisms: the documented `AppUpdateCubit`/`ForcedUpdatePage` system vs. an undocumented Android-only `in_app_update` flow in `SignIn.initState`.
+1. Entry point — agreed: a small, clearly visible "Staff sign in" link beneath the customer phone form, not hidden behind a gesture.
+2. The dedicated email/password screen itself — design fresh against the current staff-account decision; inspect `SignInFormEmailMethod`/`SignInButtons` for reusable pieces, reuse only what holds up, rebuild the rest.
+3. Correct error handling (the old `AuthCubit.signIn` path had none of the phone flow's curated `FirebaseAuthException` handling).
+4. Password-reset access from within the staff flow — and fixing the underlying silent-failure bug (`AuthServices.resetPassword` swallows its own exceptions; `AuthCubit.resetPassword`'s catch block is unreachable) as part of building this correctly, not before it's needed.
+5. Active/inactive staff-status enforcement (the new concept from PR #9 — not a revival of `_listenToActivation`/`isActivated`).
+6. Session management, in-session deactivation behavior, in-session role changes, sign-out and session restoration.
+7. Shared-device implications between staff and customer accounts.
 
-Not yet decided: whether these become their own small PR(s) now, or get folded into finishing the Auth & Entry review first. Pick this up as the next step in the review, not a new unrelated task.
+Once this is settled, implementation-ready scope also includes deciding the disposition of the remaining dead code (`AuthCubit.signUp`, `AuthServices.signUpWithEmailAndPassword`) — likely superseded by whatever the staff-creation mechanism (Staff Management area, Admin-side) ends up needing, not a straight revival.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 

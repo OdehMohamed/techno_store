@@ -492,3 +492,24 @@ Implemented on `docs/staff-account-and-activation-decisions` as five reviewed, i
 **Merged:** PR #9, squash-merged as `d3ada95`. Feature branch `docs/staff-account-and-activation-decisions` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the actual technical implementation of staff status (data shape, Cloud Function design, audit logging) — `ADR-004`'s note flags this as a real design question for whenever it's actually built, not resolved here. Also unresolved: the remaining Auth & Entry code findings from the same review pass — a likely navigation bug stranding new phone sign-ups on the OTP screen after successful verification, a phone country-code propagation bug in the sign-in form, a silent password-reset failure, dead email/password-auth-adjacent code (now partially relevant again given the staff-account decision), and two seemingly unreconciled app-update mechanisms. The Auth & Entry review continues from here.
+
+---
+
+### 2026-07-23 — Two contained Auth & Entry bug fixes shipped; update-mechanism finding retracted
+
+**Decision:** Implement the two Auth & Entry findings that were fully contained and required no product or design decision, as separate reviewable fixes, rather than waiting for the broader staff-auth workflow to be designed. Investigate the "two app-update mechanisms" finding before deciding whether it needed fixing at all.
+
+**Decided by:** Product owner, confirming the two bug fixes should proceed independently and asking for a history-based investigation (not a guess) on the update-mechanism question before any action there.
+
+**Outcome:**
+- **Update-mechanism finding retracted.** `git log` traced `in_app_update`'s usage in `SignIn.initState` to before the forced-update feature existed, and `docs/ai-workflow/DECISIONS_LOG.md`'s own 2026-07-09 entry (already read earlier this session but not cross-checked against this specific code-review finding) documents that the forced-update feature's design explicitly audited `in_app_update` first and made a deliberate call: kept unchanged, as a non-blocking Android-only nudge toward the latest Play release, with all actual blocking owned by `AppUpdateCubit`/`ForcedUpdatePage`. Complementary by design, not redundant — no code change made. Recorded here as a correction to the prior review pass's characterization, not a new decision.
+- **Fix 1:** `PinVerificationPage`'s listener now also reacts to `AuthNeedsProfileCompletion`, not just `AuthSuccess`, and pops the same way. Brand-new phone sign-ups were emitting `AuthNeedsProfileCompletion`, which the listener ignored, stranding them on the OTP screen while `MainScreen` swapped to `CreateUserAccount` unseen underneath.
+- **Fix 2:** `SignInFormPhoneInput` no longer mutates its own local `phoneCode` field (silently discarded, since it's passed by value from the parent). Replaced with an explicit `onCodeChanged` callback so country selection actually reaches `SignInFormPhoneMethod`'s state before submission. The widget is now properly immutable, dropping the `must_be_immutable` lint suppression it carried.
+
+Implemented on `fix/auth-pin-verification-and-phone-code` as two separate, individually-approved commits, deliberately not bundled together or with the broader staff-auth redesign.
+
+**Testing:** `flutter analyze` clean on all four touched files. Manual on-device verification of both fixes (new-signup flow reaching profile completion; non-default country code submitting correctly) flagged as recommended but not yet independently confirmed by the product owner.
+
+**Merged:** PR #10, squash-merged as `75b735c`. Feature branch `fix/auth-pin-verification-and-phone-code` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** the staff-auth workflow itself. Product owner directed that this be treated as its own workflow-design discussion before any implementation — not an incremental revival of the old, pre-decision email/password code, which is to be treated as reference only, inspected for reusable pieces rather than restored wholesale. Scope for that discussion, per product owner: the entry point and dedicated screen already discussed, plus explicitly session management, in-session deactivation behavior, in-session role changes, sign-out and session restoration, and shared-device implications between staff and customer accounts. Not started as of this entry.
