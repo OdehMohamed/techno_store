@@ -146,8 +146,10 @@ class _MainDrawer2State extends State<MainDrawer2> {
                   UserRole.isAdmin(type)
                       ? ListTile(
                           onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(AppRoutes.createAccountAdminSide);
+                            Navigator.of(context).pushNamed(
+                              AppRoutes.createAccountAdminSide,
+                              arguments: {'userData': state.userData},
+                            );
                           },
                           leading: const Icon(
                             Icons.person_add,
