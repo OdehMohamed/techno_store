@@ -22,6 +22,7 @@ Each of these is resolvable independently of the others and of the foundational 
 - **PIN/pattern purge timing** — immediate on delivery, or a short, strictly bounded grace period, and what mechanism guarantees completion.
 - **Deletion recovery mechanism** — how long a hidden record stays recoverable, and how it's restored.
 - **Phone-number-change mechanism** — how a customer's identity survives a verified number changing entirely.
+- **Shared-device staff identity switching or locking** — its secure mechanism deserves its own dedicated security and architecture thread whenever there's a real reason to take it up.
 - **Starting Something New** — the mechanism for a customer-initiated request, remote from a walk-in visit.
 - **Customer notification and communication channel(s)** — reliability is the governing requirement; the specific mechanism is undecided.
 - **Whether promotional communication belongs in the Communication Timeline at all** — not decided against, simply not yet earned; independent of the channel question above.
