@@ -1,10 +1,32 @@
 # ADR-004: Admin User Management Feature — Design Proposal
 
-**Status:** Proposed — **future work, explicitly not part of Phase 1 implementation.** Design only, per product-owner request ("propose the safest design... but do not implement it in Phase 1 unless it is required for security").
-**Date:** 2026-07-03
-**Related:** `ADR-002-role-management.md` (Phase 2, Custom Claims), `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §2
+**Status:** Split. The **Staff Status architecture** (activate/deactivate) below is **settled — approved by the product owner 2026-07-23, ready for implementation planning whenever it's picked up.** The **role-change proposal** (`setUserRole`) remains **Proposed — future work, not decided to build**; this pass deliberately left it untouched, per its own original recommendation to treat role-change as a separate, more carefully reviewed feature.
+**Date:** 2026-07-03 (original proposal); settled 2026-07-23 (Staff Status Architecture Pass).
+**Related:** `ADR-002-role-management.md` (Phase 2, Custom Claims), `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §2, `docs/product/PRD.md` (Auth & Account Lifecycle)
 
 **2026-07-22 product-decision update:** `docs/product/PRD.md` (Auth & Account Lifecycle) has since settled the product-level question this ADR anticipated — Admin can create, suspend, and restore staff access, with accounts created directly by Admin (no invitation flow). However, the generic `isActivated` field this ADR designs around has separately been retired for customer accounts (also `PRD.md`); staff access will be modeled as its own distinct lifecycle status, not a revival of that field. The activate/deactivate mechanics below (Cloud Function shape, audit log, route-level authorization) are still a reasonable starting point, but the exact field/data shape should be revisited against the new staff-status concept — not `isActivated` — whenever this is actually built.
+
+## 2026-07-23 — Staff Status Architecture Pass (settled)
+
+This section supersedes the activation-specific parts of the original design proposal below (data model, write mechanism). The original's read/browse/filter design, Custom Claims sequencing, and route-level authorization guidance still stand unchanged. The role-change proposal (`setUserRole`) is untouched and still just a proposal.
+
+**Data model.** `users/{uid}/meta/staffStatus`, holding `{ status: "active" | "inactive", updatedAt, updatedBy }`. A new document, not a revival of `users/{uid}/meta/isActivated` — per `PRD.md`, staff status is a distinct concept. No rules change needed: the existing `meta/{metaDoc}` wildcard match already covers any document under `meta/`, so the current read (owner or staff) and write (`if false`, always denied to clients) rules apply automatically.
+
+**Write authority.** A `setStaffStatus({ uid, status })` HTTPS Callable Cloud Function, per this ADR's original design — with one addition: it must verify not only that the caller's role is Admin, but that **the calling Admin's own `staffStatus` is currently active**. A deactivated Admin account retaining a valid Firebase Auth session must not be able to change anyone else's status. Writes an audit log entry (`auditLogs/{autoId}`: acting admin uid, target uid, old/new status, timestamp), per the original design's recommendation.
+
+**Live-session enforcement (client-side; not part of the original proposal, which was backend/Admin-screen only).** Two separate listeners, started together right after a successful staff sign-in:
+- One on `users/{uid}/meta/staffStatus`, reacting to a transition to `inactive`.
+- One on `users/{uid}` itself, reacting to a change in `type` against the value captured at sign-in.
+
+Both funnel into the same settled behavior: an immediate forced sign-out, with status-specific and role-specific messaging kept distinct. Deliberately **not named after the old `_listenToActivation`/`AuthNeedActivation` pattern** — that code is dead, and reusing its name would blur the distinction `PRD.md` already draws between the retired `isActivated` concept and this new one. Proposed naming: `_listenToStaffStatus()` / `_listenToStaffRole()` on `AuthCubit`, emitting distinct new states (e.g. `AuthStaffDeactivated`, `AuthStaffRoleChanged`) rather than reusing `AuthNeedActivation` — exact naming to be finalized at implementation, but conceptually new, not inherited.
+
+**Role-change scope.** This pass only covers the app correctly *reacting* to a role change, regardless of how it was performed (Console-only today, same as status was before this pass). Building an in-app role-change mechanism (`setUserRole`) remains explicitly out of scope, per the original proposal's own recommendation.
+
+**Failure handling if status can't be verified.** Split by context, not a single fail-open/fail-closed rule for everything:
+- At sign-in and on app restart (`checkAuth()`): fail **closed** — a read failure blocks access with a retry-able error, never a silent assumption of "active."
+- For an already-active session's live listener: a connection hiccup does **not** force a sign-out — only an actual received value (inactive, or a changed role) triggers it. A transient disconnect exposes no new risk beyond what was already true when the session started.
+
+**Migration from the legacy `isActivated` data.** Explicitly out of scope for this architecture — handled manually by the product owner at implementation time, not automated or designed here.
 
 ## Is any part of this required for Phase 1 security?
 
