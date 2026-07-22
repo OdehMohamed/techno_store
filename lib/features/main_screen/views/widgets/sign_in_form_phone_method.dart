@@ -79,7 +79,9 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
                         const SizedBox(height: 20),
                         SignInFormPhoneInput(
                           phoneController: phoneController,
-                          phoneCode: phoneCode,
+                          onCodeChanged: (code) => setState(() {
+                            phoneCode = code;
+                          }),
                         ),
                         const SizedBox(
                           height: 30,
@@ -120,7 +122,9 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
                               width: width * 0.3,
                               child: SignInFormPhoneInput(
                                 phoneController: phoneController,
-                                phoneCode: phoneCode,
+                                onCodeChanged: (code) => setState(() {
+                                  phoneCode = code;
+                                }),
                               ),
                             ),
                             const SizedBox(
