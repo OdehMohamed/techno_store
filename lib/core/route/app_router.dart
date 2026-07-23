@@ -4,6 +4,7 @@ import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/features/app_update/cubit/app_update_cubit.dart';
+import 'package:techno_store/features/archived_devices/view/archived_devices_page.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/main_screen.dart';
@@ -123,6 +124,25 @@ class AppRouter {
               BlocProvider.value(value: maintenanceListCubit),
             ],
             child: const MaintenancePage(),
+          ),
+          settings: settings,
+        );
+
+      case AppRoutes.archivedDevices:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final archivedMaintenanceListCubit =
+            args?['maintenanceListCubit'] as MaintenanceListCubit?;
+        final archivedUserData = args?['userData'] as UserData?;
+        if (archivedMaintenanceListCubit == null ||
+            archivedUserData == null ||
+            !UserRole.isAdmin(archivedUserData.type)) {
+          return _unauthorizedRoute();
+        }
+
+        return CupertinoPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: archivedMaintenanceListCubit,
+            child: ArchivedDevicesPage(adminUserData: archivedUserData),
           ),
           settings: settings,
         );

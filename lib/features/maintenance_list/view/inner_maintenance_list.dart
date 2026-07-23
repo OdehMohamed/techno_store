@@ -14,6 +14,7 @@ import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
 import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
+import 'package:techno_store/core/widgets/message.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
 import 'package:techno_store/features/maintenance_list/services/maintenance_list_services.dart';
@@ -484,12 +485,12 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           ),
           SlidableAction(
             onPressed: (_) {
-              _showDeleteConfirmation(context, device);
+              _showArchiveConfirmation(context, device);
             },
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.grey[700]!,
             foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete'.tr(),
+            icon: Icons.archive_outlined,
+            label: 'Archive'.tr(),
             borderRadius: BorderRadius.circular(12),
             padding: const EdgeInsets.symmetric(horizontal: 4),
           ),
@@ -525,12 +526,12 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           ),
           SlidableAction(
             onPressed: (_) {
-              _showDeleteConfirmation(context, device);
+              _showArchiveConfirmation(context, device);
             },
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.grey[700]!,
             foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete'.tr(),
+            icon: Icons.archive_outlined,
+            label: 'Archive'.tr(),
             borderRadius: BorderRadius.circular(12),
             padding: const EdgeInsets.symmetric(horizontal: 4),
           ),
@@ -579,12 +580,12 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           // ),
           SlidableAction(
             onPressed: (_) {
-              _showDeleteConfirmation(context, device);
+              _showArchiveConfirmation(context, device);
             },
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.grey[700]!,
             foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete'.tr(),
+            icon: Icons.archive_outlined,
+            label: 'Archive'.tr(),
             borderRadius: BorderRadius.circular(12),
             padding: const EdgeInsets.symmetric(horizontal: 4),
           ),
@@ -654,29 +655,48 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     );
   }
 
-  void _showDeleteConfirmation(
+  void _showArchiveConfirmation(
     BuildContext context,
     MaintenanceDeviceModel device,
   ) {
     // Shows customer name/phone alongside the model so staff can visually
-    // confirm they're deleting the intended record before this cascading,
-    // irreversible action runs — see docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md
-    // "Cascade deletion behavior" (delete is now staff-wide, not Admin-only).
+    // confirm they're archiving the intended record. Unlike the old hard
+    // delete this replaces, archiving is fully reversible (an Admin can
+    // restore it) and never touches images or sensitive data — see
+    // docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md.
     CustomDialogs.showDialogConfirm(
       context: context,
-      title: 'Delete Device',
-      content: 'Are you sure you want to delete this device? This will also '
-          'delete its photos and cannot be undone.\n\n'
+      title: 'Archive Device',
+      content: 'This will remove the device from the normal lists. It can be '
+          'restored later by an Admin.\n\n'
           'Customer: ${device.name} (${device.phoneNumber})\n'
           'Device: ${device.model}',
-      icon: Icons.warning_amber_rounded,
-      iconColor: Colors.red,
-      confirmText: 'Delete',
+      icon: Icons.archive_outlined,
+      iconColor: Colors.grey[700],
+      confirmText: 'Archive',
       cancelText: 'Cancel',
       onPressed: () async {
         Navigator.of(context).pop();
         final maintenanceListCubit = context.read<MaintenanceListCubit>();
-        await maintenanceListCubit.deleteDevice(device.id!);
+        final actingUid = _userData?.uid;
+        if (actingUid == null) return;
+        try {
+          await maintenanceListCubit.archiveDevice(device.id!, actingUid);
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Device archived successfully'.tr()),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (_) {
+          if (!mounted) return;
+          Message.showBottomMessage(
+            context,
+            'Could not archive this device. Please try again.'.tr(),
+            isError: true,
+          );
+        }
       },
     );
   }
