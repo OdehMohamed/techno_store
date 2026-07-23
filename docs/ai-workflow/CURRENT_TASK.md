@@ -4,14 +4,15 @@ Status: reflects the state as of 2026-07-23. Overwrite this file's content at th
 
 ## Active task
 
-**Implementing Staff Auth — backend piece shipped, client vertical slice next.** Auth & Entry review is complete (PR #9–#13, all in `main`). Sequencing agreed: finish Staff Auth implementation before opening Reception & Maintenance's review, to keep one active line of work at a time. Split into two PRs:
-1. **`setStaffStatus` Cloud Function — shipped (PR #14, `8fc01a5`).**
-2. **Client-side Staff Auth vertical slice — not yet started.** Scope and acceptance criteria locked in before implementation, per explicit product-owner condition (this combines several security-sensitive behaviors, not just a new screen). The nine acceptance criteria: active staff sign-in succeeds; inactive staff denied and immediately signed out; status rechecked on app restart; deactivation during an active session forces sign-out with a clear message; a role change during an active session forces sign-out with a distinct message; a temporary listener/network interruption does not force sign-out; password-reset failures are handled correctly without false success; the customer phone-OTP path remains unchanged; staff and customer authentication paths remain clearly separated.
+**Staff Auth is fully complete.** Auth & Entry review is complete (PR #9–#13, all in `main`), and both Staff Auth implementation PRs are merged: backend (`setStaffStatus`, PR #14) and the client-side vertical slice (PR #15), the latter live-verified on a real device against all nine locked acceptance criteria (one, restart recheck in isolation, deliberately deferred rather than failed — see `DECISIONS_LOG.md`).
 
-See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record, including the standing process correction: once a line of work clears product decisions, behavior, and architecture with no blockers, implementation is the default next step, not an automatic extra planning phase.
+**What's next is an open sequencing decision, not yet made** — per the standing process discipline (once a line of work clears with no blockers, implementation is the default next step, not an extra planning phase) the next candidate is opening Reception & Maintenance's review under "Current Application Review & Evolution," but this should be a deliberate joint call, not assumed.
+
+See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record.
 
 ## Status
 
+- [x] **Client-side Staff Auth vertical slice shipped and live-verified (2026-07-23).** PR #15 squash-merged (`31c2c81`) to `main`. All nine acceptance criteria verified (six live on a real emulator/real test staff account, one deferred by product-owner agreement, two by fix + code review). Two pre-existing bugs (`UserData.fromMap` unsafe casts; `Message.showBottomMessage` error re-curation, which also affected the shipped customer phone-OTP path) found via live testing and fixed in-scope. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record. `feat/staff-auth-client` deleted locally and remotely.
 - [x] **`setStaffStatus` Cloud Function shipped (2026-07-23).** PR #14 squash-merged (`8fc01a5`) to `main`. Also corrects a stale `ADR-004` claim (Cloud Functions infrastructure already existed via `linkDevicesToNewCustomer`, not needed "for the first time"). See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record, including recommended-but-not-yet-run emulator verification. `feat/set-staff-status-function` deleted locally and remotely.
 - [x] **PR #12 (Staff Status architecture) merged (2026-07-23).** Squash-merged as `ee1b2d3`. Previously dropped mid-session (opened but never reviewed/merged) — caught and closed before any implementation-readiness assessment, per explicit product-owner instruction that `main` should reflect the settled state first. `docs/staff-status-architecture` deleted locally and remotely.
 - [x] **Two contained Auth & Entry closeout fixes shipped, Auth & Entry review complete (2026-07-23).** PR #13 squash-merged (`0fc44b8`) to `main`. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record. `fix/auth-router-role-guards` deleted locally and remotely.
@@ -32,10 +33,12 @@ See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record, including the s
 
 ## What is NOT yet decided
 
-- The client-side Staff Auth vertical slice's implementation itself — scope/acceptance criteria are locked, but no code written yet. See `NEXT_STEPS.md`.
-- Whether `setStaffStatus` gets emulator-verified before the client PR relies on it, or verified together with the client integration.
+- What the next line of work is now that Staff Auth is fully closed out (see `NEXT_STEPS.md`).
+- Criterion 3 (restart recheck) in true isolation — deferred, not pursued further per product-owner preference; not blocking.
 - Shared-device staff identity switching/locking mechanism (`OPEN_DECISIONS.md`) — deliberately not designed yet; its own security and architecture thread.
-- Once Staff Auth implementation (if selected) is underway: whether the remaining email/password dead-code cleanup (what's reused vs. rebuilt) ships as one PR or several.
+- Whether the remaining old email/password dead code (`SignInFormEmailMethod`, `SignInButtons`, `sign_in_form_text_fields.dart`, commented-out `AuthCubit.signUp`/`AuthServices.signUpWithEmailAndPassword`) gets removed as its own cleanup PR.
+- `phoneNumber` nullability on the shared `UserData` model — flagged during PR #15's live testing (staff accounts don't inherently have one); deliberately not bundled into that PR.
+- Whether `staffStatus` document creation becomes a mandatory, enforced part of any future staff-account-creation feature.
 - `BACKLOG.md` item 16 (new): ~17 Dart source-code doc-comments under `lib/` still cite the old pre-restructuring flat paths to archived docs. Comment-only, no functional impact, deliberately deferred rather than fixed opportunistically on the docs-only restructuring branch, per `RULES.md`.
 
 Ongoing, tracked-but-not-active follow-ups remain in `BACKLOG.md` (0a deferred/accepted risk; 0b/0c/0d/10/14/15 non-blocking, including two new findings from the Home page audit — dead single-tab `TabBar` chrome under item 7, and hardcoded carousel image URLs as item 15).

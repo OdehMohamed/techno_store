@@ -599,3 +599,44 @@ Implemented on `feat/set-staff-status-function` as two commits (the function; th
 **Merged:** PR #14, squash-merged as `8fc01a5`. Feature branch `feat/set-staff-status-function` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the client-side vertical slice itself. Scoped and bounded by the nine acceptance criteria above, to be implemented next.
+
+---
+
+### 2026-07-23 — Client-side Staff Auth vertical slice shipped and live-verified against all nine acceptance criteria (PR #15)
+
+**Decision:** Implement the client-side Staff Auth vertical slice against the nine acceptance criteria locked in PR #14's entry, and verify the six most security-sensitive criteria (sign-in, deactivation, restart recheck, mid-session deactivation, mid-session role change, listener interruption tolerance) live on a real Android emulator against a real test staff account, rather than closing the line of work on code-level reasoning alone.
+
+**Decided by:** Product owner, requesting live verification explicitly: "the outstanding cases are the most security-sensitive part of this feature ... I don't think leaving these six criteria resting only on code review." Provided a real test staff account (`staffStatus`/role toggled live in Firestore during the pass) and an explicit standing instruction to stop and flag anything unexpected rather than working around it silently.
+
+**Outcome:**
+- Removed the retired `isActivated` field from `UserData` and `FirestoreApiPath`; added `staffStatus(uid)` pointing at `users/{uid}/meta/staffStatus`, write-only via the already-shipped `setStaffStatus` function.
+- `AuthCubit.signIn` rewritten as the staff-only email/password path: Firebase Auth → fetch `UserData` → confirm staff role → check `staffStatus` (fail-closed: missing/unreadable/non-`active` all deny) → curated rejection messages, or `AuthSuccess` plus two live Firestore listeners (`staffStatus`, and the user document itself for role changes). Both listeners react only to actual data changes, never to `onError` (network interruption) — the mechanism behind criterion 6.
+- `checkAuth()` runs the same fail-closed staff-status check on app restart before granting `AuthSuccess`.
+- New dedicated `StaffSignInPage`, reachable via a small, low-emphasis "Staff sign in" entry beneath the customer phone form — never a toggle inside it, keeping the two auth paths structurally separate.
+- `AuthServices.resetPassword` changed from a `Future<bool>` that swallowed all errors into an unconditional `true` to a `Future<void>` that only treats `user-not-found` as a silent success (preventing account enumeration) and rethrows everything else.
+- Two pre-existing bugs found via live testing, not code review, and fixed in-scope per product owner approval:
+  - `UserData.fromMap` cast `phoneNumber`/`location` as non-nullable `String`, crashing on any staff document (created directly in Firestore, never through `completeUserProfile`, so lacking `phoneNumber` entirely). Fixed: `phoneNumber` defaults to `''` (matches its non-nullable declared type), `location` reads as nullable (matches its declared type). Flagged for later, deliberately out of scope now: whether `phoneNumber` should become nullable on the shared `UserData` model, since a staff account doesn't inherently have one.
+  - `Message.showBottomMessage` internally re-curated any message against hardcoded Firebase error-code substrings, silently discarding caller-curated text that didn't literally contain them — found when a real `invalid-credential` response showed "An unexpected error occurred" instead of `AuthCubit`'s actual curated message. This affected the already-shipped customer phone-OTP error path too, not just new code. Fixed by removing the re-curation entirely; error interpretation now happens exactly once, at the `AuthCubit`/domain boundary.
+
+**Live verification (real device, real test staff account, `moh95od@gmail.com`):**
+1. Active sign-in — verified live.
+2. Inactive denial + immediate sign-out — verified live.
+3. Restart recheck — not exercised in isolation; the test sequence used hit criterion 4 first (deactivation while the app was open forced an immediate sign-out), so no session remained to restart into by the time the app was relaunched. Product owner explicitly accepted this as "not yet exercised independently" rather than failed, and the immediate-sign-out behavior observed instead was treated as a positive result. Deferred, not blocking.
+4. Mid-session deactivation forces sign-out with distinct message — verified via precise log timestamps correlating with the live Firestore change, accepted by product owner without requiring a repeat for a screenshot.
+5. Mid-session role change forces sign-out with distinct message — verified on the same log-based basis as criterion 4.
+6. Listener interruption tolerance — verified live: wifi/data disabled ~23s (app stayed on Home, signed in, no forced sign-out), then re-enabled (app remained stable, still signed in). Both directions confirmed no forced sign-out from connectivity alone.
+7. Password-reset failure handling — covered by the `resetPassword` fix and code review (not separately live-verified against a real failure).
+8. Customer phone-OTP path unchanged — verified live, including a real `app-not-authorized` error displaying its full unmodified message post-fix.
+9. Staff/customer paths clearly separated — verified live and via code review (dedicated screen, dedicated entry point, no shared toggle).
+
+Two real bugs were caught specifically by live testing that code review had missed, validating the product owner's insistence on it for this security-sensitive slice.
+
+Implemented on `feat/staff-auth-client` as six commits (retire `isActivated`/add `staffStatus` path; staff sign-in with status enforcement; `resetPassword` false-success fix; Staff Sign In screen/entry point/deactivation messaging; `Message.showBottomMessage` re-curation removal; `UserData.fromMap` null-safety fix).
+
+**Testing:** live, on a real Android emulator against a real test staff account and real production Firestore data, per the criteria above. No automated test suite added for this slice.
+
+**Merged:** PR #15, squash-merged as `31c2c81`. Feature branch `feat/staff-auth-client` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**With this merged, the full Staff Auth line of work (PR #9–#15: product decisions, workflow behavior, technical architecture, backend function, client vertical slice) is complete and in `main`.**
+
+**Explicitly not decided in this session:** criterion 3 in true isolation (app fully closed before any `staffStatus` change, then relaunched) — left deferred rather than pursued further, per product owner's preference to keep moving rather than re-litigate an already-proven mechanism in a different form. Also not decided: what's genuinely implementation-ready next, now that Staff Auth is fully closed out.

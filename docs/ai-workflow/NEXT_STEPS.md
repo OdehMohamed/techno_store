@@ -4,21 +4,13 @@ Short-lived by design — reflects proposed next actions as of 2026-07-23. Overw
 
 ## Immediate
 
-Implement the **client-side Staff Auth vertical slice** (PR 2 of 2 for Staff Auth; PR 1, `setStaffStatus`, shipped as PR #14). Scope is locked to nine explicit acceptance criteria, agreed before implementation starts:
+**Staff Auth is fully shipped and live-verified (PR #14 backend + PR #15 client, both in `main` as of 2026-07-23).** The next line of work is an open sequencing decision — per the standing discipline, the natural candidate is opening Reception & Maintenance's review under "Current Application Review & Evolution," but this hasn't been deliberately decided yet and shouldn't be assumed.
 
-1. An active staff account signs in successfully.
-2. An inactive staff account is denied access and immediately signed out.
-3. Status is rechecked on app restart (`checkAuth()`).
-4. Deactivation during an active session forces sign-out with a clear message.
-5. A role change during an active session forces sign-out with a distinct message.
-6. A temporary listener/network interruption does not force sign-out.
-7. Password-reset failures are handled correctly without false success.
-8. The customer phone-OTP path remains unchanged.
-9. Staff and customer authentication paths remain clearly separated.
-
-Implementation includes: the Staff Sign In entry point and dedicated screen (built fresh — `SignInFormEmailMethod`/`SignInButtons`/`AuthCubit.signUp` are reference only, per prior direction not to revive them wholesale); curated `AuthCubit`/`AuthServices` error handling; the two live listeners (`ADR-004` proposes `_listenToStaffStatus()`/`_listenToStaffRole()`, new names, not `_listenToActivation`); calling the now-shipped `setStaffStatus` function from wherever staff status gets toggled.
-
-Recommend emulator-verifying `setStaffStatus` (Admin can activate/deactivate; non-Admin rejected; deactivated-Admin rejected; Customer-target rejected; audit log written) either before or alongside this client integration — not yet done.
+Small deferred items surfaced during PR #15, not urgent but worth deliberately picking up at some point:
+- Criterion 3 (restart recheck) re-tested in true isolation (app fully closed *before* any `staffStatus` change) — currently just deferred, not failed.
+- Old email/password dead code cleanup (`SignInFormEmailMethod`, `SignInButtons`, `sign_in_form_text_fields.dart`, commented-out `AuthCubit.signUp`/`AuthServices.signUpWithEmailAndPassword`) as its own separate PR.
+- `phoneNumber` nullability reconsideration on the shared `UserData` model.
+- Making `staffStatus` document creation a mandatory part of any future staff-account-creation feature.
 
 Separately, still outstanding from the v1.1.0 release: the actual Shorebird release / Play Console / TestFlight upload for `v1.1.0`, per `CONTRIBUTING.md` §11's boundary (product owner's to run manually).
 
