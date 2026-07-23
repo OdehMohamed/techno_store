@@ -18,7 +18,14 @@ final class AuthFailure extends AuthState {
   AuthFailure(this.error);
 }
 
-final class AuthNeedActivation extends AuthState {}
+// Live-session enforcement (staff only) — transient states, always
+// followed immediately by signOut()'s LoggingOut/AuthInitial. Kept
+// distinct from each other so MainScreen can show a different message
+// for each, and deliberately not named after the old, dead
+// AuthNeedActivation — a new concept (staffStatus), not a revival.
+final class AuthStaffDeactivated extends AuthState {}
+
+final class AuthStaffRoleChanged extends AuthState {}
 
 final class LoggingOut extends AuthState {}
 
