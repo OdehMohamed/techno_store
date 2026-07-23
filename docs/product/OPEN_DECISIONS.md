@@ -24,7 +24,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 **The estimate/approval record shape.** Pricing is a sequence of records, not a single overwritten field — the principle is settled, the exact structure of that sequence is not.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
-**PIN/pattern purge timing.** Sensitive unlock data is captured only when genuinely needed, and the Delivered event permanently triggers its purge lifecycle — it can never remain part of durable history past that point. Settled. Whether the purge completes immediately or after a short, strictly bounded grace period — and what mechanism guarantees it actually completes — is not.
+**Retention limit for sensitive unlock data.** Settled (2026-07-23): delivery and destruction are decoupled — the Delivered event does not automatically purge PIN/pattern data, since the customer provided it voluntarily and it may still hold value for the device's future maintenance history, protected in the meantime by the existing access restrictions. What remains open is whether any retention limit or automatic-deletion trigger should ever apply to this data at all, and if so what it is — folded into the general permanent-deletion mechanism below rather than tied to delivery specifically.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
 **Deletion recovery mechanism.** Ordinary removal from normal use is recoverable by default — hidden, not destroyed, protecting the durable history the timeline exists to preserve — settled. How long a hidden record actually stays recoverable and how it's restored is not designed. Distinct from *who* may authorize true permanent deletion, tracked separately under Business Authority below.
