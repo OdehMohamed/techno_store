@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
+import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_buttons_phone_method.dart';
 import 'package:techno_store/features/main_screen/views/widgets/sign_in_form_phone_input.dart';
+import 'package:techno_store/features/main_screen/views/widgets/staff_sign_in_page.dart';
 
 class SignInFormPhoneMethod extends StatefulWidget {
   const SignInFormPhoneMethod({super.key});
@@ -13,14 +16,13 @@ class SignInFormPhoneMethod extends StatefulWidget {
 }
 
 class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
-  final loginEmail = TextEditingController();
-  final loginPassword = TextEditingController();
   final phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String phoneCode = '+970';
 
   @override
   Widget build(BuildContext context) {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
@@ -142,6 +144,32 @@ class _SignInFormPhoneMethodState extends State<SignInFormPhoneMethod> {
                         ),
                       ],
                     ),
+                  // Staff sign-in entry point — small and low-emphasis, but
+                  // deliberately visible rather than hidden behind a
+                  // gesture, per the agreed Staff Auth workflow design.
+                  // Leads to its own screen; never a toggle inside this
+                  // customer form, keeping the two authentication paths
+                  // visually and structurally separate.
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: authCubit,
+                            child: const StaffSignInPage(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Staff sign in'.tr(),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

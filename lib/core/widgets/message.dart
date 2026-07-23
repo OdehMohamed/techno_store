@@ -1,5 +1,4 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
@@ -23,21 +22,21 @@ class Message {
         backgroundColor: Colors.green, textColor: Colors.white);
   }
 
+  /// Displays exactly the message it's given — isError only controls
+  /// styling (red vs. green), never the text. Error interpretation belongs
+  /// once, at the boundary where a technical exception becomes a
+  /// user-facing string (AuthCubit and other cubits' curated messages),
+  /// not here. This used to also pattern-match error text against
+  /// hardcoded Firebase error-code substrings and silently replace
+  /// whatever the caller passed — which meant a caller's own correctly
+  /// curated message (e.g. "Incorrect email or password") never actually
+  /// reached the screen, since it didn't contain the raw code substring
+  /// this was matching on. Found via live device testing during the Staff
+  /// Auth vertical slice review (2026-07-23) — affected every caller that
+  /// already curated its own message, including the customer phone-OTP
+  /// error path, not just the code that surfaced it.
   static void showBottomMessage(BuildContext context, String message,
       {bool isError = false}) {
-    if (isError == true) {
-      if (message.contains('invalid-credential')) {
-        message = "Your email or password is wrong.".tr();
-      } else if (message.contains('too-many-requests')) {
-        message = "Too many attempts. Please try again later.".tr();
-      } else if (message.contains('network-request-failed')) {
-        message = "Network error. Please check your connection.".tr();
-      } else if (message.contains('email-already-in-use')) {
-        message = "Email already in use. Please use a different email.".tr();
-      } else {
-        message = "An unexpected error occurred. Please try again.".tr();
-      }
-    }
     Flushbar(
       maxWidth: 600,
       message: message,

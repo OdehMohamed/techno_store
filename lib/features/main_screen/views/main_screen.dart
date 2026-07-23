@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:techno_store/core/widgets/message.dart';
 import 'package:techno_store/features/app_update/cubit/app_update_cubit.dart';
 import 'package:techno_store/features/app_update/view/forced_update_page.dart';
 import 'package:techno_store/features/create_user_account/view/create_user_account_view.dart';
@@ -30,8 +31,32 @@ class _MainScreenState extends State<MainScreen> {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     final homeCubit = BlocProvider.of<HomeCubit>(context);
     final appUpdateCubit = BlocProvider.of<AppUpdateCubit>(context);
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
       bloc: authCubit,
+      // Live-session enforcement (staff only) — transient states, always
+      // immediately followed by signOut()'s AuthInitial, which the
+      // buildWhen/builder below already handles by falling through to
+      // SignIn. This listener only shows the distinct message for each;
+      // it deliberately doesn't also appear in buildWhen, since the
+      // state right after it is what should trigger the actual rebuild.
+      listenWhen: (previous, current) =>
+          current is AuthStaffDeactivated || current is AuthStaffRoleChanged,
+      listener: (context, state) {
+        if (state is AuthStaffDeactivated) {
+          Message.showBottomMessage(
+            context,
+            'Your account has been deactivated. Contact your administrator.',
+            isError: true,
+          );
+        }
+        if (state is AuthStaffRoleChanged) {
+          Message.showBottomMessage(
+            context,
+            'Your role has changed — please sign in again.',
+            isError: true,
+          );
+        }
+      },
       buildWhen: (previous, current) =>
           current is AuthSuccess ||
           current is AuthInitial ||

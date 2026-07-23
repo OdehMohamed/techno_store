@@ -9,7 +9,6 @@ class UserData {
   final String? name;
   final String? nickname;
   final String? email;
-  final bool isActivated;
   final int type;
   UserData({
     required this.uid,
@@ -19,7 +18,6 @@ class UserData {
     this.name,
     this.nickname,
     this.email,
-    this.isActivated = false,
     this.type = 1,
   });
 
@@ -39,8 +37,15 @@ class UserData {
   factory UserData.fromMap(Map<String, dynamic> map, [String? documentID]) {
     return UserData(
       uid: documentID ?? map['uid'] as String,
-      phoneNumber: map['phoneNumber'] as String,
-      location: map['location'] as String,
+      // Staff accounts (created directly in Firestore, not through
+      // completeUserProfile) have no phoneNumber field at all — phone is a
+      // customer/phone-OTP concept. Default rather than crash; matches
+      // completeUserProfile's own `?? ''` fallback for the same field.
+      phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] as String : '',
+      // location is declared nullable — read it as such. (Previously cast
+      // to non-nullable String, crashing on any document without it, e.g.
+      // any staff account.)
+      location: map['location'] != null ? map['location'] as String : null,
       nickname: map['nickname'] != null ? map['nickname'] as String : null,
       photoURL: map['photoURL'] != null ? map['photoURL'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
@@ -62,7 +67,6 @@ class UserData {
     String? photoURL,
     String? name,
     String? email,
-    bool? isActivated,
     int? type,
   }) {
     return UserData(
@@ -73,7 +77,6 @@ class UserData {
       photoURL: photoURL ?? this.photoURL,
       name: name ?? this.name,
       email: email ?? this.email,
-      isActivated: isActivated ?? this.isActivated,
       type: type ?? this.type,
     );
   }

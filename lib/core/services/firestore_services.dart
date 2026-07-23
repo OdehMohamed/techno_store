@@ -106,28 +106,21 @@ class FirestoreServices {
   }
 
   Future<UserData?> getUserData(String userId) async {
-    final userData = await getDocument<UserData>(
+    return getDocument<UserData>(
       path: FirestoreApiPath.user(userId),
       builder: (data, documentID) => UserData.fromMap(data, documentID),
-    );
-    // The activation meta document may not exist (it is created only when a
-    // privileged operator activates the account — see saveUserData). Treat an
-    // absent document as "not activated" rather than throwing.
-    final userMetaData = await getDocumentOrNull(
-      path: FirestoreApiPath.userMeta(userId),
-    );
-    return userData.copyWith(
-      isActivated: (userMetaData?['isActivated'] as bool?) ?? false,
     );
   }
 
   Future<void> saveUserData(UserData userData) async {
-    // Writes only the user profile document. Account activation state
-    // (users/{uid}/meta/isActivated) is deliberately NOT written from the
-    // client: per ADR-004 it is controlled exclusively by a privileged
-    // operator (Console/Admin SDK), and the deployed Firestore rules deny
-    // client writes to that path. A user with no meta document is treated as
-    // not activated (see getUserData and AuthCubit._listenToActivation).
+    // Writes only the user profile document. Staff lifecycle status
+    // (users/{uid}/meta/staffStatus) is a separate, staff-only concept —
+    // deliberately NOT written from the client: the deployed Firestore
+    // rules deny all client writes under users/{uid}/meta, and the only
+    // write path is setStaffStatus (functions/index.js), per ADR-004's
+    // Staff Status Architecture Pass. See AuthCubit's staff sign-in path
+    // for how an absent/unreadable status document is treated (fails
+    // closed — never assumed active).
     await setData(
       path: FirestoreApiPath.user(userData.uid),
       data: userData.toMap(),

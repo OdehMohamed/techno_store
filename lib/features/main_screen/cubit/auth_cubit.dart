@@ -8,6 +8,7 @@ import 'package:techno_store/core/services/auth_services.dart';
 import 'package:techno_store/core/services/cache_services.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/utils/firestore_api_path.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -18,7 +19,13 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthServices _authServices = AuthServices();
   final FirestoreServices _firestoreServices = FirestoreServices.instance;
   final cacheServices = CacheServices();
-  StreamSubscription<Map<String, dynamic>?>? _activationSubscription;
+
+  // Staff-only: live-session enforcement, started after a successful staff
+  // sign-in (fresh or restored). Never started for customers — this whole
+  // mechanism doesn't apply to the phone-OTP path. See ADR-004's "Staff
+  // Status Architecture Pass".
+  StreamSubscription<Map<String, dynamic>?>? _staffStatusSubscription;
+  StreamSubscription<Map<String, dynamic>?>? _staffRoleSubscription;
 
   // download the saved state on app start
   Future<void> _loadPendingVerification() async {
@@ -66,17 +73,73 @@ class AuthCubit extends Cubit<AuthState> {
     debugPrint('🗑️ Deleted pending profile completion state');
   }
 
+  /// Staff-only sign-in. Email/password is deliberately never used by
+  /// customers (phone-OTP only) — see docs/product/PRD.md, Auth & Account
+  /// Lifecycle. Enforces staff status here, not just at the UI layer:
+  /// wrong account type, an unverifiable status, or a confirmed-inactive
+  /// status are all rejected and signed out before AuthSuccess is ever
+  /// emitted, never granted provisionally.
   Future<void> signIn(String email, String password) async {
     emit(AuthLoading());
     try {
-      bool isAuthenticated =
-          await _authServices.signInWithEmailAndPassword(email, password);
+      await _authServices.signInWithEmailAndPassword(email, password);
 
-      debugPrint(isAuthenticated.toString());
+      final userData = await _authServices.fetchCurrentUserData();
+      if (userData == null) {
+        await _authServices.signOut();
+        emit(AuthFailure('Could not load your account. Please try again.'));
+        return;
+      }
 
-      emit(AuthSuccess());
+      if (!UserRole.isStaff(userData.type)) {
+        await _authServices.signOut();
+        emit(AuthFailure('This sign-in is for staff accounts only.'));
+        return;
+      }
+
+      final isActive = await _fetchStaffIsActive(userData.uid);
+      if (isActive == null) {
+        await _authServices.signOut();
+        emit(AuthFailure(
+          'Could not verify your account status. Please try again.',
+        ));
+        return;
+      }
+      if (!isActive) {
+        await _authServices.signOut();
+        emit(AuthFailure(
+          'Your account has been deactivated. Contact your administrator.',
+        ));
+        return;
+      }
+
+      _watchStaffSession(userData.uid, userData.type);
+      emit(AuthSuccess(userData));
+    } on FirebaseAuthException catch (e) {
+      debugPrint('❌ Staff sign-in Firebase error: ${e.code} - ${e.message}');
+      emit(AuthFailure(_staffSignInErrorMessage(e)));
     } catch (error) {
-      emit(AuthFailure(error.toString()));
+      debugPrint('💥 Unexpected staff sign-in error: $error');
+      emit(AuthFailure('An unexpected error occurred: $error'));
+    }
+  }
+
+  String _staffSignInErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'user-disabled':
+        return 'This account has been disabled';
+      case 'invalid-credential':
+      case 'wrong-password':
+      case 'user-not-found':
+        return 'Incorrect email or password';
+      case 'too-many-requests':
+        return 'Too many attempts, please try again later';
+      case 'network-request-failed':
+        return 'Network error, please check your connection';
+      default:
+        return e.message ?? 'An error occurred while signing in';
     }
   }
 
@@ -286,6 +349,7 @@ class AuthCubit extends Cubit<AuthState> {
   // }
 
   Future<void> signOut() async {
+    await _stopStaffSessionWatch();
     emit(LoggingOut());
     try {
       await _authServices.signOut();
@@ -295,13 +359,37 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// Restores a session on app start. Staff status is re-verified here too
+  /// — not just at fresh sign-in — since an account could have been
+  /// deactivated while the app was closed. Fails closed on an unverifiable
+  /// status, same as signIn.
   Future<void> checkAuth() async {
     final userData = await _authServices.fetchCurrentUserData();
-    if (userData != null) {
-      emit(AuthSuccess(userData));
-    } else {
+    if (userData == null) {
       emit(AuthInitial());
+      return;
     }
+
+    if (UserRole.isStaff(userData.type)) {
+      final isActive = await _fetchStaffIsActive(userData.uid);
+      if (isActive == null) {
+        await _authServices.signOut();
+        emit(AuthFailure(
+          'Could not verify your account status. Please sign in again.',
+        ));
+        return;
+      }
+      if (!isActive) {
+        await _authServices.signOut();
+        emit(AuthFailure(
+          'Your account has been deactivated. Contact your administrator.',
+        ));
+        return;
+      }
+      _watchStaffSession(userData.uid, userData.type);
+    }
+
+    emit(AuthSuccess(userData));
   }
 
   void passwordSecretChanged(bool isSecret) {
@@ -318,29 +406,74 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void _listenToActivation([UserData? userData]) async {
-    await _activationSubscription?.cancel();
-    final uid = _authServices.currentUser!.uid;
-    _activationSubscription = _firestoreServices
+  /// Fails closed: an absent staffStatus document, one without an explicit
+  /// "active" value, or a read failure are all treated as not-active.
+  /// Returns null specifically when the read itself failed, so callers can
+  /// distinguish "confirmed inactive" from "couldn't verify" in their
+  /// messaging — both still deny access, but for different reasons.
+  Future<bool?> _fetchStaffIsActive(String uid) async {
+    try {
+      final data = await _firestoreServices.getDocumentOrNull(
+        path: FirestoreApiPath.staffStatus(uid),
+      );
+      return data?['status'] == 'active';
+    } catch (e) {
+      debugPrint('❌ Error fetching staff status for $uid: $e');
+      return null;
+    }
+  }
+
+  /// Live-session enforcement for an already-signed-in staff account. Two
+  /// independent listeners — status lives under users/{uid}/meta, role
+  /// lives on users/{uid} itself, so one stream can't cover both. Each
+  /// reacts only to an actual received value; a stream error (temporary
+  /// network interruption) is deliberately ignored, not treated as a
+  /// reason to sign out — see ADR-004's fail-open/fail-closed split.
+  void _watchStaffSession(String uid, int roleAtSignIn) {
+    _staffStatusSubscription?.cancel();
+    _staffRoleSubscription?.cancel();
+
+    _staffStatusSubscription = _firestoreServices
         .documentsStream(
-      path: FirestoreApiPath.userMeta(uid),
+      path: FirestoreApiPath.staffStatus(uid),
       builder: (data, documentID) => data,
     )
-        .listen((data) async {
-      debugPrint('Activation data: $data');
-      // An absent meta document means the account has not been activated by a
-      // privileged operator yet (see FirestoreServices.saveUserData) — treat
-      // it the same as isActivated != true.
-      if (data == null || data['isActivated'] != true) {
-        emit(AuthNeedActivation());
-        await signOut();
-      } else {
-        if (userData != null) {
-          emit(AuthSuccess(userData));
-        } else {
-          emit(AuthSuccess());
+        .listen(
+      (data) async {
+        final isActive = data?['status'] == 'active';
+        if (!isActive) {
+          emit(AuthStaffDeactivated());
+          await signOut();
         }
-      }
-    });
+      },
+      onError: (e) => debugPrint(
+        '⚠️ Staff status listener error (ignored, no forced sign-out): $e',
+      ),
+    );
+
+    _staffRoleSubscription = _firestoreServices
+        .documentsStream(
+      path: FirestoreApiPath.user(uid),
+      builder: (data, documentID) => data,
+    )
+        .listen(
+      (data) async {
+        final currentType = data?['type'] as int?;
+        if (currentType != null && currentType != roleAtSignIn) {
+          emit(AuthStaffRoleChanged());
+          await signOut();
+        }
+      },
+      onError: (e) => debugPrint(
+        '⚠️ Staff role listener error (ignored, no forced sign-out): $e',
+      ),
+    );
+  }
+
+  Future<void> _stopStaffSessionWatch() async {
+    await _staffStatusSubscription?.cancel();
+    await _staffRoleSubscription?.cancel();
+    _staffStatusSubscription = null;
+    _staffRoleSubscription = null;
   }
 }
