@@ -174,13 +174,23 @@ class AuthServices {
     await cacheServices.clear();
   }
 
-  Future<bool> resetPassword(String email) async {
+  /// Deliberately masks only "no account with this email" — the caller
+  /// shows the same "check your email" message whether or not the account
+  /// exists, avoiding account enumeration. Every other failure (network,
+  /// invalid-email, too-many-requests) is a real problem and must
+  /// propagate, never be swallowed into a false success. Previously this
+  /// caught every exception and returned an unchecked bool, so every
+  /// failure mode showed a false "success" message — see DECISIONS_LOG.md,
+  /// 2026-07-23 Auth & Entry review.
+  Future<void> resetPassword(String email) async {
     try {
       await firebaseAuth.sendPasswordResetEmail(email: email);
-      return true;
-    } catch (e) {
-      debugPrint('Error resetting password: $e');
-      return false;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        debugPrint('Password reset requested for unknown email: $email');
+        return;
+      }
+      rethrow;
     }
   }
 
