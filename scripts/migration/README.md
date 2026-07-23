@@ -47,14 +47,18 @@ See `PRE_DEPLOYMENT_BACKUP_PLAN.md` §4 (restoration procedure) and `PHASE1_IMPL
 
 ## ADR-005: Device Lifecycle `recordState` Backfill
 
-**Status: written and tested (dry-run), NOT yet executed against production.** Backfills `recordState: 'active'` onto every `maintenanceDevices` document, required before the client's device-tab queries start filtering on that field — see `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md` ("Migration") for the full rationale. Independent of the Phase 1C migration above; does not touch `pin`/`patternLock`/`notesHidden`/Storage/`private/sensitive` at all.
+**Status: written and tested (dry-run), NOT yet executed against production.** Backfills `recordState: 'active'` onto every `maintenanceDevices` document — see `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md` ("Migration") for the full rationale. Independent of the Phase 1C migration above; does not touch `pin`/`patternLock`/`notesHidden`/Storage/`private/sensitive` at all.
+
+**Run this as part of final cutover, after the client-side vertical slice (ADR-005's "PR 2") is implemented, reviewed, and live-verified against production — not as a step between PR 1 and PR 2.** PR 2's new-device-creation path sets `recordState` explicitly, so live verification of Archive/Restore/Permanent Delete doesn't depend on this backfill having run yet; pre-existing devices are just expected to be temporarily absent from the tabs during that verification window.
 
 ### Order of operations
 
-1. Take a fresh backup — both the managed `gcloud firestore export` (format A, see step 3 in the Phase 1C section above, adjusted to `--collection-ids=maintenanceDevices`) and `npm run backup` (format B). Do not skip this because Phase 1C's old backups exist; those predate this data.
-2. Get explicit product-owner approval to proceed — this writes to every real customer device record.
-3. `npm run migrate:recordstate` — dry-run by default (prints intended writes, writes nothing). Review the output, then run `node migrate-recordstate.js --execute` to actually write. Idempotent: documents that already have a `recordState` field (from a prior partial run) are skipped, not overwritten.
-4. `npm run verify:recordstate` — read-only. Must report **zero documents missing recordState** before any client code that queries on it is deployed. If it fails, do not proceed — investigate and re-run step 3.
+1. Confirm PR 2 has been implemented, reviewed, and live-verified per the sequence above.
+2. Take a fresh backup — both the managed `gcloud firestore export` (format A, see step 3 in the Phase 1C section above, adjusted to `--collection-ids=maintenanceDevices`) and `npm run backup` (format B). Do not skip this because Phase 1C's old backups exist; those predate this data.
+3. Get explicit product-owner approval to proceed — this writes to every real customer device record.
+4. `npm run migrate:recordstate` — dry-run by default (prints intended writes, writes nothing). Review the output, then run `node migrate-recordstate.js --execute` to actually write. Idempotent: documents that already have a `recordState` field (from a prior partial run) are skipped, not overwritten.
+5. `npm run verify:recordstate` — read-only. Must report **zero documents missing recordState**. If it fails, do not proceed — investigate and re-run step 4.
+6. Merge PR 2 to `main`, closing out the vertical slice.
 
 ### What this does NOT do
 

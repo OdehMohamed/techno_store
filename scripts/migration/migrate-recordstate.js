@@ -17,8 +17,12 @@
  * directory — shares only lib/admin.js. Take a fresh backup (see backup.js
  * and docs/ai-workflow/PRE_DEPLOYMENT_BACKUP_PLAN.md) and get explicit
  * product-owner approval before running with --execute against production.
+ *
+ * Sequenced as part of final cutover, AFTER the client-side vertical slice
+ * (PR 2) is implemented, reviewed, and live-verified against production
+ * using freshly created test devices — not as a step between PR 1 and PR 2.
  * See docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md
- * "Migration".
+ * "Migration" and "Rollout".
  */
 const { initAdmin } = require('./lib/admin');
 
