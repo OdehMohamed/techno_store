@@ -4,14 +4,22 @@ Status: reflects the state as of 2026-07-23. Overwrite this file's content at th
 
 ## Active task
 
-**Staff Auth is fully complete.** Auth & Entry review is complete (PR #9–#13, all in `main`), and both Staff Auth implementation PRs are merged: backend (`setStaffStatus`, PR #14) and the client-side vertical slice (PR #15), the latter live-verified on a real device against all nine locked acceptance criteria (one, restart recheck in isolation, deliberately deferred rather than failed — see `DECISIONS_LOG.md`).
+**Reception & Maintenance review is underway** (Auth & Entry, including full Staff Auth, is complete — PR #9–#15, all in `main`). Continuing the same rhythm just proven on Staff Auth: review → decide/implement → live verification → merge → move on, per item, no separate planning phase.
 
-**What's next is an open sequencing decision, not yet made** — per the standing process discipline (once a line of work clears with no blockers, implementation is the default next step, not an extra planning phase) the next candidate is opening Reception & Maintenance's review under "Current Application Review & Evolution," but this should be a deliberate joint call, not assumed.
+A first code-level pass (routes, device intake form, maintenance tracking list, Fixed/Deliver dialogs, `ManageCategoriesPage`, drawer) is done. One finding has been decided; several remain open:
+
+- [x] **Settled and shipped (2026-07-23).** PR #16 squash-merged (`a7203ed`). PIN/pattern data is not automatically purged at delivery — delivery and destruction are deliberately decoupled. See `DECISIONS_LOG.md`.
+- [ ] **Open:** device deletion is a genuine hard delete (no recoverable/hidden state), for devices in any status including Delivered — conflicts with `PRD.md`'s settled "recoverable by default" principle, and intersects the still-open permanent-deletion-authorization question.
+- [ ] **Open:** `newDeviceMaintenance` route has no role guard in `AppRouter`, unlike `maintenancePage`/`createAccountAdminSide`.
+- [ ] **Open:** employee attribution (`receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee`) is drawn from a hardcoded `AppConstants` string list, disconnected from the real Staff Auth accounts now in `main`.
+- [ ] **Open (lower priority):** intake is one large single-screen form: worth a deliberate call on whether it conflicts with the PRD's "captures only what's genuinely required" framing, or whether that's already satisfied since only phone/name/model/received-by are hard-required.
+- [ ] **Confirmed dead code, not yet removed:** `ManageCategoriesPage` + its cubit (fully non-functional shell), `lib/features/maintenance_list/view_model/maintenance_list_state.dart` (unreferenced), Invoice/Reopen TODO stubs on the Delivered tab, several empty drawer `onTap: () {}` stubs (Favorite, Settings, Add new Product, Customer's "Maintenance (My Devices)").
 
 See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record.
 
 ## Status
 
+- [x] **PIN/pattern purge decoupled from delivery, settled and shipped (2026-07-23).** PR #16 squash-merged (`a7203ed`) to `main`. `docs/pin-pattern-purge-decoupled-from-delivery` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record.
 - [x] **Client-side Staff Auth vertical slice shipped and live-verified (2026-07-23).** PR #15 squash-merged (`31c2c81`) to `main`. All nine acceptance criteria verified (six live on a real emulator/real test staff account, one deferred by product-owner agreement, two by fix + code review). Two pre-existing bugs (`UserData.fromMap` unsafe casts; `Message.showBottomMessage` error re-curation, which also affected the shipped customer phone-OTP path) found via live testing and fixed in-scope. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record. `feat/staff-auth-client` deleted locally and remotely.
 - [x] **`setStaffStatus` Cloud Function shipped (2026-07-23).** PR #14 squash-merged (`8fc01a5`) to `main`. Also corrects a stale `ADR-004` claim (Cloud Functions infrastructure already existed via `linkDevicesToNewCustomer`, not needed "for the first time"). See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record, including recommended-but-not-yet-run emulator verification. `feat/set-staff-status-function` deleted locally and remotely.
 - [x] **PR #12 (Staff Status architecture) merged (2026-07-23).** Squash-merged as `ee1b2d3`. Previously dropped mid-session (opened but never reviewed/merged) — caught and closed before any implementation-readiness assessment, per explicit product-owner instruction that `main` should reflect the settled state first. `docs/staff-status-architecture` deleted locally and remotely.
