@@ -142,24 +142,23 @@ service cloud.firestore {
           && request.resource.data.get('recordState', 'active') != 'archived')
       );
 
-      // Deletion cascades client-side today (Storage images + the
-      // private/sensitive subdocument below must also be deleted by the
-      // calling code — Firestore does not cascade-delete subcollections
-      // automatically). Deliberately UNCHANGED here even though ADR-005
-      // moves permanent deletion to a server-side-only Cloud Function
-      // (`permanentlyDeleteDevice`) with its own Admin-only, archived-only
-      // authorization — narrowing this to `if false` is sequenced into the
-      // second PR of that rollout, together with the client cutover that
-      // stops calling this path, so this rule and the shipped client action
-      // it backs never fall out of sync mid-rollout. See ADR-005 "Rollout".
-      allow delete: if isSignedIn() && isStaff();
+      // Permanent deletion moved server-side (ADR-005): the
+      // permanentlyDeleteDevice Cloud Function uses the Admin SDK, which
+      // bypasses these rules entirely, so it needs no client `delete`
+      // permission here at all. The client no longer calls `.delete()` on
+      // this collection anywhere — see MaintenanceListServices (Archive is
+      // an `update`, not a `delete`).
+      allow delete: if false;
 
       // Sensitive fields (pin, patternLock, notesHidden) — ADR-001 Option A.
       // No customer exception, ever, per explicit product-owner instruction:
       // the owning customer must never read these values.
       match /private/{doc} {
         allow read: if isSignedIn() && isStaff();
-        allow write: if isSignedIn() && isStaff();
+        allow create, update: if isSignedIn() && isStaff();
+        // Deletion also moved server-side (ADR-005) — same reasoning as
+        // the parent document's `delete` rule above.
+        allow delete: if false;
       }
 
       // Append-only provenance log for Archive/Restore — see ADR-005.
