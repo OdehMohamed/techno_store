@@ -1,39 +1,63 @@
-# Phase 1C Migration Scripts
+# Migration Scripts
 
-**Status: prepared during Phase 1B, NOT executed.** These implement the migration described in `docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md` §4, validated against `docs/ai-workflow/MIGRATION_SUCCESS_CRITERIA.md`. They are plain Node.js — **not part of the Flutter app**; nothing under `lib/` imports or depends on anything here.
+Plain Node.js Admin SDK scripts for one-off production data migrations — **not part of the Flutter app**; nothing under `lib/` imports or depends on anything here. Two independent migrations currently live in this directory, sharing only `lib/admin.js` and the setup steps below:
 
-## Before running anything
+1. **Phase 1C sensitive-data split** — prepared during Phase 1B, **NOT executed** as of this writing.
+2. **ADR-005 device lifecycle `recordState` backfill** — required before the client-side Archive/Restore/Permanent Delete cutover (`ADR-005`'s "PR 2") ships.
 
-1. Read `docs/ai-workflow/PRE_DEPLOYMENT_BACKUP_PLAN.md` and `docs/ai-workflow/MIGRATION_SUCCESS_CRITERIA.md` in full.
-2. Authenticate via Application Default Credentials (ADC) — pick one:
+## Before running anything (either migration)
+
+1. Authenticate via Application Default Credentials (ADC) — pick one:
    - **Recommended:** `gcloud auth application-default login`, signing in with an account that has Firestore access to `technostore-v2`. No key file is created or stored anywhere. Verify you're on the right account with `gcloud auth list` before running anything.
    - Or, if a service account key file already exists for this purpose: `export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json`. **Never commit that file or any credentials to this repo.**
    Either way, the scripts always target the `technostore-v2` project explicitly (see `lib/admin.js`) — they don't rely on whatever your ambient gcloud default project happens to be.
-3. `npm install` in this directory.
+2. `npm install` in this directory.
 
-## Order of operations
+## Phase 1C: Sensitive-Data Split
 
-1. `npm run inventory` — read-only. Records N (total devices) and M (devices with sensitive data). **Always run this first.**
-2. Take the managed Firestore export (backup format A) via the `gcloud` CLI per `PRE_DEPLOYMENT_BACKUP_PLAN.md` §2 — **not scripted here**, run it directly:
+**Status: prepared during Phase 1B, NOT executed.** Implements the migration described in `docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md` §4, validated against `docs/ai-workflow/MIGRATION_SUCCESS_CRITERIA.md`.
+
+### Order of operations
+
+1. Read `docs/ai-workflow/PRE_DEPLOYMENT_BACKUP_PLAN.md` and `docs/ai-workflow/MIGRATION_SUCCESS_CRITERIA.md` in full.
+2. `npm run inventory` — read-only. Records N (total devices) and M (devices with sensitive data). **Always run this first.**
+3. Take the managed Firestore export (backup format A) via the `gcloud` CLI per `PRE_DEPLOYMENT_BACKUP_PLAN.md` §2 — **not scripted here**, run it directly:
    ```
    gcloud firestore export gs://<backup-bucket>/firestore/<timestamp>/ \
      --collection-ids=maintenanceDevices,users --project=technostore-v2
    ```
-3. `npm run backup` — writes a local JSON dump (backup format B) to `backups/<timestamp>/`. Upload this directory to the backup GCS bucket per `PRE_DEPLOYMENT_BACKUP_PLAN.md` §3. **Do not proceed past this step without both backups in place.**
-4. `npm run migrate:a` — dry-run by default (prints intended writes, writes nothing). Review the output, then run `node migrate-pass-a.js --execute` to actually create the `private/sensitive` subdocuments. Non-destructive — never touches the parent documents.
-5. `npm run verify:a` — read-only. Must report **zero mismatches** before proceeding. If it fails, stop and investigate per `MIGRATION_SUCCESS_CRITERIA.md` §4 — do not continue to step 6.
-6. `npm run migrate:b` — dry-run by default. **This step is destructive**: it removes `pin`/`patternLock`/`notesHidden` from the parent documents. It re-runs Pass A's verification itself immediately before writing and refuses to execute if that fails. Run `node migrate-pass-b.js --execute` only after reviewing the dry-run output and confirming the backups from step 3 are in place.
-7. `npm run verify:b` — read-only. Confirms zero lingering sensitive fields and that the total document count matches step 1's N.
+4. `npm run backup` — writes a local JSON dump (backup format B) to `backups/<timestamp>/`. Upload this directory to the backup GCS bucket per `PRE_DEPLOYMENT_BACKUP_PLAN.md` §3. **Do not proceed past this step without both backups in place.**
+5. `npm run migrate:a` — dry-run by default (prints intended writes, writes nothing). Review the output, then run `node migrate-pass-a.js --execute` to actually create the `private/sensitive` subdocuments. Non-destructive — never touches the parent documents.
+6. `npm run verify:a` — read-only. Must report **zero mismatches** before proceeding. If it fails, stop and investigate per `MIGRATION_SUCCESS_CRITERIA.md` §4 — do not continue to step 7.
+7. `npm run migrate:b` — dry-run by default. **This step is destructive**: it removes `pin`/`patternLock`/`notesHidden` from the parent documents. It re-runs Pass A's verification itself immediately before writing and refuses to execute if that fails. Run `node migrate-pass-b.js --execute` only after reviewing the dry-run output and confirming the backups from step 4 are in place.
+8. `npm run verify:b` — read-only. Confirms zero lingering sensitive fields and that the total document count matches step 2's N.
 
-Only after step 7 passes should Firestore/Storage rules be deployed (a separate step, per `PHASE1_IMPLEMENTATION_PLAN.md` §7 — not part of this directory at all).
+Only after step 8 passes should Firestore/Storage rules be deployed (a separate step, per `PHASE1_IMPLEMENTATION_PLAN.md` §7 — not part of this directory at all).
 
-## If something goes wrong
+### If something goes wrong
 
-See `PRE_DEPLOYMENT_BACKUP_PLAN.md` §4 (restoration procedure) and `PHASE1_IMPLEMENTATION_PLAN.md` §8 (rollback order). Prefer the targeted restore (using the JSON backup from step 3) over a full `gcloud firestore import` — see the backup plan's rationale for why a blind full import risks reverting legitimate data created after the backup.
+See `PRE_DEPLOYMENT_BACKUP_PLAN.md` §4 (restoration procedure) and `PHASE1_IMPLEMENTATION_PLAN.md` §8 (rollback order). Prefer the targeted restore (using the JSON backup from step 4) over a full `gcloud firestore import` — see the backup plan's rationale for why a blind full import risks reverting legitimate data created after the backup.
 
-## What this does NOT do
+### What this does NOT do
 
 - Does not deploy Firestore or Storage rules.
 - Does not touch Storage/images.
 - Does not touch the dormant `users/{uid}/devices` subcollection (separate, pre-existing backlog item).
 - Does not check that a backup exists before Pass B — that verification is the operator's responsibility.
+
+## ADR-005: Device Lifecycle `recordState` Backfill
+
+**Status: written and tested (dry-run), NOT yet executed against production.** Backfills `recordState: 'active'` onto every `maintenanceDevices` document, required before the client's device-tab queries start filtering on that field — see `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md` ("Migration") for the full rationale. Independent of the Phase 1C migration above; does not touch `pin`/`patternLock`/`notesHidden`/Storage/`private/sensitive` at all.
+
+### Order of operations
+
+1. Take a fresh backup — both the managed `gcloud firestore export` (format A, see step 3 in the Phase 1C section above, adjusted to `--collection-ids=maintenanceDevices`) and `npm run backup` (format B). Do not skip this because Phase 1C's old backups exist; those predate this data.
+2. Get explicit product-owner approval to proceed — this writes to every real customer device record.
+3. `npm run migrate:recordstate` — dry-run by default (prints intended writes, writes nothing). Review the output, then run `node migrate-recordstate.js --execute` to actually write. Idempotent: documents that already have a `recordState` field (from a prior partial run) are skipped, not overwritten.
+4. `npm run verify:recordstate` — read-only. Must report **zero documents missing recordState** before any client code that queries on it is deployed. If it fails, do not proceed — investigate and re-run step 3.
+
+### What this does NOT do
+
+- Does not deploy Firestore or Storage rules (see `ADR-005`'s own rollout PRs for that).
+- Does not touch Storage/images, `private/sensitive`, or any field other than `recordState`.
+- Does not set `recordState` to anything other than `'active'` — no device is archived by this script.
