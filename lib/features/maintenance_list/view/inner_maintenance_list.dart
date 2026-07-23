@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techno_store/core/model/device_tab_page.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
+import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/core/route/app_routes.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
@@ -45,6 +46,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
 
   // Populated from HomeState once available (see build()).
   String? _uid;
+  UserData? _userData;
 
   static const List<String> _tabStatuses = [
     DeviceStatus.inMaintenance,
@@ -121,6 +123,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
         } else if (homeState is HomeLoaded) {
           final isEmployee = UserRole.isStaff(homeState.userData.type);
           _uid = homeState.userData.uid;
+          _userData = homeState.userData;
           final services =
               context.read<MaintenanceListCubit>().maintenanceListServices;
 
@@ -458,7 +461,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
               Navigator.pushNamed(
                 context,
                 AppRoutes.newDeviceMaintenance,
-                arguments: {'device': device},
+                arguments: {'device': device, 'userData': _userData},
               );
             },
             backgroundColor: Colors.blue,
@@ -499,7 +502,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
               Navigator.pushNamed(
                 context,
                 AppRoutes.newDeviceMaintenance,
-                arguments: {'device': device},
+                arguments: {'device': device, 'userData': _userData},
               );
             },
             backgroundColor: Colors.blue,
@@ -540,7 +543,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
               Navigator.pushNamed(
                 context,
                 AppRoutes.newDeviceMaintenance,
-                arguments: {'device': device},
+                arguments: {'device': device, 'userData': _userData},
               );
             },
             backgroundColor: Colors.blue,
@@ -692,6 +695,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
         onPressed: () async {
           await Navigator.of(context).pushNamed(
             AppRoutes.newDeviceMaintenance,
+            arguments: {'userData': _userData},
           );
         },
         icon: const Icon(Icons.add, color: Colors.white),

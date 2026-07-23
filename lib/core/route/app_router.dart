@@ -77,6 +77,11 @@ class AppRouter {
       case AppRoutes.newDeviceMaintenance:
         final args = settings.arguments as Map<String, dynamic>?;
         final device = args?['device'] as MaintenanceDeviceModel?;
+        final newDeviceUserData = args?['userData'] as UserData?;
+        if (newDeviceUserData == null ||
+            !UserRole.isStaff(newDeviceUserData.type)) {
+          return _unauthorizedRoute();
+        }
 
         debugPrint(
             '🔧 Navigating to NewDeviceMaintenance with device: ${device?.id}');
