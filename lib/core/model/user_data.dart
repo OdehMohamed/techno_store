@@ -9,7 +9,6 @@ class UserData {
   final String? name;
   final String? nickname;
   final String? email;
-  final bool isActivated;
   final int type;
   UserData({
     required this.uid,
@@ -19,7 +18,6 @@ class UserData {
     this.name,
     this.nickname,
     this.email,
-    this.isActivated = false,
     this.type = 1,
   });
 
@@ -62,7 +60,6 @@ class UserData {
     String? photoURL,
     String? name,
     String? email,
-    bool? isActivated,
     int? type,
   }) {
     return UserData(
@@ -73,7 +70,6 @@ class UserData {
       photoURL: photoURL ?? this.photoURL,
       name: name ?? this.name,
       email: email ?? this.email,
-      isActivated: isActivated ?? this.isActivated,
       type: type ?? this.type,
     );
   }

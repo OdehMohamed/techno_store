@@ -71,7 +71,6 @@ class CacheServices {
     final email = sharedPreferences.getString('email');
     final photoURL = sharedPreferences.getString('photoURL');
     final name = sharedPreferences.getString('name');
-    final isActivated = sharedPreferences.getBool('isActivated');
     final type = sharedPreferences.getInt('type');
 
     final userData = UserData(
@@ -80,7 +79,6 @@ class CacheServices {
       email: email,
       photoURL: photoURL,
       name: name,
-      isActivated: isActivated!,
       type: type!,
     );
     return userData;
@@ -97,7 +95,6 @@ class CacheServices {
     await sharedPreferences.setString('name', userData.name ?? '');
     await sharedPreferences.setString('location', userData.location ?? '');
     await sharedPreferences.setString('nickname', userData.nickname ?? '');
-    await sharedPreferences.setBool('isActivated', userData.isActivated);
     await sharedPreferences.setInt('type', userData.type);
   }
 }

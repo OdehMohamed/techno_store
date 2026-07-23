@@ -1,7 +1,11 @@
 class FirestoreApiPath {
   static String users() => 'users/';
   static String user(String userId) => 'users/$userId';
-  static String userMeta(String userId) => 'users/$userId/meta/isActivated';
+  // Staff-only lifecycle status — distinct from the retired isActivated
+  // field (see docs/product/PRD.md, Auth & Account Lifecycle). Client
+  // writes are always denied (firestore.rules); only setStaffStatus
+  // (functions/index.js) writes this.
+  static String staffStatus(String userId) => 'users/$userId/meta/staffStatus';
 
   // Maintenance Devices Paths
   static String maintenanceDevices() => 'maintenanceDevices/';
