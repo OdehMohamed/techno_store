@@ -37,8 +37,15 @@ class UserData {
   factory UserData.fromMap(Map<String, dynamic> map, [String? documentID]) {
     return UserData(
       uid: documentID ?? map['uid'] as String,
-      phoneNumber: map['phoneNumber'] as String,
-      location: map['location'] as String,
+      // Staff accounts (created directly in Firestore, not through
+      // completeUserProfile) have no phoneNumber field at all — phone is a
+      // customer/phone-OTP concept. Default rather than crash; matches
+      // completeUserProfile's own `?? ''` fallback for the same field.
+      phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] as String : '',
+      // location is declared nullable — read it as such. (Previously cast
+      // to non-nullable String, crashing on any document without it, e.g.
+      // any staff account.)
+      location: map['location'] != null ? map['location'] as String : null,
       nickname: map['nickname'] != null ? map['nickname'] as String : null,
       photoURL: map['photoURL'] != null ? map['photoURL'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
