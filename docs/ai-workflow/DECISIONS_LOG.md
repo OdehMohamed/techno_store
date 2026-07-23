@@ -672,3 +672,29 @@ Implemented on `feat/staff-auth-client` as six commits (retire `isActivated`/add
 **Merged:** PR #17, squash-merged as `e2c0f82`. Feature branch `fix/new-device-maintenance-route-guard` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the device-deletion authority boundary and recoverable-removal mechanism — the next item, deliberately started as a decision conversation rather than code. Employee attribution's hardcoded list, the intake-form shape question, and the confirmed dead code all remain open and undecided, unchanged from the prior entry.
+
+---
+
+### 2026-07-23 — Device lifecycle (Archive/Restore/Permanent Delete) settled and PR 1 shipped (ADR-005)
+
+**Decision:** Settle the device-deletion authority boundary and recoverable-removal mechanism (flagged in the prior entry) through a multi-round decision conversation before any code, then implement the backend/data-layer half as the first of two PRs.
+
+**Decided by:** Product owner, through several rounds of pressure-testing:
+- Split the single "Delete" action into three operations with different risk profiles: staff-wide reversible **Archive** (preserves the record, images, and sensitive subdocument untouched), Admin-only **Restore**, and Admin-only, archive-gated, server-side-enforced **Permanent Deletion**.
+- Rejected reusing `status: 'Archived'` (an earlier draft, cheaper to query) in favor of a genuinely separate `recordState` field — explicit reasoning: archiving is a record-lifecycle concept, not a repair-workflow status, and conflating them would distort status reporting and the deliberately-simple repair vocabulary later, even though the separate field costs more in query/index work now.
+- No automatic expiry on archived records in v1; freezing an archived record is absolute, no metadata-correction exception, after finding no concrete (not hypothetical) case for one.
+- Reserved the strongest integrity guarantee (`auditLogs`, Cloud-Function-only writes, matching `setStaffStatus`) for Permanent Deletion alone — explicit reasoning: the three operations don't deserve equal architectural weight, and Archive/Restore being reversible makes a forged provenance entry low-stakes and independently checkable, so they use a lighter `lifecycleEvents` subcollection instead, keeping Archive exactly as fast as the action it replaces.
+- Permanent Deletion made deliberately hard to reach: Admin-only, only reachable on an already-archived record (an explicit design choice, stricter than strictly required, kept on review), and a typed-confirmation UI in PR 2 — "should feel like an exceptional administrative action," not "the next button after Archive."
+- Mid-review, revised the original two-PR rollout: the `recordState` production migration is sequenced **after** PR 2 (the client cutover) is implemented, reviewed, and live-verified — not between PR 1 and PR 2 — so production data is never partially transitioned ahead of code that depends on it. Live verification uses freshly created test devices (PR 2's device-creation path will set `recordState` explicitly), so it doesn't depend on the migration having run.
+
+**Outcome:** `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md` records the full design. PR 1 (backend/data-layer, strictly additive) shipped:
+- `permanentlyDeleteDevice` Cloud Function, mirroring `setStaffStatus`'s shape (Admin + own-`staffStatus`-active check), archive-only precondition, Storage/sensitive-subdoc/parent cascade via Admin SDK (a full prefix delete now, not the client's URL-by-URL workaround), durable `auditLogs` entry written before the final delete.
+- Firestore rules: `recordState` Archive/Restore/frozen-while-archived transitions on `maintenanceDevices`, new `lifecycleEvents` subcollection rules. `allow delete` deliberately left unchanged — tightening it is sequenced into PR 2, alongside the client cutover that stops relying on it, so `main` is never in a state where a shipped client action can't succeed.
+- Migration + verify scripts (`migrate-recordstate.js`/`verify-recordstate.js`), dry-run-by-default, idempotent, mirroring the existing Phase 1C `migrate-pass-a`/`verify-pass-a` pattern — written and tested, **not run against production**.
+- `PRD.md` (Relationship Timeline) and `OPEN_DECISIONS.md` ("Deletion recovery mechanism," "The concrete authority mechanism") updated to reflect both are now settled **for maintenance devices specifically** — deliberately not claimed as generalized to other entities or future business-authority actions (refunds).
+
+**Testing:** `node --check` clean on `functions/index.js` and both migration scripts. `flutter analyze` run for baseline confirmation only (no Dart files touched by PR 1). Firestore rules reviewed manually against the file's existing patterns — local `firebase` CLI is broken in this environment, so full rules-emulator validation is deferred to deploy time.
+
+**Merged:** PR #18, squash-merged as `1b1e7a9`. Feature branch `feat/device-lifecycle-backend` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** PR 2 itself (client model/query updates, Archive/Restore/Permanent-Delete UI, new Admin-only Archived Devices screen) — up next. Also not decided: whether Restore's data-layer Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check (flagged in the ADR's Consequences, two call sites doesn't yet justify it).
