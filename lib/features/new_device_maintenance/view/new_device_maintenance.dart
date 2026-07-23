@@ -721,6 +721,12 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       fixedAt: widget.device?.fixedAt,
       timeToFix: widget.device?.timeToFix,
       status: widget.device?.status ?? 'In Maintenance',
+      // Explicit rather than relying on the model's default — this screen
+      // is never reachable for an archived device (archived records are
+      // excluded from every tab), so widget.device is always active/absent
+      // in practice, but this makes that assumption visible rather than
+      // implicit. See ADR-005.
+      recordState: widget.device?.recordState ?? 'active',
     );
 
     final sensitiveData = MaintenanceDeviceSensitiveData(
