@@ -108,19 +108,50 @@ service cloud.firestore {
         (isCustomer() && resource.data.userId == request.auth.uid)
       );
 
-      // Create, update, and delete are all staff-wide (Admin, Reception,
-      // Maintenance), per explicit product-owner decision (2026-07-03) —
-      // uniform across all three write operations. Customers and Guest are
-      // denied all three regardless. (An earlier draft had narrowed create
-      // to Reception-only and delete to Admin-only; both are superseded.)
+      // Create is staff-wide (Admin, Reception, Maintenance), per explicit
+      // product-owner decision (2026-07-03). Customers and Guest are denied.
       allow create: if isSignedIn() && isStaff();
-      allow update: if isSignedIn() && isStaff();
 
-      // Deletion cascades client-side (Storage images + the private/sensitive
-      // subdocument below must also be deleted by the calling code — Firestore
-      // does not cascade-delete subcollections automatically). See
-      // PHASE1_IMPLEMENTATION_PLAN.md "Cascade deletion behavior" for the
-      // required client-side sequencing, confirmation UX, and retry handling.
+      // recordState lifecycle — see ADR-005 (2026-07-23). Three distinct
+      // transitions, replacing what used to be one blanket staff-wide update
+      // rule:
+      //  - Archive: any staff member may move a record that isn't already
+      //    archived into `archived`. Preserves the document, Storage images,
+      //    and the private/sensitive subdocument untouched — reversible.
+      //  - Restore: Admin-only, archived -> active. Enforced here, not just
+      //    by an Admin-only screen — a route/UI gate alone is not a
+      //    substitute for the write itself being denied.
+      //  - Ordinary edits (device details, Fixed/Deliver transitions):
+      //    staff-wide, exactly as before this split existed, but only while
+      //    the record isn't archived — an archived record is frozen until
+      //    an Admin restores it (ADR-005, "Freezing archived records": no
+      //    metadata-correction exception in v1).
+      // `.get('recordState', 'active')` treats any document written before
+      // this field existed (no recordState at all) as implicitly active, so
+      // this rule doesn't retroactively break every pre-migration document
+      // the moment it deploys — see ADR-005 "Migration".
+      allow update: if isSignedIn() && (
+        (isStaff()
+          && resource.data.get('recordState', 'active') != 'archived'
+          && request.resource.data.recordState == 'archived') ||
+        (isAdmin()
+          && resource.data.get('recordState', 'active') == 'archived'
+          && request.resource.data.recordState == 'active') ||
+        (isStaff()
+          && resource.data.get('recordState', 'active') != 'archived'
+          && request.resource.data.get('recordState', 'active') != 'archived')
+      );
+
+      // Deletion cascades client-side today (Storage images + the
+      // private/sensitive subdocument below must also be deleted by the
+      // calling code — Firestore does not cascade-delete subcollections
+      // automatically). Deliberately UNCHANGED here even though ADR-005
+      // moves permanent deletion to a server-side-only Cloud Function
+      // (`permanentlyDeleteDevice`) with its own Admin-only, archived-only
+      // authorization — narrowing this to `if false` is sequenced into the
+      // second PR of that rollout, together with the client cutover that
+      // stops calling this path, so this rule and the shipped client action
+      // it backs never fall out of sync mid-rollout. See ADR-005 "Rollout".
       allow delete: if isSignedIn() && isStaff();
 
       // Sensitive fields (pin, patternLock, notesHidden) — ADR-001 Option A.
@@ -129,6 +160,24 @@ service cloud.firestore {
       match /private/{doc} {
         allow read: if isSignedIn() && isStaff();
         allow write: if isSignedIn() && isStaff();
+      }
+
+      // Append-only provenance log for Archive/Restore — see ADR-005.
+      // Deliberately lighter-weight than auditLogs (which only a Cloud
+      // Function can write): Archive/Restore are both reversible, so a
+      // forged entry here is low-stakes and independently checkable against
+      // the document's actual recordState. The strongest guarantee
+      // (auditLogs + Cloud Function) is reserved for Permanent Deletion,
+      // the one irreversible operation. No update/delete granted to any
+      // client — each event's own `type` determines who may create it,
+      // mirroring the same authority split as the transitions above.
+      match /lifecycleEvents/{eventId} {
+        allow read: if isSignedIn() && isStaff();
+        allow create: if isSignedIn() && (
+          (isStaff() && request.resource.data.type == 'archived') ||
+          (isAdmin() && request.resource.data.type == 'restored')
+        );
+        allow update, delete: if false;
       }
     }
 

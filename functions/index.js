@@ -198,3 +198,118 @@ exports.setStaffStatus = onCall(async (request) => {
 
   return { status };
 });
+
+/**
+ * Permanently deletes a maintenance device: Storage images, the
+ * private/sensitive subdocument, and the parent document — irreversible.
+ * See ADR-005 ("Maintenance Device Lifecycle", 2026-07-23).
+ *
+ * This is the sole path for permanent deletion once the second ADR-005
+ * rollout PR removes the client's direct `delete` permission on
+ * maintenanceDevices (see that PR's Firestore rules change) — until then,
+ * this function and the legacy client-side cascade both exist, but nothing
+ * in the client calls this function yet.
+ *
+ * Authorization mirrors setStaffStatus: caller must be Admin
+ * (users/{callerUid}.type == 0) AND the caller's own staffStatus must
+ * currently be "active" — closes the same deactivated-Admin-with-a-
+ * lingering-session gap.
+ *
+ * Precondition: the target device's recordState must already be
+ * "archived" — permanent deletion is never reachable directly from a live
+ * operational record, by design (ADR-005, "Permanent Deletion").
+ *
+ * Writes a durable auditLogs entry (device id, model, customer name/phone,
+ * acting admin uid, timestamp) BEFORE deleting the parent document, so a
+ * crash between steps leaves, at worst, a stray audit entry for a device
+ * that still exists (noticeable, recoverable) rather than a silently
+ * destroyed record with no trace at all.
+ */
+exports.permanentlyDeleteDevice = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Sign-in required.");
+  }
+
+  const { deviceId } = request.data ?? {};
+  if (typeof deviceId !== "string" || deviceId.length === 0) {
+    throw new HttpsError("invalid-argument", "deviceId is required.");
+  }
+
+  const callerUid = request.auth.uid;
+  const db = admin.firestore();
+
+  const callerSnap = await db.doc(`users/${callerUid}`).get();
+  if (!callerSnap.exists || callerSnap.data().type !== 0) {
+    throw new HttpsError(
+      "permission-denied",
+      "Only Admin may permanently delete a device."
+    );
+  }
+
+  const callerStatusSnap = await db
+    .doc(`users/${callerUid}/meta/staffStatus`)
+    .get();
+  const callerStatus = callerStatusSnap.exists
+    ? callerStatusSnap.data().status
+    : null;
+  if (callerStatus !== "active") {
+    throw new HttpsError(
+      "permission-denied",
+      "Caller's own staff status is not active."
+    );
+  }
+
+  const deviceRef = db.doc(`maintenanceDevices/${deviceId}`);
+  const deviceSnap = await deviceRef.get();
+  if (!deviceSnap.exists) {
+    throw new HttpsError("not-found", "Device does not exist.");
+  }
+  const deviceData = deviceSnap.data();
+  if (deviceData.recordState !== "archived") {
+    throw new HttpsError(
+      "failed-precondition",
+      "Device must be archived before it can be permanently deleted."
+    );
+  }
+
+  // Storage first: if this step fails partway, the worst-case leftover is
+  // orphaned non-sensitive images — low severity, same ordering rationale
+  // as the original client-side cascade (see
+  // PHASE1_IMPLEMENTATION_PLAN.md "Cascade deletion behavior"). Unlike the
+  // client's URL-by-URL delete, the Admin SDK isn't subject to the missing
+  // `list`-permission limitation that forced that workaround, so this can
+  // delete the whole device folder by prefix in one call.
+  try {
+    await admin
+      .storage()
+      .bucket()
+      .deleteFiles({ prefix: `maintenance_devices/${deviceId}/` });
+  } catch (error) {
+    throw new HttpsError(
+      "internal",
+      `Failed to delete Storage images: ${error.message}`
+    );
+  }
+
+  await db.doc(`maintenanceDevices/${deviceId}/private/sensitive`).delete();
+
+  await db.collection("auditLogs").add({
+    actingAdminUid: callerUid,
+    deviceId,
+    deviceModel: deviceData.model ?? null,
+    customerName: deviceData.name ?? null,
+    customerPhone: deviceData.phoneNumber ?? null,
+    action: "permanentlyDeleteDevice",
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  await deviceRef.delete();
+
+  logger.info("permanentlyDeleteDevice", {
+    callerUid,
+    deviceId,
+    deviceModel: deviceData.model ?? null,
+  });
+
+  return { deviceId };
+});

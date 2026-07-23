@@ -1,14 +1,16 @@
 {
   "name": "techno-store-migration-scripts",
   "private": true,
-  "description": "One-off Admin SDK scripts for the Phase 1C sensitive-data migration. NOT part of the Flutter app — do not import or reference these from lib/. See README.md before running anything.",
+  "description": "One-off Admin SDK migration scripts (Phase 1C sensitive-data split, ADR-005 device lifecycle). NOT part of the Flutter app — do not import or reference these from lib/. See README.md before running anything.",
   "scripts": {
     "inventory": "node inventory.js",
     "backup": "node backup.js",
     "migrate:a": "node migrate-pass-a.js",
     "verify:a": "node verify-pass-a.js",
     "migrate:b": "node migrate-pass-b.js",
-    "verify:b": "node verify-pass-b.js"
+    "verify:b": "node verify-pass-b.js",
+    "migrate:recordstate": "node migrate-recordstate.js",
+    "verify:recordstate": "node verify-recordstate.js"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0"
