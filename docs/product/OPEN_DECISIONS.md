@@ -27,7 +27,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 **Retention limit for sensitive unlock data.** Settled (2026-07-23): delivery and destruction are decoupled — the Delivered event does not automatically purge PIN/pattern data, since the customer provided it voluntarily and it may still hold value for the device's future maintenance history, protected in the meantime by the existing access restrictions. What remains open is whether any retention limit or automatic-deletion trigger should ever apply to this data at all, and if so what it is — folded into the general permanent-deletion mechanism below rather than tied to delivery specifically.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
-**Deletion recovery mechanism.** Ordinary removal from normal use is recoverable by default — hidden, not destroyed, protecting the durable history the timeline exists to preserve — settled. How long a hidden record actually stays recoverable and how it's restored is not designed. Distinct from *who* may authorize true permanent deletion, tracked separately under Business Authority below.
+**Deletion recovery mechanism.** Settled for maintenance devices (`ADR-005`, 2026-07-23): ordinary removal (Archive) is staff-wide, preserves the record and everything attached to it untouched, and stays recoverable indefinitely — no automatic expiry — until an Admin explicitly restores it (Admin-only, enforced at the data layer) or permanently deletes it. Not yet generalized beyond maintenance devices — no other entity on the timeline (repair episodes as their own record, purchases) currently has any deletion mechanism at all, so there's nothing yet to settle for them; revisit if and when one is built.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
 ### Identity & Account Lifecycle
@@ -62,7 +62,7 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 ### Business Authority
 
-**The concrete authority mechanism.** Business authority is confirmed as a real, distinct dimension from expertise. Staff Account Management is the one place it's already fully settled — Admin-only, including account creation. Permanent deletion and future refunds are recognized as belonging to the same category but remain open until the authority model behind all of it is actually designed.
+**The concrete authority mechanism.** Business authority is confirmed as a real, distinct dimension from expertise. Staff Account Management is the one place it's already fully settled — Admin-only, including account creation. Permanent deletion of a maintenance device is now settled too (`ADR-005`, 2026-07-23) — Admin-only, enforced server-side, only reachable on an already-archived record. Whether this same boundary generalizes to permanent deletion of other entities, and future refunds, remain open until each is actually designed — settling one instance doesn't retroactively settle the general mechanism for every future case.
 *Referenced in: Shared Foundation → Roles as Expertise; Operational Lens → Where Speed Intentionally Breaks.*
 
 ### Communication
