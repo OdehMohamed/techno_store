@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:techno_store/core/model/device_tab_page.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
@@ -103,7 +104,14 @@ class MaintenanceListServices {
   }) {
     Query<Map<String, dynamic>> query = _firestoreInstance
         .collection(FirestoreApiPath.maintenanceDevices())
-        .where('status', isEqualTo: status);
+        .where('status', isEqualTo: status)
+        // Normal staff tabs and the customer's own view only ever show
+        // active records — an archived device is not part of normal
+        // product truth for either. See ADR-005. Requires every existing
+        // document to have been backfilled with recordState first (see
+        // scripts/migration/migrate-recordstate.js) — Firestore equality
+        // filters don't match documents where the field is absent.
+        .where('recordState', isEqualTo: 'active');
 
     if (uid != null) {
       query = query.where('userId', isEqualTo: uid);
@@ -207,60 +215,76 @@ class MaintenanceListServices {
     return MaintenanceDeviceSensitiveDataService.instance.fetch(deviceId);
   }
 
-  /// Deletes a device and everything associated with it: Storage images,
-  /// the private/sensitive subdocument, and the parent document — in that
-  /// order. See docs/ai-workflow/PHASE1_IMPLEMENTATION_PLAN.md "Cascade
-  /// deletion behavior" for the rationale behind this ordering (a partial
-  /// failure should leave only non-sensitive orphaned images, never an
-  /// orphaned document containing customer data) and for why each step
-  /// must be idempotent (safe to retry) rather than silently succeeding
-  /// when something has already been removed.
-  ///
-  /// Images are deleted by their stored download URLs (read from the parent
-  /// document, which is deleted last so these URLs remain retrievable on a
-  /// retry) rather than by listing the device's Storage folder: Firebase
-  /// Storage has no folder-delete primitive, and the "list then delete each"
-  /// alternative needs a `list` permission that cannot be authorized for
-  /// staff — staff detection requires a cross-service Firestore role lookup
-  /// that does not resolve during `list`-operation rule evaluation. See
-  /// FirebaseStorageServices.deleteFileByUrl. A consequence is that an
-  /// orphaned image not referenced by the document (e.g. from a failed
-  /// upload) is not discoverable here and would remain — tracked in
-  /// docs/ai-workflow/BACKLOG.md.
-  ///
-  /// Deliberately does NOT catch-and-swallow errors: per the approved plan,
-  /// a caller must know a deletion was incomplete so it can retry, rather
-  /// than the UI reporting success when cleanup was only partial.
-  Future<void> deleteDevice(String deviceId) async {
-    final deviceSnapshot = await _firestoreInstance
+  /// Archives a device: sets recordState to 'archived' and writes a
+  /// lifecycleEvents entry recording who did it and when. Staff-wide.
+  /// Deliberately does NOT touch Storage images or the private/sensitive
+  /// subdocument — the whole point is that nothing is destroyed. See
+  /// docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md.
+  Future<void> archiveDevice(String deviceId, String actingUid) async {
+    final deviceRef = _firestoreInstance
         .collection(FirestoreApiPath.maintenanceDevices())
-        .doc(deviceId)
-        .get();
-    final deviceData = deviceSnapshot.data();
+        .doc(deviceId);
+    final batch = _firestoreInstance.batch();
+    batch.update(deviceRef, {
+      'recordState': 'archived',
+      'updatedAt': DateTime.now().toIso8601String(),
+    });
+    batch.set(deviceRef.collection('lifecycleEvents').doc(), {
+      'type': 'archived',
+      'actingUid': actingUid,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+    debugPrint('✅ Device archived: $deviceId');
+  }
 
-    if (deviceData != null) {
-      final imageUrls = <String>[
-        ...?(deviceData['imagesBeforeReceiving'] as List<dynamic>?)
-            ?.map((e) => e.toString()),
-        ...?(deviceData['imagesAfterDelivery'] as List<dynamic>?)
-            ?.map((e) => e.toString()),
-      ].where((url) => url.trim().isNotEmpty);
-
-      for (final url in imageUrls) {
-        await _storageServices.deleteFileByUrl(url);
-      }
-    }
-
-    await _firestoreInstance
-        .doc(FirestoreApiPath.maintenanceDeviceSensitiveData(deviceId))
-        .delete();
-
-    await _firestoreInstance
+  /// Restores an archived device back to active. Admin-only — enforced by
+  /// Firestore rules, not just by this method's caller being an Admin-only
+  /// screen. Writes a matching lifecycleEvents entry.
+  Future<void> restoreDevice(String deviceId, String actingUid) async {
+    final deviceRef = _firestoreInstance
         .collection(FirestoreApiPath.maintenanceDevices())
-        .doc(deviceId)
-        .delete();
+        .doc(deviceId);
+    final batch = _firestoreInstance.batch();
+    batch.update(deviceRef, {
+      'recordState': 'active',
+      'updatedAt': DateTime.now().toIso8601String(),
+    });
+    batch.set(deviceRef.collection('lifecycleEvents').doc(), {
+      'type': 'restored',
+      'actingUid': actingUid,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+    debugPrint('✅ Device restored: $deviceId');
+  }
 
-    debugPrint('✅ Device deleted successfully (cascade): $deviceId');
+  /// Live list of archived devices for the Admin-only Archived Devices
+  /// screen. No status/brand/employee/date filtering — the Archived view is
+  /// intentionally simple for v1 (ADR-005).
+  Stream<List<MaintenanceDeviceModel>> streamArchivedDevices() {
+    return _firestoreInstance
+        .collection(FirestoreApiPath.maintenanceDevices())
+        .where('recordState', isEqualTo: 'archived')
+        .orderBy('updatedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => MaintenanceDeviceModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  /// Permanently deletes an archived device via the server-side
+  /// permanentlyDeleteDevice Cloud Function — the only path for this
+  /// action; the client has no direct delete permission on
+  /// maintenanceDevices at all (see firestore.rules). Admin-only and
+  /// archive-only, enforced inside the function itself; this call just
+  /// surfaces whatever it decides. Error curation happens at the cubit
+  /// layer, not here — matches AuthCubit's pattern for FirebaseAuthException.
+  Future<void> permanentlyDeleteDevice(String deviceId) async {
+    await FirebaseFunctions.instance
+        .httpsCallable('permanentlyDeleteDevice')
+        .call({'deviceId': deviceId});
+    debugPrint('✅ Device permanently deleted: $deviceId');
   }
 
   Future<void> updateDeviceStatus(String deviceId, String status) async {

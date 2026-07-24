@@ -22,6 +22,13 @@ class MaintenanceDeviceModel {
   final List<String> accessories;
   final List<String> deviceStatusReceived;
 
+  // Record lifecycle — distinct from the repair-workflow `status` above.
+  // 'active' | 'archived'. See docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md.
+  // Defaults to 'active' both here and when absent on a pre-migration
+  // document (fromMap/fromJson below) — never null, so every write this
+  // model produces (create or update) always carries an explicit value.
+  final String recordState;
+
   // Pricing & Timeline
   final double? price;
   final String? estimatedTime;
@@ -64,6 +71,7 @@ class MaintenanceDeviceModel {
     this.status = 'pending', // القيمة الافتراضية
     required this.accessories,
     required this.deviceStatusReceived,
+    this.recordState = 'active',
     this.price,
     this.estimatedTime,
     this.additionalNotes,
@@ -94,6 +102,7 @@ class MaintenanceDeviceModel {
       'imeiNumber': imeiNumber,
       'problems': problems,
       'status': status,
+      'recordState': recordState,
       'accessories': accessories,
       'deviceStatusReceived': deviceStatusReceived,
       'price': price,
@@ -129,6 +138,7 @@ class MaintenanceDeviceModel {
       problems:
           (json['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: json['status'] as String? ?? 'pending',
+      recordState: json['recordState'] as String? ?? 'active',
       accessories: (json['accessories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -182,6 +192,7 @@ class MaintenanceDeviceModel {
       problems:
           (map['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: map['status'] as String? ?? 'pending',
+      recordState: map['recordState'] as String? ?? 'active',
       accessories: (map['accessories'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
@@ -231,6 +242,7 @@ class MaintenanceDeviceModel {
     String? imeiNumber,
     List<String>? problems,
     String? status,
+    String? recordState,
     List<String>? accessories,
     List<String>? deviceStatusReceived,
     double? price,
@@ -260,6 +272,7 @@ class MaintenanceDeviceModel {
       imeiNumber: imeiNumber ?? this.imeiNumber,
       problems: problems ?? this.problems,
       status: status ?? this.status,
+      recordState: recordState ?? this.recordState,
       accessories: accessories ?? this.accessories,
       deviceStatusReceived: deviceStatusReceived ?? this.deviceStatusReceived,
       price: price ?? this.price,

@@ -158,6 +158,30 @@ class _MainDrawer2State extends State<MainDrawer2> {
                               WidgetUtilities.autoSizeText('Add new Employee'),
                         )
                       : const SizedBox(),
+                  // Restore/Permanent Delete are always Admin-only,
+                  // enforced at the data layer regardless of how this
+                  // screen is reached — this gate is defense-in-depth, not
+                  // the real one. See ADR-005.
+                  UserRole.isAdmin(type)
+                      ? ListTile(
+                          onTap: () {
+                            final maintenanceListCubit =
+                                context.read<MaintenanceListCubit>();
+                            Navigator.of(context).pushNamed(
+                              AppRoutes.archivedDevices,
+                              arguments: {
+                                'userData': state.userData,
+                                'maintenanceListCubit': maintenanceListCubit,
+                              },
+                            );
+                          },
+                          leading: const Icon(
+                            Icons.archive_outlined,
+                          ),
+                          title: WidgetUtilities.autoSizeText(
+                              'Archived Devices'),
+                        )
+                      : const SizedBox(),
                   (UserRole.isAdmin(type) || UserRole.isReception(type))
                       ? ListTile(
                           onTap: () {},

@@ -38,7 +38,12 @@ service firebase.storage {
         isStaff() ||
         firestore.get(/databases/(default)/documents/maintenanceDevices/$(deviceId)).data.userId == request.auth.uid
       );
-      allow write: if isSignedIn() && isStaff();
+      allow create, update: if isSignedIn() && isStaff();
+      // Permanent deletion moved server-side (ADR-005): the
+      // permanentlyDeleteDevice Cloud Function uses the Admin SDK, which
+      // bypasses Storage rules entirely. The client no longer deletes
+      // device images directly — Archive never touches Storage at all.
+      allow delete: if false;
     }
 
     match /{allPaths=**} {

@@ -77,31 +77,4 @@ class FirebaseStorageServices {
       debugPrint('Delete by URL error: $e');
     }
   }
-
-  /// Deletes a single stored file identified by its download URL, used for
-  /// cascade-deleting a device's images (see
-  /// MaintenanceListServices.deleteDevice). Firebase Storage has no
-  /// folder-delete primitive and the equivalent "list then delete each"
-  /// approach requires a `list` permission that cannot be authorized for
-  /// staff — staff detection needs a cross-service Firestore role lookup,
-  /// which does not resolve during `list`-operation rule evaluation. So the
-  /// cascade deletes each image by its already-known URL (an object-level
-  /// `delete`, which cross-service rules do authorize) instead of listing.
-  ///
-  /// Unlike [deleteImageByUrl], this does NOT silently swallow errors — per
-  /// the cascade's "no silent failures" requirement the caller must know if a
-  /// deletion was incomplete so it can retry. The one exception is a file
-  /// that's already gone (idempotency, so a retried cascade doesn't fail on
-  /// the part that already succeeded).
-  Future<void> deleteFileByUrl(String imageUrl) async {
-    final ref = _storage.refFromURL(imageUrl);
-    try {
-      await ref.delete();
-    } on FirebaseException catch (e) {
-      if (e.code == 'object-not-found') {
-        return; // Already deleted — not a failure, safe to retry.
-      }
-      rethrow;
-    }
-  }
 }
