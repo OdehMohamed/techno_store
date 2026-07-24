@@ -11,7 +11,6 @@ import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/main_screen/cubit/auth_cubit.dart';
 import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
-import 'package:techno_store/features/manage_category/view/manage_categories_page.dart';
 import 'package:techno_store/features/store_page/view/store_page.dart';
 
 class MainDrawer2 extends StatefulWidget {
@@ -73,18 +72,6 @@ class _MainDrawer2State extends State<MainDrawer2> {
                       const SizedBox(height: 32.0),
                     ],
                   ),
-                  // Favorite: Admin, Customer, Reception. Allow-list — was
-                  // previously a deny-list (`!= 3 && != 9`) that happened to
-                  // already exclude Maintenance and Guest; now explicit.
-                  (UserRole.isAdmin(type) ||
-                          UserRole.isCustomer(type) ||
-                          UserRole.isReception(type))
-                      ? ListTile(
-                          onTap: () {},
-                          leading: const Icon(Icons.favorite),
-                          title: WidgetUtilities.autoSizeText('Favorite'),
-                        )
-                      : const SizedBox(),
                   // Store: Admin, Customer, Reception. Was previously a
                   // deny-list (`!= 3`) that also (unintentionally) let Guest
                   // see this item — converting to an explicit allow-list
@@ -103,18 +90,6 @@ class _MainDrawer2State extends State<MainDrawer2> {
                             Icons.shopping_cart,
                           ),
                           title: WidgetUtilities.autoSizeText('Store'),
-                        )
-                      : const SizedBox(),
-                  UserRole.isCustomer(type)
-                      ? ListTile(
-                          onTap: () {},
-                          leading: const Icon(
-                            Icons.phone_android,
-                          ),
-                          title: WidgetUtilities.autoSizeText(
-                            'Maintenance (My Devices)',
-                            maxLine: 2,
-                          ),
                         )
                       : const SizedBox(),
                   // Staff-wide maintenance list navigation. This was
@@ -182,41 +157,6 @@ class _MainDrawer2State extends State<MainDrawer2> {
                               'Archived Devices'),
                         )
                       : const SizedBox(),
-                  (UserRole.isAdmin(type) || UserRole.isReception(type))
-                      ? ListTile(
-                          onTap: () {},
-                          leading: const Icon(
-                            Icons.note_add,
-                          ),
-                          title:
-                              WidgetUtilities.autoSizeText('Add new Product'),
-                        )
-                      : const SizedBox(),
-                  (UserRole.isAdmin(type) || UserRole.isReception(type))
-                      ? ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const ManageCategoriesPage(),
-                              ),
-                            );
-                          },
-                          leading: const Icon(
-                            Icons.category,
-                          ),
-                          title:
-                              WidgetUtilities.autoSizeText('Manage Categories'),
-                        )
-                      : const SizedBox(),
-                  ListTile(
-                    onTap: () {},
-                    leading: const Icon(
-                      Icons.settings,
-                    ),
-                    title: WidgetUtilities.autoSizeText('Settings'),
-                  ),
                   ListTile(
                     onTap: () {
                       CustomDialogs.showDialogConfirm(
