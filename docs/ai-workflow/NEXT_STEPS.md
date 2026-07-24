@@ -4,10 +4,9 @@ Short-lived by design — reflects proposed next actions as of 2026-07-24. Overw
 
 ## Immediate
 
-**Device lifecycle (ADR-005) is fully shipped, migrated, live in production, and confirmed complete by the product owner (2026-07-24)** — PR #18 backend + PR #19 client + PR #20 hotfix, all in `main`. No open implementation work remains behind it. The next line of work is an **open sequencing decision to be made deliberately**, not assumed from the original phase's high-level product-area order (Reception & Maintenance → Admin → Customer → Retail, see `PROJECT_CONTEXT.md`/product-review-phase notes) — candidates on the table within the still-active Reception & Maintenance review:
-- Employee attribution (`receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee`) drawn from a hardcoded `AppConstants` list, disconnected from real Staff Auth accounts.
-- The intake-form-shape question (single large form vs. the PRD's "captures only what's genuinely required" framing).
-- The confirmed dead code cleanup (`ManageCategoriesPage`+cubit, `maintenance_list_state.dart`, Invoice/Reopen TODO stubs, empty drawer stubs).
+**Device lifecycle (ADR-005) is fully shipped, migrated, live in production, and confirmed complete by the product owner (2026-07-24)** — PR #18 backend + PR #19 client + PR #20 hotfix, all in `main`. No open implementation work remains behind it. The product owner deliberately chose to finish Reception & Maintenance's remaining findings before opening a new product area, in order: dead code cleanup (done, PR #21) → **employee attribution (next, decision conversation to open now)** → intake form shape (after that, lower priority).
+
+**Next up: employee attribution.** `receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee` are currently drawn from a hardcoded `AppConstants` string list, disconnected from the real Staff Auth accounts now in `main`. This needs a decision conversation before any implementation, per the established rhythm.
 
 Small deferred items from the device lifecycle work, not urgent but worth deliberately picking up at some point:
 - The 4 orphaned pre-`recordState` Firestore composite indexes in production (additive deploy never removes old indexes) — low-priority cleanup.
