@@ -1,6 +1,6 @@
 # ADR-006: Employee Attribution on Maintenance Devices
 
-**Status:** Settled — approved by the product owner 2026-07-24, ready for implementation.
+**Status:** Implemented and shipped (2026-07-24). PR #22, squash-merged as `318b242`. Executably verified via a targeted on-device smoke test against a local Firebase emulator (7/7 checklist items passed); one real layout bug (`StaffDropdown` text overflow) found and fixed during that pass. See `docs/ai-workflow/DECISIONS_LOG.md` (2026-07-24 entry) for the full record.
 **Date:** 2026-07-24, during the Reception & Maintenance area of "Current Application Review & Evolution," as the second of three remaining findings from that area's review (after the dead-code cleanup, PR #21).
 **Related:** `ADR-004-admin-user-management-design.md` (Staff Auth: roles, `staffStatus`), `ADR-005-device-lifecycle-archive-deletion.md` (the precedent this ADR follows: additive-field-not-repurposed-field, no backfill for pre-existing incompatible data), `docs/product/PRD.md`.
 

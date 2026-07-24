@@ -769,3 +769,36 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Environment note surfaced during this PR's push/merge:** this environment's SSH access to GitHub (`git@github.com`) is broken (`Permission denied (publickey)`, missing `ssh-askpass`) — all pushes and `gh pr merge`'s local git housekeeping failed over SSH and had to be routed over HTTPS via explicit remote URL overrides instead. While diagnosing this, found that two prior bookkeeping commits (this session's ADR-005 closeout, `5fa5a20`/`c242153`) had been committed locally but never actually reached `origin/main` — pushed them as part of this fix; `main` is now fully caught up on GitHub.
 
 **Explicitly not decided in this session:** employee attribution (`receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee` sourced from a hardcoded `AppConstants` list, disconnected from real Staff Auth accounts) — the next item, to begin as a decision conversation before any code, matching the same rhythm. Intake form shape remains open and lower priority. The underlying SSH configuration issue itself was not fixed (out of scope — worked around per-command instead), so it will recur in future sessions in this environment until addressed.
+
+---
+
+### 2026-07-24 — Employee attribution settled on ADR-006 and shipped (PR #22)
+
+**Decision:** Settle employee attribution — `receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee` sourced from a hardcoded, unmaintained `AppConstants` list, disconnected from real Staff Auth accounts — through a decision conversation before any code, then implement as a single PR.
+
+**Decided by:** Product owner, through a short round of pressure-testing:
+- Approved the core design fork as **additive**: keep the existing plain-name-string fields exactly as they are (no schema break), and add three new nullable `...Uid` fields referencing real accounts — explicitly modeled on `recordState`'s precedent from ADR-005 (new field for a new concept, not a repurposed one), with no migration or backfill attempted for the ~494 pre-existing records.
+- On role scoping, gave a more nuanced split than either option originally presented: **Received By** and **Delivered By** open to any active staff (Admin/Reception/Maintenance) — "receiving and delivering devices are explicitly shared capabilities in the PRD" — while **Maintenance Employee** stays restricted to active Maintenance/Admin, "because it represents technical work and judgment." (This also turned out to match how the prior hardcoded lists were already implicitly split, discovered during implementation — see Outcome.)
+- Confirmed dropdowns should be active-only for new selections, with an explicit exception: editing a record whose attributed employee has since been deactivated must still show that historical value, not silently blank it or drop it.
+- Endorsed folding in the removal of the two now-legacy `AppConstants` employee lists as part of this same work, rather than leaving them as freshly-reintroduced dead code right after the prior cleanup pass (PR #21).
+- Confirmed the risk-matched-rigor posture proposed for this feature (no Cloud Function, no new Firestore rules — same trust model the plain-name fields already used) as appropriately proportional, distinct from ADR-005's full rigor.
+- After implementation, explicitly asked for **a targeted on-device smoke test** rather than accepting code-review-only confidence, citing the genuinely new surface this PR introduces (a new query pattern, a shared cross-flow widget, role filtering, the historical-value exception) — while being clear this didn't warrant an ADR-005-sized pass. Gave a concrete 7-item checklist to verify.
+
+**Outcome (PR #22):** Recorded in full in `ADR-006-employee-attribution.md`. `MaintenanceDeviceModel` gained three additive `...Uid` fields; `FirestoreServices.getActiveStaffByRoles(roles, {alwaysInclude})` added (one-time fetch, active-only, with an escape hatch for the historical-value case); new shared `StaffDropdown` widget (`core/widgets`) used by the intake form's Received By dropdown, the Fixed dialog's Maintenance Employee dropdown, and the Deliver dialog's Delivered By dropdown. A third, previously-unaccounted-for consumer of the hardcoded `maintenanceDialogEmployeeList` was found during implementation — the maintenance-list search filter's "Employee" chip — and updated to source from the same live Maintenance+Admin roster so removing the list didn't silently break it. Both legacy `AppConstants` lists removed.
+
+**Executable verification — targeted on-device smoke test, local Firebase emulator (Firestore + Auth only), synthetic staff accounts (active/inactive, all three roles) and test device records, matching the product owner's 7-item checklist:**
+1. Received By roster shows exactly the active staff across all roles — passed.
+2. Maintenance Employee correctly limited to active Maintenance/Admin only (Reception confirmed excluded) — passed.
+3. Delivered By roster shows exactly the active staff across all roles — passed.
+4. Inactive staff never offered for new selections, confirmed across all three dropdowns — passed.
+5. Historical-value exception: editing a record whose `maintenanceEmployeeUid` pointed to a since-deactivated account still showed that account, without leaking any other inactive account into the list — passed.
+6. Employee search filter chip sources from the live Maintenance+Admin roster and correctly filters the device list by the selected name (verified both the picker's contents and the actual filtering result) — passed.
+7. No regressions in the edit flow: intake, Move to Fixed (full save round-trip), Deliver dialog, and record editing all completed without crashes or data loss — passed.
+
+**A real bug found and fixed during this pass:** `StaffDropdown` overflowed its layout by ~47px in the closed state once populated with a realistic full name. Root cause: real Staff Auth accounts capture a required "Full name" field at creation, which is plausibly longer than the old curated first-name-only `AppConstants` lists this dropdown replaces — not just a synthetic-test-data artifact. Fixed with `isExpanded: true` on the underlying `DropdownButtonFormField`, the standard fix for this overflow class; re-verified visually across all three dropdowns after the fix. Product owner cited this as validating the value of targeted smoke tests specifically for features that introduce a new UI surface or query pattern, distinct from (lower-weight than) the full rigor reserved for ADR-005-class work.
+
+**Testing:** `flutter analyze` clean (0 errors, unchanged pre-existing baseline) plus the full on-device smoke test above — not a broader new testing phase, deliberately scoped to the checklist.
+
+**Merged:** PR #22, squash-merged as `318b242`. Feature branch `feat/employee-attribution` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** the intake-form-shape question — the third and last of the three Reception & Maintenance findings from the original review, up next. The next line of work after that is to be chosen deliberately, not assumed from the original review-phase sequencing, per the same standing preference confirmed after ADR-005.

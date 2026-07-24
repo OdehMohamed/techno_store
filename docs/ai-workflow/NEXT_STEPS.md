@@ -4,9 +4,9 @@ Short-lived by design — reflects proposed next actions as of 2026-07-24. Overw
 
 ## Immediate
 
-**Device lifecycle (ADR-005) is fully shipped, migrated, live in production, and confirmed complete by the product owner (2026-07-24)** — PR #18 backend + PR #19 client + PR #20 hotfix, all in `main`. No open implementation work remains behind it. The product owner deliberately chose to finish Reception & Maintenance's remaining findings before opening a new product area, in order: dead code cleanup (done, PR #21) → **employee attribution (next, decision conversation to open now)** → intake form shape (after that, lower priority).
+**Device lifecycle (ADR-005) is fully shipped and confirmed complete (2026-07-24).** The product owner deliberately chose to finish Reception & Maintenance's remaining findings before opening a new product area, in order: dead code cleanup (done, PR #21) → employee attribution (done, PR #22, ADR-006) → **intake form shape (next, up now)**.
 
-**Next up: employee attribution.** `receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee` are currently drawn from a hardcoded `AppConstants` string list, disconnected from the real Staff Auth accounts now in `main`. This needs a decision conversation before any implementation, per the established rhythm.
+**Next up: the intake-form-shape question.** Worth a deliberate call on whether the single large intake form conflicts with the PRD's "captures only what's genuinely required" framing, or whether that's already satisfied since only phone/name/model/received-by are hard-required. Lower priority than the two items just closed — no urgency signal behind it. Once this closes, Reception & Maintenance's original review findings are fully exhausted, and the next product area should be chosen deliberately rather than assumed from the original sequencing (Reception & Maintenance → Admin → Customer → Retail).
 
 Small deferred items from the device lifecycle work, not urgent but worth deliberately picking up at some point:
 - The 4 orphaned pre-`recordState` Firestore composite indexes in production (additive deploy never removes old indexes) — low-priority cleanup.
