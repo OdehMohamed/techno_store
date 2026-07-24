@@ -2,6 +2,17 @@ const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
+// Modular import, not the legacy admin.firestore.FieldValue namespaced
+// access — found via executable emulator testing (2026-07-24) to be
+// unreliable under firebase-tools' Functions Emulator runtime for this
+// firebase-admin/firebase-functions version combination (setStaffStatus's
+// own serverTimestamp() call failed identically: "Cannot read properties
+// of undefined (reading 'serverTimestamp')"). Modular import sidesteps the
+// lazy static-property attachment this depended on, regardless of root
+// cause — this was setStaffStatus's first-ever executable test since it
+// shipped in PR #14; every status change before this was a direct
+// Firestore/Console edit that bypassed the function entirely.
+const { FieldValue } = require("firebase-admin/firestore");
 
 admin.initializeApp();
 
@@ -176,7 +187,7 @@ exports.setStaffStatus = onCall(async (request) => {
 
   await statusRef.set({
     status,
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
     updatedBy: callerUid,
   });
 
@@ -186,7 +197,7 @@ exports.setStaffStatus = onCall(async (request) => {
     field: "staffStatus",
     oldValue: previousStatus,
     newValue: status,
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    timestamp: FieldValue.serverTimestamp(),
   });
 
   logger.info("setStaffStatus", {
@@ -300,7 +311,7 @@ exports.permanentlyDeleteDevice = onCall(async (request) => {
     customerName: deviceData.name ?? null,
     customerPhone: deviceData.phoneNumber ?? null,
     action: "permanentlyDeleteDevice",
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    timestamp: FieldValue.serverTimestamp(),
   });
 
   await deviceRef.delete();
