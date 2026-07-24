@@ -86,6 +86,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
   Future<void> updateDeviceAsFixed({
     required String deviceId,
     required String maintenanceEmployee,
+    String? maintenanceEmployeeUid,
     required double? price,
     required List<String> installedPartCodes,
   }) async {
@@ -93,6 +94,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       await maintenanceListServices.updateDeviceAsFixed(
         deviceId: deviceId,
         maintenanceEmployee: maintenanceEmployee,
+        maintenanceEmployeeUid: maintenanceEmployeeUid,
         price: price,
         installedPartCodes: installedPartCodes,
       );
@@ -126,6 +128,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
   Future<void> deliverDevice({
     required String deviceId,
     required String deliveredByEmployee,
+    String? deliveredByEmployeeUid,
     required double price,
     required List<String> imagesAfterDelivery,
   }) async {
@@ -133,6 +136,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       await maintenanceListServices.deliverDevice(
         deviceId: deviceId,
         deliveredByEmployee: deliveredByEmployee,
+        deliveredByEmployeeUid: deliveredByEmployeeUid,
         price: price,
         imagesAfterDelivery: imagesAfterDelivery,
       );

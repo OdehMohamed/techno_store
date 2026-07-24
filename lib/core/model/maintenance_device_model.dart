@@ -47,6 +47,12 @@ class MaintenanceDeviceModel {
       deliveredByEmployee; // الموظف الذي سلّم الجهاز (required when status = delivered)
   final String?
       maintenanceEmployee; // موظف الصيانة (required when status = fixed or delivered)
+  // Real-account references for the three fields above. Additive, nullable,
+  // and null on every pre-ADR-006 record forever — no migration/backfill.
+  // See docs/ai-workflow/ADR-006-employee-attribution.md.
+  final String? receivedByEmployeeUid;
+  final String? deliveredByEmployeeUid;
+  final String? maintenanceEmployeeUid;
   final List<String>? installedPartCodes; // أكواد القطع التي تم تركيبها
 
   // Metadata
@@ -81,6 +87,9 @@ class MaintenanceDeviceModel {
     required this.receivedByEmployee,
     this.deliveredByEmployee,
     this.maintenanceEmployee,
+    this.receivedByEmployeeUid,
+    this.deliveredByEmployeeUid,
+    this.maintenanceEmployeeUid,
     this.installedPartCodes,
     required this.receivedAt,
     this.deliveredAt,
@@ -114,6 +123,9 @@ class MaintenanceDeviceModel {
       'receivedByEmployee': receivedByEmployee,
       'deliveredByEmployee': deliveredByEmployee,
       'maintenanceEmployee': maintenanceEmployee,
+      'receivedByEmployeeUid': receivedByEmployeeUid,
+      'deliveredByEmployeeUid': deliveredByEmployeeUid,
+      'maintenanceEmployeeUid': maintenanceEmployeeUid,
       'installedPartCodes': installedPartCodes,
       'receivedAt': receivedAt.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
@@ -158,6 +170,9 @@ class MaintenanceDeviceModel {
       receivedByEmployee: json['receivedByEmployee'] as String,
       deliveredByEmployee: json['deliveredByEmployee'] as String?,
       maintenanceEmployee: json['maintenanceEmployee'] as String?,
+      receivedByEmployeeUid: json['receivedByEmployeeUid'] as String?,
+      deliveredByEmployeeUid: json['deliveredByEmployeeUid'] as String?,
+      maintenanceEmployeeUid: json['maintenanceEmployeeUid'] as String?,
       installedPartCodes: (json['installedPartCodes'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -212,6 +227,9 @@ class MaintenanceDeviceModel {
       receivedByEmployee: map['receivedByEmployee'] as String,
       deliveredByEmployee: map['deliveredByEmployee'] as String?,
       maintenanceEmployee: map['maintenanceEmployee'] as String?,
+      receivedByEmployeeUid: map['receivedByEmployeeUid'] as String?,
+      deliveredByEmployeeUid: map['deliveredByEmployeeUid'] as String?,
+      maintenanceEmployeeUid: map['maintenanceEmployeeUid'] as String?,
       installedPartCodes: (map['installedPartCodes'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -254,6 +272,9 @@ class MaintenanceDeviceModel {
     String? receivedByEmployee,
     String? deliveredByEmployee,
     String? maintenanceEmployee,
+    String? receivedByEmployeeUid,
+    String? deliveredByEmployeeUid,
+    String? maintenanceEmployeeUid,
     List<String>? installedPartCodes,
     DateTime? receivedAt,
     DateTime? deliveredAt,
@@ -285,6 +306,11 @@ class MaintenanceDeviceModel {
       receivedByEmployee: receivedByEmployee ?? this.receivedByEmployee,
       deliveredByEmployee: deliveredByEmployee ?? this.deliveredByEmployee,
       maintenanceEmployee: maintenanceEmployee ?? this.maintenanceEmployee,
+      receivedByEmployeeUid: receivedByEmployeeUid ?? this.receivedByEmployeeUid,
+      deliveredByEmployeeUid:
+          deliveredByEmployeeUid ?? this.deliveredByEmployeeUid,
+      maintenanceEmployeeUid:
+          maintenanceEmployeeUid ?? this.maintenanceEmployeeUid,
       installedPartCodes: installedPartCodes ?? this.installedPartCodes,
       receivedAt: receivedAt ?? this.receivedAt,
       deliveredAt: deliveredAt ?? this.deliveredAt,

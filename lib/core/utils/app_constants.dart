@@ -75,20 +75,4 @@ class AppConstants {
     '5 Hours',
     'Not determined',
   ];
-
-  static const List<String> newDeviceEmployeeList = [
-    'تالين',
-    'زينب',
-    'مريم',
-    'زكريا',
-    'براء سمارة',
-    'محمد عودة',
-    'محمد ادريس',
-  ];
-
-  static const List<String> maintenanceDialogEmployeeList = [
-    'براء سمارة',
-    'محمد عودة',
-    'محمد ادريس',
-  ];
 }

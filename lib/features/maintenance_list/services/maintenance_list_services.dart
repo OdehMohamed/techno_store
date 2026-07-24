@@ -311,6 +311,7 @@ class MaintenanceListServices {
   Future<void> updateDeviceAsFixed({
     required String deviceId,
     required String maintenanceEmployee,
+    String? maintenanceEmployeeUid,
     required double? price,
     required List<String> installedPartCodes,
   }) async {
@@ -339,6 +340,7 @@ class MaintenanceListServices {
       await deviceRef.update({
         'status': DeviceStatus.fixed,
         'maintenanceEmployee': maintenanceEmployee,
+        'maintenanceEmployeeUid': maintenanceEmployeeUid,
         'price': price,
         'installedPartCodes': installedPartCodes,
         'fixedAt': fixedAt.toIso8601String(),
@@ -378,6 +380,7 @@ class MaintenanceListServices {
   Future<void> deliverDevice({
     required String deviceId,
     required String deliveredByEmployee,
+    String? deliveredByEmployeeUid,
     required double price,
     required List<String> imagesAfterDelivery,
   }) async {
@@ -395,6 +398,7 @@ class MaintenanceListServices {
         'status': DeviceStatus.delivered,
         'deliveredAt': DateTime.now().toIso8601String(),
         'deliveredByEmployee': deliveredByEmployee,
+        'deliveredByEmployeeUid': deliveredByEmployeeUid,
         'price': price,
         'imagesAfterDelivery': preparedImages,
       });

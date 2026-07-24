@@ -126,4 +126,44 @@ class FirestoreServices {
       data: userData.toMap(),
     );
   }
+
+  /// Active staff accounts (`staffStatus == 'active'`) whose [UserData.type]
+  /// is in [roles]. Used to source employee-attribution dropdowns from real
+  /// accounts instead of a hardcoded list — see
+  /// docs/ai-workflow/ADR-006-employee-attribution.md. A one-time fetch, not
+  /// a live stream: staff rosters at this scale change rarely enough that a
+  /// long-lived listener per form isn't warranted.
+  ///
+  /// [alwaysInclude], if given, is fetched and appended regardless of role
+  /// or active status — used so editing a record whose attributed employee
+  /// has since been deactivated still shows that value in the dropdown.
+  Future<List<UserData>> getActiveStaffByRoles(
+    List<int> roles, {
+    String? alwaysInclude,
+  }) async {
+    final staff = await getCollection<UserData>(
+      path: FirestoreApiPath.users(),
+      builder: (data, documentID) => UserData.fromMap(data, documentID),
+      queryBuilder: (q) => q.where('type', whereIn: roles),
+    );
+
+    final active = <UserData>[];
+    for (final member in staff) {
+      final statusData =
+          await getDocumentOrNull(path: FirestoreApiPath.staffStatus(member.uid));
+      if (statusData?['status'] == 'active') {
+        active.add(member);
+      }
+    }
+
+    if (alwaysInclude != null &&
+        !active.any((member) => member.uid == alwaysInclude)) {
+      final existing = await getUserData(alwaysInclude);
+      if (existing != null) {
+        active.add(existing);
+      }
+    }
+
+    return active;
+  }
 }
