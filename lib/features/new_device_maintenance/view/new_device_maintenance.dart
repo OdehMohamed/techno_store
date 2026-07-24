@@ -5,12 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/core/widgets/main_app_bar.dart';
 import 'package:techno_store/core/widgets/message.dart';
+import 'package:techno_store/core/widgets/staff_dropdown.dart';
 import 'package:techno_store/features/new_device_maintenance/cubit/new_device_cubit.dart';
 import 'package:techno_store/core/model/maintenance_device_model.dart';
 import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
+import 'package:techno_store/core/model/user_data.dart';
+import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/accessories_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/action_buttons_widget.dart';
@@ -54,6 +58,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   Color selectedColor = const Color(0xff000000);
   String? selectedBrand;
   String? selectedTime;
+
+  // Employee attribution — see docs/ai-workflow/ADR-006-employee-attribution.md.
+  // Received By: any active staff (shared reception/intake capability).
+  // Maintenance Employee: active Maintenance/Admin only (technical work).
+  String? receivedByEmployeeUid;
+  String? maintenanceEmployeeUid;
+  List<UserData> _receivedByOptions = [];
+  List<UserData> _maintenanceOptions = [];
 
   List<bool> problems =
       List.filled(AppConstants.maintenanceProblemList.length, false);
@@ -102,6 +114,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       nameController.text = device.name;
       phoneController.text = _toEditablePhone(device.phoneNumber);
       receivedByEmployeeController.text = device.receivedByEmployee;
+      receivedByEmployeeUid = device.receivedByEmployeeUid;
       selectedBrand = device.brand;
       modelController.text = device.model;
       selectedColor = Color(int.parse(device.colorHex, radix: 16));
@@ -122,6 +135,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       priceController.text =
           device.price != null ? device.price.toString() : '';
       maintenanceEmployeeController.text = device.maintenanceEmployee ?? '';
+      maintenanceEmployeeUid = device.maintenanceEmployeeUid;
       installedPartCodes = List<String>.from(device.installedPartCodes ?? []);
       selectedTime = device.estimatedTime;
       notes2Controller.text = device.additionalNotes ?? '';
@@ -129,6 +143,25 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       _sensitiveDataLoaded = false;
       _loadSensitiveData(device.id!);
     }
+    _loadStaffOptions();
+  }
+
+  Future<void> _loadStaffOptions() async {
+    final results = await Future.wait([
+      FirestoreServices.instance.getActiveStaffByRoles(
+        const [UserRole.admin, UserRole.reception, UserRole.maintenance],
+        alwaysInclude: receivedByEmployeeUid,
+      ),
+      FirestoreServices.instance.getActiveStaffByRoles(
+        const [UserRole.admin, UserRole.maintenance],
+        alwaysInclude: maintenanceEmployeeUid,
+      ),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      _receivedByOptions = results[0];
+      _maintenanceOptions = results[1];
+    });
   }
 
   Future<void> _loadSensitiveData(String deviceId) async {
@@ -341,15 +374,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
           required: true,
         ),
         const SizedBox(height: 16),
-        BuildDropdown(
-          value: receivedByEmployeeController.text.isEmpty
-              ? null
-              : receivedByEmployeeController.text,
+        StaffDropdown(
+          selectedUid: receivedByEmployeeUid,
           label: "Received By Employee".tr(),
           icon: Icons.person_outline,
-          items: AppConstants.newDeviceEmployeeList,
-          onChanged: (value) => setState(() {
-            receivedByEmployeeController.text = value ?? '';
+          options: _receivedByOptions,
+          onChanged: (member) => setState(() {
+            receivedByEmployeeController.text = member?.name ?? '';
+            receivedByEmployeeUid = member?.uid;
           }),
         ),
       ],
@@ -558,16 +590,15 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       title: 'Fixed Details'.tr(),
       icon: Icons.build_circle,
       children: [
-        BuildDropdown(
-          value: maintenanceEmployeeController.text.isEmpty
-              ? null
-              : maintenanceEmployeeController.text,
+        StaffDropdown(
+          selectedUid: maintenanceEmployeeUid,
           label: 'Maintenance Employee'.tr(),
           icon: Icons.engineering,
-          items: AppConstants.maintenanceDialogEmployeeList,
-          onChanged: (value) {
+          options: _maintenanceOptions,
+          onChanged: (member) {
             setState(() {
-              maintenanceEmployeeController.text = value ?? '';
+              maintenanceEmployeeController.text = member?.name ?? '';
+              maintenanceEmployeeUid = member?.uid;
             });
           },
         ),
@@ -715,8 +746,13 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       maintenanceEmployee: maintenanceEmployeeController.text.trim().isEmpty
           ? widget.device?.maintenanceEmployee
           : maintenanceEmployeeController.text.trim(),
+      receivedByEmployeeUid: receivedByEmployeeUid,
+      maintenanceEmployeeUid: maintenanceEmployeeController.text.trim().isEmpty
+          ? widget.device?.maintenanceEmployeeUid
+          : maintenanceEmployeeUid,
       installedPartCodes: List<String>.from(installedPartCodes),
       deliveredByEmployee: widget.device?.deliveredByEmployee,
+      deliveredByEmployeeUid: widget.device?.deliveredByEmployeeUid,
       deliveredAt: widget.device?.deliveredAt,
       fixedAt: widget.device?.fixedAt,
       timeToFix: widget.device?.timeToFix,

@@ -13,8 +13,10 @@ import 'package:techno_store/core/route/app_routes.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
 import 'package:techno_store/core/utils/user_role.dart';
+import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/core/widgets/message.dart';
+import 'package:techno_store/core/widgets/staff_dropdown.dart';
 import 'package:techno_store/features/home_page/cubit/home_cubit.dart';
 import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cubit.dart';
 import 'package:techno_store/features/maintenance_list/services/maintenance_list_services.dart';
@@ -297,12 +299,25 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     );
   }
 
-  void _showEmployeePicker() {
+  Future<void> _showEmployeePicker() async {
+    // Filters devices by the same `maintenanceEmployee` plain-string field
+    // the Fixed dialog writes — sourced from the same active Maintenance/
+    // Admin roster. See docs/ai-workflow/ADR-006-employee-attribution.md.
+    final staff = await FirestoreServices.instance.getActiveStaffByRoles(
+      const [UserRole.admin, UserRole.maintenance],
+    );
+    if (!mounted) return;
+    final employeeNames = staff
+        .map((member) => member.name)
+        .whereType<String>()
+        .where((name) => name.isNotEmpty)
+        .toList();
+
     showModalBottomSheet(
       context: context,
       builder: (_) => ListView(
         shrinkWrap: true,
-        children: AppConstants.maintenanceDialogEmployeeList
+        children: employeeNames
             .map((employee) => ListTile(
                   title: Text(employee),
                   onTap: () {
@@ -572,20 +587,29 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     }
   }
 
-  void _showMarkAsFixedDialog(MaintenanceDeviceModel device) {
+  Future<void> _showMarkAsFixedDialog(MaintenanceDeviceModel device) async {
+    // Maintenance Employee is restricted to active Maintenance/Admin
+    // accounts — see docs/ai-workflow/ADR-006-employee-attribution.md.
+    final employeeOptions = await FirestoreServices.instance.getActiveStaffByRoles(
+      const [UserRole.admin, UserRole.maintenance],
+      alwaysInclude: device.maintenanceEmployeeUid,
+    );
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (_) => _MarkAsFixedDialog(
         title: 'Move to Fixed'.tr(),
-        initialEmployee: device.maintenanceEmployee,
+        initialEmployeeUid: device.maintenanceEmployeeUid,
         initialPrice: device.price,
         initialInstalledPartCodes: device.installedPartCodes ?? const [],
-        employeeOptions: AppConstants.maintenanceDialogEmployeeList,
+        employeeOptions: employeeOptions,
         onSave: (employee, price, installedPartCodes) async {
           final maintenanceListCubit = context.read<MaintenanceListCubit>();
           await maintenanceListCubit.updateDeviceAsFixed(
             deviceId: device.id!,
-            maintenanceEmployee: employee,
+            maintenanceEmployee: employee.name ?? employee.uid,
+            maintenanceEmployeeUid: employee.uid,
             price: price,
             installedPartCodes: installedPartCodes,
           );
@@ -602,19 +626,29 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     );
   }
 
-  void _showDeliverDeviceDialog(MaintenanceDeviceModel device) {
+  Future<void> _showDeliverDeviceDialog(MaintenanceDeviceModel device) async {
+    // Delivered By is open to any active staff — receiving and delivering
+    // devices are shared capabilities. See
+    // docs/ai-workflow/ADR-006-employee-attribution.md.
+    final employeeOptions = await FirestoreServices.instance.getActiveStaffByRoles(
+      const [UserRole.admin, UserRole.reception, UserRole.maintenance],
+      alwaysInclude: device.deliveredByEmployeeUid,
+    );
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (_) => _DeliverDeviceDialog(
-        initialDeliveredBy: device.deliveredByEmployee,
+        initialDeliveredByUid: device.deliveredByEmployeeUid,
         initialPrice: device.price,
         initialImagesAfterDelivery: device.imagesAfterDelivery ?? const [],
-        employeeOptions: AppConstants.newDeviceEmployeeList,
+        employeeOptions: employeeOptions,
         onDeliver: (deliveredBy, price, imagesAfterDelivery) async {
           final maintenanceListCubit = context.read<MaintenanceListCubit>();
           await maintenanceListCubit.deliverDevice(
             deviceId: device.id!,
-            deliveredByEmployee: deliveredBy,
+            deliveredByEmployee: deliveredBy.name ?? deliveredBy.uid,
+            deliveredByEmployeeUid: deliveredBy.uid,
             price: price,
             imagesAfterDelivery: imagesAfterDelivery,
           );
@@ -987,19 +1021,19 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
 
 class _MarkAsFixedDialog extends StatefulWidget {
   final String title;
-  final String? initialEmployee;
+  final String? initialEmployeeUid;
   final double? initialPrice;
   final List<String> initialInstalledPartCodes;
-  final List<String> employeeOptions;
+  final List<UserData> employeeOptions;
   final Future<void> Function(
-    String employee,
+    UserData employee,
     double? price,
     List<String> installedPartCodes,
   ) onSave;
 
   const _MarkAsFixedDialog({
     required this.title,
-    required this.initialEmployee,
+    required this.initialEmployeeUid,
     required this.initialPrice,
     required this.initialInstalledPartCodes,
     required this.employeeOptions,
@@ -1014,25 +1048,20 @@ class _MarkAsFixedDialogState extends State<_MarkAsFixedDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _priceController;
   late final TextEditingController _partCodeController;
-  late final List<String> _employeeOptions;
   late final List<String> _installedPartCodes;
-  String? _selectedEmployee;
+  UserData? _selectedEmployee;
   bool _isSaving = false;
   bool _showPartCodesError = false;
 
   @override
   void initState() {
     super.initState();
-    _employeeOptions = List<String>.from(widget.employeeOptions);
-    final initialEmployee = widget.initialEmployee?.trim();
-    if (initialEmployee != null &&
-        initialEmployee.isNotEmpty &&
-        !_employeeOptions.contains(initialEmployee)) {
-      _employeeOptions.add(initialEmployee);
+    for (final member in widget.employeeOptions) {
+      if (member.uid == widget.initialEmployeeUid) {
+        _selectedEmployee = member;
+        break;
+      }
     }
-    _selectedEmployee = (initialEmployee != null && initialEmployee.isNotEmpty)
-        ? initialEmployee
-        : null;
     _priceController =
         TextEditingController(text: widget.initialPrice?.toString() ?? '');
     _partCodeController = TextEditingController();
@@ -1090,7 +1119,7 @@ class _MarkAsFixedDialogState extends State<_MarkAsFixedDialog> {
     setState(() => _isSaving = true);
     try {
       await widget.onSave(
-        _selectedEmployee!.trim(),
+        _selectedEmployee!,
         parsedPrice,
         List<String>.from(_installedPartCodes),
       );
@@ -1119,24 +1148,15 @@ class _MarkAsFixedDialogState extends State<_MarkAsFixedDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedEmployee,
-                  decoration: InputDecoration(
-                    labelText: 'Maintenance Employee'.tr(),
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: _employeeOptions
-                      .map(
-                        (employee) => DropdownMenuItem<String>(
-                          value: employee,
-                          child: Text(employee),
-                        ),
-                      )
-                      .toList(),
+                StaffDropdown(
+                  selectedUid: _selectedEmployee?.uid,
+                  label: 'Maintenance Employee'.tr(),
+                  icon: Icons.engineering,
+                  options: widget.employeeOptions,
                   onChanged: _isSaving
-                      ? null
-                      : (value) {
-                          setState(() => _selectedEmployee = value);
+                      ? (_) {}
+                      : (member) {
+                          setState(() => _selectedEmployee = member);
                         },
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -1258,18 +1278,18 @@ class _MarkAsFixedDialogState extends State<_MarkAsFixedDialog> {
 }
 
 class _DeliverDeviceDialog extends StatefulWidget {
-  final String? initialDeliveredBy;
+  final String? initialDeliveredByUid;
   final double? initialPrice;
   final List<String> initialImagesAfterDelivery;
-  final List<String> employeeOptions;
+  final List<UserData> employeeOptions;
   final Future<void> Function(
-    String deliveredBy,
+    UserData deliveredBy,
     double price,
     List<String> imagesAfterDelivery,
   ) onDeliver;
 
   const _DeliverDeviceDialog({
-    required this.initialDeliveredBy,
+    required this.initialDeliveredByUid,
     required this.initialPrice,
     required this.initialImagesAfterDelivery,
     required this.employeeOptions,
@@ -1283,25 +1303,19 @@ class _DeliverDeviceDialog extends StatefulWidget {
 class _DeliverDeviceDialogState extends State<_DeliverDeviceDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _priceController;
-  late final List<String> _employeeOptions;
   late final List<String> _imagesAfterDelivery;
-  String? _selectedDeliveredBy;
+  UserData? _selectedDeliveredBy;
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    _employeeOptions = List<String>.from(widget.employeeOptions);
-    final initialDeliveredBy = widget.initialDeliveredBy?.trim();
-    if (initialDeliveredBy != null &&
-        initialDeliveredBy.isNotEmpty &&
-        !_employeeOptions.contains(initialDeliveredBy)) {
-      _employeeOptions.add(initialDeliveredBy);
+    for (final member in widget.employeeOptions) {
+      if (member.uid == widget.initialDeliveredByUid) {
+        _selectedDeliveredBy = member;
+        break;
+      }
     }
-    _selectedDeliveredBy =
-        (initialDeliveredBy != null && initialDeliveredBy.isNotEmpty)
-            ? initialDeliveredBy
-            : null;
     _priceController =
         TextEditingController(text: widget.initialPrice?.toString() ?? '');
     _imagesAfterDelivery = List<String>.from(widget.initialImagesAfterDelivery);
@@ -1393,7 +1407,7 @@ class _DeliverDeviceDialogState extends State<_DeliverDeviceDialog> {
     setState(() => _isSaving = true);
     try {
       await widget.onDeliver(
-        _selectedDeliveredBy!.trim(),
+        _selectedDeliveredBy!,
         parsedPrice,
         List<String>.from(_imagesAfterDelivery),
       );
@@ -1436,24 +1450,15 @@ class _DeliverDeviceDialogState extends State<_DeliverDeviceDialog> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        DropdownButtonFormField<String>(
-                          initialValue: _selectedDeliveredBy,
-                          decoration: InputDecoration(
-                            labelText: 'Delivered By'.tr(),
-                            border: const OutlineInputBorder(),
-                          ),
-                          items: _employeeOptions
-                              .map(
-                                (employee) => DropdownMenuItem<String>(
-                                  value: employee,
-                                  child: Text(employee),
-                                ),
-                              )
-                              .toList(),
+                        StaffDropdown(
+                          selectedUid: _selectedDeliveredBy?.uid,
+                          label: 'Delivered By'.tr(),
+                          icon: Icons.person_outline,
+                          options: widget.employeeOptions,
                           onChanged: _isSaving
-                              ? null
-                              : (value) {
-                                  setState(() => _selectedDeliveredBy = value);
+                              ? (_) {}
+                              : (member) {
+                                  setState(() => _selectedDeliveredBy = member);
                                 },
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
