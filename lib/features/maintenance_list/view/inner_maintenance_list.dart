@@ -556,30 +556,6 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
           ),
           SlidableAction(
             onPressed: (_) {
-              // TODO: Show device details or invoice
-              // _showDeviceInvoice(device);
-            },
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-            icon: Icons.receipt_long,
-            label: 'Invoice'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-          // SlidableAction(
-          //   onPressed: (_) {
-          //     // TODO: Reopen device (move back to In Maintenance)
-          //     // maintenanceListCubit.updateDeviceStatus(device.id, 'In Maintenance');
-          //   },
-          //   backgroundColor: Colors.orange,
-          //   foregroundColor: Colors.white,
-          //   icon: Icons.replay,
-          //   label: 'Reopen'.tr(),
-          //   borderRadius: BorderRadius.circular(12),
-          //   padding: const EdgeInsets.symmetric(horizontal: 4),
-          // ),
-          SlidableAction(
-            onPressed: (_) {
               _showArchiveConfirmation(context, device);
             },
             backgroundColor: Colors.grey[700]!,
