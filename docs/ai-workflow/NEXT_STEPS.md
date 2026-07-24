@@ -1,12 +1,19 @@
 # NEXT_STEPS.md
 
-Short-lived by design — reflects proposed next actions as of 2026-07-23. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
+Short-lived by design — reflects proposed next actions as of 2026-07-24. Overwrite at the end of each work session. History lives in `DECISIONS_LOG.md`; the full candidate work list lives in `BACKLOG.md`.
 
 ## Immediate
 
-**Staff Auth is fully shipped and live-verified (PR #14 backend + PR #15 client, both in `main` as of 2026-07-23).** The next line of work is an open sequencing decision — per the standing discipline, the natural candidate is opening Reception & Maintenance's review under "Current Application Review & Evolution," but this hasn't been deliberately decided yet and shouldn't be assumed.
+**Device lifecycle (ADR-005) is fully shipped, migrated, and live in production (PR #18 backend + PR #19 client + PR #20 hotfix, all in `main` as of 2026-07-24).** The device-deletion thread opened two sessions ago is now completely closed. The next line of work is an open sequencing decision within the still-active Reception & Maintenance review — candidates on the table (not yet deliberately chosen):
+- Employee attribution (`receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee`) drawn from a hardcoded `AppConstants` list, disconnected from real Staff Auth accounts.
+- The intake-form-shape question (single large form vs. the PRD's "captures only what's genuinely required" framing).
+- The confirmed dead code cleanup (`ManageCategoriesPage`+cubit, `maintenance_list_state.dart`, Invoice/Reopen TODO stubs, empty drawer stubs).
 
-Small deferred items surfaced during PR #15, not urgent but worth deliberately picking up at some point:
+Small deferred items from the device lifecycle work, not urgent but worth deliberately picking up at some point:
+- The 4 orphaned pre-`recordState` Firestore composite indexes in production (additive deploy never removes old indexes) — low-priority cleanup.
+- Whether Restore's Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check — still just two call sites, still not revisited.
+
+Staff Auth is also fully shipped and live-verified (PR #14 backend + PR #15 client). Small deferred items surfaced during PR #15, not urgent but worth deliberately picking up at some point:
 - Criterion 3 (restart recheck) re-tested in true isolation (app fully closed *before* any `staffStatus` change) — currently just deferred, not failed.
 - Old email/password dead code cleanup (`SignInFormEmailMethod`, `SignInButtons`, `sign_in_form_text_fields.dart`, commented-out `AuthCubit.signUp`/`AuthServices.signUpWithEmailAndPassword`) as its own separate PR.
 - `phoneNumber` nullability reconsideration on the shared `UserData` model.

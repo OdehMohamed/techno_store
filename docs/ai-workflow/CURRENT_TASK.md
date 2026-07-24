@@ -1,16 +1,16 @@
 # CURRENT_TASK.md
 
-Status: reflects the state as of 2026-07-23. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
+Status: reflects the state as of 2026-07-24. Overwrite this file's content at the start/end of each work session — it should only ever describe what's active right now, not history (history belongs in `DECISIONS_LOG.md`).
 
 ## Active task
 
 **Reception & Maintenance review is underway** (Auth & Entry, including full Staff Auth, is complete — PR #9–#15, all in `main`). Continuing the same rhythm just proven on Staff Auth: review → decide/implement → live verification → merge → move on, per item, no separate planning phase.
 
-A first code-level pass (routes, device intake form, maintenance tracking list, Fixed/Deliver dialogs, `ManageCategoriesPage`, drawer) is done. One finding has been decided; several remain open:
+A first code-level pass (routes, device intake form, maintenance tracking list, Fixed/Deliver dialogs, `ManageCategoriesPage`, drawer) is done. Several findings decided; the device-deletion thread is now fully closed. Remaining findings still open:
 
 - [x] **Settled and shipped (2026-07-23).** PR #16 squash-merged (`a7203ed`). PIN/pattern data is not automatically purged at delivery — delivery and destruction are deliberately decoupled. See `DECISIONS_LOG.md`.
 - [x] **Fixed and shipped (2026-07-23).** PR #17 squash-merged (`e2c0f82`). `newDeviceMaintenance` route now has the same role guard as `maintenancePage`/`createAccountAdminSide`. See `DECISIONS_LOG.md`.
-- [x] **Design settled, PR 1 (backend) shipped (2026-07-23).** `ADR-005` — device deletion split into staff-wide reversible Archive, Admin-only Restore, and Admin-only/archive-gated/server-side Permanent Deletion. PR #18 squash-merged (`1b1e7a9`): `permanentlyDeleteDevice` Cloud Function, `recordState` rules (additive), migration scripts (not yet run). **PR 2 (client cutover) is next** — model/query updates, Archive/Restore/Permanent-Delete UI, new Admin-only Archived Devices screen. Per product-owner preference, the `recordState` production migration is sequenced *after* PR 2 is implemented, reviewed, and live-verified (using freshly created test devices) — not between PR 1 and PR 2. See `DECISIONS_LOG.md`.
+- [x] **Device lifecycle (ADR-005) fully shipped, migrated, and live in production (2026-07-24).** Device deletion split into staff-wide reversible Archive, Admin-only Restore, and Admin-only/archive-gated/server-side Permanent Deletion. PR #18 (backend, `1b1e7a9`) and PR #19 (client cutover, `4ece686`) both squash-merged, plus PR #20 (`ca84951`, standalone hotfix for a real `FieldValue`-under-emulator bug found via executable testing in both `permanentlyDeleteDevice` and the already-shipped `setStaffStatus`). Fully executably verified (Firestore rules 17/17, Cloud Function 6/6, client UI 8/8, all local-emulator) before the coordinated production cutover: 5 indexes deployed and confirmed `READY`, functions/rules deployed, `recordState` migration executed (494/494), verification passed (count unchanged, 0 missing, spot-check clean), and a real-device production smoke test against a synthetic test record passed all 8 checks. See `DECISIONS_LOG.md` (2026-07-23 and 2026-07-24 entries) for the full record.
 - [ ] **Open:** employee attribution (`receivedByEmployee`/`maintenanceEmployee`/`deliveredByEmployee`) is drawn from a hardcoded `AppConstants` string list, disconnected from the real Staff Auth accounts now in `main`.
 - [ ] **Open (lower priority):** intake is one large single-screen form: worth a deliberate call on whether it conflicts with the PRD's "captures only what's genuinely required" framing, or whether that's already satisfied since only phone/name/model/received-by are hard-required.
 - [ ] **Confirmed dead code, not yet removed:** `ManageCategoriesPage` + its cubit (fully non-functional shell), `lib/features/maintenance_list/view_model/maintenance_list_state.dart` (unreferenced), Invoice/Reopen TODO stubs on the Delivered tab, several empty drawer `onTap: () {}` stubs (Favorite, Settings, Add new Product, Customer's "Maintenance (My Devices)").
@@ -19,6 +19,7 @@ See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record.
 
 ## Status
 
+- [x] **Device lifecycle (ADR-005) client cutover shipped and cut over to production (2026-07-24).** PR #19 squash-merged (`4ece686`) to `main`, plus PR #20 squash-merged (`ca84951`, standalone `FieldValue` hotfix). Both feature branches deleted locally and remotely. Full production cutover executed: indexes, functions/rules deploy, `recordState` migration (494/494), verification, and a real-device production smoke test, all passed. The old hard-delete action is gone from both deployed rules and the client. See `DECISIONS_LOG.md` (2026-07-24 entry) for the full record.
 - [x] **Device lifecycle backend (ADR-005, PR 1 of 2) shipped (2026-07-23).** PR #18 squash-merged (`1b1e7a9`) to `main`. `feat/device-lifecycle-backend` deleted locally and remotely. Purely additive — no shipped client code sets or relies on `recordState` yet. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record.
 - [x] **`newDeviceMaintenance` route guard shipped (2026-07-23).** PR #17 squash-merged (`e2c0f82`) to `main`. `fix/new-device-maintenance-route-guard` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record.
 - [x] **PIN/pattern purge decoupled from delivery, settled and shipped (2026-07-23).** PR #16 squash-merged (`a7203ed`) to `main`. `docs/pin-pattern-purge-decoupled-from-delivery` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-23 entry) for the full record.
@@ -43,7 +44,9 @@ See `DECISIONS_LOG.md` (2026-07-23 entries) for the full record.
 
 ## What is NOT yet decided
 
-- What the next line of work is now that Staff Auth is fully closed out (see `NEXT_STEPS.md`).
+- What the next Reception & Maintenance finding to pick up is, now that the device-deletion thread (ADR-005) is fully closed out (see `NEXT_STEPS.md`).
+- The 4 orphaned pre-`recordState` Firestore composite indexes in production — low-priority cleanup, not urgent.
+- Whether Restore's Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check — still just two call sites.
 - Criterion 3 (restart recheck) in true isolation — deferred, not pursued further per product-owner preference; not blocking.
 - Shared-device staff identity switching/locking mechanism (`OPEN_DECISIONS.md`) — deliberately not designed yet; its own security and architecture thread.
 - Whether the remaining old email/password dead code (`SignInFormEmailMethod`, `SignInButtons`, `sign_in_form_text_fields.dart`, commented-out `AuthCubit.signUp`/`AuthServices.signUpWithEmailAndPassword`) gets removed as its own cleanup PR.
