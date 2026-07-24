@@ -41,6 +41,7 @@ class StaffDropdown extends StatelessWidget {
       ),
       child: DropdownButtonFormField<String>(
         initialValue: safeValue,
+        isExpanded: true,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: Colors.grey[600]),
