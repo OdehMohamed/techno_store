@@ -1,6 +1,6 @@
 # ADR-005: Maintenance Device Lifecycle — Archive, Restore, Permanent Deletion
 
-**Status:** Settled — approved by the product owner 2026-07-23, ready for implementation.
+**Status:** Implemented and live in production (2026-07-24). PR #18 (backend, `1b1e7a9`), PR #19 (client cutover, `4ece686`), PR #20 (`FieldValue` hotfix, `ca84951`) — all squash-merged to `main`. Executably verified end-to-end (Firestore rules, `permanentlyDeleteDevice` Cloud Function, client UI, all local-emulator) before a coordinated production cutover: `recordState` migration executed and verified (494/494), and a real-device production smoke test against a synthetic test record passed. See `docs/ai-workflow/DECISIONS_LOG.md` (2026-07-23 and 2026-07-24 entries) for the full record.
 **Date:** 2026-07-23, during the Reception & Maintenance area of "Current Application Review & Evolution."
 **Related:** `docs/product/PRD.md` (Shared Foundation → The Relationship Timeline), `docs/product/OPEN_DECISIONS.md` ("Deletion recovery mechanism", "Business Authority"), `ADR-001-sensitive-data-separation.md`, `ADR-004-admin-user-management-design.md` (the `setStaffStatus` Cloud Function this design mirrors), `docs/ai-workflow/archive/phase1-execution/PHASE1_IMPLEMENTATION_PLAN.md` §"Cascade deletion behavior" (the original 2026-07-03 decision this supersedes).
 

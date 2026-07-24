@@ -6,6 +6,8 @@ Status: reflects the state as of 2026-07-24. Overwrite this file's content at th
 
 **Reception & Maintenance review is underway** (Auth & Entry, including full Staff Auth, is complete — PR #9–#15, all in `main`). Continuing the same rhythm just proven on Staff Auth: review → decide/implement → live verification → merge → move on, per item, no separate planning phase.
 
+**ADR-005 (device lifecycle: Archive/Restore/Permanent Delete) is complete and closed (2026-07-24).** The product owner confirmed the full line of work finished, with no open implementation work behind it, and asked to carry forward the process that closed it — see `DECISIONS_LOG.md`'s 2026-07-23/2026-07-24 entries for the decision, implementation, and cutover record.
+
 A first code-level pass (routes, device intake form, maintenance tracking list, Fixed/Deliver dialogs, `ManageCategoriesPage`, drawer) is done. Several findings decided; the device-deletion thread is now fully closed. Remaining findings still open:
 
 - [x] **Settled and shipped (2026-07-23).** PR #16 squash-merged (`a7203ed`). PIN/pattern data is not automatically purged at delivery — delivery and destruction are deliberately decoupled. See `DECISIONS_LOG.md`.
