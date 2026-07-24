@@ -10,12 +10,12 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
   final MaintenanceListServices maintenanceListServices =
       MaintenanceListServices();
 
-  /// Archives a device (staff-wide, reversible). Rethrows on failure —
-  /// deliberately not the swallow-and-emit-an-unlistened-state pattern the
-  /// older methods below use (see BACKLOG.md item 14); this and the two
-  /// methods below let the calling confirmation dialog's own try/catch
-  /// actually show a real error instead of failing silently, which matters
-  /// most for Permanent Delete.
+  /// Archives a device (staff-wide, reversible). Rethrows on failure, as do
+  /// every other action method in this class — the calling dialog's own
+  /// try/catch is what actually surfaces a real error to the user instead
+  /// of a false "success" message (see BACKLOG.md item 14, fixed
+  /// 2026-07-25: the four older methods used to swallow their exception
+  /// into an `emit` nothing ever listened to).
   Future<void> archiveDevice(String deviceId, String actingUid) async {
     try {
       await maintenanceListServices.archiveDevice(deviceId, actingUid);
@@ -79,7 +79,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
           '✅ Device status updated successfully: $deviceId to $newStatus');
     } catch (e) {
       debugPrint('❌ Error updating device status: $e');
-      emit(MaintenanceListError(error: e.toString()));
+      rethrow;
     }
   }
 
@@ -101,7 +101,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       debugPrint('✅ Device fixed update saved successfully: $deviceId');
     } catch (e) {
       debugPrint('❌ Error saving fixed update: $e');
-      emit(MaintenanceListError(error: e.toString()));
+      rethrow;
     }
   }
 
@@ -121,7 +121,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       debugPrint('✅ Fixed device details edited successfully: $deviceId');
     } catch (e) {
       debugPrint('❌ Error editing fixed details: $e');
-      emit(MaintenanceListError(error: e.toString()));
+      rethrow;
     }
   }
 
@@ -143,7 +143,7 @@ class MaintenanceListCubit extends Cubit<MaintenanceListState> {
       debugPrint('✅ Device delivered successfully: $deviceId');
     } catch (e) {
       debugPrint('❌ Error delivering device: $e');
-      emit(MaintenanceListError(error: e.toString()));
+      rethrow;
     }
   }
 }

@@ -1128,6 +1128,11 @@ class _MarkAsFixedDialogState extends State<_MarkAsFixedDialog> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSaving = false);
+      Message.showBottomMessage(
+        context,
+        'Could not save this update. Please try again.'.tr(),
+        isError: true,
+      );
     }
   }
 
@@ -1416,6 +1421,11 @@ class _DeliverDeviceDialogState extends State<_DeliverDeviceDialog> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSaving = false);
+      Message.showBottomMessage(
+        context,
+        'Could not deliver this device. Please try again.'.tr(),
+        isError: true,
+      );
     }
   }
 
