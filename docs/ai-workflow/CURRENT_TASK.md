@@ -4,7 +4,16 @@ Status: reflects the state as of 2026-07-25. Overwrite this file's content at th
 
 ## Active task
 
-**Reception & Maintenance review is underway** (Auth & Entry, including full Staff Auth, is complete — PR #9–#15, all in `main`). Continuing the same rhythm just proven on Staff Auth: review → decide/implement → live verification → merge → move on, per item, no separate planning phase.
+**Admin area — Staff Account Management is the first decision thread (2026-07-25).** Reception & Maintenance is closed (see below). A fresh code-level Admin review found the area's one real, live gap: no trusted mechanism anywhere creates a staff account, despite `PRD.md` settling "accounts are created directly by the Admin." `ADR-004` extended in place with the full design (identity model, atomicity/rollback, initial `staffStatus`, management surface) — see `DECISIONS_LOG.md`'s 2026-07-25 entry for the full record, including the two real design gaps the product owner caught before any code was written.
+
+- [x] **PR 1 of 2 shipped (2026-07-25).** PR #24 squash-merged (`2f6ed4c`): `createStaffAccount` Cloud Function, backend-only, no client caller yet. 30/30 executable emulator checks, including a genuine bug (failure-injection placement) the first test run caught and a fix confirmed. `feat/staff-account-creation-backend` deleted.
+- [ ] **PR 2 of 2 — up next.** The Staff Management client vertical slice: Admin-only list/filter screen, wiring to `createStaffAccount` (new) and `setStaffStatus` (already shipped, unmodified), removal of `NewUserAdminSide`/`create_user_account`, drawer/route updates. No migration needed — existing manually-created staff accounts already satisfy the `users/{uid}` + `staffStatus` invariant this surface relies on.
+
+Deliberately out of scope for this thread, per `ADR-004`'s own "Explicitly not decided" section: role-change (`setUserRole`), audit-log in-app visibility, and the Admin dashboard/reporting area (Business Lens) — each its own future decision thread, not expanded into here.
+
+## Reception & Maintenance (closed)
+
+Reception & Maintenance review is complete (Auth & Entry, including full Staff Auth, is also complete — PR #9–#15, all in `main`). Rhythm proven there — review → decide/implement → live verification → merge → move on, per item, no separate planning phase — carried forward into the Admin area above.
 
 **Note (2026-07-25):** the intake-form-shape question (last of the three original review findings) was explicitly deferred by the product owner rather than picked up next — it remains open, no urgency behind it. Instead, `BACKLOG.md` item 14 (`MaintenanceListCubit`'s swallowed exceptions) was chosen as a deliberate next step and is now shipped — see below.
 
@@ -24,6 +33,7 @@ See `DECISIONS_LOG.md` (2026-07-23 through 2026-07-25 entries) for the full reco
 
 ## Status
 
+- [x] **Staff Account Creation backend shipped (2026-07-25, PR 1 of 2).** PR #24 squash-merged (`2f6ed4c`) to `main`. `feat/staff-account-creation-backend` deleted remotely (local cleanup superseded by re-syncing `main` directly after the same broken-SSH environment issue noted at PR #21). See `DECISIONS_LOG.md` (2026-07-25 entry) for the full record, including the two design gaps caught and closed before implementation.
 - [x] **`MaintenanceListCubit` swallowed-exception bug fixed (2026-07-25).** PR #23 squash-merged (`71a2bd3`) to `main`. `fix/maintenance-list-cubit-swallowed-exceptions` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-25 entry) for the full record.
 - [x] **Employee attribution (ADR-006) shipped (2026-07-24).** PR #22 squash-merged (`318b242`) to `main`. `feat/employee-attribution` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-24 entry) for the full record.
 - [x] **Reception & Maintenance dead code cleanup shipped (2026-07-24).** PR #21 squash-merged (`3c5fba8`) to `main`. `chore/reception-maintenance-dead-code-cleanup` deleted locally and remotely. See `DECISIONS_LOG.md` (2026-07-24 entry) for the full record.
@@ -52,7 +62,7 @@ See `DECISIONS_LOG.md` (2026-07-23 through 2026-07-25 entries) for the full reco
 
 ## What is NOT yet decided
 
-- What the next Reception & Maintenance finding to pick up is, now that the device-deletion thread (ADR-005) is fully closed out (see `NEXT_STEPS.md`).
+- PR 2's exact behavior once built and live-tested (the shape is settled per `ADR-004`, but nothing has been executably verified yet — matches this repo's standing rule of not treating a design as done until it's tested).
 - The 4 orphaned pre-`recordState` Firestore composite indexes in production — low-priority cleanup, not urgent.
 - Whether Restore's Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check — still just two call sites.
 - Criterion 3 (restart recheck) in true isolation — deferred, not pursued further per product-owner preference; not blocking.
