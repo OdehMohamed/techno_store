@@ -997,3 +997,25 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Merged:** Committed directly to `main` (documentation only, no PR, matching prior `ADR-007` precedent).
 
 **Explicitly not decided/not implemented in this session:** `ADR-007` implementation itself — still not started, now with three implementation-adjacent items recorded rather than two (IMEI/serial normalization; customer-known-Devices query/index design; write authority for the three new correction facts). Status Narrative Copy discovery resumes next, against the corrected model.
+
+---
+
+### 2026-07-25 — Write authority for Technical Finding / Pending Revision Resolution ratified, closing ADR-007's authorization gap
+
+**Decision:** Before returning to Status Narrative Copy, the product owner correctly flagged that the two facts corrected into `ADR-007` earlier the same day had no write authority assigned — a gap affecting the workflow itself, not just implementation. Pressure-tested against `PRD.md`'s Roles as Expertise section and the already-shipped Estimate-creation precedent rather than assumed.
+
+**Outcome:** Technical Finding and technical-work-concluded-at → **Maintenance + Admin only**. Reasoning: only whoever performed or directly oversaw the diagnostic/repair work has a first-hand basis to assert *Repaired* / *No Fault Found* / *Fault Found, Not Repaired* truthfully; Reception relaying an outcome it didn't establish is exactly the "can't be borrowed situationally" competence boundary the PRD already draws for technical judgment — the same test already applied to Estimate creation.
+
+Resolving a Pending Revision Resolution (continue under prior approved scope, or stop) → **Maintenance + Admin only**, pressure-tested specifically against the case that would break a blanket rule: a declined revision that looks obviously unrelated to the original approved scope. Correctly recognizing that the two are unrelated — rather than assuming — is itself the technical judgment being protected; Reception can't reliably distinguish that case from one where the new discovery genuinely changed the original scope's viability. Operational friction was checked directly: decline-recording (staff-wide, often live with the customer on the phone) and resolution (Maintenance+Admin, not required to happen in the same moment) are decoupled in time by the model itself, unlike Estimate-approval-recording — the scenario is inherently mid-repair and device-still-at-the-shop, not a live in-person bottleneck. No mitigation designed for Maintenance being briefly unavailable; accepted as the same shape as Admin-only Restore already has.
+
+**A real asymmetry confirmed, not assumed:** the Pending Revision Resolution condition's *existence* is not a separately authorized action at all — it's a structural consequence of the already-staff-wide Estimate decline-recording write, inheriting that authority rather than needing a new rule. Only *resolving* it needs the narrower authority. Admin holds identical authority to Maintenance throughout — this is the technical-expertise boundary, not the separate business-authority dimension Admin-only Restore/Permanent-Deletion represent.
+
+**New implementation concern recorded, not designed:** whatever write records a qualifying decline must not be able to leave a Visit without its resulting Pending Revision Resolution fact — a partial write must not silently drop the condition. The transaction/consistency mechanism is explicitly left as an implementation-time choice.
+
+**Documentation reconciled:** `ADR-007` — §4 and §7 correction blocks each gained a "Write authority" note; the Final authorization matrix gained three rows (Technical Finding/technical-work-concluded-at update; Pending Revision Resolution's condition-arising, explicitly no new rule; Pending Revision Resolution resolution update); Consequences' "not yet decided" write-authority item closed and replaced with the new atomicity concern; Status line updated. `CURRENT_TASK.md` updated in both the Active task and "What is NOT yet decided" sections. `PRD.md`, `OPEN_DECISIONS.md`, `ROADMAP.md` checked — none reference rules-level authorization detail at this granularity, so none required edits.
+
+**Testing:** Documentation-only change; no schema, Firestore rules, or client/UI code touched; `flutter analyze` not affected.
+
+**Merged:** Committed directly to `main` (documentation only, no PR, matching prior `ADR-007` precedent).
+
+**Explicitly not decided/not implemented in this session:** `ADR-007` implementation itself — still not started. Three implementation-adjacent items remain recorded, not designed: IMEI/serial normalization; the customer-known-Devices query/index design; the decline-write/Pending-Revision-Resolution atomicity mechanism. The domain and workflow model is now complete at the product-decision level — Status Narrative Copy discovery resumes next.
