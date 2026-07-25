@@ -14,8 +14,9 @@ import 'package:techno_store/features/maintenance_list/cubit/maintenance_list_cu
 import 'package:techno_store/features/maintenance_list/view/maintenance_page.dart';
 import 'package:techno_store/features/new_device_maintenance/cubit/new_device_cubit.dart';
 import 'package:techno_store/features/new_device_maintenance/view/new_device_maintenance.dart';
-import 'package:techno_store/features/new_user_admin_side/view/new_user_admin_side.dart';
 import 'package:techno_store/features/product_details.dart/view/product_details_page.dart';
+import 'package:techno_store/features/staff_management/cubit/staff_management_cubit.dart';
+import 'package:techno_store/features/staff_management/view/staff_management_page.dart';
 
 class AppRouter {
   // Route-level authorization: role-gated screens are protected only by the
@@ -62,7 +63,7 @@ class AppRouter {
         return CupertinoPageRoute(
           builder: (_) => const ProductDetailsPage(),
         );
-      case AppRoutes.createAccountAdminSide:
+      case AppRoutes.staffManagement:
         final args = settings.arguments as Map<String, dynamic>?;
         final adminUserData = args?['userData'] as UserData?;
         if (adminUserData == null || !UserRole.isAdmin(adminUserData.type)) {
@@ -70,8 +71,8 @@ class AppRouter {
         }
         return CupertinoPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => AuthCubit(),
-            child: const NewUserAdminSide(),
+            create: (context) => StaffManagementCubit(),
+            child: StaffManagementPage(adminUserData: adminUserData),
           ),
         );
 

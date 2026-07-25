@@ -345,5 +345,19 @@
   "Employee": "الموظف",
   "Date Range": "الفترة الزمنية",
   "Clear": "مسح",
-  "Load more": "تحميل المزيد"
+  "Load more": "تحميل المزيد",
+  "Staff Management": "إدارة الموظفين",
+  "New Staff Account": "حساب موظف جديد",
+  "Role": "الدور الوظيفي",
+  "All Statuses": "كل الحالات",
+  "Active": "نشط",
+  "Inactive": "غير نشط",
+  "Staff account created": "تم إنشاء حساب الموظف",
+  "Account activated": "تم تفعيل الحساب",
+  "Account deactivated": "تم إلغاء تفعيل الحساب",
+  "Deactivate Account": "إلغاء تفعيل الحساب",
+  "Deactivate": "إلغاء التفعيل",
+  "This account will have full business authority — unrestricted admin access.": "سيتمتع هذا الحساب بصلاحية إدارية كاملة دون قيود.",
+  "No staff accounts found": "لا يوجد حسابات موظفين",
+  "Staff accounts will appear here": "ستظهر حسابات الموظفين هنا"
 }

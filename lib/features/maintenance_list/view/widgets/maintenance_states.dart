@@ -41,11 +41,17 @@ class LoadingStateWidget extends StatelessWidget {
 class EmptyStateWidget extends StatelessWidget {
   final String? status;
   final IconData Function(String?)? getEmptyIcon;
+  // Overrides for non-device call sites (e.g. Staff Management) — default
+  // text stays device-oriented so existing callers are unaffected.
+  final String? title;
+  final String? subtitle;
 
   const EmptyStateWidget({
     Key? key,
     this.status,
     this.getEmptyIcon,
+    this.title,
+    this.subtitle,
   }) : super(key: key);
 
   @override
@@ -80,9 +86,10 @@ class EmptyStateWidget extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              status != null
-                  ? 'No devices in ${status!.toLowerCase()}'.tr()
-                  : 'No devices found'.tr(),
+              title ??
+                  (status != null
+                      ? 'No devices in ${status!.toLowerCase()}'.tr()
+                      : 'No devices found'.tr()),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -91,7 +98,7 @@ class EmptyStateWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Devices will appear here'.tr(),
+              subtitle ?? 'Devices will appear here'.tr(),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
