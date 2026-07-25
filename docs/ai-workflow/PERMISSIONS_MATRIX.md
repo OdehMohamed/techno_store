@@ -21,16 +21,13 @@ Roles (product-owner-confirmed 2026-07-03): **Admin**=0, **Customer**=1, **Recep
 
 ---
 
-## Resource: `users/{uid}/meta/isActivated`
+## Resource: `users/{uid}/meta/isActivated` — retired
 
-| Operation | Admin | Customer | Reception | Maintenance | Guest |
-|---|---|---|---|---|---|
-| **Current — backend (deployed rules)** | Read: own doc, or any (`isStaff()`). Write: denied for every role via any client write, including Admin's own — matches the confirmed manual Console workflow, which uses IAM access outside these rules and is unaffected. | Read: own doc only. Write: denied. | Read: own or any (staff). Write: denied. | Read: own or any (staff). Write: denied. | Read: own doc only (not staff). Write: denied. |
-| **Current — client UI** | No UI writes this field anywhere in the codebase | Same (read-only, via `AuthCubit._listenToActivation` — still unwired into the sign-in flow, `BACKLOG.md` item 10) | Same | Same | Same |
-| **Intended** *(Assumption)* | Can activate/deactivate other users (this is presumably an Admin/Reception gatekeeping mechanism, given the name and that `AuthCubit` signs a user out if it becomes `false`) | Should never be able to set their own activation status | Likely can activate customers (Unknown, needs confirmation) | Likely no reason to touch this | Should never be able to set this |
-| **Recommended (server-side)** | Allow `write` only for Admin (and possibly Reception, pending confirmation); the acting user must never be able to set their own `isActivated` to `true` if it's currently `false` | Read-only, own document only | TBD pending confirmation of whether Reception activates accounts | Deny write | Deny write |
+**Retired for customer accounts, per `docs/product/PRD.md` (Auth & Account Lifecycle).** The generic `isActivated` field this section used to document was built for a multi-tenant subscription-licensing model explicitly rejected as this product's shape, and was retired outright rather than repurposed. No code in this repository reads or writes `isActivated` — confirmed via full-codebase grep (2026-07-25, during the Admin-area review). `AuthCubit._listenToActivation` and `AuthNeedActivation`, which this section previously described as merely "unwired," no longer exist in the codebase at all.
 
-**Risk restated from docs/ai-workflow/archive/phase1-audit/SECURITY_AUDIT.md:** nothing in this repository writes `isActivated` at all — its current write mechanism (if any) is entirely outside this codebase. Recommended rules above assume the intended writer is a staff role, but this must be confirmed, not assumed, since the actual mechanism is unverified.
+**Staff accounts use a distinct, unrelated mechanism instead** — `users/{uid}/meta/staffStatus` (`active`/`inactive`), written only by the `setStaffStatus`/`createStaffAccount` Cloud Functions, enforced client-side by `AuthCubit`'s fail-closed sign-in/live-session checks. See `docs/ai-workflow/ADR-004-admin-user-management-design.md` for the full design — this is a new concept, not a revival of `isActivated`, and shouldn't be conflated with it.
+
+The deployed Firestore rule on `users/{userId}/meta/{metaDoc}` (`allow write: if false`) still exists and still applies to any document under `meta/`, `staffStatus` included — no rule change was needed when `staffStatus` was introduced, for exactly this reason.
 
 ---
 
@@ -91,7 +88,7 @@ No live Firestore or Storage path exists for this domain (see `docs/ai-workflow/
 | Operation | Admin | Customer | Reception | Maintenance | Guest |
 |---|---|---|---|---|---|
 | **Current** | N/A — not implemented | N/A | N/A | N/A | N/A |
-| **Intended** *(Assumption, from the "Add new Product"/"Manage Categories" drawer items being gated to `isAdmin \|\| isReception`)* | Full CRUD | Read-only (browsing the store) | Full CRUD | Likely no access (Maintenance is excluded from the Store drawer item's `isAdmin \|\| isCustomer \|\| isReception` allow-list in `main_drawer2.dart` — simply not listed, not a `type != 3` deny-list) | Read-only, or no access (Unknown — depends on whether guests can browse the store; also excluded from that same allow-list today) |
+| **Intended** *(Assumption — the "Add new Product"/"Manage Categories" drawer items this row's reasoning originally cited were removed as confirmed dead code in PR #21, 2026-07-24; no longer corroborating evidence, so treat this row as an unconfirmed guess pending product-owner input, not as something inferred from shipped UI)* | Full CRUD | Read-only (browsing the store) | Full CRUD | Likely no access (Maintenance is excluded from the Store drawer item's `isAdmin \|\| isCustomer \|\| isReception` allow-list in `main_drawer2.dart`, which is still live — simply not listed, not a `type != 3` deny-list) | Read-only, or no access (Unknown — depends on whether guests can browse the store; also excluded from that same allow-list today) |
 | **Recommended (server-side, once built)** | Allow all | Allow `read` only, public or authenticated-read depending on business decision; deny all writes | Allow all | Deny, pending confirmation | Allow `read` only if guest browsing is intended; otherwise deny |
 
 ---

@@ -870,3 +870,27 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Merged:** PR #25, squash-merged as `13eff56`. Feature branch `feat/staff-management-client` deleted locally and remotely.
 
 **With this, the Staff Account Management decision thread (ADR-004) is fully shipped** — creation, activation/deactivation, and the browse/filter surface are all live. **Explicitly not decided in this session:** what the next area/decision thread is. Role-change, audit-log in-app visibility, and the Admin dashboard/reporting area remain deliberately out of scope, per `ADR-004`'s own "Explicitly not decided" section.
+
+---
+
+### 2026-07-25 — Post-ADR-004 Admin checkpoint; documentation reconciled; Admin area closed as a reasonable stopping point
+
+**Decision:** Before choosing another feature, reconcile the original Admin-area review findings (B/C/D/E, from the same-day earlier session) against what ADR-004 actually shipped, rather than re-running a broad audit. Explicit scope for this pass: documentation reconciliation only — no code changes, no expansion into a new feature.
+
+**Outcome — reconciliation:**
+- Resolved by ADR-004: no staff-account-creation path (closed by `createStaffAccount`); no in-app browse/filter or `setStaffStatus` caller (closed by the Staff Management screen); `NewUserAdminSide`'s dead code and staleness (file deleted).
+- Stale documentation, now corrected in this session (see below): `PERMISSIONS_MATRIX.md`'s `isActivated` section and its Retail-catalog row citing removed drawer items; `BACKLOG.md` item 10.
+- Deliberately deferred, unchanged: role-change (`setUserRole`) — still out of scope per `ADR-004`'s own recommendation to treat it as a separate, higher-scrutiny feature.
+- Still open: audit-log in-app visibility — `ADR-004` deferred this twice; its practical case is now stronger (three real Cloud Functions — `setStaffStatus`, `permanentlyDeleteDevice`, `createStaffAccount` — actively write to `auditLogs`, which nothing in the app can read), but there's no requirement to build it now.
+- Genuinely unbuilt, not implementation-ready: Business Lens/dashboard (Relationship Health, Operational Trends) — confirmed via grep, still zero implementation, and its underlying metric definitions are still open product questions in `docs/product/OPEN_DECISIONS.md`, not implementation details. Treated as a future discovery-sized initiative, not a follow-on PR.
+
+**Outcome — documentation cleanup (docs-only, no code):**
+- `PERMISSIONS_MATRIX.md`'s `users/{uid}/meta/isActivated` section rewritten as a retired-resource note: `isActivated` is retired per `PRD.md`, `AuthCubit._listenToActivation`/`AuthNeedActivation` confirmed absent from the codebase entirely (not merely unwired), and staff accounts use the distinct, already-documented `staffStatus` mechanism instead — pointed at `ADR-004`.
+- `PERMISSIONS_MATRIX.md`'s Retail-catalog "Intended" row corrected: the "Add new Product"/"Manage Categories" drawer items it cited as evidence were removed as dead code in PR #21 (2026-07-24) — the row is now explicitly marked as an unconfirmed guess, not something inferred from shipped UI. The still-live Store drawer item's allow-list, which the Maintenance/Guest reasoning also depends on, was left as-is (confirmed still accurate).
+- `BACKLOG.md` item 10 struck through and marked resolved/retired: it described `_listenToActivation` as merely "unwired," when the method no longer exists in the codebase at all and the underlying need was resolved by product decision (retirement), not by wiring anything up.
+
+**Admin area closed as a reasonable stopping point.** The operational reason Admin was prioritized over other areas — no way to create or manage staff accounts at all — is resolved. Everything remaining in Admin is either cheap housekeeping (done above), needs its own dedicated higher-scrutiny design thread before it's even implementation-ready (role-change), a real but non-urgent open question (audit-log visibility), or not ready at all (Business Lens). None carries the urgency that justified choosing Admin last time.
+
+**Testing:** Documentation-only change; no application code touched, `flutter analyze` not affected.
+
+**Explicitly not decided in this session:** what the next product area or foundational decision is — a short cross-product sequencing check (against `ROADMAP.md`, `OPEN_DECISIONS.md`, `BACKLOG.md`, and what Reception/Maintenance and Admin surfaced) was requested next, before any implementation resumes.
