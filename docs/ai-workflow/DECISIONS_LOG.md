@@ -802,3 +802,29 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Merged:** PR #22, squash-merged as `318b242`. Feature branch `feat/employee-attribution` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
 
 **Explicitly not decided in this session:** the intake-form-shape question — the third and last of the three Reception & Maintenance findings from the original review, up next. The next line of work after that is to be chosen deliberately, not assumed from the original review-phase sequencing, per the same standing preference confirmed after ADR-005.
+
+---
+
+### 2026-07-25 — `MaintenanceListCubit`'s swallowed exceptions fixed (BACKLOG item 14, PR #23)
+
+**Decision:** With the intake-form-shape question deliberately deferred and no product-area choice yet made, fix `BACKLOG.md` item 14 — a real, live correctness bug in `MaintenanceListCubit` found and deliberately deferred back on 2026-07-09 to keep the search/filter feature's PR scoped.
+
+**Decided by:** Product owner, choosing this item over three other candidates (moving to Admin, revisiting the accepted bypass-the-UI rules-testing risk, or browsing `BACKLOG.md` for something else) — picked specifically because it's a small, self-contained, already-diagnosed bug sitting in the exact area just finished working in. After the fix was implemented, the product owner asked for a **targeted failure-path smoke test** before merging, explicit reasoning: this PR changes error propagation and dialog behavior specifically on failure, while ADR-006's smoke test had only exercised the happy path — code review and `flutter analyze` alone would leave the exact behavior being fixed unverified. Gave a 5-point checklist: induce a real failure, confirm no false success, confirm the dialog doesn't close as though it succeeded, confirm the new error feedback reaches the user, confirm retry works once the underlying issue is resolved — and explicitly allowed one representative dialog test plus a code check of the second if both use materially identical handling.
+
+**Outcome (PR #23):**
+- `updateDeviceStatus`, `updateDeviceAsFixed`, `updateFixedDeviceDetails`, and `deliverDevice` in `MaintenanceListCubit` each caught their service-layer exception and `emit`ted a `MaintenanceListError` state nothing has ever listened to (no `BlocListener`/`BlocConsumer` anywhere subscribes to `MaintenanceListState` — confirmed via full-codebase grep), instead of rethrowing. The calling dialogs (`_MarkAsFixedDialog`, `_DeliverDeviceDialog`) `await` these methods inside their own `try/catch` expecting a thrown exception — so a real failure was silently swallowed, and the dialog showed a false "success" message and closed anyway.
+- Fixed by rethrowing in all four methods, now consistent with `archiveDevice`/`restoreDevice`/`permanentlyDeleteDevice` (added in ADR-005), which already rethrow correctly.
+- `MaintenanceListError` became fully unused as a direct consequence (last remaining `emit` call site) — removed from `maintenance_list_state.dart` in the same change rather than left as new dead code.
+- Added an explicit error message to both dialogs' `catch` blocks (`Message.showBottomMessage(..., isError: true)`, matching the existing Archive-confirmation dialog's pattern), since silently resetting the saving state with no feedback wasn't meaningfully "handled correctly" either.
+
+**Executable verification — targeted failure-path smoke test, local Firebase emulator, Move to Fixed as the representative dialog:**
+- First attempt (stopping the Firestore emulator entirely, simulating a pure network cutoff) surfaced a genuinely useful finding: Firestore's default offline persistence just queues the write indefinitely rather than failing the `Future` fast — the dialog sat in its loading state with no resolution either way. Not a bug, but meant this particular induction method couldn't exercise the new `rethrow`/error-message path in a reasonable test timeframe.
+- Pivoted to a deterministic failure instead: temporarily deployed a deny-all-writes ruleset to the local emulator (kept reads open so the UI's own device-list stream kept working), then attempted the save. This produced a real, fast, `permission-denied` rejection.
+- Confirmed all 5 checklist points: no false success snackbar; dialog did not close as though the save succeeded; the new "Could not save this update. Please try again." message displayed; Save button re-enabled. Restored permissive rules and retried the identical save — completed successfully ("Device moved to Fixed successfully"), confirming retry behaves normally once the underlying issue clears.
+- `_DeliverDeviceDialogState._submit()` confirmed structurally identical to `_MarkAsFixedDialogState._submit()` by code review (same guard clauses, same `_isSaving` handling, same try/catch/error-message shape) — per the product owner's explicit allowance, not independently live-tested.
+
+**Testing:** `flutter analyze` clean (0 errors, unchanged pre-existing baseline). Full targeted failure-path smoke test above, deliberately scoped to the 5-point checklist rather than a broader new testing phase.
+
+**Merged:** PR #23, squash-merged as `71a2bd3`. Feature branch `fix/maintenance-list-cubit-swallowed-exceptions` deleted locally and remotely per `CONTRIBUTING.md` §9/§10.
+
+**Explicitly not decided in this session:** the intake-form-shape question remains open and deferred. What the next line of work is — still an open, deliberate choice, not assumed from the original review-phase sequencing.
