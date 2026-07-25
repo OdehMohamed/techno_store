@@ -1,6 +1,6 @@
 # ADR-007: Device / Visit / Estimate Domain Model
 
-**Status:** Ratified (2026-07-25). Not yet implemented — no schema, Firestore rules, migration, or client changes exist yet.
+**Status:** Ratified (2026-07-25), with the Device Matching / Deduplication Policy ratified as an addendum the same date. Not yet implemented — no schema, Firestore rules, migration, or client changes exist yet.
 **Date:** 2026-07-25, during the Foundational decision work following "Current Application Review & Evolution."
 **Related:** `docs/product/PRD.md` (Core Entities & Identity Model; Roles as Expertise; The Relationship Timeline), `docs/product/METHODOLOGY.md` (Structural Pattern 1 *Identity Persists, Attributes Change*; Structural Pattern 2 *Sequences Carry Meaning*), `docs/ai-workflow/ADR-001-sensitive-data-separation.md`, `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md`, `docs/ai-workflow/ADR-006-employee-attribution.md`, `docs/ai-workflow/FORCED_UPDATE_IMPLEMENTATION_PLAN.md`, `docs/product/OPEN_DECISIONS.md`, `docs/product/ROADMAP.md`.
 
@@ -143,3 +143,33 @@ Uses the existing forced-update mechanism (`appConfig/global`, `minRequiredVersi
 ## Consequences / deliberately deferred
 
 Device-level `recordState`/archive; Device merge/reconciliation, including any future historical-Visit-to-Device linking (no write path today, to be designed with its own authority when a real need emerges); Waiting for Parts as a status; Estimate decision-channel provenance; Estimate revision-relationship classification; IMEI-edit audit or elevated authority; rules-level enforcement of the interior status-transition graph and the `finalAmountCharged` ceiling-vs-Estimate check, both app-trusted for v1.
+
+---
+
+## Addendum (2026-07-25): Device Matching / Deduplication Policy
+
+Ratified as a product/behavioral policy, closing the one item `ROADMAP.md`/`OPEN_DECISIONS.md` still tracked as open after this ADR's initial ratification: the exact rules for confidently matching two records to the same physical device. Product-level only — no Firestore queries, indexes, schema, or UI decided here.
+
+**Two candidate-producing pathways, and only two:**
+- An **exact IMEI/serial match** — population-wide, cross-customer.
+- The resolved customer's **own previously-known Devices** — customer-scoped, derived from their prior Visits' `deviceId` references, not a field on Device itself (Device carries no customer/ownership reference by design — §4).
+
+Brand/model/color never independently produces a candidate; it only ranks or disambiguates within a set one of the two pathways above already produced.
+
+**Reason-tags, not a synthesized confidence score.** Each candidate carries one or both of: *Known device for this customer*, *Matches by IMEI/serial*. No blended numeric confidence is computed.
+
+**Ordering — three explainable buckets:** both reasons present → IMEI match alone → known-to-this-customer alone. Brand/model/color may only be used to order within the last bucket.
+
+**No candidate:** whenever neither pathway produces anything, intake proceeds directly to creating a new Device — an expected, unremarkable default, not a dead end or error state.
+
+**Cross-customer presentation — deliberately minimal.** A cross-customer candidate shows only Device-level facts (brand, model, color, IMEI-as-known) and the explicit reason it was surfaced. It does **not** show the previous customer's name, prior Visit content, or a Visit count. Staff's broad Visit-read authorization does not make that information part of this decision surface — the matching decision is narrowly whether the physical device matches the candidate, and showing more risks conceptually mixing Device identity with Customer relationship, which this ADR's relationship model (§4) deliberately keeps separate. At most, a cross-customer candidate may neutrally indicate the Device was previously seen by the shop, without attaching it to who.
+
+**What staff is actually confirming:** exactly one thing — that the physical device in front of them is the same physical device the candidate Device record represents. Not the customer relationship (already established earlier in the same intake flow), not any inherited history, condition, or pricing.
+
+**Asymmetry rule preserved by construction:** no pathway, including an exact IMEI match, ever auto-selects a candidate; "none of these — create new" is always a first-class sibling option; duplicate or conflicting IMEI data (two Device records sharing a stored IMEI value) surfaces as separate candidates rather than being silently resolved to one.
+
+**Schema/authorization consequence: none.** This policy requires no new fields on `devices` or `maintenanceDevices` beyond what §1/§4 already define, and no change to the authorization matrix — reason-tags and candidate presentation are derived at query/read time, not stored.
+
+**Recorded as implementation dependencies, not designed here:**
+- **IMEI/serial normalization.** "Exact match" means exact after whatever canonical normalization/validation policy is eventually defined (case, separators, checksum, etc.), not necessarily raw-string equality as typed by staff. That normalization policy is undesigned.
+- **The customer-known-Devices lookup** (the second pathway) implies querying Visits by `userId` where `deviceId` is present and collecting the distinct set, since Device carries no customer-side field to query directly. This is a real query/index dependency for whichever implementation phase designs it — flagged so it isn't invented ad hoc later, not resolved here.

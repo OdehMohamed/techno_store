@@ -16,7 +16,6 @@ Both items formerly in this group — device identity/matching together with the
 
 Each of these is resolvable independently of the others, in any order, whenever there's a real reason to take one up.
 
-- **Device matching and deduplication algorithm.** `ADR-007` settles Device as a persistent, system-ID-anchored entity and the intake workflow's shape; the exact rules for confidently matching two records to the same physical device — especially without IMEI — remain undesigned.
 - **Status narrative copy.** The state vocabulary and transitions are settled (`ADR-007`); the literal customer-facing wording for each state is not.
 - **PIN/pattern purge timing** — immediate on delivery, or a short, strictly bounded grace period, and what mechanism guarantees completion.
 - **Deletion recovery mechanism** — how long a hidden record stays recoverable, and how it's restored.

@@ -12,9 +12,6 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 ### Device & Repair Data
 
-**Device matching and deduplication algorithm.** A device is anchored on a system-generated internal ID, with IMEI or serial used only as an optional strong-match hint — never a required anchor, never silently merged on brand or model alone; duplicate Devices from an unconfident non-match are an accepted cost. The staff-facing intake workflow's shape — one customer-first flow, likely-Device suggestions, an explicit staff choice, a cross-customer search reachable in-flow — is settled (`ADR-007`, 2026-07-25). What's still not designed: the exact rules for confidently matching two records to the same physical device, given IMEI isn't always available or reliably captured.
-*Referenced in: Shared Foundation → Core Entities & Identity Model.*
-
 **The status vocabulary's narrative copy.** The full, final set of states, their transitions, and Delivered's permanent terminal status are settled (`ADR-007`, 2026-07-25: `In Progress → [Awaiting Approval] → Ready for Handback → Delivered`). What remains open is the exact customer-facing narrative copy for each state.
 *Referenced in: Shared Foundation → The Relationship Timeline; Relationship Lens → The Relationship, As Experienced.*
 

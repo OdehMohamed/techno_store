@@ -945,3 +945,31 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Merged:** Committed directly to `main` (documentation only, no PR, matching the item 0a precedent).
 
 **Explicitly not decided/not implemented in this session:** `ADR-007` implementation itself — no schema, Firestore rules, migration script execution, or client changes exist yet; Phase 1 (additive backend only) is the natural next step whenever the product owner chooses to proceed. Also still open within `ADR-007`'s own scope: the device-matching/deduplication algorithm, and the status vocabulary's customer-facing narrative copy (both now in `ROADMAP.md`'s Self-Contained group).
+
+---
+
+### 2026-07-25 — Device Matching / Deduplication Policy settled as an ADR-007 addendum; last remaining Device-identity product decision closed
+
+**Decision:** Of the two genuinely open items left after `ADR-007`'s ratification (device-matching algorithm; status narrative copy), the matching algorithm was chosen to close now — explicitly as a product/behavioral decision before implementation, since it's directly load-bearing for the capability client and intake workflow and the product owner didn't want matching behavior invented ad hoc inside client code or queries/indexes designed around assumptions later replaced. Narrative copy stays deferred, since the underlying statuses and communication moments are already settled and the wording can be designed closer to the UI implementation without blocking the domain architecture.
+
+**Outcome — policy settled, pressure-tested against exact-IMEI, customer-relationship, brand/model/color, phone-matching reliability, cross-customer resale/hand-me-down, duplicate/incorrect IMEIs, missing identifiers, and multiple-candidate scenarios:**
+- Exactly two candidate-producing pathways: an exact IMEI/serial match (population-wide, cross-customer), and the resolved customer's own previously-known Devices (customer-scoped). Brand/model/color never independently produces a candidate — only ranks or disambiguates within a set one of the two pathways already produced.
+- Reason-tags (*Known device for this customer* / *Matches by IMEI/serial*), not a synthesized numeric confidence score.
+- Three-bucket ordering: both reasons present → IMEI match alone → known-to-this-customer alone.
+- No candidate produced by either pathway defaults cleanly to "create new Device" — an expected outcome, not a dead end.
+- Cross-customer presentation is deliberately minimal: Device-level facts and the explicit surfacing reason only. **Settled against showing the previous customer's name, prior Visit content, or a Visit count** — staff's broad Visit-read authorization doesn't make that information part of this decision surface; the matching decision is narrowly whether the physical device matches, and showing more risks conceptually mixing Device identity with Customer relationship, which `ADR-007`'s relationship model deliberately keeps separate. A cross-customer candidate may at most neutrally indicate the Device was previously seen by the shop.
+- Selecting a candidate confirms exactly one thing: physical-device identity, not the customer relationship or any inherited history/condition/pricing.
+- The standing no-forced-merge asymmetry rule is preserved by construction — no pathway (including an exact IMEI match) ever auto-selects a candidate, "create new" is always a first-class sibling option, and duplicate/conflicting IMEI data surfaces as separate candidates rather than being silently resolved to one.
+- No schema or authorization-matrix consequence: the policy needs no new fields beyond what `ADR-007` §1/§4 already define; reason-tags and presentation are derived at read time, not stored.
+
+**Carried-forward engineering concerns (implementation-level, not open product decisions — recorded in `ADR-007`'s addendum, not designed):**
+1. Canonical IMEI/serial normalization/validation before "exact" matching is evaluated (case, separators, checksum, etc.) — not necessarily raw-string equality as typed by staff.
+2. Resolving a customer's known Devices has no direct path, since `Device` intentionally carries no customer/ownership reference (`ADR-007` §4) — it requires querying Visits by `userId` and collecting the distinct set of non-null `deviceId` values. A real query/index dependency for whichever implementation phase designs it, not resolved here.
+
+**Documentation reconciled (this entry's own scope):** `ADR-007` gained the addendum section and an updated Status line. `PRD.md`'s Device entity bullet no longer carries an Open marker — the workflow shape and the matching policy are both settled; nothing product-level remains open there. `OPEN_DECISIONS.md`'s "Device matching and deduplication algorithm" entry removed entirely (fully earned, not narrowed). `ROADMAP.md`'s Self-Contained group now lists only status narrative copy. `CURRENT_TASK.md`'s Active task and "What is NOT yet decided" updated to match, naming both carried-forward engineering concerns explicitly.
+
+**Testing:** Documentation-only change; no Firestore queries, indexes, schema, or client/UI code touched; `flutter analyze` not affected.
+
+**Merged:** Committed directly to `main` (documentation only, no PR, matching the `ADR-007` ratification and item 0a precedent).
+
+**Explicitly not decided/not implemented in this session:** `ADR-007` implementation itself, including both carried-forward engineering concerns above — still not started. Status vocabulary's customer-facing narrative copy remains the one genuinely open product-level decision (`ROADMAP.md`, Self-Contained). Role-change, audit-log in-app visibility, the Admin dashboard, and the deferred intake-form-shape question all remain open but deliberately not picked up next.
