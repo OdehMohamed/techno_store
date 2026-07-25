@@ -894,3 +894,30 @@ Rather than assume the next area from the original phase sequencing (Reception &
 **Testing:** Documentation-only change; no application code touched, `flutter analyze` not affected.
 
 **Explicitly not decided in this session:** what the next product area or foundational decision is — a short cross-product sequencing check (against `ROADMAP.md`, `OPEN_DECISIONS.md`, `BACKLOG.md`, and what Reception/Maintenance and Admin surfaced) was requested next, before any implementation resumes.
+
+---
+
+### 2026-07-25 — Cross-product sequencing check; `BACKLOG.md` item 0a closed via emulator-based authorization verification
+
+**Decision:** Sequencing check (Foundational vs. `BACKLOG.md` item 0a vs. other candidates) recommended starting both, sequentially: close item 0a first (old, explicitly-accepted verification gap, implementation-ready, no product decision required, best done while the emulator/authorization-model context from Staff Account Management is still fresh), then begin the device-identity/matching/intake-lookup decision cluster — the first slice of the Foundational group, not the whole group at once — as a pure decision thread with no implementation until settled.
+
+**Outcome (item 0a, closed):** Test matrix derived directly from the current `firestore.rules`/`storage.rules` source, not from `PERMISSIONS_MATRIX.md` (itself only reconciled for `isActivated`/Retail staleness this same session, not treated as authoritative for this pass). Verified via `@firebase/rules-unit-testing` against a local Firestore + Storage emulator (`demo-technostore-rules-test`, no production access) — the same tool ADR-005 used for its own 17/17 rules tests. `firebase.json`'s `emulators` block gained a `storage` port (9199) to support this; same dev-tooling rationale as the `functions`/`firestore`/`auth` ports added for PR #24/#25.
+
+74-case matrix, covering every role (Admin, Reception, Maintenance, Customer, Guest, unauthenticated) against every meaningful boundary the deployed rules actually enforce:
+- `users/{uid}`: read (own vs. others, staff-wide), create (signup path, self-promotion attempts at both create and update, phone-verification spoofing), update (`type` immutability — including Admin's own), delete (always denied).
+- `users/{uid}/meta/{metaDoc}` (the `staffStatus` boundary): staff can read any staff member's status (what the Staff Management list depends on), but **no role — Admin included — can write it directly**; confirms `setStaffStatus`/`createStaffAccount` really are the only path, not just the documented one.
+- `maintenanceDevices`: create (staff-wide), the full `recordState` lifecycle (staff-wide archive, Admin-only restore, frozen-while-archived with **no exception even for Admin**), and delete (denied to every client role — server-side only via `permanentlyDeleteDevice`).
+- `private/sensitive` subdocument: staff-wide read/write, **no customer exception ever, including for the device's own owner** — the exact guarantee ADR-001 exists to provide.
+- `lifecycleEvents`: creation gated by event `type`, not just role (Reception can create `archived` events but not `restored` ones; only Admin can create `restored`).
+- `appConfig/global`, and the default-deny catch-all — confirmed `auditLogs` and `staffAccountCreationRequests` are unreachable by any client, Admin included, exactly as their absence of an explicit rule implies.
+- Storage: both `profiles_photos/{uid}/` (uid-gated write, not staff-gated — confirmed Admin cannot write to a customer's own photo path either) and `maintenance_devices/{deviceId}/...` (staff-wide read/write, ownership cross-reference for customer reads, delete denied to all clients), plus the Storage default-deny catch-all.
+
+**First run: 72/74 passed, 2 failures — root-caused before being reported as rules problems.** Both failures were the same test-isolation bug, not an authorization gap: a single seeded "archived" device was reused across both an Admin-restore test and a later frozen-while-archived edit test, so by the time the second test ran, the earlier restore had already flipped that document back to active — the "failure" was the rules correctly allowing an edit to a document that was, at that point, genuinely active. Fixed by isolating the fixture (a dedicated device never touched by the restore tests); rerun clean, 74/74.
+
+**No rules changed — this was verification only, exactly as scoped.** No production data or rules touched at any point; all seeding and testing ran against the local emulator with security rules disabled only for the initial admin-privileged seed writes (the standard `@firebase/rules-unit-testing` pattern), never for the assertions themselves.
+
+**Testing:** the verification pass itself — 74/74 executable checks, full output retained. No application code touched; `flutter analyze` not affected.
+
+**Merged:** `BACKLOG.md` item 0a resolution and the `firebase.json` emulator-port addition committed directly to `main` (documentation + dev-tooling only, no PR).
+
+**Explicitly not decided in this session:** the device-identity/matching/intake-lookup decision cluster itself — scoped as the next thread to open, but not started. No implementation of any Foundational-group item until its decisions are settled, per explicit instruction.

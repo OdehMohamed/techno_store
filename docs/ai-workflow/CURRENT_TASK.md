@@ -4,13 +4,12 @@ Status: reflects the state as of 2026-07-25. Overwrite this file's content at th
 
 ## Active task
 
-**Admin area closed as a reasonable stopping point (2026-07-25).** Reception & Maintenance is closed (see below). Staff Account Management (ADR-004) — the operational gap that justified prioritizing Admin — is fully shipped in two PRs, followed by a post-ADR-004 checkpoint that reconciled the original Admin review findings and closed out the remaining documentation staleness. See `DECISIONS_LOG.md`'s 2026-07-25 entries for the full record of both PRs and the checkpoint.
+**Admin area closed (2026-07-25).** Staff Account Management (ADR-004) shipped in two PRs, followed by a post-ADR-004 checkpoint and documentation reconciliation. See `DECISIONS_LOG.md`'s 2026-07-25 entries for the full record.
 
-- [x] **PR 1 of 2 shipped.** PR #24 squash-merged (`2f6ed4c`): `createStaffAccount` Cloud Function, backend-only. 30/30 executable emulator checks, including a genuine bug (failure-injection placement) the first test run caught and a fix confirmed.
-- [x] **PR 2 of 2 shipped.** PR #25 squash-merged (`13eff56`): the Staff Management client vertical slice — Admin-only list/filter screen, `createStaffAccount`/`setStaffStatus` wiring, removal of `NewUserAdminSide`/`main_drawer.dart`. Executably verified end-to-end on a real Android emulator against local Firebase emulators — one real issue found and fixed (staff-specific empty-state copy).
-- [x] **Post-ADR-004 checkpoint closed.** Original Admin review findings reconciled against what shipped; `PERMISSIONS_MATRIX.md`'s `isActivated` section and stale Retail-catalog evidence corrected, `BACKLOG.md` item 10 resolved/retired (docs-only, no code). Remaining Admin items — role-change (deliberately deferred, higher-scrutiny future thread), audit-log visibility (still open, practical case now stronger, no requirement to build now), Business Lens/dashboard (needs product discovery first, not implementation-ready) — recorded but not picked up, since none carries the urgency that justified prioritizing Admin originally.
+- [x] PR 1 of 2 (`createStaffAccount`, PR #24, `2f6ed4c`), PR 2 of 2 (Staff Management client, PR #25, `13eff56`), and the post-ADR-004 documentation checkpoint (`PERMISSIONS_MATRIX.md`/`BACKLOG.md` item 10 reconciled) — all shipped.
+- [x] **`BACKLOG.md` item 0a closed (2026-07-25).** Direct/bypass-the-UI Firestore/Storage rules authorization — an old, explicitly-accepted verification gap since 2026-07-09 — verified via a 74-case matrix derived from the current deployed rules source, run against a local emulator with `@firebase/rules-unit-testing`. 74/74 passing (first run's 2 failures were a test-isolation bug, not a rules bug — fixed, rerun clean). No rules changed, no production access.
 
-A short cross-product sequencing check (against `ROADMAP.md`, `OPEN_DECISIONS.md`, `BACKLOG.md`, and what Reception/Maintenance and Admin surfaced) is the next step before choosing the next area — not assumed to be the deferred intake-form-shape question by default.
+**Now starting the Foundational decision work, one cluster at a time — not the whole group at once.** First cluster: **device matching/deduplication + the intake-time lookup workflow** — a pure decision thread (`docs/product/OPEN_DECISIONS.md`, Device & Repair Data), no implementation until settled. Status vocabulary + estimate/approval record shape deliberately follow afterward, with the identity/workflow decisions available as context, not decided together.
 
 ## Reception & Maintenance (closed)
 
@@ -64,7 +63,7 @@ See `DECISIONS_LOG.md` (2026-07-23 through 2026-07-25 entries) for the full reco
 
 ## What is NOT yet decided
 
-- What the next area/decision thread is, now that Staff Account Management (ADR-004) is fully closed — an open, deliberate choice, not assumed. Candidates include role-change (`setUserRole`), audit-log in-app visibility, the Admin dashboard/reporting area, the deferred intake-form-shape question, or `BACKLOG.md` item 0a.
+- The device-identity/matching/intake-lookup decisions themselves — the thread is chosen, not yet settled. Role-change, audit-log in-app visibility, the Admin dashboard, and the deferred intake-form-shape question all remain open but deliberately not picked up next.
 - The 4 orphaned pre-`recordState` Firestore composite indexes in production — low-priority cleanup, not urgent.
 - Whether Restore's Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check — still just two call sites.
 - Criterion 3 (restart recheck) in true isolation — deferred, not pursued further per product-owner preference; not blocking.
