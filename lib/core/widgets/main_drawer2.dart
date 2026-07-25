@@ -122,15 +122,15 @@ class _MainDrawer2State extends State<MainDrawer2> {
                       ? ListTile(
                           onTap: () {
                             Navigator.of(context).pushNamed(
-                              AppRoutes.createAccountAdminSide,
+                              AppRoutes.staffManagement,
                               arguments: {'userData': state.userData},
                             );
                           },
                           leading: const Icon(
-                            Icons.person_add,
+                            Icons.badge_outlined,
                           ),
                           title:
-                              WidgetUtilities.autoSizeText('Add new Employee'),
+                              WidgetUtilities.autoSizeText('Staff Management'),
                         )
                       : const SizedBox(),
                   // Restore/Permanent Delete are always Admin-only,

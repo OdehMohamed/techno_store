@@ -345,5 +345,19 @@
   "Employee": "Employee",
   "Date Range": "Date Range",
   "Clear": "Clear",
-  "Load more": "Load more"
+  "Load more": "Load more",
+  "Staff Management": "Staff Management",
+  "New Staff Account": "New Staff Account",
+  "Role": "Role",
+  "All Statuses": "All Statuses",
+  "Active": "Active",
+  "Inactive": "Inactive",
+  "Staff account created": "Staff account created",
+  "Account activated": "Account activated",
+  "Account deactivated": "Account deactivated",
+  "Deactivate Account": "Deactivate Account",
+  "Deactivate": "Deactivate",
+  "This account will have full business authority — unrestricted admin access.": "This account will have full business authority — unrestricted admin access.",
+  "No staff accounts found": "No staff accounts found",
+  "Staff accounts will appear here": "Staff accounts will appear here"
 }
