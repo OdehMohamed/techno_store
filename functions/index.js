@@ -324,3 +324,251 @@ exports.permanentlyDeleteDevice = onCall(async (request) => {
 
   return { deviceId };
 });
+
+/**
+ * Creates a new staff account (Admin, Reception, or Maintenance) — Auth
+ * user + users/{uid} profile + users/{uid}/meta/staffStatus, initialized
+ * active. See ADR-004 ("Staff Account Creation & Management Surface",
+ * 2026-07-25).
+ *
+ * This is the only path that can create a staff-typed users/{uid} document:
+ * the deployed Firestore rules hard-require `type == 1` on client `create`,
+ * and even if they didn't, a client-side Auth user creation would sign the
+ * calling Admin's own session out and into the new account. Both problems
+ * are solved by doing this entirely server-side with the Admin SDK.
+ *
+ * Authorization mirrors setStaffStatus/permanentlyDeleteDevice: caller must
+ * be Admin (users/{callerUid}.type == 0) AND the caller's own staffStatus
+ * must currently be "active".
+ *
+ * IDENTITY MODEL — read this before changing anything below. `requestId`
+ * (client-generated, one per creation attempt, resent unchanged on retry)
+ * is the only thing that identifies "this attempt", never email/role
+ * content: two unrelated creation attempts can legitimately share an email
+ * or a role, and matching on content alone could silently resolve an
+ * unrelated pre-existing account as a false "success". A durable
+ * staffAccountCreationRequests/{requestId} doc is claimed atomically
+ * (Firestore `create()`, not `set()`) before any Auth user is created, so
+ * request identity survives even a crash before a Firestore profile exists.
+ * See ADR-004's five-case table for the exact resolution rules.
+ *
+ * Every change writes an auditLogs entry, same as the other trusted
+ * functions in this file — default-denied to all client reads/writes.
+ */
+exports.createStaffAccount = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Sign-in required.");
+  }
+
+  const { requestId, name, email, password, type } = request.data ?? {};
+
+  if (typeof requestId !== "string" || requestId.length === 0) {
+    throw new HttpsError("invalid-argument", "requestId is required.");
+  }
+  if (typeof name !== "string" || name.trim().length === 0) {
+    throw new HttpsError("invalid-argument", "name is required.");
+  }
+  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new HttpsError("invalid-argument", "A valid email is required.");
+  }
+  if (typeof password !== "string" || password.length < 8 || password.includes(" ")) {
+    throw new HttpsError(
+      "invalid-argument",
+      "password must be at least 8 characters and contain no spaces."
+    );
+  }
+  if (type !== 0 && type !== 2 && type !== 3) {
+    throw new HttpsError(
+      "invalid-argument",
+      "type must be 0 (Admin), 2 (Reception), or 3 (Maintenance)."
+    );
+  }
+
+  const callerUid = request.auth.uid;
+  const db = admin.firestore();
+
+  const callerSnap = await db.doc(`users/${callerUid}`).get();
+  if (!callerSnap.exists || callerSnap.data().type !== 0) {
+    throw new HttpsError(
+      "permission-denied",
+      "Only Admin may create staff accounts."
+    );
+  }
+
+  const callerStatusSnap = await db
+    .doc(`users/${callerUid}/meta/staffStatus`)
+    .get();
+  const callerStatus = callerStatusSnap.exists
+    ? callerStatusSnap.data().status
+    : null;
+  if (callerStatus !== "active") {
+    throw new HttpsError(
+      "permission-denied",
+      "Caller's own staff status is not active."
+    );
+  }
+
+  // Claim requestId atomically. create() throws ALREADY_EXISTS (gRPC code 6)
+  // if another call already claimed it — that's the expected, handled path
+  // for a retry, not an error condition.
+  const requestRef = db.doc(`staffAccountCreationRequests/${requestId}`);
+  let requestData;
+  try {
+    const newRequestData = {
+      email,
+      type,
+      name,
+      callerUid,
+      status: "pending",
+      uid: null,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+    await requestRef.create(newRequestData);
+    requestData = newRequestData;
+  } catch (error) {
+    if (error.code !== 6) {
+      throw new HttpsError(
+        "internal",
+        `Failed to claim creation request: ${error.message}`
+      );
+    }
+    const existingSnap = await requestRef.get();
+    requestData = existingSnap.data();
+  }
+
+  // Defensive: requestId reused with different content is a client bug, not
+  // a legitimate retry — never act on stale/mismatched identity.
+  if (requestData.email !== email || requestData.type !== type) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This requestId was already used for a different account request."
+    );
+  }
+
+  // Completed same-request retry: idempotent success, no writes at all.
+  if (requestData.status === "completed" && requestData.uid) {
+    return { uid: requestData.uid };
+  }
+
+  let uid;
+  if (requestData.status === "authCreated" && requestData.uid) {
+    // Orphaned Auth user → resume, anchored strictly to this request's own
+    // tracked uid — never re-derived from email, so it can never adopt an
+    // unrelated request's orphan.
+    try {
+      await admin.auth().getUser(requestData.uid);
+      uid = requestData.uid;
+    } catch (error) {
+      throw new HttpsError(
+        "internal",
+        "Tracked Auth user for this request no longer exists; cannot resume."
+      );
+    }
+  } else {
+    // Fresh claim: fast-fail pre-check for a genuinely unrelated pre-existing
+    // account. Not the authoritative guard — admin.auth().createUser()'s own
+    // email-already-exists error is — but gives a clean error without an
+    // unnecessary Auth-create attempt in the common case.
+    try {
+      await admin.auth().getUserByEmail(email);
+      throw new HttpsError(
+        "already-exists",
+        "An account with this email already exists."
+      );
+    } catch (error) {
+      if (error instanceof HttpsError) throw error;
+      // auth/user-not-found is the expected, non-error outcome here.
+    }
+
+    let userRecord;
+    try {
+      userRecord = await admin.auth().createUser({
+        email,
+        password,
+        displayName: name,
+      });
+    } catch (error) {
+      if (error.code === "auth/email-already-exists") {
+        throw new HttpsError(
+          "already-exists",
+          "An account with this email already exists."
+        );
+      }
+      throw new HttpsError(
+        "internal",
+        `Failed to create the Auth account: ${error.message}`
+      );
+    }
+    uid = userRecord.uid;
+
+    await requestRef.update({
+      status: "authCreated",
+      uid,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  try {
+    // TEST-ONLY failure injection — must live INSIDE this try block so it
+    // exercises the same catch (and compensating delete) a real Firestore
+    // failure would hit; placing it before the try would bypass that catch
+    // entirely. Both conditions must hold; FUNCTIONS_EMULATOR is set by the
+    // Firebase emulator harness and cannot be true in a real deployed
+    // function, so this is unreachable in production regardless of what a
+    // caller sends. See ADR-004.
+    if (
+      process.env.FUNCTIONS_EMULATOR === "true" &&
+      request.data.__testInjectFailure === "afterAuthBeforeFirestore"
+    ) {
+      throw new Error("Injected test failure (emulator only)");
+    }
+
+    const batch = db.batch();
+    batch.set(db.doc(`users/${uid}`), { name, email, type });
+    batch.set(db.doc(`users/${uid}/meta/staffStatus`), {
+      status: "active",
+      updatedAt: FieldValue.serverTimestamp(),
+      updatedBy: callerUid,
+    });
+    batch.update(requestRef, {
+      status: "completed",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+  } catch (error) {
+    try {
+      await admin.auth().deleteUser(uid);
+      await requestRef.update({
+        status: "pending",
+        uid: null,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    } catch (cleanupError) {
+      // Compensating delete itself failed — leave the tracking doc at
+      // authCreated/uid so the next retry with the same requestId resumes
+      // via the branch above instead of requiring manual cleanup.
+      logger.error("createStaffAccount: compensating delete failed", {
+        uid,
+        requestId,
+        cleanupError: cleanupError.message,
+      });
+    }
+    throw new HttpsError(
+      "internal",
+      `Failed to initialize account data: ${error.message}`
+    );
+  }
+
+  await db.collection("auditLogs").add({
+    actingAdminUid: callerUid,
+    targetUid: uid,
+    action: "createStaffAccount",
+    role: type,
+    timestamp: FieldValue.serverTimestamp(),
+  });
+
+  logger.info("createStaffAccount", { callerUid, uid, type });
+
+  return { uid };
+});
