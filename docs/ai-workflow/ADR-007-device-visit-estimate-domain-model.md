@@ -1,6 +1,6 @@
 # ADR-007: Device / Visit / Estimate Domain Model
 
-**Status:** Ratified (2026-07-25), with the Device Matching / Deduplication Policy ratified as an addendum the same date. Not yet implemented — no schema, Firestore rules, migration, or client changes exist yet.
+**Status:** Ratified (2026-07-25), with the Device Matching / Deduplication Policy addendum and the Technical Finding / Pending Revision Resolution correction (both 2026-07-25, surfaced during Status Narrative Copy discovery). Not yet implemented — no schema, Firestore rules, migration, or client changes exist yet.
 **Date:** 2026-07-25, during the Foundational decision work following "Current Application Review & Evolution."
 **Related:** `docs/product/PRD.md` (Core Entities & Identity Model; Roles as Expertise; The Relationship Timeline), `docs/product/METHODOLOGY.md` (Structural Pattern 1 *Identity Persists, Attributes Change*; Structural Pattern 2 *Sequences Carry Meaning*), `docs/ai-workflow/ADR-001-sensitive-data-separation.md`, `docs/ai-workflow/ADR-005-device-lifecycle-archive-deletion.md`, `docs/ai-workflow/ADR-006-employee-attribution.md`, `docs/ai-workflow/FORCED_UPDATE_IMPLEMENTATION_PLAN.md`, `docs/product/OPEN_DECISIONS.md`, `docs/product/ROADMAP.md`.
 
@@ -45,10 +45,17 @@ maintenanceDevices/{visitId}
   ...unchanged: name, phoneNumber, userId, brand, model, colorHex, imeiNumber,
      price (legacy — see §5), estimatedTime, problems, accessories,
      deviceStatusReceived, installedPartCodes, images, employee attribution
-     fields, receivedAt/fixedAt/deliveredAt/updatedAt, recordState
+     fields, receivedAt/deliveredAt/updatedAt, recordState
 ```
 
 `name`/`phoneNumber` are the customer-at-intake snapshot (coexisting with, never overwritten by, later linking to a resolved `userId`). `brand`/`model`/`colorHex`/`imeiNumber` are the device-at-intake snapshot — unchanged fields, now formally documented as point-in-time facts, independent of whatever the live `devices/{deviceId}` document says later.
+
+**Correction (2026-07-25) — `fixedAt` is retired as a concept, replaced by two new Visit-level facts; storage shape not yet settled.** A Status Narrative Copy pressure-test found that neither `status` nor Estimate outcome can reliably answer "what did the technical work establish," especially when an approved scope was completed but a separately-proposed, later revision was declined — the two facts below are new, not merely a rename:
+
+- **Technical Finding** — a small, closed set: *Repaired* / *No Fault Found* / *Fault Found, Not Repaired*. Independent of both `status` and Estimate outcome. Set once, via an explicit staff action — preserving today's existing behavioral pattern (`fixedAt` today is already set only through one dedicated "mark complete" action, never inferred from status or Estimate history); only the meaning and name are corrected, not the mechanism.
+- **Technical-work-concluded-at** — the timestamp paired with the above. `fixedAt`'s old meaning implicitly assumed the conclusion was always a successful repair; the corrected concept is broader — when the technical work/diagnostic process concluded, regardless of which of the three Technical Finding outcomes it reached. One timestamp honestly covers all three.
+
+No general "why didn't repair happen" field is introduced. When Technical Finding is *Fault Found, Not Repaired*, the reason is already answerable from the Estimate sequence (a declined Estimate on record → customer declined); the rarer case — a fault found with no Estimate ever created because nothing viable was offered — is left as free text (`additionalNotes`) rather than formalized, consistent with not building structure for a case that hasn't earned it.
 
 ### 5. `price` (legacy) vs. `finalAmountCharged` (new)
 
@@ -57,7 +64,7 @@ maintenanceDevices/{visitId}
 `finalAmountCharged` is a new, distinct field with a defined lifecycle:
 - **Write authority:** staff-wide.
 - **Rule-level invariant:** any write that creates or changes `finalAmountCharged` is permitted **only when the write's resulting `status` is `'Ready for Handback'`** — `request.resource.data.status == 'Ready for Handback'`. This single condition covers setting it in the same write that transitions into Ready for Handback, adjusting it further while the Visit remains in that state, and — because no write can ever set `status` back to `'Ready for Handback'` once it's `'Delivered'` (Delivered is terminal — §6) — makes the field immutable after delivery without a second clause. A write that doesn't touch `finalAmountCharged` is unaffected by this rule.
-- **Ceiling invariant:** must never exceed the Visit's current Approved Estimate's `proposedAmount` (a reduction never requires new approval; an increase always does). Resolving "current Approved Estimate" is a cross-document lookup with no fixed, predictable path — the same expensive class as the interior status-transition graph (§8) — so this stays **app-layer enforced for v1**, not rules. When a Visit never had an Estimate (the optional-skip branch), there is no ceiling to check.
+- **Ceiling invariant — precision correction (2026-07-25):** must never exceed the amount of the Visit's **governing Approved Estimate** — the latest Estimate whose *outcome* is Approved, which is not necessarily the same Estimate as the positionally-current one (§8's "current" is purely positional — latest by ordering — regardless of outcome). A later revision can be Declined and still be positionally current while an earlier Approved Estimate remains the actual authorization boundary; this is exactly the shape the Pending Revision Resolution correction (§7) walks through, and the two terms are kept deliberately distinct rather than used interchangeably. A reduction against the governing Approved Estimate never requires new approval; an increase always does. Resolving the governing Approved Estimate is a cross-document lookup with no fixed, predictable path — the same expensive class as the interior status-transition graph (§8) — so this stays **app-layer enforced for v1**, not rules. When a Visit never had an Estimate (the optional-skip branch), there is no ceiling to check.
 
 ### 6. Legacy Visit boundary — precisely defined
 
@@ -72,11 +79,15 @@ The bulk migration (Phase 7) remains necessary regardless — it exists specific
 
 ### 7. Status vocabulary and transitions
 
-Legal: intake → In Progress; In Progress → Awaiting Approval (Estimate created); Awaiting Approval → In Progress (approved); Awaiting Approval → Ready for Handback (declined, no prior Approved Estimate on this Visit); In Progress → Ready for Handback (work completed directly, or a revision declined with prior approval and staff explicitly chose to stop); Ready for Handback → Delivered.
+Legal: intake → In Progress; In Progress → Awaiting Approval (Estimate created); Awaiting Approval → In Progress (approved); Awaiting Approval → Ready for Handback (declined, no prior Approved Estimate on this Visit); In Progress → Ready for Handback (work completed directly, or — see the correction below — a revision declined with prior approval, resolved to stop); Ready for Handback → Delivered.
 
 Illegal: any transition out of Delivered (a returning device is always a new Visit); any transition out of Ready for Handback other than to Delivered (a same-day mis-mark correction is a deliberately deferred operational-safety question, not a vocabulary path).
 
-Decline-with-prior-approval is never auto-derived — staff resolve it explicitly (an app/workflow requirement; the immutable ordered Estimate sequence just needs to make "was there ever a prior Approved Estimate?" answerable).
+**Correction (2026-07-25) — the decline-with-prior-approval window is a real gap in the four-state vocabulary, not an app-layer detail.** The original text above silently assumed the "declined, resolved to continue/stop" case resolves instantaneously, without saying how a Visit gets from "a revision was just declined" back to a legal status at all. It doesn't, necessarily: during any real delay between the decline and staff's resolution, none of the four status values is honestly true — not Awaiting Approval (the customer already decided), not In Progress (nothing has resumed), not Ready for Handback (nothing's been decided to stop). Pressure-testing delayed resolution, app restart, and staff handoff confirmed this is a genuine, durable condition a Visit can sit in for real, findable spans of time — not a rendering nuance.
+
+The four-state vocabulary itself is **not** expanded to cover it. Instead, a concrete, narrowly-scoped **Pending Revision Resolution** fact exists on a Visit exactly when a later Estimate revision is declined while an earlier Estimate on the same Visit was already Approved. While present, it takes precedence over `status` as the honest answer to "what's happening" — `status` isn't overridden or falsified, the Visit simply carries an additional fact layered over whatever `status` last meaningfully held. It resolves to exactly one of two outcomes — *continue under the prior approved scope* (→ Visit returns to In Progress) or *stop* (→ Visit proceeds to Ready for Handback) — recorded with who resolved it and when, durable and queryable across restart or staff handoff. This is deliberately **not** a general "blocked pending staff decision" abstraction reusable for other future conditions — it is scoped to this one concrete business condition until a second real scenario demonstrates an abstraction is actually shared.
+
+**The resolution (continue/stop) is independent of Technical Finding (§4) and must never be treated as determining it.** Pressure-testing confirmed this matters concretely: resolving to "stop" doesn't necessarily mean nothing was repaired (the earlier approved scope may already have been completed before the revision was even proposed — Technical Finding would then still be *Repaired*), and resolving to "continue" doesn't guarantee a successful outcome either. Each fact is set independently, by its own explicit action, and may combine with the other however reality actually produced.
 
 ### 8. Estimate — immutable revision sequence, server-authoritative ordering
 
@@ -142,7 +153,7 @@ Uses the existing forced-update mechanism (`appConfig/global`, `minRequiredVersi
 
 ## Consequences / deliberately deferred
 
-Device-level `recordState`/archive; Device merge/reconciliation, including any future historical-Visit-to-Device linking (no write path today, to be designed with its own authority when a real need emerges); Waiting for Parts as a status; Estimate decision-channel provenance; Estimate revision-relationship classification; IMEI-edit audit or elevated authority; rules-level enforcement of the interior status-transition graph and the `finalAmountCharged` ceiling-vs-Estimate check, both app-trusted for v1.
+Device-level `recordState`/archive; Device merge/reconciliation, including any future historical-Visit-to-Device linking (no write path today, to be designed with its own authority when a real need emerges); Waiting for Parts as a status; Estimate decision-channel provenance; Estimate revision-relationship classification; IMEI-edit audit or elevated authority; rules-level enforcement of the interior status-transition graph and the `finalAmountCharged` ceiling-vs-Estimate check, both app-trusted for v1; a generalized "blocked pending staff resolution" abstraction beyond the one concrete Pending Revision Resolution case (§7 correction) — deferred until a second real scenario demonstrates it's actually shared; a generic termination-reason taxonomy beyond what Technical Finding plus the Estimate sequence already answer (§4 correction); write authority for Technical Finding, technical-work-concluded-at, and Pending Revision Resolution — not yet decided (see report).
 
 ---
 
