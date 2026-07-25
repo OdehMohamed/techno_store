@@ -273,6 +273,8 @@
   "Archive Device": "أرشفة الجهاز",
   "Device archived successfully": "تمت أرشفة الجهاز بنجاح",
   "Could not archive this device. Please try again.": "تعذّرت أرشفة الجهاز. يرجى المحاولة مرة أخرى.",
+  "Could not save this update. Please try again.": "تعذّر حفظ هذا التحديث. يرجى المحاولة مرة أخرى.",
+  "Could not deliver this device. Please try again.": "تعذّر تسليم الجهاز. يرجى المحاولة مرة أخرى.",
   "Archived Devices": "الأجهزة المؤرشفة",
   "Restore": "استعادة",
   "Restore Device": "استعادة الجهاز",

@@ -273,6 +273,8 @@
   "Archive Device": "Archive Device",
   "Device archived successfully": "Device archived successfully",
   "Could not archive this device. Please try again.": "Could not archive this device. Please try again.",
+  "Could not save this update. Please try again.": "Could not save this update. Please try again.",
+  "Could not deliver this device. Please try again.": "Could not deliver this device. Please try again.",
   "Archived Devices": "Archived Devices",
   "Restore": "Restore",
   "Restore Device": "Restore Device",
