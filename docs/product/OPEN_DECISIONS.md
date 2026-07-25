@@ -12,22 +12,16 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 ### Device & Repair Data
 
-**Device matching and deduplication.** A device is anchored on a system-generated internal ID, with IMEI or serial used only as an optional strong-match hint — never a required anchor, never silently merged on brand or model alone. What's not yet designed: the exact rules for confirming two records represent the same physical device, given IMEI isn't always available or reliably captured.
+**Device matching and deduplication algorithm.** A device is anchored on a system-generated internal ID, with IMEI or serial used only as an optional strong-match hint — never a required anchor, never silently merged on brand or model alone; duplicate Devices from an unconfident non-match are an accepted cost. The staff-facing intake workflow's shape — one customer-first flow, likely-Device suggestions, an explicit staff choice, a cross-customer search reachable in-flow — is settled (`ADR-007`, 2026-07-25). What's still not designed: the exact rules for confidently matching two records to the same physical device, given IMEI isn't always available or reliably captured.
 *Referenced in: Shared Foundation → Core Entities & Identity Model.*
 
-**Intake-time device lookup workflow.** How staff actually find or confirm an existing device or customer relationship at the moment of intake — a search, a suggested match, something else — is not yet designed.
-*Referenced in: Shared Foundation → Core Entities & Identity Model.*
-
-**The complete status vocabulary.** Status stays deliberately simple, expanding only for genuine operational or decision points, designed together with notification triggers. The full, final set of states — and the exact narrative copy for each — is not yet settled.
+**The status vocabulary's narrative copy.** The full, final set of states, their transitions, and Delivered's permanent terminal status are settled (`ADR-007`, 2026-07-25: `In Progress → [Awaiting Approval] → Ready for Handback → Delivered`). What remains open is the exact customer-facing narrative copy for each state.
 *Referenced in: Shared Foundation → The Relationship Timeline; Relationship Lens → The Relationship, As Experienced.*
-
-**The estimate/approval record shape.** Pricing is a sequence of records, not a single overwritten field — the principle is settled, the exact structure of that sequence is not.
-*Referenced in: Shared Foundation → The Relationship Timeline.*
 
 **Retention limit for sensitive unlock data.** Settled (2026-07-23): delivery and destruction are decoupled — the Delivered event does not automatically purge PIN/pattern data, since the customer provided it voluntarily and it may still hold value for the device's future maintenance history, protected in the meantime by the existing access restrictions. What remains open is whether any retention limit or automatic-deletion trigger should ever apply to this data at all, and if so what it is — folded into the general permanent-deletion mechanism below rather than tied to delivery specifically.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
-**Deletion recovery mechanism.** Settled for maintenance devices (`ADR-005`, 2026-07-23): ordinary removal (Archive) is staff-wide, preserves the record and everything attached to it untouched, and stays recoverable indefinitely — no automatic expiry — until an Admin explicitly restores it (Admin-only, enforced at the data layer) or permanently deletes it. Not yet generalized beyond maintenance devices — no other entity on the timeline (repair episodes as their own record, purchases) currently has any deletion mechanism at all, so there's nothing yet to settle for them; revisit if and when one is built.
+**Deletion recovery mechanism.** Settled for maintenance devices (`ADR-005`, 2026-07-23): ordinary removal (Archive) is staff-wide, preserves the record and everything attached to it untouched, and stays recoverable indefinitely — no automatic expiry — until an Admin explicitly restores it (Admin-only, enforced at the data layer) or permanently deletes it. Not yet generalized beyond maintenance devices — no other entity on the timeline (the Visit now that it's its own concept per `ADR-007`, purchases) currently has any deletion mechanism at all, so there's nothing yet to settle for them; revisit if and when one is built.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
 ### Identity & Account Lifecycle
@@ -100,6 +94,21 @@ A different kind of open question: execution-level decisions discovery touched d
 Different again from both lists above: not an unresolved question waiting on a decision, and not an execution detail waiting on design work, but a concept that was actively considered and concluded *not* to earn its existence today — with the door deliberately left open, not conceptually foreclosed, should a real need surface later. Being here means "no, not now," not "undecided."
 
 - **Staff Communication Timeline.** Considered directly alongside the customer-facing Communication Timeline. Concluded not to earn its own place — a staff member's "needs attention" moments are operational, and already belong inside the Aggregate Operational View, not a separate communication record. Revisitable only if a real, currently unimagined staff-facing communication need — something genuinely not operational in nature — actually surfaces.
+
+- **Device merge/reconciliation.** Considered directly during Device-identity discovery. The matching asymmetry rule (never silently merge; duplicate Devices are an accepted cost) means false separation will occur in practice. Concluded not to design a merge/reconciliation mechanism now, including any write path for linking a historical, pre-`ADR-007` Visit to a Device after the fact — deliberately left possible, not built. Revisitable when a real operational need to correct a known duplicate actually surfaces.
+*Referenced in: `ADR-007`.*
+
+- **Estimate decision-channel provenance.** Whether an Estimate's decision record should distinguish phone, in-person, or future in-app self-service as the channel through which the customer's answer arrived. Considered directly during Estimate/Approval design; concluded the minimum useful provenance for v1 is who recorded the decision and when — channel isn't shown to matter yet. Revisitable if a real use for it surfaces.
+*Referenced in: `ADR-007`.*
+
+- **Estimate revision-relationship classification.** Whether a revised Estimate should structurally record its relationship to the prior one (replacement, expansion, reduction). Considered directly; concluded the immutable revision sequence plus each Estimate's own free-text scope description already gives staff enough context, and the settled decline-behavior keeps resolution a manual staff judgment regardless of any classification. Revisitable if staff repeatedly struggle to reconstruct that context from prose alone.
+*Referenced in: `ADR-007`.*
+
+- **Device IMEI-edit audit or elevated authority.** Whether correcting a Device's IMEI should require Admin authority or leave a provenance trail, given IMEI is the one field future matching evidence will lean on. Considered directly; concluded staff-wide authority with no added audit is appropriate for v1, since IMEI is evidence, not identity, and matching always requires explicit human confirmation regardless of its value. Revisitable if real usage shows a meaningful integrity problem.
+*Referenced in: `ADR-007`.*
+
+- **Waiting for Parts as a status.** Whether parts-availability blocking deserves a first-class Visit status. Considered directly during status-vocabulary design; concluded it isn't yet established that this blocks enough real jobs to need its own state and staff follow-up surface. Revisitable if real operational frequency at Techno Store shows otherwise.
+*Referenced in: `ADR-007`.*
 
 ---
 

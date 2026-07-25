@@ -9,7 +9,9 @@ Status: reflects the state as of 2026-07-25. Overwrite this file's content at th
 - [x] PR 1 of 2 (`createStaffAccount`, PR #24, `2f6ed4c`), PR 2 of 2 (Staff Management client, PR #25, `13eff56`), and the post-ADR-004 documentation checkpoint (`PERMISSIONS_MATRIX.md`/`BACKLOG.md` item 10 reconciled) — all shipped.
 - [x] **`BACKLOG.md` item 0a closed (2026-07-25).** Direct/bypass-the-UI Firestore/Storage rules authorization — an old, explicitly-accepted verification gap since 2026-07-09 — verified via a 74-case matrix derived from the current deployed rules source, run against a local emulator with `@firebase/rules-unit-testing`. 74/74 passing (first run's 2 failures were a test-isolation bug, not a rules bug — fixed, rerun clean). No rules changed, no production access.
 
-**Now starting the Foundational decision work, one cluster at a time — not the whole group at once.** First cluster: **device matching/deduplication + the intake-time lookup workflow** — a pure decision thread (`docs/product/OPEN_DECISIONS.md`, Device & Repair Data), no implementation until settled. Status vocabulary + estimate/approval record shape deliberately follow afterward, with the identity/workflow decisions available as context, not decided together.
+**Foundational decision work — Device / Visit / Estimate domain model — settled and ratified as `ADR-007` (2026-07-25).** All four originally-sequenced threads (device identity/matching, Visit boundaries, status vocabulary, Estimate/Approval) were resolved together in one continuous product-discovery conversation, then turned into architecture across three further pressure-test rounds (historical-migration honesty, authorization precision, rollout safety, ordering/lifecycle integrity). `ADR-007` (Device / Visit / Estimate Domain Model) is ratified and written to `docs/ai-workflow/ADR-007-device-visit-estimate-domain-model.md`. `PRD.md`, `OPEN_DECISIONS.md`, and `ROADMAP.md` reconciled to match (Foundational cluster in `ROADMAP.md` marked resolved; two narrower open threads — the device-matching *algorithm* and status *narrative copy* — moved to Self-Contained).
+
+- [ ] **Not yet implemented.** No schema, Firestore rules, migration, or client changes have been made. Next step is the product owner's call: begin implementation following `ADR-007`'s own phased rollout, or open a different area first.
 
 ## Reception & Maintenance (closed)
 
@@ -63,7 +65,7 @@ See `DECISIONS_LOG.md` (2026-07-23 through 2026-07-25 entries) for the full reco
 
 ## What is NOT yet decided
 
-- The device-identity/matching/intake-lookup decisions themselves — the thread is chosen, not yet settled. Role-change, audit-log in-app visibility, the Admin dashboard, and the deferred intake-form-shape question all remain open but deliberately not picked up next.
+- **`ADR-007` implementation** — the domain model (Device/Visit/Estimate) is ratified but not built: no schema, Firestore rules, migration script execution, or client changes exist yet. The device-matching algorithm and status narrative copy remain genuinely open within it (see `ROADMAP.md`, Self-Contained). Role-change, audit-log in-app visibility, the Admin dashboard, and the deferred intake-form-shape question all remain open but deliberately not picked up next.
 - The 4 orphaned pre-`recordState` Firestore composite indexes in production — low-priority cleanup, not urgent.
 - Whether Restore's Admin-only enforcement and the `lifecycleEvents` split need a shared helper if a third Cloud Function ever needs the same "Admin + own-staffStatus-active" check — still just two call sites.
 - Criterion 3 (restart recheck) in true isolation — deferred, not pursued further per product-owner preference; not blocking.

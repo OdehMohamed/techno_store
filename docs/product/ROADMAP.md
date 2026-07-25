@@ -8,17 +8,16 @@ This document makes no new decisions. Every item here is already defined in full
 
 ---
 
-## Foundational
+## Foundational — resolved (2026-07-25)
 
-Nothing else in this document depends on anything outside this group, and several later items depend on these being resolved first.
-
-- **Device matching and deduplication, together with the intake-time lookup workflow.** How staff actually find or confirm a device or customer at intake shapes almost everything built on top of the identity model.
-- **The complete status vocabulary, together with the estimate/approval record shape.** The full set of states and the structure of the pricing sequence are tightly coupled — designing one without the other risks a mismatch between what the workflow tracks and what it can actually show.
+Both items formerly in this group — device identity/matching together with the intake-time lookup workflow, and the status vocabulary together with the estimate/approval record shape — are now settled at the architecture level by `ADR-007` (Device / Visit / Estimate Domain Model), which designed them together specifically because of the cross-dependency this section flagged. Not yet implemented, but no longer blocking anything else in this document. The two narrow threads `ADR-007` left genuinely open no longer carry that tight cross-dependency, so they've moved to Self-Contained below.
 
 ## Self-Contained
 
-Each of these is resolvable independently of the others and of the foundational group, in any order, whenever there's a real reason to take one up.
+Each of these is resolvable independently of the others, in any order, whenever there's a real reason to take one up.
 
+- **Device matching and deduplication algorithm.** `ADR-007` settles Device as a persistent, system-ID-anchored entity and the intake workflow's shape; the exact rules for confidently matching two records to the same physical device — especially without IMEI — remain undesigned.
+- **Status narrative copy.** The state vocabulary and transitions are settled (`ADR-007`); the literal customer-facing wording for each state is not.
 - **PIN/pattern purge timing** — immediate on delivery, or a short, strictly bounded grace period, and what mechanism guarantees completion.
 - **Deletion recovery mechanism** — how long a hidden record stays recoverable, and how it's restored.
 - **Phone-number-change mechanism** — how a customer's identity survives a verified number changing entirely.
