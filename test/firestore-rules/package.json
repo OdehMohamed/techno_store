@@ -1,0 +1,15 @@
+{
+  "name": "firestore-rules-tests",
+  "private": true,
+  "description": "Permanent, reproducible executable tests for firestore.rules — established for ADR-007 Phase 1 (devices/estimates), reused/extended by later phases and rule changes instead of recreated from scratch. Not part of the Flutter app or the functions/ Cloud Functions project.",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "test": "npx firebase-tools@15.24.0 emulators:exec --only firestore --project demo-technostore-rules-test \"node --test --test-concurrency=1 *.test.js\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.1",
+    "firebase": "12.16.0"
+  }
+}

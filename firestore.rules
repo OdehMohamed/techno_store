@@ -44,6 +44,13 @@ service cloud.firestore {
       return isAdmin() || isReception() || isMaintenance();
     }
 
+    // ADR-007: the technical-judgment boundary (Estimate creation, Technical
+    // Finding, revision resolution) — Reception excluded, matching the
+    // "can't be borrowed situationally" competence test.
+    function isMaintenanceOrAdmin() {
+      return isAdmin() || isMaintenance();
+    }
+
     // ---- users/{uid} ----
 
     match /users/{userId} {
@@ -92,6 +99,65 @@ service cloud.firestore {
         // which would reopen the same class of risk ADR-002 closes for `type`.
         allow write: if false;
       }
+    }
+
+    // ---- devices/{deviceId} ----
+    // ADR-007 Phase 1: additive, unreachable by the currently-shipped
+    // client — no code under lib/ references this collection yet. A
+    // persistent Device identity anchor, distinct from any repair episode.
+    match /devices/{deviceId} {
+      // Staff-wide only, never customer — the structural prevention of
+      // cross-customer exposure through a Device shared across Visits. A
+      // customer's own view of "their device" comes only from the snapshot
+      // already on their own Visit, never this collection directly.
+      allow read: if isSignedIn() && isStaff();
+
+      // brand/model/colorHex/imeiNumber all share identical staff-wide
+      // write authority (ADR-007's matrix lists them as separate rows
+      // during design, but the ratified authority is the same for both,
+      // so one clause correctly implements all of them) — IMEI is
+      // matching evidence, not identity, so no elevated tier is needed.
+      //
+      // hasOnly/hasAll together bound the exact key set (no single
+      // "equals" exists for key sets in this rules language), closing
+      // both extra-field injection and accidental removal of required
+      // fields. Canonical field types are validated so a future buggy
+      // client can't persist a non-string into a field the Device
+      // Matching Policy's exact-IMEI-match pathway expects to be
+      // textual evidence — deliberately not validating format/length,
+      // which stays a later implementation concern.
+      allow create: if isSignedIn() && isStaff()
+        && request.resource.data.keys().hasOnly(
+             ['brand', 'model', 'colorHex', 'imeiNumber', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(
+             ['model', 'colorHex', 'createdAt', 'updatedAt'])
+        && request.resource.data.model is string
+        && request.resource.data.colorHex is string
+        && (!('brand' in request.resource.data) || request.resource.data.brand is string)
+        && (!('imeiNumber' in request.resource.data) || request.resource.data.imeiNumber is string)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // createdAt is immutable forever; updatedAt is server-authoritative
+      // and must advance on every write, same anti-spoofing reasoning as
+      // every other timestamp this ADR makes server-authoritative.
+      allow update: if isSignedIn() && isStaff()
+        && request.resource.data.keys().hasOnly(
+             ['brand', 'model', 'colorHex', 'imeiNumber', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(
+             ['model', 'colorHex', 'createdAt', 'updatedAt'])
+        && request.resource.data.model is string
+        && request.resource.data.colorHex is string
+        && (!('brand' in request.resource.data) || request.resource.data.brand is string)
+        && (!('imeiNumber' in request.resource.data) || request.resource.data.imeiNumber is string)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+
+      // Merge/reconciliation is a separate, higher-scrutiny future
+      // capability — no client delete path today, matching the same
+      // "no write path until deliberately designed" posture as the rest
+      // of ADR-007's deferred items.
+      allow delete: if false;
     }
 
     // ---- maintenanceDevices/{deviceId} ----
@@ -177,6 +243,112 @@ service cloud.firestore {
           (isAdmin() && request.resource.data.type == 'restored')
         );
         allow update, delete: if false;
+      }
+
+      // ---- estimates/{estimateId} ----
+      // ADR-007 Phase 1: additive, unreachable by the currently-shipped
+      // client. Immutable revision sequence with a server-authoritative
+      // ordering key; see ADR-007 §8 and its Pending-Revision-Resolution
+      // correction (§7) for the full reasoning behind this shape.
+      match /estimates/{estimateId} {
+        // Staff-wide, or the owning customer via a cross-document check on
+        // the parent Visit — mirrors the existing customer-owns-this-device
+        // pattern already used in storage.rules. A single get() on a known
+        // document by ID is the same cheap class as this file's own
+        // callerType() helper, not the expensive cross-document scan class
+        // ADR-007 reserves for app-layer enforcement.
+        allow read: if isSignedIn() && (
+          isStaff() ||
+          (isCustomer() &&
+           get(/databases/$(database)/documents/maintenanceDevices/$(deviceId)).data.userId == request.auth.uid)
+        );
+
+        // Maintenance + Admin only — diagnosis and proposing scope/cost is
+        // technical judgment, the one competence that can't be borrowed
+        // situationally (Roles as Expertise). Exactly the 5 required keys;
+        // decision/resolution fields don't exist on the document at all
+        // until their own later one-time write adds them — this is what
+        // stops a client from setting e.g. resolutionOutcome directly at
+        // creation, bypassing the whole one-time-transition discipline.
+        // createdAt is server-authoritative so a client can never misorder
+        // a genuinely newer Estimate behind the one it supersedes.
+        //
+        // NOT enforced here, per ADR-007 §7: blocking creation while
+        // another qualifying decline on this Visit is still unresolved —
+        // that precondition is a cross-document scan against sibling
+        // Estimates, the same expensive class as the finalAmountCharged
+        // ceiling check, explicitly left app-layer for v1.
+        allow create: if isSignedIn() && isMaintenanceOrAdmin()
+          && request.resource.data.keys().hasOnly(
+               ['proposedScope', 'proposedAmount', 'createdByUid', 'createdAt', 'outcome'])
+          && request.resource.data.keys().hasAll(
+               ['proposedScope', 'proposedAmount', 'createdByUid', 'createdAt', 'outcome'])
+          && request.resource.data.proposedScope is string
+          && request.resource.data.proposedAmount is number
+          && request.resource.data.proposedAmount >= 0
+          && request.resource.data.createdByUid == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.outcome == 'pending';
+
+        // Three mutually-exclusive one-time transitions on the same
+        // document, distinguished by diff().affectedKeys().hasOnly(...)
+        // rather than per-field equality checks alone — equality checks on
+        // a chosen subset of fields can't stop a write from adding an
+        // entirely new, never-checked field; bounding the whole changed-key
+        // set closes that gap. Provenance fields (decidedByUid/
+        // resolvedByUid) are pinned to request.auth.uid so an authorized
+        // writer can never attribute the action to someone else.
+        // NOTE on request.resource.data field access: direct dot-access to
+        // a key that's genuinely absent from the resulting document throws
+        // a rules evaluation error rather than returning a graceful
+        // false/null — confirmed empirically (not merely assumed) via this
+        // suite's own first run, where an Admin approval tripped an error
+        // inside the *resolution* branch despite that branch being
+        // irrelevant to the write. Every field below that isn't guaranteed
+        // present on every branch's resulting document uses
+        // .get(field, default), matching this file's pre-existing
+        // recordState precedent, rather than bare dot-access.
+        allow update: if isSignedIn() && (
+          ( // decision recording — approve: declineReason never touchable here
+            isStaff()
+            && resource.data.outcome == 'pending'
+            && request.resource.data.outcome == 'approved'
+            && request.resource.data.get('decidedByUid', null) == request.auth.uid
+            && request.resource.data.get('decidedAt', null) == request.time
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['outcome', 'decidedByUid', 'decidedAt'])
+          ) ||
+          ( // decision recording — decline: declineReason optional, only
+            // settable in this same write, frozen with everything else the
+            // instant it completes (resource.data.outcome == 'pending' can
+            // never be true again afterward, so there's no later path back
+            // to this branch to re-touch it)
+            isStaff()
+            && resource.data.outcome == 'pending'
+            && request.resource.data.outcome == 'declined'
+            && request.resource.data.get('decidedByUid', null) == request.auth.uid
+            && request.resource.data.get('decidedAt', null) == request.time
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['outcome', 'decidedByUid', 'decidedAt', 'declineReason'])
+            && (!('declineReason' in request.resource.data) || request.resource.data.declineReason is string)
+          ) ||
+          ( // resolution recording — Maintenance + Admin only; requires an
+            // already-declined outcome (never settable on 'pending' or
+            // 'approved'); resolutionOutcome/resolvedByUid/resolvedAt
+            // genuinely don't exist on the document until this branch adds
+            // them, hence .get() throughout rather than bare access
+            isMaintenanceOrAdmin()
+            && resource.data.outcome == 'declined'
+            && resource.data.get('resolutionOutcome', null) == null
+            && request.resource.data.get('resolutionOutcome', null) in ['continue', 'stop']
+            && request.resource.data.get('resolvedByUid', null) == request.auth.uid
+            && request.resource.data.get('resolvedAt', null) == request.time
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['resolutionOutcome', 'resolvedByUid', 'resolvedAt'])
+          )
+        );
+
+        allow delete: if false;
       }
     }
 
