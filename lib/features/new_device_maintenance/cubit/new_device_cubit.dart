@@ -21,6 +21,8 @@ class NewDeviceCubit extends Cubit<NewDeviceState> {
   Future<void> addNewDevice(
     MaintenanceDeviceModel device, {
     MaintenanceDeviceSensitiveData? sensitiveData,
+    String? existingDeviceId,
+    NewDeviceInput? newDeviceInput,
   }) async {
     try {
       emit(NewDeviceLoading());
@@ -33,6 +35,8 @@ class NewDeviceCubit extends Cubit<NewDeviceState> {
       final deviceId = await newDeviceServices.addNewDevice(
         device,
         sensitiveData: sensitiveData,
+        existingDeviceId: existingDeviceId,
+        newDeviceInput: newDeviceInput,
       );
       emit(NewDeviceSuccess(deviceId: deviceId));
     } catch (e) {
