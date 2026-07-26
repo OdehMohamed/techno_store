@@ -128,13 +128,14 @@ service cloud.firestore {
       // which stays a later implementation concern.
       allow create: if isSignedIn() && isStaff()
         && request.resource.data.keys().hasOnly(
-             ['brand', 'model', 'colorHex', 'imeiNumber', 'createdAt', 'updatedAt'])
+             ['brand', 'model', 'colorHex', 'imeiNumber', 'imeiNumberNormalized', 'createdAt', 'updatedAt'])
         && request.resource.data.keys().hasAll(
              ['model', 'colorHex', 'createdAt', 'updatedAt'])
         && request.resource.data.model is string
         && request.resource.data.colorHex is string
         && (!('brand' in request.resource.data) || request.resource.data.brand is string)
         && (!('imeiNumber' in request.resource.data) || request.resource.data.imeiNumber is string)
+        && (!('imeiNumberNormalized' in request.resource.data) || request.resource.data.imeiNumberNormalized is string)
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
 
@@ -149,13 +150,14 @@ service cloud.firestore {
       // only the four required fields are protected from removal.
       allow update: if isSignedIn() && isStaff()
         && request.resource.data.keys().hasOnly(
-             ['brand', 'model', 'colorHex', 'imeiNumber', 'createdAt', 'updatedAt'])
+             ['brand', 'model', 'colorHex', 'imeiNumber', 'imeiNumberNormalized', 'createdAt', 'updatedAt'])
         && request.resource.data.keys().hasAll(
              ['model', 'colorHex', 'createdAt', 'updatedAt'])
         && request.resource.data.model is string
         && request.resource.data.colorHex is string
         && (!('brand' in request.resource.data) || request.resource.data.brand is string)
         && (!('imeiNumber' in request.resource.data) || request.resource.data.imeiNumber is string)
+        && (!('imeiNumberNormalized' in request.resource.data) || request.resource.data.imeiNumberNormalized is string)
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
 
@@ -202,6 +204,34 @@ service cloud.firestore {
       // this field existed (no recordState at all) as implicitly active, so
       // this rule doesn't retroactively break every pre-migration document
       // the moment it deploys — see ADR-005 "Migration".
+      //
+      // ADR-007 (2026-07-26): two integrity constraints apply across ALL
+      // three transitions above, not nested inside just one — a write
+      // bundling e.g. "archive this" with "also change deviceId" must be
+      // caught too, not just an isolated ordinary edit.
+      //
+      // deviceId is immutable after creation. Checked on both key
+      // presence and value, not value alone, so a legacy Visit (no
+      // deviceId key at all) can never gain one via update, and a
+      // new-world Visit can never have its key removed (only reassigning
+      // the value would be caught by a value-only check) — "absent" and
+      // "explicitly null" are deliberately treated as different states
+      // here, matching Firestore's own document model, not conflated.
+      // Untouched fields are unaffected: Firestore fills in the existing
+      // value on both sides of any write that doesn't mention deviceId,
+      // so this only ever fires against a write that actually attempts to
+      // touch it.
+      //
+      // technicalFinding/technicalWorkConcludedAt are Maintenance + Admin
+      // only (§4) — technical judgment can't be borrowed situationally,
+      // same competence test as Estimate creation. Only restricts a write
+      // that actually *changes* either field; an unrelated edit (price,
+      // problems, Fixed/Deliver, archive/restore) that leaves both
+      // untouched is unaffected, so Reception's existing authority over
+      // everything else on this document is preserved exactly. Value/
+      // enum/one-time-transition validation for these two fields is
+      // deliberately deferred to the PR that builds their real write path
+      // — this is the role gate only.
       allow update: if isSignedIn() && (
         (isStaff()
           && resource.data.get('recordState', 'active') != 'archived'
@@ -212,6 +242,16 @@ service cloud.firestore {
         (isStaff()
           && resource.data.get('recordState', 'active') != 'archived'
           && request.resource.data.get('recordState', 'active') != 'archived')
+      )
+      && (
+        (!('deviceId' in resource.data) && !('deviceId' in request.resource.data)) ||
+        (('deviceId' in resource.data) && ('deviceId' in request.resource.data)
+          && request.resource.data.deviceId == resource.data.deviceId)
+      )
+      && (
+        (request.resource.data.get('technicalFinding', null) == resource.data.get('technicalFinding', null)
+          && request.resource.data.get('technicalWorkConcludedAt', null) == resource.data.get('technicalWorkConcludedAt', null))
+        || isMaintenanceOrAdmin()
       );
 
       // Permanent deletion moved server-side (ADR-005): the

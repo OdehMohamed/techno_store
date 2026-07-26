@@ -12,6 +12,17 @@ class FirestoreApiPath {
   static String maintenanceDevice(String deviceId) =>
       'maintenanceDevices/$deviceId';
 
+  // ADR-007 — the persistent Device identity anchor (distinct from
+  // maintenanceDevices/{id}, the repair-episode Visit — see ADR-007 §2).
+  static String devices() => 'devices/';
+  static String device(String deviceId) => 'devices/$deviceId';
+
+  // ADR-007 §8 — one Visit's immutable Estimate revision sequence.
+  static String estimates(String visitId) =>
+      'maintenanceDevices/$visitId/estimates/';
+  static String estimate(String visitId, String estimateId) =>
+      'maintenanceDevices/$visitId/estimates/$estimateId';
+
   // Sensitive fields (pin, patternLock, notesHidden), split out per
   // docs/ai-workflow/ADR-001-sensitive-data-separation.md. Never readable
   // by the owning customer, even for their own device.
