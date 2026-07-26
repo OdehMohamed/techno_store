@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/utils/device_status.dart';
 import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/core/widgets/main_app_bar.dart';
@@ -288,7 +289,10 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                             pricingAndTimeline(),
 
                             if (widget.device != null &&
-                                widget.device!.status == 'Fixed') ...[
+                                DeviceStatus.isInGroup(
+                                  widget.device!.status,
+                                  DeviceStatus.fixedGroup,
+                                )) ...[
                               const SizedBox(height: 24),
                               fixedDetailsSection(),
                             ],
@@ -329,7 +333,10 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                             pricingAndTimeline(),
 
                             if (widget.device != null &&
-                                widget.device!.status == 'Fixed') ...[
+                                DeviceStatus.isInGroup(
+                                  widget.device!.status,
+                                  DeviceStatus.fixedGroup,
+                                )) ...[
                               const SizedBox(height: 24),
                               fixedDetailsSection(),
                             ],
@@ -756,7 +763,7 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       deliveredAt: widget.device?.deliveredAt,
       fixedAt: widget.device?.fixedAt,
       timeToFix: widget.device?.timeToFix,
-      status: widget.device?.status ?? 'In Maintenance',
+      status: widget.device?.status ?? DeviceStatus.inMaintenance,
       // Explicit rather than relying on the model's default — this screen
       // is never reachable for an archived device (archived records are
       // excluded from every tab), so widget.device is always active/absent

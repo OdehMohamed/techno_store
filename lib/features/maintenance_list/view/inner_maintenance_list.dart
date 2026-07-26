@@ -12,6 +12,7 @@ import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/core/route/app_routes.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/utils/device_status.dart';
 import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
@@ -55,6 +56,14 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     DeviceStatus.inMaintenance,
     DeviceStatus.fixed,
     DeviceStatus.delivered,
+  ];
+
+  // Parallel to _tabStatuses: the full set of literals (either vocabulary)
+  // each tab's Firestore query matches. See core/utils/device_status.dart.
+  static const List<List<String>> _tabStatusGroups = [
+    DeviceStatus.inMaintenanceGroup,
+    DeviceStatus.fixedGroup,
+    DeviceStatus.deliveredGroup,
   ];
 
   @override
@@ -164,6 +173,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
                         _MaintenanceTabPage(
                           key: ValueKey(_tabStatuses[i]),
                           status: _tabStatuses[i],
+                          statusGroup: _tabStatusGroups[i],
                           tabIndex: i,
                           tabController: _tabController,
                           uid: isEmployee ? null : _uid,
@@ -431,7 +441,11 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
                     },
                     child: DeviceCard(
                       device: devices[index],
-                      status: status,
+                      // The device's own status, not the tab's — a tab now
+                      // matches a group of literals (see
+                      // core/utils/device_status.dart), so devices within
+                      // one tab are not guaranteed to share one literal.
+                      status: devices[index].status,
                       isEmployee: isEmployee,
                       onTap: () => _showDeviceDetails(devices[index], isEmployee),
                       getStatusColor: _getStatusColor,
@@ -469,9 +483,8 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
     MaintenanceDeviceModel device,
     String status,
   ) {
-    switch (status.toLowerCase()) {
-      case 'in maintenance':
-        return [
+    if (DeviceStatus.isInGroup(status, DeviceStatus.inMaintenanceGroup)) {
+      return [
           SlidableAction(
             onPressed: (_) {
               Navigator.pushNamed(
@@ -510,81 +523,82 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
             padding: const EdgeInsets.symmetric(horizontal: 4),
           ),
         ];
-
-      case 'fixed':
-        return [
-          SlidableAction(
-            onPressed: (_) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.newDeviceMaintenance,
-                arguments: {'device': device, 'userData': _userData},
-              );
-            },
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            icon: Icons.edit,
-            label: 'Edit'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-          SlidableAction(
-            onPressed: (_) {
-              _showDeliverDeviceDialog(device);
-            },
-            backgroundColor: Colors.purple,
-            foregroundColor: Colors.white,
-            icon: Icons.delivery_dining,
-            label: 'Deliver'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-          SlidableAction(
-            onPressed: (_) {
-              _showArchiveConfirmation(context, device);
-            },
-            backgroundColor: Colors.grey[700]!,
-            foregroundColor: Colors.white,
-            icon: Icons.archive_outlined,
-            label: 'Archive'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-        ];
-
-      case 'delivered':
-        return [
-          SlidableAction(
-            onPressed: (_) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.newDeviceMaintenance,
-                arguments: {'device': device, 'userData': _userData},
-              );
-            },
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            icon: Icons.edit,
-            label: 'Edit'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-          SlidableAction(
-            onPressed: (_) {
-              _showArchiveConfirmation(context, device);
-            },
-            backgroundColor: Colors.grey[700]!,
-            foregroundColor: Colors.white,
-            icon: Icons.archive_outlined,
-            label: 'Archive'.tr(),
-            borderRadius: BorderRadius.circular(12),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-          ),
-        ];
-
-      default:
-        return [];
     }
+
+    if (DeviceStatus.isInGroup(status, DeviceStatus.fixedGroup)) {
+      return [
+        SlidableAction(
+          onPressed: (_) {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.newDeviceMaintenance,
+              arguments: {'device': device, 'userData': _userData},
+            );
+          },
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          icon: Icons.edit,
+          label: 'Edit'.tr(),
+          borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
+        SlidableAction(
+          onPressed: (_) {
+            _showDeliverDeviceDialog(device);
+          },
+          backgroundColor: Colors.purple,
+          foregroundColor: Colors.white,
+          icon: Icons.delivery_dining,
+          label: 'Deliver'.tr(),
+          borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
+        SlidableAction(
+          onPressed: (_) {
+            _showArchiveConfirmation(context, device);
+          },
+          backgroundColor: Colors.grey[700]!,
+          foregroundColor: Colors.white,
+          icon: Icons.archive_outlined,
+          label: 'Archive'.tr(),
+          borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
+      ];
+    }
+
+    if (DeviceStatus.isInGroup(status, DeviceStatus.deliveredGroup)) {
+      return [
+        SlidableAction(
+          onPressed: (_) {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.newDeviceMaintenance,
+              arguments: {'device': device, 'userData': _userData},
+            );
+          },
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          icon: Icons.edit,
+          label: 'Edit'.tr(),
+          borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
+        SlidableAction(
+          onPressed: (_) {
+            _showArchiveConfirmation(context, device);
+          },
+          backgroundColor: Colors.grey[700]!,
+          foregroundColor: Colors.white,
+          icon: Icons.archive_outlined,
+          label: 'Archive'.tr(),
+          borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
+      ];
+    }
+
+    return [];
   }
 
   Future<void> _showMarkAsFixedDialog(MaintenanceDeviceModel device) async {
@@ -758,43 +772,43 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'in maintenance':
-        return Colors.orange;
-      case 'fixed':
-        return Colors.green;
-      case 'delivered':
-        return Colors.blue;
-      default:
-        return Colors.grey;
+    if (DeviceStatus.isInGroup(status, DeviceStatus.inMaintenanceGroup)) {
+      return Colors.orange;
     }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.fixedGroup)) {
+      return Colors.green;
+    }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.deliveredGroup)) {
+      return Colors.blue;
+    }
+    return Colors.grey;
   }
 
   String _getStatusIcon(String status) {
-    switch (status.toLowerCase()) {
-      case 'in maintenance':
-        return '🔧';
-      case 'fixed':
-        return '✅';
-      case 'delivered':
-        return '📦';
-      default:
-        return '📱';
+    if (DeviceStatus.isInGroup(status, DeviceStatus.inMaintenanceGroup)) {
+      return '🔧';
     }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.fixedGroup)) {
+      return '✅';
+    }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.deliveredGroup)) {
+      return '📦';
+    }
+    return '📱';
   }
 
   IconData _getEmptyIcon(String? status) {
     if (status == null) return Icons.devices_other;
-    switch (status.toLowerCase()) {
-      case 'in maintenance':
-        return Icons.build_circle_outlined;
-      case 'fixed':
-        return Icons.check_circle_outline;
-      case 'delivered':
-        return Icons.delivery_dining;
-      default:
-        return Icons.devices_other;
+    if (DeviceStatus.isInGroup(status, DeviceStatus.inMaintenanceGroup)) {
+      return Icons.build_circle_outlined;
     }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.fixedGroup)) {
+      return Icons.check_circle_outline;
+    }
+    if (DeviceStatus.isInGroup(status, DeviceStatus.deliveredGroup)) {
+      return Icons.delivery_dining;
+    }
+    return Icons.devices_other;
   }
 }
 
@@ -809,6 +823,7 @@ class _InnerMaintenanceListState extends State<InnerMaintenanceList>
 /// subscribing to all three queries.
 class _MaintenanceTabPage extends StatefulWidget {
   final String status;
+  final List<String> statusGroup;
   final int tabIndex;
   final TabController tabController;
   final String? uid;
@@ -834,6 +849,7 @@ class _MaintenanceTabPage extends StatefulWidget {
   const _MaintenanceTabPage({
     required super.key,
     required this.status,
+    required this.statusGroup,
     required this.tabIndex,
     required this.tabController,
     required this.uid,
@@ -907,7 +923,7 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
     });
     _subscription = widget.services
         .streamDevicesForTab(
-          status: widget.status,
+          statusGroup: widget.statusGroup,
           uid: widget.uid,
           brand: widget.brand,
           maintenanceEmployee: widget.maintenanceEmployee,
@@ -954,7 +970,7 @@ class _MaintenanceTabPageState extends State<_MaintenanceTabPage>
     setState(() => _isLoadingMore = true);
     try {
       final page = await widget.services.fetchMoreDevicesForTab(
-        status: widget.status,
+        statusGroup: widget.statusGroup,
         startAfter: _lastDocument!,
         uid: widget.uid,
         brand: widget.brand,

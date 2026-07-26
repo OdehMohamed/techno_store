@@ -18,7 +18,10 @@ class MaintenanceDeviceModel {
 
   // Maintenance Information
   final List<String> problems;
-  final String status; // pending, in_progress, completed, delivered
+  // 'In Maintenance' | 'Fixed' | 'Delivered' (legacy) — see
+  // core/utils/device_status.dart. Bare String by design: this model has
+  // no whitelist/enum, so it already tolerates the ADR-007 vocabulary too.
+  final String status;
   final List<String> accessories;
   final List<String> deviceStatusReceived;
 

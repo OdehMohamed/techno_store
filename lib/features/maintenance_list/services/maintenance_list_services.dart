@@ -9,15 +9,9 @@ import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
 import 'package:techno_store/core/services/firebase_storage_services.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
+import 'package:techno_store/core/utils/device_status.dart';
 import 'package:techno_store/core/utils/firestore_api_path.dart';
 import 'package:techno_store/core/utils/storage_api_path.dart';
-
-// Constants for device status
-class DeviceStatus {
-  static const String inMaintenance = 'In Maintenance';
-  static const String fixed = 'Fixed';
-  static const String delivered = 'Delivered';
-}
 
 class MaintenanceListServices {
   final FirebaseFirestore _firestoreInstance = FirebaseFirestore.instance;
@@ -75,11 +69,19 @@ class MaintenanceListServices {
     return null;
   }
 
-  /// Applies the shared filter set (status + at most one of
+  /// Applies the shared filter set (status group + at most one of
   /// brand/maintenanceEmployee/date-range, plus optional customer [uid]
   /// scoping) used by both [streamDevicesForTab] and
   /// [fetchMoreDevicesForTab]. See
   /// docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md.
+  ///
+  /// [statusGroup] is a list, not a single literal, so one tab can match
+  /// both the legacy and ADR-007 status vocabularies (see
+  /// core/utils/device_status.dart) — a bridge-phase (ADR-007 Phase 2)
+  /// requirement even though this build never writes the new literals
+  /// itself. `whereIn` uses the same composite index as an equality filter
+  /// on that field, so this reuses the existing status+recordState indexes
+  /// unchanged.
   ///
   /// [uid] scopes to one customer's own devices via the `userId` field on
   /// the real `maintenanceDevices` collection — NOT the dormant
@@ -95,7 +97,7 @@ class MaintenanceListServices {
   /// format, no timezone offset mixed in). The range reuses the
   /// status+receivedAt composite index; no separate index is needed for it.
   Query<Map<String, dynamic>> _deviceTabQuery({
-    required String status,
+    required List<String> statusGroup,
     String? uid,
     String? brand,
     String? maintenanceEmployee,
@@ -104,7 +106,7 @@ class MaintenanceListServices {
   }) {
     Query<Map<String, dynamic>> query = _firestoreInstance
         .collection(FirestoreApiPath.maintenanceDevices())
-        .where('status', isEqualTo: status)
+        .where('status', whereIn: statusGroup)
         // Normal staff tabs and the customer's own view only ever show
         // active records — an archived device is not part of normal
         // product truth for either. See ADR-005. Requires every existing
@@ -156,7 +158,7 @@ class MaintenanceListServices {
   /// collection (see docs/ai-workflow/SEARCH_FILTER_IMPLEMENTATION_PLAN.md,
   /// BACKLOG.md item 1g).
   Stream<DeviceTabPage> streamDevicesForTab({
-    required String status,
+    required List<String> statusGroup,
     String? uid,
     String? brand,
     String? maintenanceEmployee,
@@ -165,7 +167,7 @@ class MaintenanceListServices {
     int limit = 50,
   }) {
     final query = _deviceTabQuery(
-      status: status,
+      statusGroup: statusGroup,
       uid: uid,
       brand: brand,
       maintenanceEmployee: maintenanceEmployee,
@@ -181,7 +183,7 @@ class MaintenanceListServices {
   /// is the last document already loaded for this tab/filter combination
   /// (see [DeviceTabPage.lastDocument]).
   Future<DeviceTabPage> fetchMoreDevicesForTab({
-    required String status,
+    required List<String> statusGroup,
     required QueryDocumentSnapshot<Map<String, dynamic>> startAfter,
     String? uid,
     String? brand,
@@ -191,7 +193,7 @@ class MaintenanceListServices {
     int limit = 50,
   }) async {
     final query = _deviceTabQuery(
-      status: status,
+      statusGroup: statusGroup,
       uid: uid,
       brand: brand,
       maintenanceEmployee: maintenanceEmployee,

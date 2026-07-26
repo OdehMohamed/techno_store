@@ -1,6 +1,8 @@
-# Firestore rules tests
+# Firestore rules and query tests
 
-Permanent, reproducible executable tests for `../../firestore.rules`, established during `ADR-007` Phase 1 so later phases (Phase 6's rule tightening, and any future rule change) can regress against this suite instead of writing a one-off scratchpad script each time. Not part of the Flutter app or the `functions/` Cloud Functions project — a standalone Node project scoped to this one concern.
+Permanent, reproducible executable tests against a local Firestore emulator, established during `ADR-007` Phase 1 so later phases (Phase 6's rule tightening, and any future rule or query change) can regress against this suite instead of writing a one-off scratchpad script each time. Not part of the Flutter app or the `functions/` Cloud Functions project — a standalone Node project scoped to this one concern.
+
+Mostly security-rules tests (`../../firestore.rules`), plus one query-behavior test (`maintenance-devices-status-compatibility.test.js`, added in Phase 2) that isn't about rules at all — it proves the actual `whereIn` compatibility query returns the right merged document set, reusing this same emulator harness rather than standing up a separate one.
 
 ## Prerequisites
 
@@ -28,5 +30,7 @@ npm test
 ## Scope
 
 Covers `devices/{deviceId}` and `maintenanceDevices/{deviceId}/estimates/{estimateId}` (both new in `ADR-007` Phase 1), plus a small regression subset of the pre-existing `maintenanceDevices/{deviceId}` rules to confirm they're undisturbed. Does not re-run the full historical `BACKLOG` #0a matrix. App-layer-only invariants (the no-new-Estimate-while-unresolved rule, and Estimate qualification) are explicitly out of scope here — they aren't enforced by `firestore.rules` and need their own coverage once the app-layer code implementing them exists.
+
+`maintenance-devices-status-compatibility.test.js` (Phase 2) separately covers the `whereIn` status-group query behind `MaintenanceListServices._deviceTabQuery` — that each compatibility group (see `lib/core/utils/device_status.dart`) returns exactly the documents it should and none it shouldn't. It does not cover composite-index availability against a real (non-emulator) Firestore project — the emulator doesn't enforce production's index requirements, so a query can pass here and still need an index deployed for real. See `BACKLOG.md` #17.
 
 No CI wiring in this phase — run manually until that's worth doing.
