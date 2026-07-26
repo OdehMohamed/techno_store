@@ -87,6 +87,20 @@ test('Admin restoring an archived new-world Visit without touching deviceId stil
   );
 });
 
+test('Admin cannot reassign deviceId while restoring an archived Visit — Restore is not a side door around the invariant', async () => {
+  await seedVisit(testEnv, VISIT_ID, {
+    deviceId: 'device-1',
+    recordState: 'archived',
+  });
+  const db = firestoreAs(testEnv, UID.ADMIN);
+  await assertFails(
+    updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), {
+      recordState: 'active',
+      deviceId: 'device-2',
+    })
+  );
+});
+
 // ---- technicalFinding / technicalWorkConcludedAt authority ----
 
 test('Reception can edit price on a Visit with no technicalFinding set', async () => {
@@ -151,6 +165,17 @@ test('Reception cannot bundle a technicalFinding change into an otherwise-ordina
   await assertFails(
     updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), {
       price: 42,
+      technicalFinding: 'Repaired',
+    })
+  );
+});
+
+test('Reception cannot set technicalFinding while archiving a Visit — Archive is not a side door around the authority boundary', async () => {
+  await seedVisit(testEnv, VISIT_ID, { recordState: 'active' });
+  const db = firestoreAs(testEnv, UID.RECEPTION);
+  await assertFails(
+    updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), {
+      recordState: 'archived',
       technicalFinding: 'Repaired',
     })
   );

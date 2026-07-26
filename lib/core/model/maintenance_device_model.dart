@@ -133,16 +133,27 @@ class MaintenanceDeviceModel {
       'model': model,
       'colorHex': colorHex,
       'imeiNumber': imeiNumber,
-      // deviceId is the one field this model omits entirely when null,
-      // rather than writing an explicit null like every other optional
-      // field here — firestore.rules distinguishes "key absent" (legacy
-      // Visit) from "key present with value null" for this field
-      // specifically (ADR-007 §3), so an ordinary edit of a legacy
-      // Visit must never introduce the key at all.
+      // deviceId, finalAmountCharged, technicalFinding, and
+      // technicalWorkConcludedAt are all omitted entirely when null,
+      // unlike every pre-ADR-007 optional field on this model (which
+      // write an explicit null). deviceId must omit because
+      // firestore.rules distinguishes "key absent" (legacy Visit) from
+      // "key present with value null" (ADR-007 §3). The other three omit
+      // for a different, equally real reason: no write path sets them yet
+      // (Estimate/Technical-Finding actions land in later PRs), and every
+      // caller that builds a MaintenanceDeviceModel to save an unrelated
+      // edit — including new_device_maintenance.dart's onSaveLogic(),
+      // which doesn't know about these fields at all — constructs one
+      // with these fields defaulting to null. Writing them unconditionally
+      // would mean a merge write for an unrelated edit silently erases an
+      // already-persisted value the instant a later PR starts setting
+      // one, without requiring every such form-reconstruction call site to
+      // remember to preserve fields it doesn't own.
       if (deviceId != null) 'deviceId': deviceId,
-      'finalAmountCharged': finalAmountCharged,
-      'technicalFinding': technicalFinding,
-      'technicalWorkConcludedAt': technicalWorkConcludedAt?.toIso8601String(),
+      if (finalAmountCharged != null) 'finalAmountCharged': finalAmountCharged,
+      if (technicalFinding != null) 'technicalFinding': technicalFinding,
+      if (technicalWorkConcludedAt != null)
+        'technicalWorkConcludedAt': technicalWorkConcludedAt!.toIso8601String(),
       'problems': problems,
       'status': status,
       'recordState': recordState,
