@@ -10,13 +10,12 @@ This document makes no new decisions. Every item here is already defined in full
 
 ## Foundational — resolved (2026-07-25)
 
-Both items formerly in this group — device identity/matching together with the intake-time lookup workflow, and the status vocabulary together with the estimate/approval record shape — are now settled at the architecture level by `ADR-007` (Device / Visit / Estimate Domain Model), which designed them together specifically because of the cross-dependency this section flagged. Not yet implemented, but no longer blocking anything else in this document. The two narrow threads `ADR-007` left genuinely open no longer carry that tight cross-dependency, so they've moved to Self-Contained below.
+Both items formerly in this group — device identity/matching together with the intake-time lookup workflow, and the status vocabulary together with the estimate/approval record shape — are now settled at the architecture level by `ADR-007` (Device / Visit / Estimate Domain Model), which designed them together specifically because of the cross-dependency this section flagged. Not yet implemented, but no longer blocking anything else in this document. The two narrower threads this left open — the device-matching algorithm and the status vocabulary's narrative copy — briefly moved to Self-Contained below and have since been settled in full (2026-07-25 and 2026-07-26 respectively); neither remains in this document as an open item.
 
 ## Self-Contained
 
 Each of these is resolvable independently of the others, in any order, whenever there's a real reason to take one up.
 
-- **Status narrative copy.** The state vocabulary and transitions are settled (`ADR-007`); the literal customer-facing wording for each state is not.
 - **PIN/pattern purge timing** — immediate on delivery, or a short, strictly bounded grace period, and what mechanism guarantees completion.
 - **Deletion recovery mechanism** — how long a hidden record stays recoverable, and how it's restored.
 - **Phone-number-change mechanism** — how a customer's identity survives a verified number changing entirely.

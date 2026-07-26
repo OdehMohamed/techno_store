@@ -12,9 +12,6 @@ An item leaves either list when it's been earned, not when someone decides a dea
 
 ### Device & Repair Data
 
-**The status vocabulary's narrative copy.** The full, final set of states, their transitions, and Delivered's permanent terminal status are settled (`ADR-007`, 2026-07-25: `In Progress → [Awaiting Approval] → Ready for Handback → Delivered`). What remains open is the exact customer-facing narrative copy for each state.
-*Referenced in: Shared Foundation → The Relationship Timeline; Relationship Lens → The Relationship, As Experienced.*
-
 **Retention limit for sensitive unlock data.** Settled (2026-07-23): delivery and destruction are decoupled — the Delivered event does not automatically purge PIN/pattern data, since the customer provided it voluntarily and it may still hold value for the device's future maintenance history, protected in the meantime by the existing access restrictions. What remains open is whether any retention limit or automatic-deletion trigger should ever apply to this data at all, and if so what it is — folded into the general permanent-deletion mechanism below rather than tied to delivery specifically.
 *Referenced in: Shared Foundation → The Relationship Timeline.*
 
