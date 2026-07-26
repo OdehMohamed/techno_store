@@ -119,3 +119,36 @@ test('Admin can restore an archived Visit', async () => {
     })
   );
 });
+
+// ---- ordinary edits, and the archived-record freeze (ADR-005) ----
+// Added alongside the ADR-007 targeted integrity rules (deviceId
+// immutability, technicalFinding authority) to prove the pre-existing
+// "ordinary edit" branch of the update rule — the one both new
+// constraints are AND-ed onto — is still reachable and unbroken for
+// every role and record state it always supported.
+
+test('Reception can perform an ordinary edit on an active Visit', async () => {
+  await seedVisit(testEnv, VISIT_ID, { recordState: 'active' });
+  const db = firestoreAs(testEnv, UID.RECEPTION);
+  await assertSucceeds(
+    updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), { price: 55 })
+  );
+});
+
+test('Maintenance can perform an ordinary edit on an active Visit', async () => {
+  await seedVisit(testEnv, VISIT_ID, { recordState: 'active' });
+  const db = firestoreAs(testEnv, UID.MAINTENANCE);
+  await assertSucceeds(
+    updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), {
+      maintenanceEmployee: 'Test Tech',
+    })
+  );
+});
+
+test('an ordinary edit on an archived Visit is rejected — frozen until restored (no metadata-correction exception)', async () => {
+  await seedVisit(testEnv, VISIT_ID, { recordState: 'archived' });
+  const db = firestoreAs(testEnv, UID.ADMIN);
+  await assertFails(
+    updateDoc(doc(db, 'maintenanceDevices', VISIT_ID), { price: 55 })
+  );
+});

@@ -11,6 +11,23 @@ class MaintenanceDeviceModel {
   final String model;
   final String colorHex;
   final String? imeiNumber;
+  // ADR-007 §3 — set only at Visit creation, immutable thereafter (rules-
+  // enforced). Null means "legacy Visit, no linked Device" — this is a
+  // permanent, valid state, not a migration gap. See toJson(): this field
+  // is deliberately the one place this model omits a null key entirely
+  // rather than writing it explicitly, since the rule distinguishes
+  // "key absent" from "key present with value null."
+  final String? deviceId;
+  // ADR-007 §5 — new lifecycle, distinct from legacy `price` below.
+  // Writable staff-wide today; the Ready-for-Handback-only ceiling and
+  // ...unchanged-once-Delivered invariant are rules-enforced starting
+  // Phase 6 (app-trusted until then).
+  final double? finalAmountCharged;
+  // ADR-007 §4 — replaces fixedAt's old, narrower meaning. One of
+  // 'Repaired' | 'No Fault Found' | 'Fault Found, Not Repaired'.
+  // Maintenance + Admin only (rules-enforced).
+  final String? technicalFinding;
+  final DateTime? technicalWorkConcludedAt;
   // pin, patternLock, notesHidden intentionally NOT on this model — they
   // live in maintenanceDevices/{id}/private/sensitive per
   // docs/ai-workflow/ADR-001-sensitive-data-separation.md. Use
@@ -76,6 +93,10 @@ class MaintenanceDeviceModel {
     required this.model,
     required this.colorHex,
     this.imeiNumber,
+    this.deviceId,
+    this.finalAmountCharged,
+    this.technicalFinding,
+    this.technicalWorkConcludedAt,
     required this.problems,
     this.status = 'pending', // القيمة الافتراضية
     required this.accessories,
@@ -112,6 +133,16 @@ class MaintenanceDeviceModel {
       'model': model,
       'colorHex': colorHex,
       'imeiNumber': imeiNumber,
+      // deviceId is the one field this model omits entirely when null,
+      // rather than writing an explicit null like every other optional
+      // field here — firestore.rules distinguishes "key absent" (legacy
+      // Visit) from "key present with value null" for this field
+      // specifically (ADR-007 §3), so an ordinary edit of a legacy
+      // Visit must never introduce the key at all.
+      if (deviceId != null) 'deviceId': deviceId,
+      'finalAmountCharged': finalAmountCharged,
+      'technicalFinding': technicalFinding,
+      'technicalWorkConcludedAt': technicalWorkConcludedAt?.toIso8601String(),
       'problems': problems,
       'status': status,
       'recordState': recordState,
@@ -150,6 +181,14 @@ class MaintenanceDeviceModel {
       model: json['model'] as String,
       colorHex: json['colorHex'] as String,
       imeiNumber: json['imeiNumber'] as String?,
+      deviceId: json['deviceId'] as String?,
+      finalAmountCharged: json['finalAmountCharged'] != null
+          ? (json['finalAmountCharged'] as num).toDouble()
+          : null,
+      technicalFinding: json['technicalFinding'] as String?,
+      technicalWorkConcludedAt: json['technicalWorkConcludedAt'] != null
+          ? DateTime.parse(json['technicalWorkConcludedAt'] as String)
+          : null,
       problems:
           (json['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: json['status'] as String? ?? 'pending',
@@ -207,6 +246,19 @@ class MaintenanceDeviceModel {
       model: map['model'] as String,
       colorHex: map['colorHex'] as String,
       imeiNumber: map['imeiNumber'] as String?,
+      deviceId: map['deviceId'] as String?,
+      finalAmountCharged: map['finalAmountCharged'] != null
+          ? (map['finalAmountCharged'] as num).toDouble()
+          : null,
+      technicalFinding: map['technicalFinding'] as String?,
+      // ISO string, matching this model's other DateTime fields
+      // (deliveredAt/fixedAt/timeToFix) — this document's own existing
+      // convention, distinct from the new devices/estimates collections'
+      // server-Timestamp convention. Revisit if PR 4 makes this field
+      // server-authoritative instead.
+      technicalWorkConcludedAt: map['technicalWorkConcludedAt'] != null
+          ? DateTime.parse(map['technicalWorkConcludedAt'] as String)
+          : null,
       problems:
           (map['problems'] as List<dynamic>).map((e) => e as String).toList(),
       status: map['status'] as String? ?? 'pending',
@@ -261,6 +313,10 @@ class MaintenanceDeviceModel {
     String? model,
     String? colorHex,
     String? imeiNumber,
+    String? deviceId,
+    double? finalAmountCharged,
+    String? technicalFinding,
+    DateTime? technicalWorkConcludedAt,
     List<String>? problems,
     String? status,
     String? recordState,
@@ -294,6 +350,11 @@ class MaintenanceDeviceModel {
       model: model ?? this.model,
       colorHex: colorHex ?? this.colorHex,
       imeiNumber: imeiNumber ?? this.imeiNumber,
+      deviceId: deviceId ?? this.deviceId,
+      finalAmountCharged: finalAmountCharged ?? this.finalAmountCharged,
+      technicalFinding: technicalFinding ?? this.technicalFinding,
+      technicalWorkConcludedAt:
+          technicalWorkConcludedAt ?? this.technicalWorkConcludedAt,
       problems: problems ?? this.problems,
       status: status ?? this.status,
       recordState: recordState ?? this.recordState,

@@ -117,6 +117,26 @@ test('create accepts a string imeiNumber when present', async () => {
   );
 });
 
+test('create rejects a non-string imeiNumberNormalized when present', async () => {
+  const db = firestoreAs(testEnv, UID.ADMIN);
+  await assertFails(
+    setDoc(
+      doc(db, 'devices', 'd1'),
+      validDevice({ imeiNumberNormalized: 490154203237518 })
+    )
+  );
+});
+
+test('create accepts a string imeiNumberNormalized when present', async () => {
+  const db = firestoreAs(testEnv, UID.ADMIN);
+  await assertSucceeds(
+    setDoc(
+      doc(db, 'devices', 'd1'),
+      validDevice({ imeiNumberNormalized: '490154203237518' })
+    )
+  );
+});
+
 test('create rejects an arbitrary extra field', async () => {
   const db = firestoreAs(testEnv, UID.ADMIN);
   await assertFails(
@@ -176,6 +196,18 @@ test('staff can update brand/model/colorHex/imeiNumber together', async () => {
     updateDoc(doc(db, 'devices', id), {
       brand: 'Samsung',
       imeiNumber: '356938035643809',
+      updatedAt: serverTimestamp(),
+    })
+  );
+});
+
+test('staff can update imeiNumber together with imeiNumberNormalized', async () => {
+  const id = await seedDevice(testEnv);
+  const db = firestoreAs(testEnv, UID.MAINTENANCE);
+  await assertSucceeds(
+    updateDoc(doc(db, 'devices', id), {
+      imeiNumber: '35-6938-035643-809',
+      imeiNumberNormalized: '356938035643809',
       updatedAt: serverTimestamp(),
     })
   );
