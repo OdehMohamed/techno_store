@@ -362,5 +362,14 @@
   "Deactivate": "إلغاء التفعيل",
   "This account will have full business authority — unrestricted admin access.": "سيتمتع هذا الحساب بصلاحية إدارية كاملة دون قيود.",
   "No staff accounts found": "لا يوجد حسابات موظفين",
-  "Staff accounts will appear here": "ستظهر حسابات الموظفين هنا"
+  "Staff accounts will appear here": "ستظهر حسابات الموظفين هنا",
+  "Matching Devices": "أجهزة مطابقة",
+  "Known device for this customer": "جهاز معروف لهذا العميل",
+  "Matches by IMEI/serial": "مطابقة عبر IMEI/الرقم التسلسلي",
+  "None of these — Create New Device": "لا شيء من هذا — إنشاء جهاز جديد",
+  "Use saved device details": "استخدام بيانات الجهاز المحفوظة",
+  "No matching devices found.": "لم يتم العثور على أجهزة مطابقة.",
+  "Please select an existing device or choose Create New": "يرجى اختيار جهاز موجود أو اختيار إنشاء جهاز جديد",
+  "Linked Device": "الجهاز المرتبط",
+  "No linked Device (legacy record).": "لا يوجد جهاز مرتبط (سجل قديم)."
 }

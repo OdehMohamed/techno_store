@@ -362,5 +362,14 @@
   "Deactivate": "Deactivate",
   "This account will have full business authority — unrestricted admin access.": "This account will have full business authority — unrestricted admin access.",
   "No staff accounts found": "No staff accounts found",
-  "Staff accounts will appear here": "Staff accounts will appear here"
+  "Staff accounts will appear here": "Staff accounts will appear here",
+  "Matching Devices": "Matching Devices",
+  "Known device for this customer": "Known device for this customer",
+  "Matches by IMEI/serial": "Matches by IMEI/serial",
+  "None of these — Create New Device": "None of these — Create New Device",
+  "Use saved device details": "Use saved device details",
+  "No matching devices found.": "No matching devices found.",
+  "Please select an existing device or choose Create New": "Please select an existing device or choose Create New",
+  "Linked Device": "Linked Device",
+  "No linked Device (legacy record).": "No linked Device (legacy record)."
 }

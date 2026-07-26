@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:techno_store/core/model/device_match_candidate.dart';
+import 'package:techno_store/core/model/device_model.dart';
 import 'package:techno_store/core/utils/app_colors.dart';
 import 'package:techno_store/core/utils/app_constants.dart';
+import 'package:techno_store/core/utils/device_matching.dart';
 import 'package:techno_store/core/utils/device_status.dart';
+import 'package:techno_store/core/utils/imei_normalization.dart';
 import 'package:techno_store/core/utils/user_role.dart';
 import 'package:techno_store/core/widgets/custom_dialogs.dart';
 import 'package:techno_store/core/widgets/main_app_bar.dart';
@@ -17,6 +23,8 @@ import 'package:techno_store/core/model/maintenance_device_sensitive_data.dart';
 import 'package:techno_store/core/model/user_data.dart';
 import 'package:techno_store/core/services/firestore_services.dart';
 import 'package:techno_store/core/services/maintenance_device_sensitive_data_service.dart';
+import 'package:techno_store/features/new_device_maintenance/services/device_services.dart';
+import 'package:techno_store/features/new_device_maintenance/services/new_device_services.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/accessories_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/action_buttons_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/build_dropdown.dart';
@@ -28,6 +36,20 @@ import 'package:techno_store/features/new_device_maintenance/widgets/pattern_but
 import 'package:techno_store/features/new_device_maintenance/widgets/pattern_dialog_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/pre_check_section_widget.dart';
 import 'package:techno_store/features/new_device_maintenance/widgets/problems_section_widget.dart';
+
+/// ADR-007 Device Matching Policy — the intake-only Device decision.
+/// Deliberately distinct from "a candidate is selected": `undecided` and
+/// `createNew` are different states (staff never touched the panel, vs.
+/// staff explicitly chose to create a new Device), so Save can require an
+/// explicit choice rather than silently treating "did nothing" as
+/// "create new" because a search was slow, failed, or simply ignored.
+enum DeviceDecision { undecided, existingSelected, createNew }
+
+/// Both debounced lookups (customer resolution, exact-IMEI match) use this
+/// so "no candidates" and "couldn't check" are never conflated in the UI —
+/// both stay non-blocking, but only one of them is actual evidence of
+/// absence.
+enum LookupStatus { idle, loading, succeeded, failed }
 
 class NewDeviceMaintenance extends StatefulWidget {
   final MaintenanceDeviceModel? device;
@@ -68,6 +90,25 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   List<UserData> _receivedByOptions = [];
   List<UserData> _maintenanceOptions = [];
 
+  // ADR-007 Device Matching — intake only (widget.device == null). Never
+  // shown/wired for editing an existing Visit: deviceId is immutable
+  // after creation (see the read-only linked-Device display instead).
+  final _deviceServices = DeviceServices();
+  final _newDeviceServices = NewDeviceServices();
+
+  DeviceDecision _deviceDecision = DeviceDecision.undecided;
+  DeviceMatchCandidate? _selectedCandidate;
+
+  List<DeviceModel> _imeiMatches = [];
+  LookupStatus _imeiLookupStatus = LookupStatus.idle;
+  int _imeiLookupGeneration = 0;
+  Timer? _imeiDebounce;
+
+  List<DeviceModel> _knownDevices = [];
+  LookupStatus _knownDevicesLookupStatus = LookupStatus.idle;
+  int _knownDevicesLookupGeneration = 0;
+  Timer? _phoneDebounce;
+
   List<bool> problems =
       List.filled(AppConstants.maintenanceProblemList.length, false);
   List<bool> accessories =
@@ -93,6 +134,8 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
 
   @override
   void dispose() {
+    _imeiDebounce?.cancel();
+    _phoneDebounce?.cancel();
     nameController.dispose();
     phoneController.dispose();
     modelController.dispose();
@@ -110,6 +153,14 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
   @override
   void initState() {
     super.initState();
+    // Device Matching is intake-only (ADR-007) — deviceId is immutable
+    // after creation, so an existing Visit never re-runs candidate search;
+    // see deviceMatchingSection()'s edit-mode branch for the read-only
+    // linked-Device display instead.
+    if (widget.device == null) {
+      imeiController.addListener(_onImeiChanged);
+      phoneController.addListener(_onPhoneChanged);
+    }
     if (widget.device != null) {
       final device = widget.device!;
       nameController.text = device.name;
@@ -162,6 +213,144 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
     setState(() {
       _receivedByOptions = results[0];
       _maintenanceOptions = results[1];
+    });
+  }
+
+  // ---- ADR-007 Device Matching — intake only ----
+  //
+  // Both lookups below share the same shape: debounce the triggering
+  // field, run the query, then discard the result if a newer request has
+  // started since (the generation guard) — a slower response for an
+  // older input must never overwrite candidate state produced for
+  // whatever's currently typed. No cancellation abstraction, just a
+  // monotonically increasing counter per lookup, per the product owner's
+  // explicit preference for the lightest mechanism that's actually
+  // correct.
+
+  void _onImeiChanged() {
+    _imeiDebounce?.cancel();
+    _imeiDebounce = Timer(const Duration(milliseconds: 500), _runImeiLookup);
+  }
+
+  Future<void> _runImeiLookup() async {
+    final normalized = ImeiNormalization.normalize(imeiController.text);
+    final generation = ++_imeiLookupGeneration;
+
+    if (normalized == null) {
+      // Empty/unnormalizable input is absent evidence, not a query to
+      // run — matches DeviceServices.findByNormalizedImei's own guard,
+      // just avoided here too so the loading state doesn't flicker for
+      // input that was never going to produce anything.
+      if (!mounted) return;
+      setState(() {
+        _imeiMatches = [];
+        _imeiLookupStatus = LookupStatus.idle;
+      });
+      return;
+    }
+
+    if (mounted) setState(() => _imeiLookupStatus = LookupStatus.loading);
+    try {
+      final results = await _deviceServices.findByNormalizedImei(imeiController.text);
+      if (!mounted || generation != _imeiLookupGeneration) return;
+      setState(() {
+        _imeiMatches = results;
+        _imeiLookupStatus = LookupStatus.succeeded;
+      });
+    } catch (e) {
+      debugPrint('❌ IMEI candidate lookup failed: $e');
+      if (!mounted || generation != _imeiLookupGeneration) return;
+      setState(() {
+        _imeiMatches = [];
+        _imeiLookupStatus = LookupStatus.failed;
+      });
+    }
+  }
+
+  void _onPhoneChanged() {
+    _phoneDebounce?.cancel();
+    _phoneDebounce = Timer(const Duration(milliseconds: 500), _runCustomerLookup);
+  }
+
+  Future<void> _runCustomerLookup() async {
+    // This is purely for driving candidate search — the authoritative
+    // userId is re-resolved fresh at save time (NewDeviceServices already
+    // does this inside addNewDevice), so a stale value here never reaches
+    // Firestore. If staff edits the phone number after a candidate was
+    // already selected based on the old number, only the candidate
+    // *search* reruns; the Device decision itself isn't silently reset.
+    final normalized = _normalizePhoneNumber(phoneController.text);
+    final generation = ++_knownDevicesLookupGeneration;
+
+    if (normalized == null) {
+      if (!mounted) return;
+      setState(() {
+        _knownDevices = [];
+        _knownDevicesLookupStatus = LookupStatus.idle;
+      });
+      return;
+    }
+
+    if (mounted) setState(() => _knownDevicesLookupStatus = LookupStatus.loading);
+    try {
+      final uid = await _newDeviceServices.getUserIdByPhoneNumber(normalized);
+      if (!mounted || generation != _knownDevicesLookupGeneration) return;
+
+      if (uid == null) {
+        // A genuinely new customer — not a failure, an expected default.
+        setState(() {
+          _knownDevices = [];
+          _knownDevicesLookupStatus = LookupStatus.succeeded;
+        });
+        return;
+      }
+
+      final devices = await _newDeviceServices.getKnownDevicesForCustomer(uid);
+      if (!mounted || generation != _knownDevicesLookupGeneration) return;
+      setState(() {
+        _knownDevices = devices;
+        _knownDevicesLookupStatus = LookupStatus.succeeded;
+      });
+    } catch (e) {
+      debugPrint('❌ Known-device candidate lookup failed: $e');
+      if (!mounted || generation != _knownDevicesLookupGeneration) return;
+      setState(() {
+        _knownDevices = [];
+        _knownDevicesLookupStatus = LookupStatus.failed;
+      });
+    }
+  }
+
+  void _selectCandidate(DeviceMatchCandidate candidate) {
+    // Confirms physical identity only — sets which Device this Visit will
+    // reference. Never touches brand/model/color/IMEI fields: the Visit
+    // snapshot and the Device's canonical record are separate truths
+    // (ADR-007 §4), and a candidate appearing here is not evidence that
+    // its stored attributes are more accurate than what staff just
+    // observed. See _useSavedDeviceDetails for the explicit opt-in copy.
+    setState(() {
+      _deviceDecision = DeviceDecision.existingSelected;
+      _selectedCandidate = candidate;
+    });
+  }
+
+  void _chooseCreateNew() {
+    setState(() {
+      _deviceDecision = DeviceDecision.createNew;
+      _selectedCandidate = null;
+    });
+  }
+
+  void _useSavedDeviceDetails() {
+    final candidate = _selectedCandidate?.device;
+    if (candidate == null) return;
+    setState(() {
+      selectedBrand = candidate.brand;
+      modelController.text = candidate.model;
+      if (candidate.colorHex.isNotEmpty) {
+        selectedColor = Color(int.parse(candidate.colorHex, radix: 16));
+      }
+      imeiController.text = candidate.imeiNumber ?? '';
     });
   }
 
@@ -427,6 +616,11 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
           icon: Icons.fingerprint,
         ),
         const SizedBox(height: 16),
+        if (widget.device == null)
+          deviceMatchingSection()
+        else
+          linkedDeviceSection(),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -447,6 +641,169 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
           ],
         ),
       ],
+    );
+  }
+
+  /// ADR-007 Device Matching — intake only. Merges both candidate
+  /// pathways, always keeps "Create New Device" available regardless of
+  /// lookup state, and never auto-selects or auto-fills anything.
+  Widget deviceMatchingSection() {
+    final candidates = buildMatchCandidates(
+      imeiMatches: _imeiMatches,
+      knownDevices: _knownDevices,
+    );
+    final isLoading = _imeiLookupStatus == LookupStatus.loading ||
+        _knownDevicesLookupStatus == LookupStatus.loading;
+    final anyFailed = _imeiLookupStatus == LookupStatus.failed ||
+        _knownDevicesLookupStatus == LookupStatus.failed;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                "Matching Devices".tr(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              if (isLoading) ...[
+                const SizedBox(width: 8),
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ],
+            ],
+          ),
+          if (anyFailed) ...[
+            const SizedBox(height: 6),
+            Text(
+              "Couldn't check for matching devices — you can still create a new one."
+                  .tr(),
+              style: TextStyle(color: Colors.orange[800], fontSize: 12),
+            ),
+          ] else if (!isLoading &&
+              candidates.isEmpty &&
+              (_imeiLookupStatus == LookupStatus.succeeded ||
+                  _knownDevicesLookupStatus == LookupStatus.succeeded)) ...[
+            const SizedBox(height: 6),
+            Text(
+              "No matching devices found.".tr(),
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
+          ],
+          const SizedBox(height: 8),
+          ...candidates.map((candidate) => _candidateTile(candidate)),
+          _createNewTile(),
+          if (_deviceDecision == DeviceDecision.existingSelected) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _useSavedDeviceDetails,
+                icon: const Icon(Icons.content_copy, size: 16),
+                label: Text("Use saved device details".tr()),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _candidateTile(DeviceMatchCandidate candidate) {
+    final isSelected = _deviceDecision == DeviceDecision.existingSelected &&
+        _selectedCandidate?.device.id == candidate.device.id;
+    final tags = [
+      if (candidate.reasons.contains(MatchReason.imeiMatch))
+        'Matches by IMEI/serial'.tr(),
+      if (candidate.reasons.contains(MatchReason.knownForCustomer))
+        'Known device for this customer'.tr(),
+    ].join(' · ');
+
+    // Deliberately built from DeviceModel fields only — brand/model/
+    // colorHex/imeiNumber and the reason tags. No customer name, prior
+    // Visit content, or Visit count: DeviceModel has no such field to
+    // leak, so this disclosure boundary is structural, not just a UI
+    // convention to remember (ADR-007 Addendum).
+    return Card(
+      color: isSelected ? Colors.blue[50] : null,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(
+          isSelected ? Icons.check_circle : Icons.smartphone,
+          color: isSelected ? Colors.blue : Colors.grey[600],
+        ),
+        title: Text(
+          [candidate.device.brand, candidate.device.model]
+              .where((s) => s != null && s.isNotEmpty)
+              .join(' '),
+        ),
+        subtitle: Text(
+          [
+            if (candidate.device.imeiNumber != null)
+              'IMEI: ${candidate.device.imeiNumber}',
+            tags,
+          ].join('\n'),
+        ),
+        isThreeLine: true,
+        onTap: () => _selectCandidate(candidate),
+      ),
+    );
+  }
+
+  Widget _createNewTile() {
+    final isSelected = _deviceDecision == DeviceDecision.createNew;
+    return Card(
+      color: isSelected ? Colors.blue[50] : null,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(
+          isSelected ? Icons.check_circle : Icons.add_circle_outline,
+          color: isSelected ? Colors.blue : Colors.grey[600],
+        ),
+        title: Text("None of these — Create New Device".tr()),
+        onTap: _chooseCreateNew,
+      ),
+    );
+  }
+
+  /// Editing an existing Visit — deviceId is immutable after creation
+  /// (ADR-007 §3), so this is a read-only reference, never a re-openable
+  /// picker. A legacy Visit (deviceId absent) has no linked-Device UI at
+  /// all: there is no write path to retroactively add one via ordinary
+  /// update, so offering an action here would promise something the
+  /// rules structurally can't allow.
+  Widget linkedDeviceSection() {
+    final deviceId = widget.device?.deviceId;
+    if (deviceId == null) {
+      return Text(
+        "No linked Device (legacy record).".tr(),
+        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+      );
+    }
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.link, color: Colors.grey[600], size: 18),
+          const SizedBox(width: 8),
+          Expanded(child: Text("Linked Device".tr())),
+        ],
+      ),
     );
   }
 
@@ -690,6 +1047,17 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
                 await newDeviceMaintenanceCubit.addNewDevice(
                   device,
                   sensitiveData: sensitiveData,
+                  existingDeviceId: _deviceDecision == DeviceDecision.existingSelected
+                      ? _selectedCandidate?.device.id
+                      : null,
+                  newDeviceInput: _deviceDecision == DeviceDecision.createNew
+                      ? NewDeviceInput(
+                          brand: selectedBrand,
+                          model: modelController.text.trim(),
+                          colorHex: selectedColor.value.toRadixString(16),
+                          imeiNumber: imeiController.text.trim(),
+                        )
+                      : null,
                 );
               } else {
                 await newDeviceMaintenanceCubit.updateDevice(
@@ -721,12 +1089,27 @@ class _NewDeviceMaintenanceState extends State<NewDeviceMaintenance> {
       return null;
     }
 
+    // ADR-007: staff must make an explicit Existing/Create New choice at
+    // intake — undecided is a distinct state from createNew (see
+    // DeviceDecision), not a silent default. Lookup failure or slowness
+    // never blocks this: "Create New Device" stays tappable regardless.
+    if (widget.device == null && _deviceDecision == DeviceDecision.undecided) {
+      Message.showErrorToastMessage(
+          "Please select an existing device or choose Create New".tr());
+      return null;
+    }
+
     MaintenanceDeviceModel device = MaintenanceDeviceModel(
       name: nameController.text.trim(),
       phoneNumber: normalizedPhoneNumber,
       model: modelController.text.trim(),
       brand: selectedBrand,
       colorHex: selectedColor.value.toRadixString(16),
+      // Preserved for editing an existing Visit (immutable after
+      // creation — see firestore.rules); naturally null for new intake,
+      // where the real value is resolved inside addNewDevice via
+      // existingDeviceId/newDeviceInput below, not through this field.
+      deviceId: widget.device?.deviceId,
       problems: [
         for (int i = 0; i < problems.length; i++)
           if (problems[i]) AppConstants.maintenanceProblemList[i]
