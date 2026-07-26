@@ -1,9 +1,12 @@
 'use strict';
 
+const assert = require('node:assert/strict');
 const { test, before, beforeEach, after } = require('node:test');
 const {
   doc,
+  collection,
   getDoc,
+  getDocs,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -216,6 +219,30 @@ test('unauthenticated cannot read an Estimate', async () => {
   const id = await seedEstimate(testEnv, VISIT_ID);
   const db = firestoreAs(testEnv, null);
   await assertFails(getDoc(doc(db, ...estimatePath(id))));
+});
+
+// ---- read: query-shaped, not just single-document get() ----
+// A getDoc() denial doesn't by itself prove a *query* against the same
+// subcollection is equally denied — Firestore can, in principle, reject a
+// list query outright when it can't prove every possible result satisfies
+// the rule. These exercise the actual query path a real client would use.
+
+test('the owning customer can query the Estimates under their own Visit', async () => {
+  await seedEstimate(testEnv, VISIT_ID, { proposedScope: 'First' });
+  await seedEstimate(testEnv, VISIT_ID, { proposedScope: 'Second' });
+  const db = firestoreAs(testEnv, UID.CUSTOMER_A); // VISIT_ID's userId
+  const snapshot = await assertSucceeds(
+    getDocs(collection(db, 'maintenanceDevices', VISIT_ID, 'estimates'))
+  );
+  assert.equal(snapshot.size, 2);
+});
+
+test('a different customer cannot use a query to expose this Visit\'s Estimates', async () => {
+  await seedEstimate(testEnv, VISIT_ID);
+  const db = firestoreAs(testEnv, UID.CUSTOMER_B);
+  await assertFails(
+    getDocs(collection(db, 'maintenanceDevices', VISIT_ID, 'estimates'))
+  );
 });
 
 // ==== decision recording: approve ====
@@ -543,6 +570,73 @@ test('resolution rejects an arbitrary extra field', async () => {
       sneaky: true,
     })
   );
+});
+
+// ==== end-to-end: the individually-valid transitions compose into a
+// legitimately reachable sequence ====
+// Every action below (create, decline, resolve) goes through a real,
+// rules-enforced client context via firestoreAs() -- no
+// withSecurityRulesDisabled() shortcut for the Estimate itself. Only the
+// parent Visit (an unrelated collection this suite doesn't own the rules
+// for) is seeded via the bypass, in beforeEach, as ordinary fixture setup.
+
+test('end-to-end: create -> decline -> resolve to continue, entirely through authorized writes', async () => {
+  const createDb = firestoreAs(testEnv, UID.MAINTENANCE);
+  const estimateRef = doc(createDb, ...estimatePath('e2e-continue'));
+  await assertSucceeds(
+    setDoc(estimateRef, validEstimate(UID.MAINTENANCE))
+  );
+
+  const declineDb = firestoreAs(testEnv, UID.RECEPTION);
+  await assertSucceeds(
+    updateDoc(doc(declineDb, ...estimatePath('e2e-continue')), {
+      outcome: 'declined',
+      decidedByUid: UID.RECEPTION,
+      decidedAt: serverTimestamp(),
+      declineReason: 'Customer wants to think about it',
+    })
+  );
+
+  const resolveDb = firestoreAs(testEnv, UID.MAINTENANCE);
+  await assertSucceeds(
+    updateDoc(doc(resolveDb, ...estimatePath('e2e-continue')), {
+      resolutionOutcome: 'continue',
+      resolvedByUid: UID.MAINTENANCE,
+      resolvedAt: serverTimestamp(),
+    })
+  );
+
+  const finalDoc = await getDoc(doc(createDb, ...estimatePath('e2e-continue')));
+  assert.equal(finalDoc.data().outcome, 'declined');
+  assert.equal(finalDoc.data().resolutionOutcome, 'continue');
+});
+
+test('end-to-end: create -> decline -> resolve to stop, entirely through authorized writes', async () => {
+  const createDb = firestoreAs(testEnv, UID.ADMIN);
+  const estimateRef = doc(createDb, ...estimatePath('e2e-stop'));
+  await assertSucceeds(setDoc(estimateRef, validEstimate(UID.ADMIN)));
+
+  const declineDb = firestoreAs(testEnv, UID.ADMIN);
+  await assertSucceeds(
+    updateDoc(doc(declineDb, ...estimatePath('e2e-stop')), {
+      outcome: 'declined',
+      decidedByUid: UID.ADMIN,
+      decidedAt: serverTimestamp(),
+    })
+  );
+
+  const resolveDb = firestoreAs(testEnv, UID.ADMIN);
+  await assertSucceeds(
+    updateDoc(doc(resolveDb, ...estimatePath('e2e-stop')), {
+      resolutionOutcome: 'stop',
+      resolvedByUid: UID.ADMIN,
+      resolvedAt: serverTimestamp(),
+    })
+  );
+
+  const finalDoc = await getDoc(doc(createDb, ...estimatePath('e2e-stop')));
+  assert.equal(finalDoc.data().outcome, 'declined');
+  assert.equal(finalDoc.data().resolutionOutcome, 'stop');
 });
 
 // ==== delete ====

@@ -141,6 +141,12 @@ service cloud.firestore {
       // createdAt is immutable forever; updatedAt is server-authoritative
       // and must advance on every write, same anti-spoofing reasoning as
       // every other timestamp this ADR makes server-authoritative.
+      //
+      // brand/imeiNumber are absent from hasAll() deliberately: a later
+      // write that omits a previously-set optional field is allowed to
+      // clear it. That's optionality working as intended (e.g. correcting
+      // a wrongly-entered IMEI back to unknown), not accidental data loss —
+      // only the four required fields are protected from removal.
       allow update: if isSignedIn() && isStaff()
         && request.resource.data.keys().hasOnly(
              ['brand', 'model', 'colorHex', 'imeiNumber', 'createdAt', 'updatedAt'])
